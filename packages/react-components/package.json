@@ -6,8 +6,16 @@
 	"main": "src/index.js",
 	"dependencies": {
 		"@writing-tool/constants": "0.1.0",
+		"@writing-tool/helpers": "0.1.0",
+		"@writing-tool/utils": "0.1.0",
 		"react": "^16.10.2",
 		"react-dom": "^16.10.2",
-		"styled-components": "^5.0.1"
+		"styled-components": "^5.0.1",
+		"react-icons": "^3.8.0",
+		"slate": "^0.57.1",
+		"slate-react": "^0.57.1",
+		"slate-history": "^0.57.1",
+		"is-hotkey": "^0.1.6",
+		"prismjs": "^1.19.0"
 	}
 }

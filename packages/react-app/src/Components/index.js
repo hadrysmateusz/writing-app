@@ -1,1 +1,1 @@
-export * from "@writing-tool/components"
+export * from "./Firebase"

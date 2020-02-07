@@ -1,7 +1,8 @@
 import React from "react"
 import { useSlate } from "slate-react"
 
-import { toggleBlock, isBlockActive } from "../helpers"
+import { isBlockActive } from "@writing-tool/helpers"
+
 import Icon from "../Icon"
 
 const Toolbar = () => {

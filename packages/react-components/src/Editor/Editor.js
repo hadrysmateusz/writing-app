@@ -1,15 +1,17 @@
 import React, { useMemo, useState, useCallback } from "react"
 import { createEditor, Node, Text, Range, Editor, Transforms, Point } from "slate"
 import { Slate, Editable, withReact } from "slate-react"
-import isHotkey from "is-hotkey"
 import { withHistory } from "slate-history"
+import isHotkey from "is-hotkey"
 
-import { toggleMark } from "../helpers"
+import { toggleMark } from "@writing-tool/helpers"
+
 import Toolbar from "./Toolbar"
 import { Element } from "./Elements"
 import { Leaf } from "./Leaf"
-import Prism from "../prism"
 import { Publish } from "./Publish"
+
+import Prism from "../prism"
 
 const HOTKEYS = {
 	"mod+b": "bold",
@@ -110,12 +112,7 @@ function EditorComponent() {
 			<Publish>Publish</Publish>
 
 			<div style={{ fontFamily: "IBM Plex Mono", fontSize: "16px" }}>
-				<Editable
-					renderElement={renderElement}
-					renderLeaf={renderLeaf}
-					onKeyDown={onKeyDown}
-					decorate={decorate}
-				/>
+				<Editable renderElement={renderElement} renderLeaf={renderLeaf} onKeyDown={onKeyDown} decorate={decorate} />
 			</div>
 		</Slate>
 	)
@@ -143,11 +140,7 @@ const withShortcuts = (editor) => {
 			if (type) {
 				Transforms.select(editor, range)
 				Transforms.delete(editor)
-				Transforms.setNodes(
-					editor,
-					{ type },
-					{ match: (node) => Editor.isBlock(editor, node) }
-				)
+				Transforms.setNodes(editor, { type }, { match: (node) => Editor.isBlock(editor, node) })
 
 				if (type === "list-item") {
 					const list = { type: "bulleted-list", children: [] }

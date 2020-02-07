@@ -1,12 +1,9 @@
 import React, { useRef, useEffect } from "react"
 
-import routes from "../constants/routes"
-import { openPopupWindow } from "../utils"
+import { ROUTES, HOSTING_URL, MEDIUM_API_AUTH_URL } from "@writing-tool/constants"
+import { openPopupWindow } from "@writing-tool/utils"
 
 // const lambdaCallback = "https://us-central1-write-and-publish-tool.cloudfunctions.net/oauth/authorize"
-const MEDIUM_API_BASE_URL = "https://api.medium.com/v1"
-const MEDIUM_API_AUTH_URL = "https://medium.com/m/oauth/authorize"
-const HOSTING_URL = "https://write-and-publish-tool.web.app"
 
 export const Publish = ({ children }) => {
 	const popupWindow = useRef(null)
@@ -25,7 +22,7 @@ export const Publish = ({ children }) => {
 		const scope = "basicProfile,publishPost"
 		const state = "asdf" // TODO: proper state string generation
 		const response_type = "code"
-		const redirect_uri = encodeURIComponent(HOSTING_URL + routes.MEDIUM_AUTH_CALLBACK)
+		const redirect_uri = encodeURIComponent(HOSTING_URL + ROUTES.MEDIUM_AUTH_CALLBACK)
 
 		const popup_url =
 			MEDIUM_API_AUTH_URL +

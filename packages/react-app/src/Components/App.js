@@ -2,9 +2,10 @@ import React from "react"
 import styled from "styled-components"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 
-import { Editor, FirebaseProvider } from "Components"
+import { Editor } from "@writing-tool/react-components"
 
-import MediumAuthRedirectPage from "./pages/MediumAuthRedirect"
+import { FirebaseProvider } from "Components"
+import { MediumAuthRedirectPage } from "Pages"
 
 function App() {
 	return (

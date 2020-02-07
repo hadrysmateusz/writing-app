@@ -7,13 +7,19 @@
 		"@writing-tool/constants": "0.1.0",
 		"@writing-tool/react-components": "0.1.0",
 		"@writing-tool/utils": "0.1.0",
+		"@writing-tool/helpers": "0.1.0",
 		"@testing-library/jest-dom": "^4.2.4",
 		"@testing-library/react": "^9.3.2",
 		"@testing-library/user-event": "^7.1.2",
 		"react": "^16.12.0",
 		"react-dom": "^16.12.0",
+		"react-router-dom": "^5.1.2",
 		"react-scripts": "3.3.1",
-		"customize-cra": "^0.9.1"
+		"customize-cra": "^0.9.1",
+		"styled-components": "^5.0.1",
+		"typeface-ibm-plex-mono": "0.0.61",
+		"firebase": "^7.8.0",
+		"babel-plugin-macros": "^2.8.0"
 	},
 	"devDependencies": {
 		"react-app-rewired": "^2.1.5"
