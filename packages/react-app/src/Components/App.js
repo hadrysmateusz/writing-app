@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 
 import { Editor } from "@writing-tool/react-components"
 
-import { FirebaseProvider } from "Components"
+import { FirebaseProvider } from "Components/Firebase"
 import { MediumAuthRedirectPage } from "Pages"
 
 function App() {
