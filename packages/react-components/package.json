@@ -17,5 +17,8 @@
 		"slate-history": "^0.57.1",
 		"is-hotkey": "^0.1.6",
 		"prismjs": "^1.19.0"
+	},
+	"eslintConfig": {
+		"extends": "react-app"
 	}
 }
