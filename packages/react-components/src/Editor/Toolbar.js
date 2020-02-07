@@ -18,15 +18,17 @@ const Toolbar = () => {
 				<BlockButton format="blockquote">
 					<Icon icon="quote" />
 				</BlockButton>
+				<BlockButton format="image">
+					<Icon icon="image" />
+				</BlockButton>
+
 				<BlockButton format="numbered-list">
 					<Icon icon="listNumbered" />
 				</BlockButton>
 				<BlockButton format="bulleted-list">
 					<Icon icon="listBulleted" />
 				</BlockButton>
-				<BlockButton format="image">
-					<Icon icon="image" />
-				</BlockButton>
+
 				<BlockButton format="embed">Embed</BlockButton>
 			</div>
 
