@@ -9,7 +9,7 @@ import { toggleMark } from "@writing-tool/helpers"
 import Toolbar from "./Toolbar"
 import { Element } from "./Elements"
 import { Leaf } from "./Leaf"
-import { Publish } from "./Publish"
+import { SuperPowers } from "./SuperPowers"
 
 import Prism from "../prism"
 
@@ -109,7 +109,7 @@ function EditorComponent() {
 		<Slate editor={editor} value={value} onChange={onChange}>
 			<Toolbar />
 
-			<Publish>Publish</Publish>
+			<SuperPowers>Publish</SuperPowers>
 
 			<div style={{ fontFamily: "IBM Plex Mono", fontSize: "16px" }}>
 				<Editable renderElement={renderElement} renderLeaf={renderLeaf} onKeyDown={onKeyDown} decorate={decorate} />

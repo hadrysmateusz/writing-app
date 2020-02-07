@@ -1,5 +1,7 @@
 import React, { useEffect } from "react"
 
+import { MEDIUM_AUTH_MESSAGE_TYPE } from "@writing-tool/constants"
+
 /**
  * this is the redirect page for the Medium OAuth popup,
  * it will send the searchParams to the opening window
@@ -14,26 +16,28 @@ export default () => {
 		}
 
 		try {
-			let state, code
-
 			const params = new URLSearchParams(window.location.search)
 
-			if (params.get("error")) {
+			if (params.has("error")) {
 				throw Error("Medium Error:" + params.error)
 			}
 			if (!params.has("state") || !params.has("code")) {
 				throw Error("Response is missing required search parameters")
 			}
 
+			const state = params.get("state")
+			const code = params.get("code")
+
 			// TODO: verify that using window.opener is safe, it might be necessary to hardcode a url or use a different solution
 			// send the parameters to the opening window
-			window.opener.postMessage({ state, code })
+			window.opener.postMessage({ type: MEDIUM_AUTH_MESSAGE_TYPE, state, code })
 		} catch (error) {
+			console.log(error)
 			// send the error message to the opening window
-			window.opener.postMessage({ error })
+			window.opener.postMessage({ type: MEDIUM_AUTH_MESSAGE_TYPE, error })
 		}
 
-		// close the popup
+		// // close the popup
 		window.close()
 	})
 	// some text to show the user
