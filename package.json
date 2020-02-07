@@ -1,0 +1,17 @@
+{
+	"name": "writing-tool",
+	"private": true,
+	"workspaces": [
+		"packages/*"
+	],
+	"devDependencies": {
+		"lerna": "^3.20.2"
+	},
+	"scripts": {
+		"bootstrap": "lerna bootstrap",
+		"start": "lerna run start --scope @writing-tool/react-app --stream",
+		"test": "lerna run test --scope @writing-tool/react-app --stream",
+		"list-packages": "lerna la",
+		"refresh-dependencies": "rm -rf node_modules yarn.lock && lerna clean -y && lerna bootstrap"
+	}
+}
