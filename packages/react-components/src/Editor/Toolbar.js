@@ -9,12 +9,9 @@ const Toolbar = () => {
 	return (
 		<div>
 			<div>
-				<BlockButton format="heading-one">h1</BlockButton>
-				<BlockButton format="heading-two">h2</BlockButton>
-				{/* <BlockButton format="heading-three">h3</BlockButton>
-				<BlockButton format="heading-four">h4</BlockButton>
-				<BlockButton format="heading-five">h5</BlockButton>
-				<BlockButton format="heading-six">h6</BlockButton> */}
+				<BlockButton format="heading1">h1</BlockButton>
+				<BlockButton format="heading2">h2</BlockButton>
+
 				<BlockButton format="code">
 					<Icon icon="code" />
 				</BlockButton>

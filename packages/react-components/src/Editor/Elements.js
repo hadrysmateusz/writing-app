@@ -64,17 +64,17 @@ const HorizontalRule = ({ attributes, children }) => {
 export const Element = (props) => {
 	const { attributes, children, element } = props
 	switch (element.type) {
-		case "heading-one":
+		case "heading1":
 			return <Heading {...props} level={1} />
-		case "heading-two":
+		case "heading2":
 			return <Heading {...props} level={2} />
-		case "heading-three":
+		case "heading3":
 			return <Heading {...props} level={3} />
-		case "heading-four":
+		case "heading4":
 			return <Heading {...props} level={4} />
-		case "heading-five":
+		case "heading5":
 			return <Heading {...props} level={5} />
-		case "heading-six":
+		case "heading6":
 			return <Heading {...props} level={6} />
 		case "blockquote":
 			return <Blockquote {...props} />
