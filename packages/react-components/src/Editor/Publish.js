@@ -3,8 +3,6 @@ import React, { useRef, useEffect } from "react"
 import { ROUTES, HOSTING_URL, MEDIUM_API_AUTH_URL } from "@writing-tool/constants"
 import { openPopupWindow } from "@writing-tool/utils"
 
-// const lambdaCallback = "https://us-central1-write-and-publish-tool.cloudfunctions.net/oauth/authorize"
-
 export const Publish = ({ children }) => {
 	const popupWindow = useRef(null)
 
