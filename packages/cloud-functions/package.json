@@ -19,7 +19,7 @@
 		"node": "10"
 	},
 	"dependencies": {
-		"@writing-tool/constants": "0.1.0",
+		"@writing-tool/constants": "*",
 		"cors": "^2.8.5",
 		"express": "^4.17.1",
 		"firebase-admin": "^8.6.0",
