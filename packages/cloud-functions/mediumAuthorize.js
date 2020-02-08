@@ -46,7 +46,7 @@ async function requestMediumAccessToken(code, redirect_uri) {
 		// TODO: better response schema validation
 		if (!data.access_token || !data.refresh_token) throw new Error("Tokens aren't present in the response")
 
-		getTokenTTL(data.expires_at)
+		// Last time I checked medium access tokens expire after 60 days
 
 		return data
 	} catch (error) {
@@ -87,27 +87,4 @@ async function getUserDetails(access_token) {
 	} catch (error) {
 		throw new Error("Couldn't get user details: " + error.message)
 	}
-}
-
-function getTokenTTL(expires_at) {
-	const now = new Date(expires_at)
-	const tokenExpiration = new Date(Date.now())
-
-	var res = Math.abs(now - tokenExpiration) / 1000
-
-	// get total days between two dates
-	var days = Math.floor(res / 86400)
-	console.log("Difference (Days): " + days)
-
-	// get hours
-	var hours = Math.floor(res / 3600) % 24
-	console.log("Difference (Hours): " + hours)
-
-	// get minutes
-	var minutes = Math.floor(res / 60) % 60
-	console.log("Difference (Minutes): " + minutes)
-
-	// get seconds
-	var seconds = res % 60
-	console.log("Difference (Seconds): " + seconds)
 }
