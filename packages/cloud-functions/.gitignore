@@ -1,1 +1,4 @@
 node_modules/
+
+# file containing cloud functions config variables, used for local testing
+.runtimeconfig.json
