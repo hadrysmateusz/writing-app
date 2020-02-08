@@ -12,7 +12,7 @@ const app = express()
 app.use(cors({ origin: true }))
 
 // Request access token from the Medium API
-app.get(API_ROUTES.MEDIUM_REQUEST_ACCESS_TOKEN, mediumRequestAccessToken)
+app.get(API_ROUTES.MEDIUM_AUTHORIZE, mediumRequestAccessToken)
 
 // Expose Express API as a single Cloud Function:
 exports.medium = functions.https.onRequest(app)

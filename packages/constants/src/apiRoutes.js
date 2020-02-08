@@ -1,1 +1,3 @@
-export const MEDIUM_REQUEST_ACCESS_TOKEN = "/medium-request-access-token"
+export default {
+	MEDIUM_AUTHORIZE: "/medium-authorize"
+}

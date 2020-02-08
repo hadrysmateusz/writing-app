@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 
-import { MEDIUM_AUTH_MESSAGE_TYPE } from "@writing-tool/constants"
+import { MESSAGE_TYPES } from "@writing-tool/constants"
 
 /**
  * this is the redirect page for the Medium OAuth popup,
@@ -30,11 +30,11 @@ export default () => {
 
 			// TODO: verify that using window.opener is safe, it might be necessary to hardcode a url or use a different solution
 			// send the parameters to the opening window
-			window.opener.postMessage({ type: MEDIUM_AUTH_MESSAGE_TYPE, state, code })
+			window.opener.postMessage({ type: MESSAGE_TYPES.MEDIUM_AUTH_CALLBACK, state, code })
 		} catch (error) {
 			console.log(error)
 			// send the error message to the opening window
-			window.opener.postMessage({ type: MEDIUM_AUTH_MESSAGE_TYPE, error })
+			window.opener.postMessage({ type: MESSAGE_TYPES.MEDIUM_AUTH_CALLBACK, error })
 		}
 
 		// // close the popup
