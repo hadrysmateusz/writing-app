@@ -3,27 +3,19 @@ const functions = require("firebase-functions")
 const { MEDIUM_API_BASE_URL, MEDIUM_CLIENT_ID } = require("@writing-tool/constants")
 
 module.exports = async (req, res) => {
-	const body = req.body
-
-	const code = body.code
-	const redirect_uri = body.redirect_uri
-
-	const { error: authError, data: authData } = await requestMediumAccessToken(code, redirect_uri)
-	if (authError) {
-		throw new Error("Couldn't get access token: " + authError)
-	}
-
-	// TODO: store the tokens safely - this is just a temporary solution
-
-	const { error: userError, data: userData } = await getUserDetails(authData.access_token)
-	if (userError) {
-		throw new Error("Couldn't get user details: " + userError)
-	}
-
 	try {
-		res.status(200).send({ user: userData })
+		const body = req.body
+
+		const code = body.code
+		const redirect_uri = body.redirect_uri
+
+		const authData = await requestMediumAccessToken(code, redirect_uri)
+		// TODO: store the tokens safely - this is just a temporary solution
+		const userData = await getUserDetails(authData.access_token)
+
+		res.status(200).send({ data: userData })
 	} catch (error) {
-		res.status(500).send({ error })
+		res.status(500).send({ error: error.message })
 	}
 }
 
@@ -56,9 +48,9 @@ async function requestMediumAccessToken(code, redirect_uri) {
 
 		getTokenTTL(data.expires_at)
 
-		return { data }
+		return data
 	} catch (error) {
-		return { error }
+		throw new Error("Couldn't get access token: " + error.message)
 	}
 }
 
@@ -70,7 +62,7 @@ async function getUserDetails(access_token) {
 		}
 
 		// Fetch user details from medium api
-		const res = await fetch(`${MEDIUM_API_BASE_URL}/tokens`, {
+		const res = await fetch(`${MEDIUM_API_BASE_URL}/me`, {
 			method: "GET",
 			headers: {
 				Authorization: `Bearer ${access_token}`
@@ -91,9 +83,9 @@ async function getUserDetails(access_token) {
 
 		const { data } = await res.json()
 
-		return { data }
+		return data
 	} catch (error) {
-		return { error }
+		throw new Error("Couldn't get user details: " + error.message)
 	}
 }
 
