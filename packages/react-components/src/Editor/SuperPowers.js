@@ -1,29 +1,53 @@
 import React, { useRef, useEffect, useState } from "react"
 
 import { openPopupWindow } from "@writing-tool/utils"
-import { ROUTES, HOSTING_URL, MEDIUM_API_AUTH_URL, MEDIUM_AUTH_MESSAGE_TYPE } from "@writing-tool/constants"
+import {
+	ROUTES,
+	API_ROUTES,
+	HOSTING_URL,
+	MEDIUM_API_AUTH_URL,
+	CLOUD_FUNCTIONS_BASE_URL,
+	MESSAGE_TYPES
+} from "@writing-tool/constants"
 
 export const SuperPowers = ({ children }) => {
 	const popupWindow = useRef(null)
 	const [oAuthState] = useState("asdf") // TODO: generate proper state string
+	const redirect_uri = encodeURIComponent(HOSTING_URL + ROUTES.MEDIUM_AUTH_CALLBACK)
 
 	useEffect(() => {
-		const receiveMessage = (event) => {
+		const receiveMessage = async (event) => {
 			try {
-				const { data, origin } = event
-				const { type, scope, state, error } = data
+				const { type, code, state, error } = event.data
 
 				// TODO: add all other valid origins
 				// verify that the message comes from a valid origin
-				if (![HOSTING_URL].includes(origin)) return
+				if (![HOSTING_URL].includes(event.origin)) return
 				// verify that the message type is the one I'm interested in
-				if (type !== MEDIUM_AUTH_MESSAGE_TYPE) return
+				if (type !== MESSAGE_TYPES.MEDIUM_AUTH_CALLBACK) return
 				// if there was an error, rethrow it
 				if (error) throw new Error(error)
 				// verify that the state string returned matches the original
 				if (typeof state !== "string" || state !== oAuthState) {
 					throw new Error("Returned state string doesn't match the original")
 				}
+
+				console.log(event)
+
+				const apiRes = await fetch(CLOUD_FUNCTIONS_BASE_URL + API_ROUTES.MEDIUM_AUTHORIZE, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Accept: "application/json",
+						"Accept-Charset": "utf-8"
+					},
+					body: {
+						code,
+						redirect_uri
+					}
+				})
+
+				const data = await apiRes.json()
 			} catch (error) {
 				// TODO: handle errors (display error state)
 			}
@@ -37,7 +61,6 @@ export const SuperPowers = ({ children }) => {
 		const scope = "basicProfile,publishPost"
 		const state = oAuthState
 		const response_type = "code"
-		const redirect_uri = encodeURIComponent(HOSTING_URL + ROUTES.MEDIUM_AUTH_CALLBACK)
 
 		const popup_url =
 			MEDIUM_API_AUTH_URL +
