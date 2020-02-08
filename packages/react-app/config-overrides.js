@@ -7,10 +7,9 @@ module.exports = (config, env) => {
 	return Object.assign(
 		config,
 		override(
-			/* Makes sure Babel compiles the stuff in the common folder */
 			babelInclude([
 				path.resolve("src"),
-				fs.realpathSync("../react-components/src") // THIS
+				fs.realpathSync("../react-components/src") // Make sure Babel compiles the shared components
 			])
 		)(config, env)
 	)
