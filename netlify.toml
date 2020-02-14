@@ -1,0 +1,9 @@
+[build]
+  base = "packages/react-app"
+  command = "yarn build"
+  publish = "packages/react-app/build/"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
