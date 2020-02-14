@@ -37,7 +37,7 @@ export default () => {
 			window.opener.postMessage({ type: MESSAGE_TYPES.MEDIUM_AUTH_CALLBACK, error })
 		}
 
-		// // close the popup
+		// close the popup
 		window.close()
 	})
 	// some text to show the user

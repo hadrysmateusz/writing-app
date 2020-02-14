@@ -4,25 +4,22 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 
 import { Editor } from "@writing-tool/react-components"
 
-import { FirebaseProvider } from "Components/Firebase"
 import { MediumAuthRedirectPage } from "Pages"
 
 function App() {
 	return (
 		<Router>
-			<FirebaseProvider>
-				<Container>
-					<Switch>
-						<Route path="/medium-auth-callback">
-							<MediumAuthRedirectPage />
-						</Route>
-						<Route path="/">
-							<h1>Writing Tool</h1>
-							<Editor />
-						</Route>
-					</Switch>
-				</Container>
-			</FirebaseProvider>
+			<Container>
+				<Switch>
+					<Route path="/medium-auth-callback">
+						<MediumAuthRedirectPage />
+					</Route>
+					<Route path="/">
+						<h1>Writing Tool</h1>
+						<Editor />
+					</Route>
+				</Switch>
+			</Container>
 		</Router>
 	)
 }

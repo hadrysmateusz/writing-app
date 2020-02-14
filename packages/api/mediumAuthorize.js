@@ -1,5 +1,4 @@
 const fetch = require("node-fetch")
-const functions = require("firebase-functions")
 const { MEDIUM_API_BASE_URL, MEDIUM_CLIENT_ID } = require("@writing-tool/constants")
 
 module.exports = async (req, res) => {
@@ -22,7 +21,7 @@ module.exports = async (req, res) => {
 async function requestMediumAccessToken(code, redirect_uri) {
 	try {
 		const client_id = MEDIUM_CLIENT_ID
-		const client_secret = functions.config().medium.client_secret
+		const client_secret = process.env.MEDIUM_CLIENT_SECRET
 		const grant_type = "authorization_code"
 
 		const res = await fetch(`${MEDIUM_API_BASE_URL}/tokens`, {
@@ -44,7 +43,8 @@ async function requestMediumAccessToken(code, redirect_uri) {
 
 		if (data.errors) throw new Error(JSON.stringify(data.errors))
 		// TODO: better response schema validation
-		if (!data.access_token || !data.refresh_token) throw new Error("Tokens aren't present in the response")
+		if (!data.access_token || !data.refresh_token)
+			throw new Error("Tokens aren't present in the response")
 
 		// Last time I checked medium access tokens expire after 60 days
 

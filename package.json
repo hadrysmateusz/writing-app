@@ -12,10 +12,8 @@
 		"list-packages": "lerna la",
 		"refresh-dependencies": "rm -rf node_modules yarn.lock && lerna clean -y && lerna bootstrap",
 		"start": "lerna run start --scope @writing-tool/react-app --stream",
+		"start-server": "lerna run start --scope @writing-tool/api --stream",
 		"build": "lerna run build --scope @writing-tool/react-app --stream",
-		"test": "lerna run test --scope @writing-tool/react-app --stream",
-		"predeploy-web": "lerna run build --scope @writing-tool/react-app --stream",
-		"deploy-web": "firebase deploy --only hosting",
-		"deploy-functions": "firebase deploy --only functions"
+		"test": "lerna run test --scope @writing-tool/react-app --stream"
 	}
 }
