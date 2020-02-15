@@ -109,10 +109,15 @@ function EditorComponent() {
 		<Slate editor={editor} value={value} onChange={onChange}>
 			<Toolbar />
 
-			<SuperPowers>Publish</SuperPowers>
+			<SuperPowers />
 
 			<div style={{ fontFamily: "IBM Plex Mono", fontSize: "16px" }}>
-				<Editable renderElement={renderElement} renderLeaf={renderLeaf} onKeyDown={onKeyDown} decorate={decorate} />
+				<Editable
+					renderElement={renderElement}
+					renderLeaf={renderLeaf}
+					onKeyDown={onKeyDown}
+					decorate={decorate}
+				/>
 			</div>
 		</Slate>
 	)
@@ -140,7 +145,11 @@ const withShortcuts = (editor) => {
 			if (type) {
 				Transforms.select(editor, range)
 				Transforms.delete(editor)
-				Transforms.setNodes(editor, { type }, { match: (node) => Editor.isBlock(editor, node) })
+				Transforms.setNodes(
+					editor,
+					{ type },
+					{ match: (node) => Editor.isBlock(editor, node) }
+				)
 
 				if (type === "list-item") {
 					const list = { type: "bulleted-list", children: [] }

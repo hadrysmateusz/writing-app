@@ -21,13 +21,20 @@ export const isLocalhost = () => {
  * @param {Object} windowObj the window object of the popup
  * @returns the window object of the popup
  */
-export const openPopupWindow = (url, name, windowFeatures, windowObj) => {
+export const openPopupWindow = (url, name, windowFeatures, windowObj, onClose) => {
 	const popupIsOpen = windowObj && !windowObj.closed
 	const urlHasChanged = popupIsOpen ? windowObj.location.href !== url : true
 	// open new window if it's not already open or open new url in window with the same name if url has changed
 	if (!popupIsOpen || urlHasChanged) {
 		windowObj = window.open(url, name, windowFeatures)
+		var pollIsClosed = setInterval(function() {
+			if (windowObj.closed) {
+				clearInterval(pollIsClosed)
+				onClose()
+			}
+		}, 1000)
 	}
+
 	// focus the popup (might not work in all browsers)
 	windowObj.focus()
 	// return the window object
