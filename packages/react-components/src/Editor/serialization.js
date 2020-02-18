@@ -1,14 +1,16 @@
-import { Node } from "slate"
+// TODO: optimize this
 
-// TODO: serialization should save more info than just text
+const EMPTY = [{ children: [{ text: "" }] }]
 
 export const serialize = (value) => {
-	return value.map((n) => Node.string(n)).join("\n")
+	return JSON.stringify(value)
 }
 
-export const deserialize = (string) => {
-	// Return a value array of children derived by splitting the string
-	return string.split("\n").map((line) => {
-		return { children: [{ text: line }] }
-	})
+export const deserialize = (value) => {
+	console.log(value)
+	try {
+		return JSON.parse(value)
+	} catch (err) {
+		return EMPTY
+	}
 }
