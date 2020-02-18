@@ -4,7 +4,6 @@
 	"private": true,
 	"main": "src/index.js",
 	"dependencies": {
-		"@writing-tool/constants": "*",
-		"slate": "0.57.1"
+		"@writing-tool/constants": "*"
 	}
 }

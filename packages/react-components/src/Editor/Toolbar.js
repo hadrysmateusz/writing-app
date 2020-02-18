@@ -1,7 +1,7 @@
 import React from "react"
 import { useSlate } from "slate-react"
 
-import { isBlockActive, toggleBlock } from "@writing-tool/helpers"
+import { isBlockActive, toggleBlock } from "./helpers"
 
 import Icon from "../Icon"
 
