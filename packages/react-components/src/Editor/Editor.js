@@ -12,6 +12,8 @@ import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 
+const LOG_VALUE = true
+
 function EditorComponent() {
 	const renderElement = useCallback((props) => <Element {...props} />, [])
 	const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
@@ -20,7 +22,11 @@ function EditorComponent() {
 	}, [])
 	const [value, setValue] = useState(deserialize(localStorage.getItem("content") || ""))
 
-	console.log(JSON.stringify(value, null, 2))
+	if (LOG_VALUE) {
+		console.clear()
+		console.log(JSON.stringify(value, null, 2))
+		console.log(`Top level nodes: ${value.length}`)
+	}
 
 	const onChange = useCallback((value) => {
 		setValue(value)
