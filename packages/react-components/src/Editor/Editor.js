@@ -12,6 +12,10 @@ import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 
+import { config } from "@writing-tool/dev-tools"
+
+console.log("config", config)
+
 const LOG_VALUE = false
 const LOG_EDITOR = false
 const LOG_OPERATIONS = true
@@ -20,7 +24,7 @@ const withLogger = (editor) => {
 	const { apply } = editor
 
 	editor.apply = (op) => {
-		if (LOG_OPERATIONS) {
+		if (config.logOperations) {
 			console.log(op)
 		}
 		apply(op)

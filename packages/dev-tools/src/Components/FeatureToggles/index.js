@@ -1,8 +1,8 @@
 import React from "react"
-import featureToggles, { enable, disable } from "../../featureToggles"
+import { config, enable, disable } from "../../config"
 
 function FeatureToggle({ name }) {
-	const [feature, setFeature] = React.useState(featureToggles[name])
+	const [feature, setFeature] = React.useState(config[name])
 
 	React.useEffect(() => {
 		if (feature) {
@@ -29,8 +29,8 @@ function FeatureToggle({ name }) {
 function FeatureToggles() {
 	return (
 		<>
-			{Object.keys(featureToggles).map((key) => (
-				<FeatureToggle name={key} />
+			{Object.keys(config).map((key) => (
+				<FeatureToggle key={key} name={key} />
 			))}
 		</>
 	)

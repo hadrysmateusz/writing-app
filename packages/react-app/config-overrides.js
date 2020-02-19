@@ -9,7 +9,8 @@ module.exports = (config, env) => {
 		override(
 			babelInclude([
 				path.resolve("src"),
-				fs.realpathSync("../react-components/src") // Make sure Babel compiles the shared components
+				fs.realpathSync("../react-components/src"), // Make sure Babel compiles the shared components
+				fs.realpathSync("../dev-tools/src") // Make sure Babel compiles the shared components
 			])
 		)(config, env)
 	)

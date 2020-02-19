@@ -1,8 +1,8 @@
-import "./dev-tools.css"
 import React from "react"
 import ReactDOM from "react-dom"
 
-import FeatureToggles from "./Components/FeatureToggles"
+import "./dev-tools.css"
+import FeatureToggles from "../Components/FeatureToggles"
 
 function getLocalDevTools() {
 	const requireDevToolsLocal = require.context("./", false, /dev-tools\.local\.js/)

@@ -1,0 +1,11 @@
+{
+	"name": "@writing-tool/dev-tools",
+	"version": "0.1.0",
+	"private": true,
+	"main": "src/index.js",
+	"dependencies": {
+		"@writing-tool/constants": "*",
+		"react": "^16.12.0",
+		"react-dom": "^16.12.0"
+	}
+}
