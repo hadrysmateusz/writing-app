@@ -32,6 +32,4 @@ function disable(name) {
 	persist()
 }
 
-console.log("config: ", config)
-
 export { config, enable, disable, loadConfig }

@@ -1,5 +1,7 @@
 const config = {
-	logOperations: true
+	logOperations: true,
+	logEditor: false,
+	logValue: true
 }
 
 export default config

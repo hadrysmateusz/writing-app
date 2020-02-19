@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 
 import "./dev-tools.css"
 import FeatureToggles from "../Components/FeatureToggles"
+import { ClearConsole } from "../Components/Console"
 
 function getLocalDevTools() {
 	const requireDevToolsLocal = require.context("./", false, /dev-tools\.local\.js/)
@@ -26,6 +27,7 @@ function install() {
 				<div className="tools">
 					<LocalDevTools />
 					<FeatureToggles />
+					<ClearConsole />
 				</div>
 			</div>
 		)

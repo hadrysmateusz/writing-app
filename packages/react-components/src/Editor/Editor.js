@@ -14,12 +14,6 @@ import { serialize, deserialize } from "./serialization"
 
 import { config } from "@writing-tool/dev-tools"
 
-console.log("config", config)
-
-const LOG_VALUE = false
-const LOG_EDITOR = false
-const LOG_OPERATIONS = true
-
 const withLogger = (editor) => {
 	const { apply } = editor
 
@@ -41,12 +35,12 @@ function EditorComponent() {
 	}, [])
 	const [value, setValue] = useState(deserialize(localStorage.getItem("content") || ""))
 
-	if (LOG_VALUE) {
+	if (config.logValue) {
 		console.clear()
 		console.log(JSON.stringify(value, null, 2))
 		console.log(`Top level nodes: ${value.length}`)
 	}
-	if (LOG_EDITOR) {
+	if (config.logEditor) {
 		console.log(editor)
 	}
 
