@@ -8,5 +8,9 @@
 
 # Yarn
 **/yarn-error.log
+
 # Local Netlify folder
 .netlify
+
+# Any local overrides
+*.local.*

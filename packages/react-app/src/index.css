@@ -9,3 +9,9 @@ body {
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+*,
+*::after,
+*::before {
+	box-sizing: border-box;
+}
