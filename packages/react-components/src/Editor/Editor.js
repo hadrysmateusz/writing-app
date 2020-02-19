@@ -12,31 +12,38 @@ import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 
-const DEBUG = true
-const LOG_VALUE = true
+const LOG_VALUE = false
 const LOG_EDITOR = false
-const LOG_OPERATIONS = false
+const LOG_OPERATIONS = true
+
+const withLogger = (editor) => {
+	const { apply } = editor
+
+	editor.apply = (op) => {
+		if (LOG_OPERATIONS) {
+			console.log(op)
+		}
+		apply(op)
+	}
+
+	return editor
+}
 
 function EditorComponent() {
 	const renderElement = useCallback((props) => <Element {...props} />, [])
 	const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
 	const editor = useMemo(() => {
-		return withMarkdownShortcuts(withHistory(withReact(createEditor())))
+		return withLogger(withMarkdownShortcuts(withHistory(withReact(createEditor()))))
 	}, [])
 	const [value, setValue] = useState(deserialize(localStorage.getItem("content") || ""))
 
-	if (DEBUG) {
+	if (LOG_VALUE) {
 		console.clear()
-		if (LOG_VALUE) {
-			console.log(JSON.stringify(value, null, 2))
-			console.log(`Top level nodes: ${value.length}`)
-		}
-		if (LOG_EDITOR) {
-			console.log(editor)
-		}
-		if (LOG_OPERATIONS) {
-			console.log(JSON.stringify(editor.operations, null, 2))
-		}
+		console.log(JSON.stringify(value, null, 2))
+		console.log(`Top level nodes: ${value.length}`)
+	}
+	if (LOG_EDITOR) {
+		console.log(editor)
 	}
 
 	const onChange = useCallback((value) => {

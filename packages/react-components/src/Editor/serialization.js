@@ -7,7 +7,6 @@ export const serialize = (value) => {
 }
 
 export const deserialize = (value) => {
-	console.log(value)
 	try {
 		return JSON.parse(value)
 	} catch (err) {
