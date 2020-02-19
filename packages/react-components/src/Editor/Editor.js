@@ -12,7 +12,10 @@ import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 
+const DEBUG = true
 const LOG_VALUE = true
+const LOG_EDITOR = false
+const LOG_OPERATIONS = false
 
 function EditorComponent() {
 	const renderElement = useCallback((props) => <Element {...props} />, [])
@@ -22,10 +25,18 @@ function EditorComponent() {
 	}, [])
 	const [value, setValue] = useState(deserialize(localStorage.getItem("content") || ""))
 
-	if (LOG_VALUE) {
+	if (DEBUG) {
 		console.clear()
-		console.log(JSON.stringify(value, null, 2))
-		console.log(`Top level nodes: ${value.length}`)
+		if (LOG_VALUE) {
+			console.log(JSON.stringify(value, null, 2))
+			console.log(`Top level nodes: ${value.length}`)
+		}
+		if (LOG_EDITOR) {
+			console.log(editor)
+		}
+		if (LOG_OPERATIONS) {
+			console.log(JSON.stringify(editor.operations, null, 2))
+		}
 	}
 
 	const onChange = useCallback((value) => {
