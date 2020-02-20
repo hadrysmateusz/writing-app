@@ -1,13 +1,8 @@
 /**
- * Map of all inline node types. Inline nodes can only contain inline or text nodes.
- * @type {Map}
+ * Inline nodes can only contain inline or text nodes.
  */
 
 export const INLINES = {
-	HTML: "html",
 	LINK: "link",
-	IMAGE: "image",
-	FOOTNOTE_REF: "footnote-ref",
-	MATH: "math",
-	VARIABLE: "variable"
+	CODE: "code_inline"
 }
