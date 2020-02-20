@@ -4,7 +4,7 @@ import { Slate, Editable, withReact } from "slate-react"
 import { withHistory } from "slate-history"
 
 import Toolbar from "./Toolbar"
-import { Element } from "./Elements"
+import { renderElement } from "./Elements"
 import { Leaf } from "./Leaf"
 import { SuperPowers } from "./SuperPowers"
 import withMarkdownShortcuts from "./withMarkdownShortcuts"
@@ -28,7 +28,7 @@ const withLogger = (editor) => {
 }
 
 function EditorComponent() {
-	const renderElement = useCallback((props) => <Element {...props} />, [])
+	// const renderElement = useCallback((props) => <Element {...props} />, [])
 	const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
 	const editor = useMemo(() => {
 		return withLogger(withMarkdownShortcuts(withHistory(withReact(createEditor()))))
