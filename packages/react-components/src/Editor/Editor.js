@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react"
+import React, { useMemo, useState, useCallback, useEffect } from "react"
 import { createEditor } from "slate"
 import { Slate, Editable, withReact } from "slate-react"
 import { withHistory } from "slate-history"
@@ -35,14 +35,15 @@ function EditorComponent() {
 	}, [])
 	const [value, setValue] = useState(deserialize(localStorage.getItem("content") || ""))
 
-	if (config.logValue) {
-		console.clear()
-		console.log(JSON.stringify(value, null, 2))
-		console.log(`Top level nodes: ${value.length}`)
-	}
-	if (config.logEditor) {
-		console.log(editor)
-	}
+	useEffect(() => {
+		if (config.logValue) {
+			console.clear()
+			console.log(JSON.stringify(value, null, 2))
+			console.log(`Top level nodes: ${value.length}`)
+		}
+	}, [value])
+
+	// console.log(editor)
 
 	const onChange = useCallback((value) => {
 		setValue(value)

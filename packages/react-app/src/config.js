@@ -1,6 +1,5 @@
 const config = {
 	logOperations: true,
-	logEditor: false,
 	logValue: true
 }
 
