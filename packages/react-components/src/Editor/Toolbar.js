@@ -1,7 +1,7 @@
 import React from "react"
 import { useSlate } from "slate-react"
 
-import { isBlockActive, toggleBlock } from "./helpers"
+import { isBlockActive, toggleBlock, isMarkActive, toggleMark } from "./helpers"
 
 import Icon from "../Icon"
 
@@ -9,9 +9,10 @@ const Toolbar = () => {
 	return (
 		<div>
 			<div>
+				{/* Headings */}
 				<BlockButton format="heading1">h1</BlockButton>
 				<BlockButton format="heading2">h2</BlockButton>
-
+				{/* Common */}
 				<BlockButton format="code">
 					<Icon icon="code" />
 				</BlockButton>
@@ -21,19 +22,18 @@ const Toolbar = () => {
 				<BlockButton format="image">
 					<Icon icon="image" />
 				</BlockButton>
-
+				{/* Lists */}
 				<BlockButton format="numbered-list">
 					<Icon icon="listNumbered" />
 				</BlockButton>
 				<BlockButton format="bulleted-list">
 					<Icon icon="listBulleted" />
 				</BlockButton>
-
+				{/* Embeds */}
 				<BlockButton format="embed">Embed</BlockButton>
 			</div>
 
-			{/* <div>
-				<b>Inline Styles </b>
+			<div>
 				<MarkButton format="bold">
 					<Icon icon="bold" />
 				</MarkButton>
@@ -46,25 +46,25 @@ const Toolbar = () => {
 				<MarkButton format="code">
 					<Icon icon="code" />
 				</MarkButton>
-			</div> */}
+			</div>
 		</div>
 	)
 }
 
-// const MarkButton = ({ format, children }) => {
-// 	const editor = useSlate()
-// 	return (
-// 		<Button
-// 			active={isMarkActive(editor, format)}
-// 			onMouseDown={(event) => {
-// 				event.preventDefault()
-// 				toggleMark(editor, format)
-// 			}}
-// 		>
-// 			{children}
-// 		</Button>
-// 	)
-// }
+const MarkButton = ({ format, children }) => {
+	const editor = useSlate()
+	return (
+		<Button
+			active={isMarkActive(editor, format)}
+			onMouseDown={(event) => {
+				event.preventDefault()
+				toggleMark(editor, format)
+			}}
+		>
+			{children}
+		</Button>
+	)
+}
 
 const BlockButton = ({ format, children }) => {
 	const editor = useSlate()
