@@ -1,11 +1,12 @@
 import isHotkey from "is-hotkey"
 
 import { toggleMark } from "@writing-tool/helpers"
+import { MARKS } from "@writing-tool/constants/src/Slate"
 
 const HOTKEYS = {
-	"mod+b": "bold",
-	"mod+i": "italic",
-	"mod+`": "code"
+	"mod+b": MARKS.BOLD,
+	"mod+i": MARKS.ITALIC,
+	"mod+`": MARKS.CODE
 }
 
 export default (editor, event) => {

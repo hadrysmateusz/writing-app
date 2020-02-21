@@ -2,7 +2,7 @@
  * Blocks can contain inlines or blocks. (With the exception of void elements)
  */
 
-export const BLOCKS = {
+const BLOCKS = {
 	TEXT: "unstyled",
 	// Classic blocks
 	PARAGRAPH: "paragraph",
@@ -14,14 +14,16 @@ export const BLOCKS = {
 	EMBED: "embed",
 	HR: "hr",
 	// Headings
-	HEADING_1: "header_one",
-	HEADING_2: "header_two",
-	HEADING_3: "header_three",
-	HEADING_4: "header_four",
-	HEADING_5: "header_five",
-	HEADING_6: "header_six",
+	HEADING_1: "heading_1",
+	HEADING_2: "heading_2",
+	HEADING_3: "heading_3",
+	HEADING_4: "heading_4",
+	HEADING_5: "heading_5",
+	HEADING_6: "heading_6",
 	// Lists
-	OL_LIST: "ordered_list",
-	UL_LIST: "unordered_list",
+	LIST_NUMBERED: "list_numbered",
+	LIST_BULLETED: "list_bulleted",
 	LIST_ITEM: "list_item"
 }
+
+export default BLOCKS

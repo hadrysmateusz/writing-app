@@ -1,16 +1,18 @@
 import { Range, Editor, Transforms, Point } from "slate"
 
+import { BLOCKS } from "@writing-tool/constants/src/Slate"
+
 const SHORTCUTS = {
-	"*": "list-item",
-	"-": "list-item",
-	"+": "list-item",
-	">": "block-quote",
-	"#": "heading1",
-	"##": "heading2",
-	"###": "heading3",
-	"####": "heading4",
-	"#####": "heading5",
-	"######": "heading6"
+	"*": [BLOCKS.LIST_ITEM],
+	"-": [BLOCKS.LIST_ITEM],
+	"+": [BLOCKS.LIST_ITEM],
+	">": [BLOCKS.BLOCKQUOTE],
+	"#": [BLOCKS.HEADING_1],
+	"##": [BLOCKS.HEADING_2],
+	"###": [BLOCKS.HEADING_3],
+	"####": [BLOCKS.HEADING_4],
+	"#####": [BLOCKS.HEADING_5],
+	"######": [BLOCKS.HEADING_6]
 }
 
 export default (editor) => {
@@ -40,10 +42,11 @@ export default (editor) => {
 					{ type },
 					{ match: (node) => Editor.isBlock(editor, node) }
 				)
-				if (type === "list-item") {
-					const list = { type: "bulleted-list", children: [] }
+				// TODO: add shortcut and handling for numbered lists
+				if (type === BLOCKS.LIST_ITEM) {
+					const list = { type: BLOCKS.LIST_BULLETED, children: [] }
 					Transforms.wrapNodes(editor, list, {
-						match: (node) => node.type === "list-item"
+						match: (node) => node.type === BLOCKS.LIST_ITEM
 					})
 				}
 
@@ -66,12 +69,12 @@ export default (editor) => {
 				const [block, path] = match
 				const start = Editor.start(editor, path)
 
-				if (block.type !== "paragraph" && Point.equals(selection.anchor, start)) {
-					Transforms.setNodes(editor, { type: "paragraph" })
+				if (block.type !== BLOCKS.PARAGRAPH && Point.equals(selection.anchor, start)) {
+					Transforms.setNodes(editor, { type: BLOCKS.PARAGRAPH })
 
-					if (block.type === "list-item") {
+					if (block.type === BLOCKS.LIST_ITEM) {
 						Transforms.unwrapNodes(editor, {
-							match: (node) => node.type === "bulleted-list"
+							match: (node) => node.type === BLOCKS.LIST_BULLETED
 						})
 					}
 

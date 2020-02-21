@@ -1,21 +1,50 @@
 import React from "react"
+import { css } from "styled-components/macro"
+
+const heading_big = css`
+	font-weight: bold;
+	font-size: 26px;
+	margin: 20px 0 10px 0;
+`
+
+const heading_small = css`
+	font-weight: bold;
+	font-size: 20px;
+	margin: 20px 0 10px 0;
+`
 
 export const Heading1 = ({ attributes, children }) => {
-	return <h1 {...attributes}>{children}</h1>
+	return (
+		<h1 css={heading_big} {...attributes}>
+			{children}
+		</h1>
+	)
 }
 
 export const Heading2 = ({ attributes, children }) => {
-	return <h2 {...attributes}>{children}</h2>
+	return (
+		<h2 css={heading_small} {...attributes}>
+			{children}
+		</h2>
+	)
 }
 
 export const Heading3 = ({ attributes, children }) => {
 	// level 3 is treated like level 2 on medium
-	return <h3 {...attributes}>{children}</h3>
+	return (
+		<h3 css={heading_small} {...attributes}>
+			{children}
+		</h3>
+	)
 }
 
 export const Heading4 = ({ attributes, children }) => {
 	// level 4 is treated like level 2 on medium
-	return <h4 {...attributes}>{children}</h4>
+	return (
+		<h4 css={heading_small} {...attributes}>
+			{children}
+		</h4>
+	)
 }
 
 export const Heading5 = ({ attributes, children }) => {
