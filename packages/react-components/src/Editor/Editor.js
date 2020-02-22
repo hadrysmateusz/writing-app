@@ -5,33 +5,23 @@ import { withHistory } from "slate-history"
 
 import Toolbar from "./Toolbar"
 import { renderElement } from "./Elements"
-import { Leaf } from "./Leaf"
+import { Leaf } from "./Leafs"
 import { SuperPowers } from "./SuperPowers"
-import withMarkdownShortcuts from "./withMarkdownShortcuts"
+import withMarkdownShortcuts from "./Plugins/withMarkdownShortcuts"
+import withOperationLogger from "./Plugins/withOperationLogger"
 import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 
 import { config } from "@writing-tool/dev-tools"
 
-const withLogger = (editor) => {
-	const { apply } = editor
-
-	editor.apply = (op) => {
-		if (config.logOperations) {
-			console.log(op)
-		}
-		apply(op)
-	}
-
-	return editor
-}
-
 function EditorComponent() {
 	// const renderElement = useCallback((props) => <Element {...props} />, [])
 	const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
 	const editor = useMemo(() => {
-		return withLogger(withMarkdownShortcuts(withHistory(withReact(createEditor()))))
+		return withOperationLogger(
+			withMarkdownShortcuts(withHistory(withReact(createEditor())))
+		)
 	}, [])
 	const [value, setValue] = useState(deserialize(localStorage.getItem("content") || ""))
 

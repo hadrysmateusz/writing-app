@@ -8,7 +8,7 @@ const code = css`
 	font-family: monospace;
 	background-color: #f5f5f5;
 	color: #111;
-	padding: 4px;
+	padding: 3px 6px;
 	border-radius: 5px;
 `
 

@@ -7,6 +7,7 @@ const SHORTCUTS = {
 	"-": [BLOCKS.LIST_ITEM],
 	"+": [BLOCKS.LIST_ITEM],
 	">": [BLOCKS.BLOCKQUOTE],
+	"```": [BLOCKS.CODE],
 	"#": [BLOCKS.HEADING_1],
 	"##": [BLOCKS.HEADING_2],
 	"###": [BLOCKS.HEADING_3],
