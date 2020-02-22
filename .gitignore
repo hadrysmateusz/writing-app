@@ -1,10 +1,5 @@
-**/node_modules/*
-
-# Firebase
-/.firebase
-**/firebase-debug.log
-**/firestore-debug.log
-**/.runtimeconfig.json
+**/node_modules
+node_modules
 
 # Yarn
 **/yarn-error.log
