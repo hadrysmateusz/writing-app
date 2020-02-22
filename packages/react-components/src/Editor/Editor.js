@@ -10,6 +10,7 @@ import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import createEditorWithPlugins from "./createEditorWithPlugins"
+import HoveringToolbar from "./HoveringToolbar"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -37,10 +38,9 @@ function EditorComponent() {
 
 	return (
 		<Slate editor={editor} value={value} onChange={onChange}>
+			<HoveringToolbar />
 			<Toolbar />
-
 			<SuperPowers />
-
 			<div style={{ fontFamily: "IBM Plex Mono", fontSize: "16px" }}>
 				<Editable
 					renderElement={renderElement}
