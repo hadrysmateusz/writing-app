@@ -9,11 +9,15 @@ import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
-import { createEditorWithPlugins } from "./Plugins"
+import createEditorWithPlugins from "./createEditorWithPlugins"
+
+function loadFromLocalStorage() {
+	return deserialize(localStorage.getItem("content") || "")
+}
 
 function EditorComponent() {
-	const [value, setValue] = useState(deserialize(localStorage.getItem("content") || ""))
-	const editor = useMemo(createEditorWithPlugins())
+	const [value, setValue] = useState(loadFromLocalStorage())
+	const editor = useMemo(createEditorWithPlugins, [])
 
 	// DevTools utils
 	useLogEditor(editor)

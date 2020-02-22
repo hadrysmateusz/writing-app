@@ -16,7 +16,7 @@ function createEditorWithPlugins() {
 		withHistory,
 		withReact,
 		createEditor
-	)
+	)()
 }
 
 export default createEditorWithPlugins
