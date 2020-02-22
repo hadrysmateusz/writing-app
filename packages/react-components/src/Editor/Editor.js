@@ -2,6 +2,13 @@ import React, { useMemo, useState, useCallback, useEffect } from "react"
 import { createEditor } from "slate"
 import { Slate, Editable, withReact } from "slate-react"
 import { withHistory } from "slate-history"
+import { cloneDeep } from "lodash"
+
+import {
+	config,
+	addDevToolsEventHandler,
+	removeDevToolsEventHandler
+} from "@writing-tool/dev-tools"
 
 import Toolbar from "./Toolbar"
 import { renderElement } from "./Elements"
@@ -12,8 +19,6 @@ import withOperationLogger from "./Plugins/withOperationLogger"
 import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
-
-import { config } from "@writing-tool/dev-tools"
 
 function EditorComponent() {
 	// const renderElement = useCallback((props) => <Element {...props} />, [])
@@ -33,7 +38,13 @@ function EditorComponent() {
 		}
 	}, [value])
 
-	// console.log(editor)
+	useEffect(() => {
+		const logEditor = () => {
+			console.dir(cloneDeep(editor))
+		}
+		addDevToolsEventHandler("logEditor", logEditor)
+		return removeDevToolsEventHandler("logEditor", logEditor)
+	}, [editor])
 
 	const onChange = useCallback((value) => {
 		setValue(value)

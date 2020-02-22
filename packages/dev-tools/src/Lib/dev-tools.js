@@ -1,7 +1,8 @@
 import React from "react"
 import { css } from "styled-components/macro"
 
-import FeatureToggles from "./Components/FeatureToggles"
+import FeatureToggles from "../Components/FeatureToggles"
+import TriggerEvent from "../Components/TriggerEvent"
 
 const containerStyles = css`
 	position: absolute;
@@ -37,6 +38,7 @@ const DevTools = ({ local = null }) => {
 			<div className="tools">
 				{local}
 				<FeatureToggles />
+				<TriggerEvent name="logEditor" />
 			</div>
 		</div>
 	)
