@@ -1,50 +1,23 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react"
-import { createEditor } from "slate"
-import { Slate, Editable, withReact } from "slate-react"
-import { withHistory } from "slate-history"
-import { cloneDeep } from "lodash"
-
-import {
-	config,
-	addDevToolsEventHandler,
-	removeDevToolsEventHandler
-} from "@writing-tool/dev-tools"
+import React, { useMemo, useState, useCallback } from "react"
+import { Slate, Editable } from "slate-react"
 
 import Toolbar from "./Toolbar"
 import { renderElement } from "./Elements"
-import { Leaf } from "./Leafs"
+import { renderLeaf } from "./Leafs"
 import { SuperPowers } from "./SuperPowers"
-import withMarkdownShortcuts from "./Plugins/withMarkdownShortcuts"
-import withOperationLogger from "./Plugins/withOperationLogger"
 import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
+import { useLogEditor, useLogValue } from "./devToolsUtils"
+import { createEditorWithPlugins } from "./Plugins"
 
 function EditorComponent() {
-	// const renderElement = useCallback((props) => <Element {...props} />, [])
-	const renderLeaf = useCallback((props) => <Leaf {...props} />, [])
-	const editor = useMemo(() => {
-		return withOperationLogger(
-			withMarkdownShortcuts(withHistory(withReact(createEditor())))
-		)
-	}, [])
 	const [value, setValue] = useState(deserialize(localStorage.getItem("content") || ""))
+	const editor = useMemo(createEditorWithPlugins())
 
-	useEffect(() => {
-		if (config.logValue) {
-			console.clear()
-			console.log(JSON.stringify(value, null, 2))
-			console.log(`Top level nodes: ${value.length}`)
-		}
-	}, [value])
-
-	useEffect(() => {
-		const logEditor = () => {
-			console.dir(cloneDeep(editor))
-		}
-		addDevToolsEventHandler("logEditor", logEditor)
-		return removeDevToolsEventHandler("logEditor", logEditor)
-	}, [editor])
+	// DevTools utils
+	useLogEditor(editor)
+	useLogValue(value)
 
 	const onChange = useCallback((value) => {
 		setValue(value)

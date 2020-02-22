@@ -31,10 +31,14 @@ const LeafStyles = styled.span`
 	${(p) => p.leaf[MARKS.STRIKE] && strike}
 `
 
-export const Leaf = ({ attributes, children, leaf }) => {
+const Leaf = ({ attributes, children, leaf }) => {
 	return (
 		<LeafStyles {...attributes} leaf={leaf}>
 			{children}
 		</LeafStyles>
 	)
+}
+
+export const renderLeaf = (props) => {
+	return <Leaf {...props} />
 }
