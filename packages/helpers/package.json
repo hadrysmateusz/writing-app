@@ -5,5 +5,8 @@
 	"main": "src/index.js",
 	"dependencies": {
 		"@writing-tool/constants": "*"
+	},
+	"eslintConfig": {
+		"extends": "react-app"
 	}
 }
