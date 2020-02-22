@@ -4,6 +4,7 @@ import styled, { css } from "styled-components/macro"
 import { MARKS } from "@writing-tool/constants/src/Slate"
 
 const code = css`
+	display: inline-block;
 	font-family: monospace;
 	background-color: #f5f5f5;
 	color: #111;

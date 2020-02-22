@@ -2,7 +2,6 @@ import React from "react"
 import { css } from "styled-components/macro"
 
 const styles = css`
-	display: inline-block;
 	border-left: 2px solid #ddd;
 	padding-left: 10px;
 	margin-left: 0;
