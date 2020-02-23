@@ -7,7 +7,7 @@ const styles = css`
 	border-bottom: 2px solid #ddd;
 `
 
-const HR = ({ attributes, children }) => {
+const HR = ({ attributes }) => {
 	return <hr css={styles} {...attributes} />
 }
 

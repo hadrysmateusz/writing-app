@@ -1,7 +1,7 @@
 import React from "react"
 
-const Paragraph = (props) => {
-	return <p {...props} />
+const Paragraph = ({ attributes, children }) => {
+	return <p {...attributes}>{children}</p>
 }
 
 export default Paragraph

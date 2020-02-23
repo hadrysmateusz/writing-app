@@ -1,10 +1,9 @@
 import React from "react"
 
-const Image = ({ attributes, children }) => {
+const Image = ({ attributes }) => {
 	return (
 		<p {...attributes}>
 			<b>IMAGE PLACEHOLDER</b>
-			{children}
 		</p>
 	)
 }

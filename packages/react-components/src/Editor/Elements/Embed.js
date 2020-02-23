@@ -1,10 +1,9 @@
 import React from "react"
 
-const Embed = ({ attributes, children }) => {
+const Embed = ({ attributes }) => {
 	return (
 		<p {...attributes}>
 			<b>EMBED PLACEHOLDER</b>
-			{children}
 		</p>
 	)
 }
