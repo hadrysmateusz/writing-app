@@ -7,7 +7,7 @@ const BLOCKS = {
 	// Classic blocks
 	PARAGRAPH: "paragraph",
 	BLOCKQUOTE: "blockquote",
-	CODE: "code_block",
+	CODE_BLOCK: "code_block",
 	COMMENT: "comment",
 	// Voids
 	IMAGE: "image",
