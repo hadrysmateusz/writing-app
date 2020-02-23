@@ -1,7 +1,8 @@
 import isHotkey from "is-hotkey"
 
-import { toggleMark } from "@writing-tool/helpers"
 import { MARKS } from "@writing-tool/constants/src/Slate"
+
+import { toggleMark } from "./helpers"
 
 const HOTKEYS = {
 	"mod+b": MARKS.BOLD,
