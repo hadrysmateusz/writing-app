@@ -10,7 +10,6 @@ import { isMarkActive, toggleMark, isBlockActive, toggleBlock } from "./helpers"
 const FormatButton = ({ format, text }) => {
 	const editor = useSlate()
 	const isMark = Object.values(MARKS).includes(format) // INLINES and BLOCKS use the same functions so we check if it's a mark to know which functions to use
-	console.log(format, MARKS, isMark)
 	const toggleFn = isMark ? toggleMark : toggleBlock
 	const isActiveFn = isMark ? isMarkActive : isBlockActive
 
