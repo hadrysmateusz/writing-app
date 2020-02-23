@@ -23,6 +23,7 @@ export const useLogEditor = (editor) => {
 			console.dir(cloneDeep(editor))
 		}
 		addDevToolsEventHandler("logEditor", logEditor)
-		return removeDevToolsEventHandler("logEditor", logEditor)
+		// TODO: this is removed temporarily due to some issues
+		// return removeDevToolsEventHandler("logEditor", logEditor)
 	}, [editor])
 }
