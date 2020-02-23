@@ -1,6 +1,6 @@
 import { Editor, Transforms } from "slate"
 
-import { LIST_TYPES, BLOCKS } from "@writing-tool/constants/src/Slate"
+import { LIST_TYPES, BLOCKS, MARKS } from "@writing-tool/constants/src/Slate"
 
 export const toggleBlock = (editor, format) => {
 	const isActive = isBlockActive(editor, format)
@@ -27,6 +27,14 @@ export const toggleMark = (editor, format) => {
 	if (isActive) {
 		Editor.removeMark(editor, format)
 	} else {
+		// // TODO: this logic might need to be moved into an Editor.addMark() override to make it apply in more situations
+		// if (format === MARKS.CODE) {
+		// 	// remove all other marks from inside of the selection first to prevent multiple code nodes being created
+		// 	Object.values(MARKS).forEach((mark) => {
+		// 		Editor.removeMark(editor, mark)
+		// 	})
+		// }
+
 		Editor.addMark(editor, format, true)
 	}
 }
