@@ -1,25 +1,20 @@
 import React, { useCallback } from "react"
 import { useSlate } from "slate-react"
 
-import { MARKS } from "@writing-tool/constants/src/Slate"
-
 import Icon from "../Icon"
 import Button from "../Button"
-import { isMarkActive, toggleMark, isBlockActive, toggleBlock } from "./helpers"
+import { isFormatActive, toggleFormat } from "./helpers"
 
 const FormatButton = ({ format, text }) => {
 	const editor = useSlate()
-	const isMark = Object.values(MARKS).includes(format) // INLINES and BLOCKS use the same functions so we check if it's a mark to know which functions to use
-	const toggleFn = isMark ? toggleMark : toggleBlock
-	const isActiveFn = isMark ? isMarkActive : isBlockActive
+	const isActive = isFormatActive(editor, format)
 
-	const isActive = isActiveFn(editor, format)
 	const onClick = useCallback(
 		(event) => {
 			event.preventDefault()
-			toggleFn(editor, format)
+			toggleFormat(editor, format)
 		},
-		[editor, format, toggleFn]
+		[editor, format]
 	)
 
 	return (

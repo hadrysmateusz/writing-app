@@ -5,15 +5,17 @@ import { compose } from "lodash/fp"
 
 import withMarkdownShortcuts from "./Plugins/withMarkdownShortcuts"
 import withOperationLogger from "./Plugins/withOperationLogger"
+import { withInlineCode } from "./Plugins/inlineCode"
 
 /**
  * Creates a Slate editor and applies plugins
  */
 function createEditorWithPlugins() {
 	return compose(
+		withInlineCode,
+		withHistory,
 		withOperationLogger,
 		withMarkdownShortcuts,
-		withHistory,
 		withReact,
 		createEditor
 	)()

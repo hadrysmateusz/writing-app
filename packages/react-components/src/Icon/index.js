@@ -15,21 +15,21 @@ import {
 import { ReactComponent as Heading1 } from "../Assets/Heading1.svg"
 import { ReactComponent as Heading2 } from "../Assets/Heading2.svg"
 
-import { BLOCKS, MARKS, INLINES } from "@writing-tool/constants/src/Slate"
+import { ELEMENTS, MARKS } from "@writing-tool/constants/src/Slate"
 
 const Icons = {
 	[MARKS.BOLD]: FaBold,
 	[MARKS.ITALIC]: FaItalic,
 	[MARKS.STRIKE]: FaStrikethrough,
-	[MARKS.CODE]: FaCode,
-	[INLINES.LINK]: FaLink,
-	[BLOCKS.CODE]: FaCode,
-	[BLOCKS.BLOCKQUOTE]: FaQuoteRight,
-	[BLOCKS.IMAGE]: FaRegFileImage,
-	[BLOCKS.LIST_NUMBERED]: FaListOl,
-	[BLOCKS.LIST_BULLETED]: FaListUl,
-	[BLOCKS.HEADING_1]: Heading1,
-	[BLOCKS.HEADING_2]: Heading2
+	[ELEMENTS.LINK]: FaLink,
+	[ELEMENTS.CODE_BLOCK]: FaCode,
+	[ELEMENTS.CODE_INLINE]: FaCode,
+	[ELEMENTS.BLOCKQUOTE]: FaQuoteRight,
+	[ELEMENTS.IMAGE]: FaRegFileImage,
+	[ELEMENTS.LIST_NUMBERED]: FaListOl,
+	[ELEMENTS.LIST_BULLETED]: FaListUl,
+	[ELEMENTS.HEADING_1]: Heading1,
+	[ELEMENTS.HEADING_2]: Heading2
 }
 
 function Icon({ icon }) {

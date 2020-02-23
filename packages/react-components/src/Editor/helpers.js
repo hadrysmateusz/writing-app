@@ -1,53 +1,80 @@
 import { Editor, Transforms } from "slate"
 
-import { LIST_TYPES, BLOCKS, MARKS } from "@writing-tool/constants/src/Slate"
+import {
+	LIST_TYPES,
+	BLOCKS,
+	INLINES,
+	ELEMENTS,
+	MARKS
+} from "@writing-tool/constants/src/Slate"
+import { insertInlineCode } from "./Plugins/inlineCode"
 
-export const toggleBlock = (editor, format) => {
-	const isActive = isBlockActive(editor, format)
-	const isList = LIST_TYPES.includes(format)
+export const isInline = (element) => {
+	const { type } = element
+	return Object.values(INLINES).includes(type)
+}
 
-	Transforms.unwrapNodes(editor, {
-		match: (n) => LIST_TYPES.includes(n.type),
-		split: true
-	})
+/**
+ * Helper function for use in the 'match' option.
+ * It's a higher-order function that returns a matcher function checking the node's type
+ */
+export const matchType = (type) => {
+	return (n) => n.type === type
+}
 
-	Transforms.setNodes(editor, {
-		type: isActive ? BLOCKS.PARAGRAPH : isList ? BLOCKS.LIST_ITEM : format
-	})
+/**
+ * Toggles the given formatting in the selection
+ * works for all blocks, inlines and marks
+ */
+export function toggleFormat(editor, format) {
+	switch (format) {
+		case ELEMENTS.CODE_INLINE:
+			insertInlineCode(editor)
+			break
 
-	if (!isActive && isList) {
-		const block = { type: format, children: [] }
-		Transforms.wrapNodes(editor, block)
+		default:
+			const isMark = Object.values(MARKS).includes(format)
+			const isActive = isFormatActive(editor, format)
+
+			if (isMark) {
+				if (isActive) {
+					Editor.removeMark(editor, format)
+				} else {
+					Editor.addMark(editor, format, true)
+				}
+			} else {
+				const isList = LIST_TYPES.includes(format)
+
+				Transforms.unwrapNodes(editor, {
+					match: (n) => LIST_TYPES.includes(n.type),
+					split: true
+				})
+
+				Transforms.setNodes(editor, {
+					type: isActive ? BLOCKS.PARAGRAPH : isList ? BLOCKS.LIST_ITEM : format
+				})
+
+				if (!isActive && isList) {
+					const block = { type: format, children: [] }
+					Transforms.wrapNodes(editor, block)
+				}
+			}
 	}
 }
 
-export const toggleMark = (editor, format) => {
-	const isActive = isMarkActive(editor, format)
-
-	if (isActive) {
-		Editor.removeMark(editor, format)
+/**
+ * Check if the given formatting is active in the selection
+ * works for all blocks, inlines and marks
+ */
+export function isFormatActive(editor, format) {
+	const isMark = Object.values(MARKS).includes(format)
+	if (isMark) {
+		const marks = Editor.marks(editor)
+		return marks ? marks[format] === true : false
 	} else {
-		// // TODO: this logic might need to be moved into an Editor.addMark() override to make it apply in more situations
-		// if (format === MARKS.CODE) {
-		// 	// remove all other marks from inside of the selection first to prevent multiple code nodes being created
-		// 	Object.values(MARKS).forEach((mark) => {
-		// 		Editor.removeMark(editor, mark)
-		// 	})
-		// }
-
-		Editor.addMark(editor, format, true)
+		const [match] = Editor.nodes(editor, {
+			match: matchType(format)
+		})
+		return !!match
 	}
-}
-
-export const isBlockActive = (editor, format) => {
-	const [match] = Editor.nodes(editor, {
-		match: (n) => n.type === format
-	})
-
-	return !!match
-}
-
-export const isMarkActive = (editor, format) => {
-	const marks = Editor.marks(editor)
-	return marks ? marks[format] === true : false
 }

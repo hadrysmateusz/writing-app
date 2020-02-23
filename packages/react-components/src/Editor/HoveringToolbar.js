@@ -5,7 +5,7 @@ import { css } from "styled-components/macro"
 import { Portal } from "react-portal"
 
 import FormatButton from "./FormatButton"
-import { MARKS } from "@writing-tool/constants/src/Slate"
+import { MARKS, ELEMENTS } from "@writing-tool/constants/src/Slate"
 
 const menuStyles = css`
 	padding: 8px 7px 6px;
@@ -59,7 +59,7 @@ const HoveringToolbar = () => {
 				<FormatButton format={MARKS.BOLD} />
 				<FormatButton format={MARKS.ITALIC} />
 				<FormatButton format={MARKS.STRIKE} />
-				<FormatButton format={MARKS.CODE} />
+				<FormatButton format={ELEMENTS.CODE_INLINE} />
 			</div>
 		</Portal>
 	)

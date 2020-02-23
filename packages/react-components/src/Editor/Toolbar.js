@@ -1,26 +1,26 @@
 import React from "react"
 
-import { BLOCKS } from "@writing-tool/constants/src/Slate"
+import { ELEMENTS } from "@writing-tool/constants/src/Slate"
 import FormatButton from "./FormatButton"
 
 const Toolbar = () => {
 	return (
 		<div>
 			{/* Headings */}
-			<FormatButton format={BLOCKS.HEADING_1} />
-			<FormatButton format={BLOCKS.HEADING_2} />
+			<FormatButton format={ELEMENTS.HEADING_1} />
+			<FormatButton format={ELEMENTS.HEADING_2} />
 			&nbsp;
 			{/* Common */}
-			<FormatButton format={BLOCKS.BLOCKQUOTE} />
-			<FormatButton format={BLOCKS.CODE} />
-			<FormatButton format={BLOCKS.IMAGE} />
+			<FormatButton format={ELEMENTS.BLOCKQUOTE} />
+			<FormatButton format={ELEMENTS.CODE_BLOCK} />
+			<FormatButton format={ELEMENTS.IMAGE} />
 			&nbsp;
 			{/* Lists */}
-			<FormatButton format={BLOCKS.LIST_NUMBERED} />
-			<FormatButton format={BLOCKS.LIST_BULLETED} />
+			<FormatButton format={ELEMENTS.LIST_NUMBERED} />
+			<FormatButton format={ELEMENTS.LIST_BULLETED} />
 			&nbsp;
 			{/* Embeds */}
-			{/* <FormatButton format={BLOCKS.EMBED} text="Embed" /> */}
+			{/* <FormatButton format={ELEMENTS.EMBED} text="Embed" /> */}
 		</div>
 	)
 }
