@@ -70,12 +70,12 @@ export default (editor) => {
 				const [block, path] = match
 				const start = Editor.start(editor, path)
 
-				if (block.type !== BLOCKS.PARAGRAPH && Point.equals(selection.anchor, start)) {
-					Transforms.setNodes(editor, { type: BLOCKS.PARAGRAPH })
+				if (block.type !== ELEMENTS.PARAGRAPH && Point.equals(selection.anchor, start)) {
+					Transforms.setNodes(editor, { type: ELEMENTS.PARAGRAPH })
 
-					if (block.type === BLOCKS.LIST_ITEM) {
+					if (block.type === ELEMENTS.LIST_ITEM) {
 						Transforms.unwrapNodes(editor, {
-							match: (node) => node.type === BLOCKS.LIST_BULLETED
+							match: (node) => node.type === ELEMENTS.LIST_BULLETED
 						})
 					}
 
