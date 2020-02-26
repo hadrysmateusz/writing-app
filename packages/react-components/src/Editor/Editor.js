@@ -1,5 +1,7 @@
-import React, { useMemo, useState, useCallback } from "react"
+import React, { useState, useCallback } from "react"
 import { Slate, Editable } from "slate-react"
+import { withHistory } from "slate-history"
+import { withReact } from "slate-react"
 
 import Toolbar from "./Toolbar"
 import { renderElement } from "./Elements"
@@ -9,8 +11,11 @@ import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
-import createEditorWithPlugins from "./createEditorWithPlugins"
+import useCreateEditor from "./createEditorWithPlugins"
 import HoveringToolbar from "./HoveringToolbar"
+import withMarkdownShortcuts from "./Plugins/withMarkdownShortcuts"
+import withOperationLogger from "./Plugins/withOperationLogger"
+import { withInlineCode } from "./Plugins/inlineCode"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -18,7 +23,13 @@ function loadFromLocalStorage() {
 
 function EditorComponent() {
 	const [value, setValue] = useState(loadFromLocalStorage())
-	const editor = useMemo(createEditorWithPlugins, [])
+	const editor = useCreateEditor([
+		withInlineCode,
+		withHistory,
+		withOperationLogger,
+		withMarkdownShortcuts,
+		withReact
+	])
 
 	// DevTools utils
 	useLogEditor(editor)
