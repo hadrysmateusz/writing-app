@@ -10,7 +10,17 @@ function App() {
 	return (
 		<Router>
 			<Container>
-				<Editor />
+				<Switch>
+					<>
+						<Route path="/medium-auth-callback">
+							<MediumAuthRedirectPage />
+						</Route>
+						<Route path="/">
+							<h1>Writing Tool</h1>
+							<Editor />
+						</Route>
+					</>
+				</Switch>
 			</Container>
 		</Router>
 	)
