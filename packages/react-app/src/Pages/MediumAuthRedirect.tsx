@@ -7,8 +7,8 @@ import { MESSAGE_TYPES } from "@writing-tool/constants"
  * it will send the searchParams to the opening window
  * to be handled in the web app
  */
-export default () => {
-	const [error, setError] = useState(null)
+const MediumAuthRedirect: React.FC = () => {
+	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
 		// intentionally outside the inner trycatch block
@@ -23,7 +23,7 @@ export default () => {
 			const params = new URLSearchParams(window.location.search)
 
 			if (params.has("error")) {
-				throw Error("Medium Error:" + params.error)
+				throw Error("Medium Error:" + params.get("error"))
 			}
 			if (!params.has("state") || !params.has("code")) {
 				throw Error("Response is missing required search parameters")
@@ -54,5 +54,7 @@ export default () => {
 	}, [])
 
 	// TODO: improve this loading state
-	return error ? <p styled={{ color: "red" }}>{error}</p> : <p>Please wait...</p>
+	return error ? <p style={{ color: "red" }}>{error}</p> : <p>Please wait...</p>
 }
+
+export default MediumAuthRedirect
