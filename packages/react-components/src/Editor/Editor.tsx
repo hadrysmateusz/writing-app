@@ -21,15 +21,17 @@ function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
 }
 
+const plugins = [
+	withInlineCode,
+	withHistory,
+	withOperationLogger,
+	withMarkdownShortcuts,
+	withReact
+]
+
 function EditorComponent() {
 	const [value, setValue] = useState(loadFromLocalStorage())
-	const editor = useCreateEditor([
-		withInlineCode,
-		withHistory,
-		withOperationLogger,
-		withMarkdownShortcuts,
-		withReact
-	])
+	const editor = useCreateEditor(plugins)
 
 	// DevTools utils
 	useLogEditor(editor)
