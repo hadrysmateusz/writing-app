@@ -2,7 +2,8 @@ import React, { useState, useCallback } from "react"
 import { Slate, withReact } from "slate-react"
 import { withHistory } from "slate-history"
 
-import { Editable, useCreateEditor, LinkPlugin } from "@writing-tool/slate-plugins"
+import { Editable, useCreateEditor } from "@writing-tool/slate-plugins-system"
+import { LinkPlugin } from "@writing-tool/slate-plugins"
 
 import Toolbar from "./Toolbar"
 import { renderElement } from "./Elements"
