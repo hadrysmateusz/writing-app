@@ -14,7 +14,6 @@ import Toolbar from "./Toolbar"
 import { renderElement } from "./Elements"
 import { renderLeaf } from "./Leafs"
 import { SuperPowers } from "./SuperPowers"
-import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
@@ -64,13 +63,6 @@ function EditorComponent() {
 		localStorage.setItem("content", serialize(value))
 	}, [])
 
-	const onKeyDown = useCallback(
-		(event) => {
-			handleHotkeys(editor, event)
-		},
-		[editor]
-	)
-
 	return (
 		<Slate editor={editor} value={value} onChange={onChange}>
 			<HoveringToolbar />
@@ -79,7 +71,6 @@ function EditorComponent() {
 			<div style={{ fontFamily: "IBM Plex Mono", fontSize: "16px" }}>
 				<Editable
 					plugins={plugins}
-					onKeyDown={[onKeyDown]}
 					decorate={[decorate]}
 					renderLeaf={[renderLeaf]}
 					renderElement={[renderElement]}
