@@ -6,6 +6,7 @@ import { Editable, useCreateEditor } from "@writing-tool/slate-plugins-system"
 import {
 	InlineCodePlugin,
 	LinkPlugin,
+	HeadingsPlugin,
 	OperationLoggerPlugin
 } from "@writing-tool/slate-plugins"
 
@@ -18,6 +19,7 @@ import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import HoveringToolbar from "./HoveringToolbar"
+import { isInline } from "./helpers"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -27,9 +29,27 @@ const plugins = [
 	LinkPlugin(),
 	InlineCodePlugin(),
 	OperationLoggerPlugin(),
+	HeadingsPlugin({ levels: 6 }),
 	{ editorOverrides: withHistory },
 	{ editorOverrides: withReact }
 ]
+
+const InlineWrapper = ({ children }) => {
+	return children
+}
+
+const BlockWrapper = ({ children }) => {
+	return children
+}
+
+const ElementWrapper = ({ element, children }) => {
+	const isElementInline = isInline(element)
+	console.log(
+		`element of type ${element.type} is ${isElementInline ? "inline" : "block"}`
+	)
+	const WrapperComponent = isElementInline ? InlineWrapper : BlockWrapper
+	return <WrapperComponent>{children}</WrapperComponent>
+}
 
 function EditorComponent() {
 	const [value, setValue] = useState(loadFromLocalStorage())
@@ -63,6 +83,7 @@ function EditorComponent() {
 					decorate={[decorate]}
 					renderLeaf={[renderLeaf]}
 					renderElement={[renderElement]}
+					elementWrapper={ElementWrapper}
 					autoFocus
 				/>
 			</div>

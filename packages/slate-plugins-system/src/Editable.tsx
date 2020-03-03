@@ -22,6 +22,7 @@ interface Props {
 	renderElement?: RenderElement[]
 	renderLeaf?: RenderLeaf[]
 	onKeyDown?: OnKeyDown[]
+	elementWrapper?: React.ComponentType
 }
 
 export const EditablePlugins = ({
@@ -31,6 +32,7 @@ export const EditablePlugins = ({
 	renderLeaf: renderLeafList = [],
 	onDOMBeforeInput: onDOMBeforeInputList = [],
 	onKeyDown: onKeyDownList = [],
+	elementWrapper: ElementWrapper = React.Fragment,
 	...props
 }: Props) => {
 	const editor = useSlate()
@@ -65,21 +67,26 @@ export const EditablePlugins = ({
 	}
 
 	const renderElementPlugins = (elementProps: RenderElementProps) => {
+		// TODO: reduce the repetition
 		let element
 
 		renderElementList.some((renderElement) => {
 			element = renderElement(elementProps)
 			return !!element
 		})
-		if (element) return element
+		if (element) return <ElementWrapper element={element}>{element}</ElementWrapper>
 
 		plugins.some(({ renderElement }) => {
 			element = renderElement && renderElement(elementProps)
 			return !!element
 		})
-		if (element) return element
+		if (element) return <ElementWrapper element={element}>{element}</ElementWrapper>
 
-		return <div {...elementProps.attributes}>{elementProps.children}</div>
+		return (
+			<ElementWrapper element={element}>
+				<div {...elementProps.attributes}>{elementProps.children}</div>
+			</ElementWrapper>
+		)
 	}
 
 	const renderLeafPlugins = (leafProps: RenderLeafProps) => {
