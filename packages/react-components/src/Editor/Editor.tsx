@@ -76,6 +76,7 @@ function EditorComponent() {
 					renderElement={[renderElement]}
 					elementWrapper={ElementWrapper}
 					autoFocus
+					spellCheck={false}
 				/>
 			</div>
 		</Slate>
