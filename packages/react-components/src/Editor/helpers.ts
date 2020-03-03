@@ -7,19 +7,12 @@ import {
 	ELEMENTS,
 	MARKS
 } from "@writing-tool/constants/src/Slate"
-import { insertInlineCode } from "./Plugins/inlineCode"
+import { insertInlineCode } from "@writing-tool/slate-plugins"
+import { matchType } from "@writing-tool/helpers"
 
 export const isInline = (element) => {
 	const { type } = element
 	return Object.values(INLINES).includes(type)
-}
-
-/**
- * Helper function for use in the 'match' option.
- * It's a higher-order function that returns a matcher function checking the node's type
- */
-export const matchType = (type) => {
-	return (n) => n.type === type
 }
 
 /**

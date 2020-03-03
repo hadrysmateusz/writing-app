@@ -1,6 +1,6 @@
 import { config } from "@writing-tool/dev-tools"
 
-const withOperationLogger = (editor) => {
+export const withOperationLogger = (editor) => {
 	const { apply } = editor
 
 	editor.apply = (op) => {
@@ -12,5 +12,3 @@ const withOperationLogger = (editor) => {
 
 	return editor
 }
-
-export default withOperationLogger

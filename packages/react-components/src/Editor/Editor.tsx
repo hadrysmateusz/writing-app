@@ -3,7 +3,11 @@ import { Slate, withReact } from "slate-react"
 import { withHistory } from "slate-history"
 
 import { Editable, useCreateEditor } from "@writing-tool/slate-plugins-system"
-import { LinkPlugin } from "@writing-tool/slate-plugins"
+import {
+	InlineCodePlugin,
+	LinkPlugin,
+	OperationLoggerPlugin
+} from "@writing-tool/slate-plugins"
 
 import Toolbar from "./Toolbar"
 import { renderElement } from "./Elements"
@@ -14,9 +18,6 @@ import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import HoveringToolbar from "./HoveringToolbar"
-import withMarkdownShortcuts from "./Plugins/withMarkdownShortcuts"
-import withOperationLogger from "./Plugins/withOperationLogger"
-import { withInlineCode } from "./Plugins/inlineCode"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -24,10 +25,9 @@ function loadFromLocalStorage() {
 
 const plugins = [
 	LinkPlugin(),
-	{ editorOverrides: withInlineCode },
+	InlineCodePlugin(),
+	OperationLoggerPlugin(),
 	{ editorOverrides: withHistory },
-	{ editorOverrides: withOperationLogger },
-	{ editorOverrides: withMarkdownShortcuts },
 	{ editorOverrides: withReact }
 ]
 

@@ -1,5 +1,6 @@
-import { SlatePlugin, RenderElementOptions } from "../../PluginSystem/types"
-import { renderElementLink } from "./renderElementLink"
+import { SlatePlugin, RenderElementOptions } from "@writing-tool/slate-plugins-system"
+
+import { renderElementLink } from "./renderElement"
 import { withLink } from "./withLink"
 
 export const LinkPlugin = (options?: RenderElementOptions): SlatePlugin => ({

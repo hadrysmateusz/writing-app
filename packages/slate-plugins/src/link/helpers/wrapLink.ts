@@ -1,4 +1,5 @@
 import { Editor, Range, Transforms } from "slate"
+
 import { isLinkActive } from "./isLinkActive"
 import { LINK } from "../types"
 import { unwrapLink } from "./unwrapLink"

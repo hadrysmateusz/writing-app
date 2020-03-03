@@ -53,5 +53,5 @@ All of the overrides from the above props and those contained in plugins will be
 
 ## Todo
 
-- Move the core plugins system to a separate repo
 - Move all of the plugins into a separate monorepo with all plugins being separate packages
+- Consider making (almost) everything overridable (including the component and type in the plugin options). It would require putting everything through the plugin including the type(s).

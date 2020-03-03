@@ -1,5 +1,6 @@
-import isUrl from "is-url"
 import { ReactEditor } from "slate-react"
+import isUrl from "is-url"
+
 import { wrapLink } from "./helpers"
 import { LINK } from "./types"
 
