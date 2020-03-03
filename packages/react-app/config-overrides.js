@@ -12,7 +12,8 @@ module.exports = (config, env) => {
 				path.resolve("src"),
 				fs.realpathSync("../react-components/src"),
 				fs.realpathSync("../dev-tools/src"),
-				fs.realpathSync("../slate-plugins/src")
+				fs.realpathSync("../slate-plugins/src"),
+				fs.realpathSync("../slate-plugins-system")
 			])
 		)(config, env)
 	)

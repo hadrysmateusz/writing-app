@@ -1,11 +1,11 @@
 {
-	"name": "@writing-tool/slate-plugins",
-	"description": "Slate Plugins Collection",
+	"name": "@writing-tool/slate-plugins-system",
+	"description": "Slate Plugins System",
 	"version": "0.1.0",
 	"private": true,
 	"main": "src/index.ts",
 	"dependencies": {
-		"is-hotkey": "^0.1.6",
+		"lodash": "^4.17.15",
 		"react": "^16.12.0",
 		"react-dom": "^16.12.0",
 		"slate": "^0.57.1",

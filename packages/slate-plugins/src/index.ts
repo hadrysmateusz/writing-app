@@ -1,2 +1,1 @@
-export * from "./PluginSystem"
-export * from "./Plugins"
+export * from "./link"
