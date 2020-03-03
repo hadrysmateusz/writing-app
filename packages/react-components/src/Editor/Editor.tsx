@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react"
-import { Slate, Editable } from "slate-react"
+import { Slate, withReact } from "slate-react"
 import { withHistory } from "slate-history"
-import { withReact } from "slate-react"
+
+import { Editable, useCreateEditor, LinkPlugin } from "@writing-tool/slate-plugins"
 
 import Toolbar from "./Toolbar"
 import { renderElement } from "./Elements"
@@ -11,7 +12,6 @@ import handleHotkeys from "./handleHotkeys"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
-import useCreateEditor from "./createEditorWithPlugins"
 import HoveringToolbar from "./HoveringToolbar"
 import withMarkdownShortcuts from "./Plugins/withMarkdownShortcuts"
 import withOperationLogger from "./Plugins/withOperationLogger"
@@ -22,11 +22,12 @@ function loadFromLocalStorage() {
 }
 
 const plugins = [
-	withInlineCode,
-	withHistory,
-	withOperationLogger,
-	withMarkdownShortcuts,
-	withReact
+	LinkPlugin(),
+	{ editorOverrides: withInlineCode },
+	{ editorOverrides: withHistory },
+	{ editorOverrides: withOperationLogger },
+	{ editorOverrides: withMarkdownShortcuts },
+	{ editorOverrides: withReact }
 ]
 
 function EditorComponent() {
@@ -56,10 +57,12 @@ function EditorComponent() {
 			<SuperPowers />
 			<div style={{ fontFamily: "IBM Plex Mono", fontSize: "16px" }}>
 				<Editable
-					renderElement={renderElement}
-					renderLeaf={renderLeaf}
-					onKeyDown={onKeyDown}
-					decorate={decorate}
+					plugins={plugins}
+					onKeyDown={[onKeyDown]}
+					decorate={[decorate]}
+					renderLeaf={[renderLeaf]}
+					renderElement={[renderElement]}
+					autoFocus
 				/>
 			</div>
 		</Slate>

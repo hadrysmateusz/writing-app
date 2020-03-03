@@ -7,10 +7,12 @@ module.exports = (config, env) => {
 	return Object.assign(
 		config,
 		override(
+			// Make sure Babel compiles related react packages
 			babelInclude([
 				path.resolve("src"),
-				fs.realpathSync("../react-components/src"), // Make sure Babel compiles the shared components
-				fs.realpathSync("../dev-tools/src") // Make sure Babel compiles the shared components
+				fs.realpathSync("../react-components/src"),
+				fs.realpathSync("../dev-tools/src"),
+				fs.realpathSync("../slate-plugins/src")
 			])
 		)(config, env)
 	)

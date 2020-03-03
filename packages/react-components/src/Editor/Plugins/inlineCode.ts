@@ -4,6 +4,12 @@ import { Transforms } from "slate"
 
 import { matchType } from "../helpers"
 
+export const InlineCodePlugin = (): SlatePlugin => ({
+	renderLeaf: renderLeafItalic(),
+	onKeyDown: onKeyDownMark({ mark: MARK_ITALIC, hotkey }),
+	deserialize: deserializeItalic()
+})
+
 export const withInlineCode = (editor) => {
 	const { isInline } = editor
 
