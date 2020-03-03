@@ -5,12 +5,15 @@ import styled from "styled-components/macro"
 import { CODE_INLINE } from "../types"
 
 const StyledCode = styled.code`
+	--padding: 5px;
+
 	display: inline-block;
 	font-family: monospace;
-	background-color: #f5f5f5;
+	background-color: #efefef;
 	color: #111;
-	padding: 3px 6px;
+	padding: var(--padding);
 	border-radius: 5px;
+	font-size: 0.9em;
 `
 
 export const InlineCodeElement = ({ attributes, children }: RenderElementProps) => (
