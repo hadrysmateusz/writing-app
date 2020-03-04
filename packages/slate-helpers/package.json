@@ -1,0 +1,10 @@
+{
+	"name": "@writing-tool/slate-helpers",
+	"version": "0.1.0",
+	"private": true,
+	"main": "src/index.ts",
+	"dependencies": {},
+	"eslintConfig": {
+		"extends": "react-app"
+	}
+}
