@@ -3,8 +3,6 @@ import React from "react"
 import { ELEMENTS } from "@writing-tool/constants/src/Slate"
 
 import Paragraph from "./Paragraph"
-import Blockquote from "./Blockquote"
-import CodeBlock from "./CodeBlock"
 import Embed from "./Embed"
 import Image from "./Image"
 import HR from "./HR"
@@ -14,8 +12,6 @@ export const renderElement = (props) => {
 	const components = {
 		// Common Blocks
 		[ELEMENTS.PARAGRAPH]: <Paragraph {...props} />,
-		[ELEMENTS.BLOCKQUOTE]: <Blockquote {...props} />,
-		[ELEMENTS.CODE_BLOCK]: <CodeBlock {...props} />,
 		// Void Blocks
 		[ELEMENTS.IMAGE]: <Image {...props} />,
 		[ELEMENTS.EMBED]: <Embed {...props} />,

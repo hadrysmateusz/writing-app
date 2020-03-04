@@ -7,6 +7,8 @@ import {
 	InlineCodePlugin,
 	LinkPlugin,
 	HeadingsPlugin,
+	BlockquotePlugin,
+	CodeBlockPlugin,
 	OperationLoggerPlugin
 } from "@writing-tool/slate-plugins"
 
@@ -28,6 +30,8 @@ function loadFromLocalStorage() {
 const plugins = [
 	LinkPlugin(),
 	InlineCodePlugin(),
+	BlockquotePlugin(),
+	CodeBlockPlugin(),
 	OperationLoggerPlugin(),
 	HeadingsPlugin({ levels: 6 }),
 	{ editorOverrides: withHistory },
@@ -58,9 +62,7 @@ const BlockWrapper = ({ children }) => {
 
 const ElementWrapper = ({ element, children }) => {
 	const isElementInline = isInline(element)
-	console.log(
-		`element of type ${element.type} is ${isElementInline ? "inline" : "block"}`
-	)
+	// TODO: there are issues with the element type probably caused by fragments or something
 	const WrapperComponent = isElementInline ? InlineWrapper : BlockWrapper
 	return <WrapperComponent>{children}</WrapperComponent>
 }
