@@ -19,6 +19,7 @@ import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import HoveringToolbar from "./HoveringToolbar"
 import { isInline } from "./helpers"
+import { withBreakEmptyReset } from "./Plugins/withBreakEmptyReset"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -30,6 +31,20 @@ const plugins = [
 	OperationLoggerPlugin(),
 	HeadingsPlugin({ levels: 6 }),
 	{ editorOverrides: withHistory },
+	{
+		editorOverrides: withBreakEmptyReset({
+			types: [
+				"blockquote",
+				"code_block",
+				"heading_1",
+				"heading_2",
+				"heading_3",
+				"heading_4",
+				"heading_5",
+				"heading_6"
+			]
+		})
+	},
 	{ editorOverrides: withReact }
 ]
 
