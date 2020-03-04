@@ -9,3 +9,6 @@ node_modules
 
 # Any local overrides
 *.local.*
+
+# Lerna
+**/lerna-debug.log
