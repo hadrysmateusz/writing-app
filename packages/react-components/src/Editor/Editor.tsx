@@ -9,7 +9,7 @@ import {
 	HeadingsPlugin,
 	BlockquotePlugin,
 	CodeBlockPlugin,
-	OperationLoggerPlugin
+	LoggerPlugin
 } from "@writing-tool/slate-plugins"
 
 import Toolbar from "./Toolbar"
@@ -28,13 +28,13 @@ function loadFromLocalStorage() {
 }
 
 const plugins = [
+	{ editorOverrides: withHistory },
 	LinkPlugin(),
 	InlineCodePlugin(),
 	BlockquotePlugin(),
 	CodeBlockPlugin(),
-	OperationLoggerPlugin(),
 	HeadingsPlugin({ levels: 6 }),
-	{ editorOverrides: withHistory },
+	LoggerPlugin(),
 	{
 		editorOverrides: withBreakEmptyReset({
 			types: [
