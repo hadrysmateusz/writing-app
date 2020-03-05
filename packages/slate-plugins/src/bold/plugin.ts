@@ -1,8 +1,12 @@
 import { SlatePlugin } from "@writing-tool/slate-plugins-system"
+import { onKeyDownMark } from "@writing-tool/slate-helpers"
 
 import { renderLeafBold } from "./renderLeaf"
-import { BoldPluginOptions } from "./types"
+import { BoldPluginOptions, BOLD } from "./types"
 
-export const BoldPlugin = (options?: BoldPluginOptions): SlatePlugin => ({
-	renderLeaf: renderLeafBold(options)
+export const BoldPlugin = ({
+	hotkey = "mod+b"
+}: BoldPluginOptions = {}): SlatePlugin => ({
+	renderLeaf: renderLeafBold(),
+	onKeyDown: onKeyDownMark({ mark: BOLD, hotkey })
 })

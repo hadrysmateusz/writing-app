@@ -3,7 +3,11 @@
 	"version": "0.1.0",
 	"private": true,
 	"main": "src/index.ts",
-	"dependencies": {},
+	"dependencies": {
+		"is-hotkey": "^0.1.6",
+		"slate": "^0.57.1",
+		"slate-react": "^0.57.1"
+	},
 	"eslintConfig": {
 		"extends": "react-app"
 	}

@@ -31,13 +31,13 @@ function loadFromLocalStorage() {
 const plugins = [
 	{ editorOverrides: withHistory },
 	LinkPlugin(),
-	InlineCodePlugin(),
 	BlockquotePlugin(),
 	CodeBlockPlugin(),
 	HeadingsPlugin({ levels: 6 }),
-	BoldPlugin(),
-	ItalicPlugin(),
-	StrikethroughPlugin(),
+	BoldPlugin({ hotkey: "mod+b" }),
+	ItalicPlugin({ hotkey: "mod+i" }),
+	StrikethroughPlugin({ hotkey: "mod+shift+k" }),
+	InlineCodePlugin(),
 	LoggerPlugin(),
 	{ editorOverrides: withReact }
 ]
