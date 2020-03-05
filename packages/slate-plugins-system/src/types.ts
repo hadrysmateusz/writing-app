@@ -17,6 +17,11 @@ export interface SlatePlugin {
 	editorOverrides?: EditorOverrides
 }
 
+export interface GetRenderLeafOptions {
+	type: string
+	component: any
+}
+
 export interface GetRenderElementOptions {
 	type: string
 	component: any
@@ -24,6 +29,14 @@ export interface GetRenderElementOptions {
 
 export interface RenderElementOptions {
 	component?: any
+}
+
+export interface RenderLeafOptions {
+	component?: any
+}
+
+export interface MarkPluginOptions extends RenderLeafOptions {
+	hotkey?: string
 }
 
 export interface ElementPluginOptions extends RenderElementOptions {}
