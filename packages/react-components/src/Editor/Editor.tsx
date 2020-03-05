@@ -4,18 +4,19 @@ import { withHistory } from "slate-history"
 
 import { Editable, useCreateEditor } from "@writing-tool/slate-plugins-system"
 import {
+	LoggerPlugin,
 	InlineCodePlugin,
 	LinkPlugin,
 	HeadingsPlugin,
 	BlockquotePlugin,
 	CodeBlockPlugin,
 	BoldPlugin,
-	LoggerPlugin
+	ItalicPlugin,
+	StrikethroughPlugin
 } from "@writing-tool/slate-plugins"
 
 import Toolbar from "./Toolbar"
 import { renderElement } from "./Elements"
-import { renderLeaf } from "./Leafs"
 import { SuperPowers } from "./SuperPowers"
 import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
@@ -35,6 +36,8 @@ const plugins = [
 	CodeBlockPlugin(),
 	HeadingsPlugin({ levels: 6 }),
 	BoldPlugin(),
+	ItalicPlugin(),
+	StrikethroughPlugin(),
 	LoggerPlugin(),
 	{ editorOverrides: withReact }
 ]
