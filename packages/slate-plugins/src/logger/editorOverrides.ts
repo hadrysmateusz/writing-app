@@ -8,7 +8,15 @@ export const withSelectionLogger = (editor) => {
 			// console.clear()
 		}
 
+		// ------------ OPERATIONS ------------
+		if (config.logOperations) {
+			console.log(op)
+		}
+
+		apply(op)
+
 		// ------------ SELECTION ------------
+		// selection is logged after the operation to reflect the newest changes
 		if (config.logSelection) {
 			if (editor.selection) {
 				const { anchor, focus } = editor.selection
@@ -21,13 +29,6 @@ export const withSelectionLogger = (editor) => {
 				console.log("selection is null")
 			}
 		}
-
-		// ------------ OPERATIONS ------------
-		if (config.logOperations) {
-			console.log(op)
-		}
-
-		apply(op)
 	}
 
 	return editor
