@@ -74,19 +74,15 @@ export const EditablePlugins = ({
 			element = renderElement(elementProps)
 			return !!element
 		})
-		if (element) return <ElementWrapper element={element}>{element}</ElementWrapper>
+		if (element) return element
 
 		plugins.some(({ renderElement }) => {
 			element = renderElement && renderElement(elementProps)
 			return !!element
 		})
-		if (element) return <ElementWrapper element={element}>{element}</ElementWrapper>
+		if (element) return element
 
-		return (
-			<ElementWrapper element={element}>
-				<div {...elementProps.attributes}>{elementProps.children}</div>
-			</ElementWrapper>
-		)
+		return <div {...elementProps.attributes}>{elementProps.children}</div>
 	}
 
 	const renderLeafPlugins = (leafProps: RenderLeafProps) => {

@@ -20,7 +20,7 @@ import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import HoveringToolbar from "./HoveringToolbar"
-import { isInline } from "./helpers"
+// import { isInline } from "./helpers"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -37,20 +37,20 @@ const plugins = [
 	{ editorOverrides: withReact }
 ]
 
-const InlineWrapper = ({ children }) => {
-	return children
-}
+// const InlineWrapper = ({ children }) => {
+// 	return children
+// }
 
-const BlockWrapper = ({ children }) => {
-	return children
-}
+// const BlockWrapper = ({ children }) => {
+// 	return children
+// }
 
-const ElementWrapper = ({ element, children }) => {
-	const isElementInline = isInline(element)
-	// TODO: there are issues with the element type probably caused by fragments or something
-	const WrapperComponent = isElementInline ? InlineWrapper : BlockWrapper
-	return <WrapperComponent>{children}</WrapperComponent>
-}
+// const ElementWrapper = ({ element, children }) => {
+// 	const isElementInline = isInline(element)
+// 	// TODO: there are issues with the element type probably caused by fragments or something (only on firefox)
+// 	const WrapperComponent = isElementInline ? InlineWrapper : BlockWrapper
+// 	return <WrapperComponent>{children}</WrapperComponent>
+// }
 
 function EditorComponent() {
 	const [value, setValue] = useState(loadFromLocalStorage())
@@ -76,7 +76,6 @@ function EditorComponent() {
 					decorate={[decorate]}
 					renderLeaf={[renderLeaf]}
 					renderElement={[renderElement]}
-					elementWrapper={ElementWrapper}
 					autoFocus
 					spellCheck={false}
 				/>
