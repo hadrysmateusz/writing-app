@@ -54,4 +54,8 @@ All of the overrides from the above props and those contained in plugins will be
 ## Todo
 
 - Move all of the plugins into a separate monorepo with all plugins being separate packages
-- Consider making (almost) everything overridable (including the component and type in the plugin options). It would require putting everything through the plugin including the type(s).
+
+## Considerations
+
+- Consider making (almost) everything overridable (including the component and type in the plugin options). It would require putting everything through the plugin including the type(s). From what I know components are already overridable by default (inherited from slate-plugins-next)
+- Consider making it mandatory (or at least optional and documented) to make editorOverrides functions be factories that create the actual withSomething function with some options applied. It is already a pattern used by some native slate plugins
