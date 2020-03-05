@@ -9,6 +9,7 @@ import {
 	HeadingsPlugin,
 	BlockquotePlugin,
 	CodeBlockPlugin,
+	BoldPlugin,
 	LoggerPlugin
 } from "@writing-tool/slate-plugins"
 
@@ -33,6 +34,7 @@ const plugins = [
 	BlockquotePlugin(),
 	CodeBlockPlugin(),
 	HeadingsPlugin({ levels: 6 }),
+	BoldPlugin(),
 	LoggerPlugin(),
 	{ editorOverrides: withReact }
 ]
@@ -74,7 +76,6 @@ function EditorComponent() {
 				<Editable
 					plugins={plugins}
 					decorate={[decorate]}
-					renderLeaf={[renderLeaf]}
 					renderElement={[renderElement]}
 					autoFocus
 					spellCheck={false}
