@@ -6,6 +6,7 @@
 	"main": "src/index.ts",
 	"dependencies": {
 		"@writing-tool/slate-helpers": "*",
+		"@writing-tool/slate-plugins-system": "*",
 		"is-hotkey": "^0.1.6",
 		"react": "^16.12.0",
 		"react-dom": "^16.12.0",

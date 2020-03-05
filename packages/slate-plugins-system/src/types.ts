@@ -25,3 +25,5 @@ export interface GetRenderElementOptions {
 export interface RenderElementOptions {
 	component?: any
 }
+
+export interface ElementPluginOptions extends RenderElementOptions {}
