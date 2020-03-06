@@ -16,9 +16,7 @@ import {
 } from "@writing-tool/slate-plugins"
 
 import Toolbar from "./Toolbar"
-import { renderElement } from "./Elements"
 import { SuperPowers } from "./SuperPowers"
-import decorate from "./decorate"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import HoveringToolbar from "./HoveringToolbar"
@@ -30,13 +28,13 @@ function loadFromLocalStorage() {
 
 const plugins = [
 	{ editorOverrides: withHistory },
-	LinkPlugin(),
 	BlockquotePlugin(),
 	CodeBlockPlugin(),
 	HeadingsPlugin({ levels: 6 }),
 	BoldPlugin({ hotkey: "mod+b" }),
 	ItalicPlugin({ hotkey: "mod+i" }),
 	StrikethroughPlugin({ hotkey: "mod+shift+k" }),
+	LinkPlugin(),
 	InlineCodePlugin(),
 	LoggerPlugin(),
 	{ editorOverrides: withReact }
@@ -73,16 +71,11 @@ function EditorComponent() {
 	return (
 		<Slate editor={editor} value={value} onChange={onChange}>
 			<HoveringToolbar />
+
 			<Toolbar />
 			<SuperPowers />
 			<div style={{ fontFamily: "IBM Plex Mono", fontSize: "16px" }}>
-				<Editable
-					plugins={plugins}
-					decorate={[decorate]}
-					renderElement={[renderElement]}
-					autoFocus
-					spellCheck={false}
-				/>
+				<Editable plugins={plugins} autoFocus spellCheck={false} />
 			</div>
 		</Slate>
 	)

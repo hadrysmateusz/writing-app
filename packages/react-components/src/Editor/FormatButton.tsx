@@ -5,11 +5,11 @@ import Icon from "../Icon"
 import Button from "../Button"
 import { isFormatActive, toggleFormat } from "./helpers"
 
-const FormatButton = ({ format, text }) => {
+const FormatButton = ({ format, text, onClick }) => {
 	const editor = useSlate()
 	const isActive = isFormatActive(editor, format)
 
-	const onClick = useCallback(
+	const defaultOnClick = useCallback(
 		(event) => {
 			event.preventDefault()
 			toggleFormat(editor, format)
@@ -18,7 +18,7 @@ const FormatButton = ({ format, text }) => {
 	)
 
 	return (
-		<Button active={isActive} onClick={onClick}>
+		<Button active={isActive} onClick={onClick ?? defaultOnClick}>
 			{text ? text : <Icon icon={format} />}
 		</Button>
 	)

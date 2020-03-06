@@ -6,6 +6,7 @@ import { Portal } from "react-portal"
 
 import FormatButton from "./FormatButton"
 import { MARKS, ELEMENTS } from "@writing-tool/constants/src/Slate"
+import { LINK, insertLink } from "@writing-tool/slate-plugins"
 
 const menuStyles = css`
 	padding: 8px 7px 6px;
@@ -60,6 +61,16 @@ const HoveringToolbar = () => {
 				<FormatButton format={MARKS.ITALIC} />
 				<FormatButton format={MARKS.STRIKE} />
 				<FormatButton format={ELEMENTS.CODE_INLINE} />
+				<FormatButton
+					format={LINK}
+					onClick={(event: Event) => {
+						event.preventDefault()
+
+						const url = window.prompt("Enter the URL of the link:")
+						if (!url) return
+						insertLink(editor, url)
+					}}
+				/>
 			</div>
 		</Portal>
 	)
