@@ -59,3 +59,4 @@ All of the overrides from the above props and those contained in plugins will be
 
 - Consider making (almost) everything overridable (including the component and type in the plugin options). It would require putting everything through the plugin including the type(s). From what I know components are already overridable by default (inherited from slate-plugins-next)
 - Consider making it mandatory (or at least optional and documented) to make editorOverrides functions be factories that create the actual withSomething function with some options applied. It is already a pattern used by some native slate plugins
+- Consider registering other helpers inside the plugin so that they are available elsewhere e.g. register the `insertSomething` helper that can then be used inside toolbar buttons by doing something like `insertElement("ELEMENT_NAME")` it might even be possible to then use that inside of the onKeyDown handler for that plugin
