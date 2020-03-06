@@ -34,8 +34,8 @@ const plugins = [
 	BoldPlugin({ hotkey: "mod+b" }),
 	ItalicPlugin({ hotkey: "mod+i" }),
 	StrikethroughPlugin({ hotkey: "mod+shift+k" }),
+	InlineCodePlugin({ hotkey: "mod+e" }),
 	LinkPlugin(),
-	InlineCodePlugin(),
 	LoggerPlugin(),
 	{ editorOverrides: withReact }
 ]

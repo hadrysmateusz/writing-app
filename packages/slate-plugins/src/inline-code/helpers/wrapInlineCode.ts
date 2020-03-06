@@ -12,7 +12,7 @@ export const wrapInlineCode = (editor) => {
 
 	const node = {
 		type: CODE_INLINE,
-		children: []
+		children: [{ text: "" }]
 	}
 
 	if (isCollapsed) {

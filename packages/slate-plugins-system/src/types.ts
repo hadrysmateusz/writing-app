@@ -17,6 +17,8 @@ export interface SlatePlugin {
 	editorOverrides?: EditorOverrides
 }
 
+// GetRender Options
+
 export interface GetRenderLeafOptions {
 	type: string
 	component: any
@@ -27,6 +29,8 @@ export interface GetRenderElementOptions {
 	component: any
 }
 
+// Render Options
+
 export interface RenderElementOptions {
 	component?: any
 }
@@ -35,7 +39,17 @@ export interface RenderLeafOptions {
 	component?: any
 }
 
-export interface MarkPluginOptions extends RenderLeafOptions {
+export interface RenderInlineOptions {
+	component?: any
+}
+
+// Plugin Options
+
+export interface MarkPluginOptions extends RenderInlineOptions {
+	hotkey?: string
+}
+
+export interface InlinePluginOptions extends RenderInlineOptions {
 	hotkey?: string
 }
 
