@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react"
 import { Slate, withReact } from "slate-react"
 import { withHistory } from "slate-history"
+import styled from "styled-components"
 
 import { Editable, useCreateEditor } from "@writing-tool/slate-plugins-system"
 import {
@@ -15,12 +16,11 @@ import {
 	StrikethroughPlugin
 } from "@writing-tool/slate-plugins"
 
-import Toolbar from "./Toolbar"
 import { SuperPowers } from "./SuperPowers"
+import { Toolbar } from "./Toolbar"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import HoveringToolbar from "./HoveringToolbar"
-// import { isInline } from "./helpers"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -40,20 +40,14 @@ const plugins = [
 	{ editorOverrides: withReact }
 ]
 
-// const InlineWrapper = ({ children }) => {
-// 	return children
-// }
-
-// const BlockWrapper = ({ children }) => {
-// 	return children
-// }
-
-// const ElementWrapper = ({ element, children }) => {
-// 	const isElementInline = isInline(element)
-// 	// TODO: there are issues with the element type probably caused by fragments or something (only on firefox)
-// 	const WrapperComponent = isElementInline ? InlineWrapper : BlockWrapper
-// 	return <WrapperComponent>{children}</WrapperComponent>
-// }
+const StyledEditable = styled(Editable)`
+	background: #fdfdfd;
+	border: 1px solid #f3f3f3;
+	margin: 20px 0;
+	padding: 20px;
+	font-family: IBM Plex Mono;
+	font-size: 16px;
+`
 
 function EditorComponent() {
 	const [value, setValue] = useState(loadFromLocalStorage())
@@ -69,15 +63,14 @@ function EditorComponent() {
 	}, [])
 
 	return (
-		<Slate editor={editor} value={value} onChange={onChange}>
-			<HoveringToolbar />
-
-			<Toolbar />
+		<div>
 			<SuperPowers />
-			<div style={{ fontFamily: "IBM Plex Mono", fontSize: "16px" }}>
-				<Editable plugins={plugins} autoFocus spellCheck={false} />
-			</div>
-		</Slate>
+			<Slate editor={editor} value={value} onChange={onChange}>
+				<HoveringToolbar />
+				<Toolbar />
+				<StyledEditable plugins={plugins} autoFocus spellCheck={false} />
+			</Slate>
+		</div>
 	)
 }
 

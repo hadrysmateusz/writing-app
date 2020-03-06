@@ -3,7 +3,7 @@ import React from "react"
 import { ELEMENTS } from "@writing-tool/constants/src/Slate"
 import FormatButton from "./FormatButton"
 
-const Toolbar = () => {
+export const Toolbar = () => {
 	return (
 		<div>
 			{/* Headings */}
@@ -24,5 +24,3 @@ const Toolbar = () => {
 		</div>
 	)
 }
-
-export default Toolbar
