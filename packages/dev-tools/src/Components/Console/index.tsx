@@ -3,7 +3,7 @@ import React from "react"
 export function ClearConsole() {
 	return (
 		<div>
-			<button onClick={() => console.clear()}>Clear Console</button>
+			<button onMouseDown={() => console.clear()}>Clear Console</button>
 		</div>
 	)
 }

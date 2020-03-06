@@ -63,7 +63,7 @@ const HoveringToolbar = () => {
 				<FormatButton format={ELEMENTS.CODE_INLINE} />
 				<FormatButton
 					format={LINK}
-					onClick={(event: Event) => {
+					onMouseDown={(event: Event) => {
 						event.preventDefault()
 
 						const url = window.prompt("Enter the URL of the link:")

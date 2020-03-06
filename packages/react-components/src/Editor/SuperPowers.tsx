@@ -113,5 +113,5 @@ export const SuperPowers = () => {
 		)
 	}
 
-	return <button onClick={initMediumAuthentication}>Authenticate</button>
+	return <button onMouseDown={initMediumAuthentication}>Authenticate</button>
 }
