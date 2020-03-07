@@ -1,7 +1,7 @@
 import { SlatePlugin } from "@writing-tool/slate-plugins-system"
 
-import { withSelectionLogger } from "./editorOverrides"
+import { withLogger } from "./editorOverrides"
 
 export const LoggerPlugin = (): SlatePlugin => ({
-	editorOverrides: withSelectionLogger
+	editorOverrides: withLogger
 })

@@ -1,6 +1,6 @@
 import { config } from "@writing-tool/dev-tools"
 
-export const withSelectionLogger = (editor) => {
+export const withLogger = (editor) => {
 	const { apply } = editor
 
 	editor.apply = (op) => {
