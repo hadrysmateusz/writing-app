@@ -9,15 +9,16 @@ import { MARKS } from "@writing-tool/constants/src/Slate"
 import { LINK, CODE_INLINE, insertLink } from "@writing-tool/slate-plugins"
 
 const menuStyles = css`
-	padding: 8px 7px 6px;
+	padding: 4px 7px 1px;
 	position: absolute;
 	z-index: 1;
 	top: -10000px;
 	left: -10000px;
 	margin-top: -6px;
 	opacity: 0;
-	background-color: #222;
-	border-radius: 4px;
+	background-color: #fdfdfd;
+	border: 1px solid #ddd;
+	border-radius: 3px;
 	transition: opacity 0.75s;
 `
 

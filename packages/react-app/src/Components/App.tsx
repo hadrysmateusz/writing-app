@@ -16,7 +16,6 @@ function App() {
 							<MediumAuthRedirectPage />
 						</Route>
 						<Route path="/">
-							<h1>Writing Tool</h1>
 							<Editor />
 						</Route>
 					</>
