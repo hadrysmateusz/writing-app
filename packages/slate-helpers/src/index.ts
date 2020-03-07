@@ -1,5 +1,5 @@
 export * from "./queries"
 export * from "./transforms"
-export * from "./insertDefaultBlockOnLineBreak"
+export * from "./editorOverrides"
 export * from "./onKeyDownMark"
 export * from "./types"
