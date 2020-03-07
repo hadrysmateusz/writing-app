@@ -34,7 +34,15 @@ export const BlockWrapper = ({ children, element }) => {
 	return (
 		<Wrapper>
 			<div>{children}</div>
-			<Toolbar>+</Toolbar>
+			<Toolbar
+				onMouseDown={(e) => {
+					// Prevent Slate errors
+					e.preventDefault()
+					e.stopPropagation()
+				}}
+			>
+				+
+			</Toolbar>
 		</Wrapper>
 	)
 }
