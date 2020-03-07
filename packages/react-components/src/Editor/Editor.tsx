@@ -63,7 +63,7 @@ function EditorComponent() {
 
 	return (
 		<div>
-			<SuperPowers />
+			{/* <SuperPowers /> */}
 			<Slate editor={editor} value={value} onChange={onChange}>
 				<HoveringToolbar />
 				<Toolbar />
