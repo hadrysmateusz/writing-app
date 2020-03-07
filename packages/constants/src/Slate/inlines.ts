@@ -3,8 +3,7 @@
  */
 
 const INLINES = {
-	LINK: "link",
-	CODE_INLINE: "code_inline"
+	LINK: "link"
 }
 
 export default INLINES

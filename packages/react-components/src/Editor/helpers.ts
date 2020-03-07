@@ -1,13 +1,6 @@
 import { Editor, Transforms } from "slate"
 
-import {
-	LIST_TYPES,
-	BLOCKS,
-	INLINES,
-	ELEMENTS,
-	MARKS
-} from "@writing-tool/constants/src/Slate"
-import { insertInlineCode } from "@writing-tool/slate-plugins"
+import { LIST_TYPES, BLOCKS, INLINES, MARKS } from "@writing-tool/constants/src/Slate"
 import { matchType } from "@writing-tool/helpers"
 
 export const isInline = (element) => {
@@ -21,10 +14,6 @@ export const isInline = (element) => {
  */
 export function toggleFormat(editor, format) {
 	switch (format) {
-		case ELEMENTS.CODE_INLINE:
-			insertInlineCode(editor)
-			break
-
 		default:
 			const isMark = Object.values(MARKS).includes(format)
 			const isActive = isFormatActive(editor, format)
