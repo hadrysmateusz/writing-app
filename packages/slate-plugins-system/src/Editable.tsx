@@ -1,5 +1,5 @@
 import React from "react"
-import { NodeEntry, Range } from "slate"
+import { NodeEntry, Range, Element } from "slate"
 import { Editable, RenderElementProps, RenderLeafProps, useSlate } from "slate-react"
 import {
 	Decorate,
@@ -22,7 +22,7 @@ interface Props {
 	renderElement?: RenderElement[]
 	renderLeaf?: RenderLeaf[]
 	onKeyDown?: OnKeyDown[]
-	elementWrapper?: React.ComponentType
+	elementWrapper?: React.ComponentType<{ element: Element }>
 }
 
 export const EditablePlugins = ({
@@ -32,7 +32,7 @@ export const EditablePlugins = ({
 	renderLeaf: renderLeafList = [],
 	onDOMBeforeInput: onDOMBeforeInputList = [],
 	onKeyDown: onKeyDownList = [],
-	elementWrapper: ElementWrapper = React.Fragment,
+	elementWrapper: ElementWrapper = null,
 	...props
 }: Props) => {
 	const editor = useSlate()
@@ -67,6 +67,14 @@ export const EditablePlugins = ({
 	}
 
 	const renderElementPlugins = (elementProps: RenderElementProps) => {
+		const wrapElement = (element: JSX.Element) => {
+			if (ElementWrapper) {
+				return <ElementWrapper element={elementProps.element}>{element}</ElementWrapper>
+			} else {
+				return element
+			}
+		}
+
 		// TODO: reduce the repetition
 		let element
 
@@ -74,15 +82,15 @@ export const EditablePlugins = ({
 			element = renderElement(elementProps)
 			return !!element
 		})
-		if (element) return element
+		if (element) return wrapElement(element)
 
 		plugins.some(({ renderElement }) => {
 			element = renderElement && renderElement(elementProps)
 			return !!element
 		})
-		if (element) return element
+		if (element) return wrapElement(element)
 
-		return <div {...elementProps.attributes}>{elementProps.children}</div>
+		return wrapElement(<div {...elementProps.attributes}>{elementProps.children}</div>)
 	}
 
 	const renderLeafPlugins = (leafProps: RenderLeafProps) => {

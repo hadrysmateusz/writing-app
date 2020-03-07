@@ -1,3 +1,4 @@
+import React from "react"
 import { Editor, NodeEntry, Range } from "slate"
 import { RenderElementProps, RenderLeafProps, ReactEditor } from "slate-react"
 

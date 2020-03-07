@@ -21,6 +21,7 @@ import { Toolbar } from "./Toolbar"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import HoveringToolbar from "./HoveringToolbar"
+import { BlockWrapper } from "./BlockWrapper"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -40,13 +41,11 @@ const plugins = [
 	{ editorOverrides: withReact }
 ]
 
-const StyledEditable = styled(Editable)`
-	background: #fdfdfd;
-	border: 1px solid #f3f3f3;
+const EditableContainer = styled.div`
 	margin: 20px 0;
-	padding: 20px;
 	font-family: IBM Plex Mono;
 	font-size: 16px;
+	line-height: 24px;
 `
 
 function EditorComponent() {
@@ -68,7 +67,14 @@ function EditorComponent() {
 			<Slate editor={editor} value={value} onChange={onChange}>
 				<HoveringToolbar />
 				<Toolbar />
-				<StyledEditable plugins={plugins} autoFocus spellCheck={false} />
+				<EditableContainer>
+					<Editable
+						plugins={plugins}
+						elementWrapper={BlockWrapper}
+						autoFocus
+						spellCheck={false}
+					/>
+				</EditableContainer>
 			</Slate>
 		</div>
 	)
