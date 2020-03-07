@@ -13,7 +13,8 @@ import {
 	CodeBlockPlugin,
 	BoldPlugin,
 	ItalicPlugin,
-	StrikethroughPlugin
+	StrikethroughPlugin,
+	ListPlugin
 } from "@writing-tool/slate-plugins"
 
 import { SuperPowers } from "./SuperPowers"
@@ -29,21 +30,22 @@ function loadFromLocalStorage() {
 
 const plugins = [
 	{ editorOverrides: withHistory },
-	BlockquotePlugin(),
-	CodeBlockPlugin(),
-	HeadingsPlugin({ levels: 6 }),
+	LoggerPlugin(),
 	BoldPlugin({ hotkey: "mod+b" }),
 	ItalicPlugin({ hotkey: "mod+i" }),
 	StrikethroughPlugin({ hotkey: "mod+shift+k" }),
 	InlineCodePlugin({ hotkey: "mod+e" }),
 	LinkPlugin(),
-	LoggerPlugin(),
+	BlockquotePlugin(),
+	CodeBlockPlugin(),
+	ListPlugin(),
+	HeadingsPlugin({ levels: 6 }),
 	{ editorOverrides: withReact }
 ]
 
 const EditableContainer = styled.div`
 	margin: 20px 0;
-	font-family: IBM Plex Mono;
+	font-family: "IBM Plex Mono";
 	font-size: 16px;
 	line-height: 24px;
 `

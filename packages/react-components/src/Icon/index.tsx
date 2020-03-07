@@ -7,7 +7,7 @@ import {
 	FaCode,
 	FaLink,
 	FaQuoteRight,
-	FaRegFileImage,
+	// FaRegFileImage,
 	FaListOl,
 	FaListUl
 } from "react-icons/fa"
@@ -15,21 +15,31 @@ import {
 import { ReactComponent as Heading1 } from "../Assets/Heading1.svg"
 import { ReactComponent as Heading2 } from "../Assets/Heading2.svg"
 
-import { ELEMENTS, MARKS } from "@writing-tool/constants/src/Slate"
+import {
+	ListType,
+	BLOCKQUOTE,
+	CODE_BLOCK,
+	HeadingType,
+	LINK,
+	BOLD,
+	ITALIC,
+	STRIKE,
+	CODE_INLINE
+} from "@writing-tool/slate-plugins"
 
 const Icons = {
-	[MARKS.BOLD]: FaBold,
-	[MARKS.ITALIC]: FaItalic,
-	[MARKS.STRIKE]: FaStrikethrough,
-	[MARKS.CODE_INLINE]: FaCode,
-	[ELEMENTS.LINK]: FaLink,
-	[ELEMENTS.CODE_BLOCK]: FaCode,
-	[ELEMENTS.BLOCKQUOTE]: FaQuoteRight,
-	[ELEMENTS.IMAGE]: FaRegFileImage,
-	[ELEMENTS.LIST_NUMBERED]: FaListOl,
-	[ELEMENTS.LIST_BULLETED]: FaListUl,
-	[ELEMENTS.HEADING_1]: Heading1,
-	[ELEMENTS.HEADING_2]: Heading2
+	[BOLD]: FaBold,
+	[ITALIC]: FaItalic,
+	[STRIKE]: FaStrikethrough,
+	[CODE_INLINE]: FaCode,
+	[LINK]: FaLink,
+	[CODE_BLOCK]: FaCode,
+	[BLOCKQUOTE]: FaQuoteRight,
+	// [ELEMENTS.IMAGE]: FaRegFileImage,
+	[ListType.OL_LIST]: FaListOl,
+	[ListType.UL_LIST]: FaListUl,
+	[HeadingType.H1]: Heading1,
+	[HeadingType.H2]: Heading2
 }
 
 function Icon({ icon }) {

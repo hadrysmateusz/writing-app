@@ -55,6 +55,14 @@ const HoveringToolbar = () => {
 			rect.width / 2}px`
 	})
 
+	const onToggleLink = (event: Event) => {
+		event.preventDefault()
+
+		const url = window.prompt("Enter the URL of the link:")
+		if (!url) return
+		insertLink(editor, url)
+	}
+
 	return (
 		<Portal>
 			<div ref={ref} css={menuStyles}>
@@ -62,16 +70,7 @@ const HoveringToolbar = () => {
 				<FormatButton format={MARKS.ITALIC} />
 				<FormatButton format={MARKS.STRIKE} />
 				<FormatButton format={CODE_INLINE} />
-				<FormatButton
-					format={LINK}
-					onMouseDown={(event: Event) => {
-						event.preventDefault()
-
-						const url = window.prompt("Enter the URL of the link:")
-						if (!url) return
-						insertLink(editor, url)
-					}}
-				/>
+				<FormatButton format={LINK} onMouseDown={onToggleLink} />
 			</div>
 		</Portal>
 	)

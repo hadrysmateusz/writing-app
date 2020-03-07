@@ -34,7 +34,7 @@ export const BlockWrapper = ({ children, element }) => {
 	return (
 		<Wrapper>
 			<div>{children}</div>
-			<Toolbar
+			{/* <Toolbar
 				onMouseDown={(e) => {
 					// Prevent Slate errors
 					e.preventDefault()
@@ -42,7 +42,7 @@ export const BlockWrapper = ({ children, element }) => {
 				}}
 			>
 				+
-			</Toolbar>
+			</Toolbar> */}
 		</Wrapper>
 	)
 }
