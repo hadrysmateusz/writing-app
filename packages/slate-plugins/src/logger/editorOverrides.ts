@@ -1,6 +1,7 @@
 import { config } from "@writing-tool/dev-tools"
+import { Operation, Editor } from "slate"
 
-export const withLogger = (editor) => {
+export const withLogger = <T extends Editor>(editor: T) => {
 	const { apply } = editor
 
 	editor.apply = (op) => {
@@ -17,7 +18,7 @@ export const withLogger = (editor) => {
 
 		// ------------ SELECTION ------------
 		// selection is logged after the operation to reflect the newest changes
-		if (config.logSelection) {
+		if (config.logSelection && Operation.isSelectionOperation(op)) {
 			if (editor.selection) {
 				const { anchor, focus } = editor.selection
 				console.log(
