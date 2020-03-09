@@ -97,7 +97,7 @@ const moveDown = (editor: Editor, listNode: Ancestor, listItemPath: number[]) =>
 }
 
 export const onKeyDownList = () => (e: KeyboardEvent, editor: Editor) => {
-	if (Object.values(ListHotkey).includes(e.key)) {
+	if (["Tab", "Enter", "Backspace"].includes(e.key)) {
 		if (editor.selection && isSelectionInList(editor)) {
 			if (e.key === "Tab") {
 				e.preventDefault()

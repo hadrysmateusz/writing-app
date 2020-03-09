@@ -6,6 +6,6 @@ import { onKeyDownList } from "./onKeyDown"
 
 export const ListPlugin = (options?: RenderElementListOptions): SlatePlugin => ({
 	renderElement: renderElementList(options),
-	onKeyDown: onKeyDownList,
+	onKeyDown: onKeyDownList(),
 	editorOverrides: withList
 })
