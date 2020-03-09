@@ -16,13 +16,45 @@ export const renderElementHeading = ({
 	H6 = getElement("p") // level 6 isn't supported on medium, it's rendered like regular text
 }: RenderElementHeadingOptions = {}) => (props: RenderElementProps) => {
 	const {
-		element: { type }
+		element: { type },
+		attributes,
+		children
 	} = props
 
-	if (levels >= 1 && type === HeadingType.H1) return <H1 {...props} />
-	if (levels >= 2 && type === HeadingType.H2) return <H2 {...props} />
-	if (levels >= 3 && type === HeadingType.H3) return <H3 {...props} />
-	if (levels >= 4 && type === HeadingType.H4) return <H4 {...props} />
-	if (levels >= 5 && type === HeadingType.H5) return <H5 {...props} />
-	if (levels >= 6 && type === HeadingType.H6) return <H6 {...props} />
+	if (levels >= 1 && type === HeadingType.H1)
+		return (
+			<H1 {...attributes} data-slate-type={HeadingType.H1}>
+				{children}
+			</H1>
+		)
+	if (levels >= 2 && type === HeadingType.H2)
+		return (
+			<H2 {...attributes} data-slate-type={HeadingType.H2}>
+				{children}
+			</H2>
+		)
+	if (levels >= 3 && type === HeadingType.H3)
+		return (
+			<H3 {...attributes} data-slate-type={HeadingType.H3}>
+				{children}
+			</H3>
+		)
+	if (levels >= 4 && type === HeadingType.H4)
+		return (
+			<H4 {...attributes} data-slate-type={HeadingType.H4}>
+				{children}
+			</H4>
+		)
+	if (levels >= 5 && type === HeadingType.H5)
+		return (
+			<H5 {...attributes} data-slate-type={HeadingType.H5}>
+				{children}
+			</H5>
+		)
+	if (levels >= 6 && type === HeadingType.H6)
+		return (
+			<H6 {...attributes} data-slate-type={HeadingType.H6}>
+				{children}
+			</H6>
+		)
 }
