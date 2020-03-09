@@ -14,10 +14,11 @@ import {
 	BoldPlugin,
 	ItalicPlugin,
 	StrikethroughPlugin,
-	ListPlugin
+	ListPlugin,
+	MoveNodesPlugin
 } from "@writing-tool/slate-plugins"
 
-import { SuperPowers } from "./SuperPowers"
+// import { SuperPowers } from "./SuperPowers"
 import { Toolbar } from "./Toolbar"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
@@ -40,6 +41,7 @@ const plugins = [
 	CodeBlockPlugin(),
 	ListPlugin(),
 	HeadingsPlugin({ levels: 6 }),
+	MoveNodesPlugin(),
 	{ editorOverrides: withReact }
 ]
 
