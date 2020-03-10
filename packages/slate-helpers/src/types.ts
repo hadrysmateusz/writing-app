@@ -4,3 +4,5 @@ export interface OnKeyDownMarkOptions {
 }
 
 export const DEFAULT = "paragraph"
+
+export type SortingDirection = "asc" | "desc"
