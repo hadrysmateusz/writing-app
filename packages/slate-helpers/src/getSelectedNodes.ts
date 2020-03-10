@@ -37,6 +37,29 @@ export const getSelectedNodes = (
 	}
 }
 
+const getUniqueValues = (nodeEntries: NodeEntry[], index: number): number[] => {
+	// we use a Set because we only need unique values
+	const set = new Set<number>()
+	nodeEntries.forEach(([, path]) => {
+		// not all paths have to be of the same length so we need to check for undefined values
+		if (path[index] !== undefined) {
+			set.add(path[index])
+		}
+	})
+
+	// we create an array from the Set to access the values in it
+	return Array.from(set)
+}
+
+const shouldRoundSelection = (editor, commonPath, numUnique) => {
+	const commonNode = Node.get(editor, commonPath)
+	const [...children] = Node.children(editor, commonPath)
+	const numChildren = children.length
+	const allChildrenSelected = numChildren === numUnique
+
+	return allChildrenSelected && !Editor.isEditor(commonNode)
+}
+
 const getCommonPaths = (
 	editor,
 	nodeEntries: NodeEntry<Node>[],
@@ -73,61 +96,27 @@ const getCommonPaths = (
 		}
 	}
 
-	// we use a Set because we only need unique values
-	const set = new Set<number>()
-	nodeEntries.forEach(([, path]) => {
-		// not all paths have to be of the same length so we need to check for undefined values
-		if (path[index] !== undefined) {
-			set.add(path[index])
-		}
-	})
+	const values = getUniqueValues(nodeEntries, index)
+	const numUnique = values.length
 
-	// we create an array from the Set to access the values in it
-	const values = Array.from(set)
-	const numSelected = values.length
+	if (numUnique === 0) {
+		throw new Error("Unexpected scenario, nodeEntries might have been duplicated")
+	}
 
-	if (numSelected > 1) {
-		// if there were many unique values it means that the common part is over
+	if (numUnique === 1) {
+		// if there is only one unique value it means that we are still in the common part and we need to move further
+		return getCommonPaths(editor, nodeEntries, [...commonPath, values[0]], index + 1)
+	}
 
-		// if the common node is the editor, return the children
-		const commonNode = Node.get(editor, commonPath)
-		if (Editor.isEditor(commonNode)) {
-			const fullPaths = values.map((value) => [...commonPath, value])
-			return { parentPath: commonPath, relativePaths: values, fullPaths: fullPaths }
-		}
-
-		const [...children] = Node.children(editor, commonPath)
-		const numChildren = children.length
-		const commonMsg = `${numSelected}/${numChildren} of the common parent's children are selected.`
-		const allChildrenSelected = numChildren === numSelected
-		const parentPath = Path.parent(commonPath)
-		const parentNode = Node.get(editor, parentPath)
-
-		if (allChildrenSelected && !Editor.isEditor(parentNode)) {
-			// if all of the common parent's children are selected we should treat it as a selection on the parent itself
-			console.log(`${commonMsg} returning parent...`)
-			return {
-				parentPath: Path.parent(commonPath),
-				relativePaths: [0],
-				fullPaths: [commonPath]
-			}
-		} else {
-			// if there were many unique values it means that the common part is over and we can return the paths
-			// we construct the paths by concatenating the common part with all unique values
-			console.log(`${commonMsg} returning children...`)
-			const fullPaths = values.map((value) => [...commonPath, value])
-			return { parentPath: commonPath, relativePaths: values, fullPaths: fullPaths }
-		}
-	} else if (numSelected === 0) {
-		// if there was no values at all, it probably means that the nodeEntries were duplicated and we should treat the common part as the only common path
-		console.warn("unusual scenario, returning common part")
+	// if all children of the parent node are selected and the commonPart is not the editor, round the selection to the parent
+	if (shouldRoundSelection(editor, commonPath, numUnique)) {
 		return {
 			parentPath: Path.parent(commonPath),
 			relativePaths: [0],
 			fullPaths: [commonPath]
 		}
-	} else {
-		// if there was only one unique value it means that we are still in the common part and we need to move further
-		return getCommonPaths(editor, nodeEntries, [...commonPath, values[0]], index + 1)
 	}
+
+	const fullPaths = values.map((value) => [...commonPath, value])
+	return { parentPath: commonPath, relativePaths: values, fullPaths: fullPaths }
 }
