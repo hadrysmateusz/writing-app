@@ -1,59 +1,52 @@
-import { Transforms, Path, Node, Editor } from "slate"
+import { Transforms, Path, Node, Editor, NodeEntry } from "slate"
 import { ReactEditor } from "slate-react"
-import { getSelectedNodes } from "@writing-tool/slate-helpers"
+import {
+	getSelectedNodes,
+	sortPaths,
+	sortNodeEntries,
+	getLastPathIndex,
+	isFirstChild,
+	isLastChild
+} from "@writing-tool/slate-helpers"
+
+const moveNodes = (editor, from, to) => {
+	Transforms.moveNodes(editor, {
+		mode: "all",
+		match: (node) => {
+			const path = ReactEditor.findPath(editor, node)
+			const matches = from.some((fullPath) => {
+				if (path.length === fullPath.length) {
+					return fullPath.every((index, i) => path[i] === index)
+				}
+				return false
+			})
+			return matches
+		},
+		to: to
+	})
+}
 
 export const onKeyDownMoveNodes = () => (e: KeyboardEvent, editor: ReactEditor) => {
 	if (e.altKey && ["ArrowUp", "ArrowDown"].includes(e.key)) {
 		e.preventDefault()
 
-		console.log("moving")
+		const selected = getSelectedNodes(editor, "asc")
+		console.log(selected)
 
-		const entries = getSelectedNodes(editor)
-		entries.forEach(([node, path]) => console.log(node, path))
-		const firstPath = entries[0][1]
-		const lastPath = entries[entries.length - 1][1]
+		const { fullPaths, nodes, parentNode, parentPath, relativePaths } = selected
 
+		const firstPath = fullPaths[0]
+		const lastPath = fullPaths[fullPaths.length - 1]
+
+		// TODO: can't move down if selection contains a list and other block
 		switch (e.key) {
 			case "ArrowUp":
-				if (firstPath[firstPath.length - 1] === 0) {
-					console.log("CAN'T MOVE FURTHER UP")
-					break
-				}
-
-				Editor.withoutNormalizing(editor, () => {
-					const firstPath = entries[0][1]
-					const lastPath = entries[entries.length - 1][1]
-
-					const previousPath = Path.previous(firstPath)
-
-					Transforms.moveNodes(editor, {
-						to: lastPath,
-						at: previousPath,
-						mode: "highest"
-					})
-				})
-
+				if (isFirstChild(firstPath)) break
+				moveNodes(editor, fullPaths, Path.previous(firstPath))
 				break
 			case "ArrowDown":
-				const parentNode = Node.parent(editor, lastPath)
-				const numChildren = parentNode.children.length
-				if (lastPath[lastPath.length - 1] === numChildren - 1) {
-					console.log("CAN'T MOVE FURTHER DOWN")
-					break
-				}
-
-				Editor.withoutNormalizing(editor, () => {
-					const firstPath = entries[0][1]
-					const lastPath = entries[entries.length - 1][1]
-					const nextPath = Path.next(lastPath)
-
-					Transforms.moveNodes(editor, {
-						to: firstPath,
-						at: nextPath,
-						mode: "highest"
-					})
-				})
-
+				if (isLastChild(editor, lastPath)) break
+				moveNodes(editor, fullPaths, Path.next(lastPath))
 				break
 		}
 	}
