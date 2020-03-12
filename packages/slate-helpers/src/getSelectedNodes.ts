@@ -19,14 +19,8 @@ export const getSelectedNodes = (
 	})
 
 	if (!editor.selection) {
-		console.warn("attempted to move nodes without a selection")
-		return {
-			parentPath: null,
-			relativePaths: null,
-			fullPaths: [],
-			nodes: [],
-			parentNode: null
-		}
+		// TODO: better handle this scenario
+		return
 	}
 
 	const { parentPath, relativePaths, fullPaths } = getCommonPaths(
