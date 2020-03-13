@@ -14,8 +14,7 @@ import {
 	BoldPlugin,
 	ItalicPlugin,
 	StrikethroughPlugin,
-	ListPlugin,
-	MoveNodesPlugin
+	ListPlugin
 } from "@writing-tool/slate-plugins"
 
 // import { SuperPowers } from "./SuperPowers"
@@ -41,7 +40,6 @@ const plugins = [
 	CodeBlockPlugin(),
 	ListPlugin(),
 	HeadingsPlugin({ levels: 6 }),
-	MoveNodesPlugin(),
 	{ editorOverrides: withReact }
 ]
 
