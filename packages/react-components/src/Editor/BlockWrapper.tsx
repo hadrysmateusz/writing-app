@@ -1,6 +1,8 @@
 import React from "react"
 import styled from "styled-components/macro"
 import { useSlate } from "slate-react"
+import Icon from "../Icon"
+import { ListType } from "@writing-tool/slate-plugins"
 
 const Toolbar = styled.div`
 	position: absolute;
@@ -15,14 +17,26 @@ const Toolbar = styled.div`
 	font-weight: bold;
 	font-size: 20px;
 	cursor: pointer;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	* {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
 `
 
 const Wrapper = styled.div`
 	position: relative;
-	:hover {
-		${Toolbar} {
-			display: flex;
-		}
+	:hover > ${Toolbar} {
+		display: flex;
 	}
 `
 
@@ -31,18 +45,32 @@ export const BlockWrapper = ({ children, element }) => {
 
 	if (editor.isInline(element)) return children
 
+	const showToolbar = ![ListType.LIST_ITEM, ListType.OL_LIST, ListType.UL_LIST].includes(
+		element.type
+	)
+
 	return (
 		<Wrapper>
 			<div>{children}</div>
-			{/* <Toolbar
-				onMouseDown={(e) => {
-					// Prevent Slate errors
-					e.preventDefault()
-					e.stopPropagation()
-				}}
-			>
-				+
-			</Toolbar> */}
+			{showToolbar && (
+				<Toolbar
+					onMouseDown={(e) => {
+						// Prevent Slate errors
+						e.preventDefault()
+						e.stopPropagation()
+					}}
+				>
+					{/* This element can't contain text, to prevent slate selection errors */}
+					<Icon
+						icon="plus"
+						onMouseDown={(e) => {
+							e.preventDefault()
+							alert("add")
+							console.log(element)
+						}}
+					/>
+				</Toolbar>
+			)}
 		</Wrapper>
 	)
 }

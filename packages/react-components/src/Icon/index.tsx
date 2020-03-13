@@ -9,7 +9,8 @@ import {
 	FaQuoteRight,
 	// FaRegFileImage,
 	FaListOl,
-	FaListUl
+	FaListUl,
+	FaPlus
 } from "react-icons/fa"
 
 import { ReactComponent as Heading1 } from "../Assets/Heading1.svg"
@@ -39,14 +40,17 @@ const Icons = {
 	[ListType.OL_LIST]: FaListOl,
 	[ListType.UL_LIST]: FaListUl,
 	[HeadingType.H1]: Heading1,
-	[HeadingType.H2]: Heading2
+	[HeadingType.H2]: Heading2,
+	plus: FaPlus
 }
 
-function Icon({ icon }) {
+function Icon({ icon, ...rest }) {
 	const iconComponent = Icons[icon]
 	if (!iconComponent) console.error("invalid icon:", icon)
 	return iconComponent ? (
-		<IconContainer>{React.createElement(iconComponent, null, null)}</IconContainer>
+		<IconContainer {...rest}>
+			{React.createElement(iconComponent, null, null)}
+		</IconContainer>
 	) : null
 }
 
