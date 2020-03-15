@@ -4,10 +4,11 @@ import { RenderElementProps } from "slate-react"
 import { getElement } from "@writing-tool/slate-plugins-system"
 
 import { ListType, RenderElementListOptions } from "./types"
+import { StyledUL, StyledOL } from "./components"
 
 export const renderElementList = ({
-	UL = getElement("ul"),
-	OL = getElement("ol"),
+	UL = StyledUL,
+	OL = StyledOL,
 	LI = getElement("li")
 }: RenderElementListOptions = {}) => (props: RenderElementProps) => {
 	switch (props.element.type) {
