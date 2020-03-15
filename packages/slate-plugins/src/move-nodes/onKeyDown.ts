@@ -3,6 +3,8 @@ import { Transforms, Path } from "slate"
 import { ReactEditor } from "slate-react"
 import { getSelectedNodes, isFirstChild, isLastChild } from "@writing-tool/slate-helpers"
 
+import { setSelectionAfterMoving } from "./setSelectionAfterMoving"
+
 const moveNodes = (editor, from: Path[], to: Path) => {
 	// TODO: This is a temporary solution - there are still many issues with it (see below). I'm going to wait for now, maybe the issue will be fixed at some point upstream, if not I can attempt to fix it myself, or (temporarily) restrict moving nodes to a collapse selection (single line)
 
@@ -29,7 +31,7 @@ const moveNodes = (editor, from: Path[], to: Path) => {
 	})
 
 	// TODO: History is messed up after moving (when using the custom deselect/select logic)
-	// setSelectionAfterMoving(editor, from, to, oldSelection)
+	setSelectionAfterMoving(editor, from, to, oldSelection)
 }
 
 export const onKeyDownMoveNodes = () => (e: KeyboardEvent, editor: ReactEditor) => {
