@@ -10,10 +10,7 @@ module.exports = (config, env) => {
 			// Make sure Babel compiles related react packages
 			babelInclude([
 				path.resolve("src"),
-				fs.realpathSync("../components/src"),
 				fs.realpathSync("../common/src"),
-				fs.realpathSync("../slate-helpers/src"),
-				fs.realpathSync("../slate-plugins/src"),
 				fs.realpathSync("../slate-plugins-system/src")
 			])
 		)(config, env)
