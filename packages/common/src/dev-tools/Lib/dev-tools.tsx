@@ -1,8 +1,7 @@
 import React from "react"
 import { css } from "styled-components/macro"
 
-import FeatureToggles from "../Components/FeatureToggles"
-import TriggerEvent from "../Components/TriggerEvent"
+import { FeatureToggles, TriggerEvent } from "../Components"
 
 const containerStyles = css`
 	position: absolute;

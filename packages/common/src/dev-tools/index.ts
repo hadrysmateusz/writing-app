@@ -1,3 +1,2 @@
-export { default as loadDevTools } from "./Lib/loadDevTools"
-export * from "./Lib/config"
-export * from "./Lib/events"
+export * from "./Lib"
+export * from "./Components"

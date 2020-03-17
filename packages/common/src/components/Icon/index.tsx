@@ -13,8 +13,8 @@ import {
 	FaPlus
 } from "react-icons/fa"
 
-import { ReactComponent as Heading1 } from "../Assets/Heading1.svg"
-import { ReactComponent as Heading2 } from "../Assets/Heading2.svg"
+import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
+import { ReactComponent as Heading2 } from "../../assets/Heading2.svg"
 
 import {
 	ListType,

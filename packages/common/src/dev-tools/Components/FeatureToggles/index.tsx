@@ -26,7 +26,7 @@ function FeatureToggle({ name }) {
 	)
 }
 
-function FeatureToggles() {
+export function FeatureToggles() {
 	return (
 		<>
 			{Object.keys(config).map((key) => (
@@ -35,5 +35,3 @@ function FeatureToggles() {
 		</>
 	)
 }
-
-export default FeatureToggles
