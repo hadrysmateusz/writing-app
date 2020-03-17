@@ -1,6 +1,6 @@
 import { Transforms } from "slate"
 
-import { matchType } from "@writing-tool/helpers"
+import { matchType } from "@writing-tool/common"
 
 import { CODE_INLINE } from "../types"
 

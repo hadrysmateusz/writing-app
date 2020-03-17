@@ -7,7 +7,7 @@
 		"start": "nodemon index.js"
 	},
 	"dependencies": {
-		"@writing-tool/constants": "*",
+		"@writing-tool/common": "*",
 		"cors": "^2.8.5",
 		"dotenv": "^8.2.0",
 		"express": "^4.17.1",

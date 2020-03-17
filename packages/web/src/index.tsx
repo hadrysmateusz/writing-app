@@ -7,7 +7,7 @@ import "./index.css"
 import * as serviceWorker from "./serviceWorker"
 import config from "./config"
 
-import { loadDevTools, loadConfig } from "@writing-tool/dev-tools"
+import { loadDevTools, loadConfig } from "@writing-tool/common"
 
 // load and install the dev tools (if they need to be)
 // and when that's done, let's render the app

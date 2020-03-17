@@ -5,7 +5,7 @@ import { css } from "styled-components/macro"
 import { Portal } from "react-portal"
 
 import FormatButton from "./FormatButton"
-import { MARKS } from "@writing-tool/constants/src/Slate"
+import { MARKS } from "@writing-tool/common/src/constants/Slate"
 import { LINK, CODE_INLINE, insertLink } from "@writing-tool/slate-plugins"
 
 const menuStyles = css`

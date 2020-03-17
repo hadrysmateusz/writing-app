@@ -1,14 +1,14 @@
 import React, { useRef, useEffect, useState } from "react"
 
-import { openPopupWindow } from "@writing-tool/utils"
 import {
 	ROUTES,
+	openPopupWindow,
 	API_ROUTES,
 	HOSTING_URL,
 	MEDIUM_API_AUTH_URL,
 	API_BASE_URL,
 	MESSAGE_TYPES
-} from "@writing-tool/constants"
+} from "@writing-tool/common"
 
 export const SuperPowers = () => {
 	const popupWindow = useRef(null)

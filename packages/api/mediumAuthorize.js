@@ -1,5 +1,5 @@
 const fetch = require("node-fetch")
-const { MEDIUM_API_BASE_URL, MEDIUM_CLIENT_ID } = require("@writing-tool/constants")
+const { MEDIUM_API_BASE_URL, MEDIUM_CLIENT_ID } = require("@writing-tool/common")
 
 module.exports = async (req, res) => {
 	try {

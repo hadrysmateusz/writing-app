@@ -1,7 +1,7 @@
 import React from "react"
 import styled, { css } from "styled-components/macro"
 
-import { MARKS } from "@writing-tool/constants/src/Slate"
+import { MARKS } from "@writing-tool/common/src/constants/Slate"
 
 const bold = css`
 	font-weight: bold;

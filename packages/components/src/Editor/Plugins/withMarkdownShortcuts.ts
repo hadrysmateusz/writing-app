@@ -1,6 +1,6 @@
 import { Range, Editor, Transforms, Point } from "slate"
 
-import { ELEMENTS } from "@writing-tool/constants/src/Slate"
+import { ELEMENTS } from "@writing-tool/common/src/constants/Slate"
 
 const SHORTCUTS = {
 	"*": [ELEMENTS.LIST_ITEM],

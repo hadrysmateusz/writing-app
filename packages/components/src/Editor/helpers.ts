@@ -1,7 +1,12 @@
 import { Editor, Transforms } from "slate"
 
-import { LIST_TYPES, BLOCKS, INLINES, MARKS } from "@writing-tool/constants/src/Slate"
-import { matchType } from "@writing-tool/helpers"
+import {
+	LIST_TYPES,
+	BLOCKS,
+	INLINES,
+	MARKS
+} from "@writing-tool/common/src/constants/Slate"
+import { matchType } from "@writing-tool/slate-helpers"
 
 export const isInline = (element) => {
 	const { type } = element

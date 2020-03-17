@@ -1,14 +1,12 @@
 {
-	"name": "@writing-tool/react-components",
+	"name": "@writing-tool/components",
 	"description": "React Components",
 	"version": "0.1.0",
 	"private": true,
 	"main": "src/index.ts",
 	"dependencies": {
-		"@writing-tool/constants": "*",
-		"@writing-tool/helpers": "*",
+		"@writing-tool/common": "*",
 		"@writing-tool/slate-plugins": "*",
-		"@writing-tool/utils": "*",
 		"is-hotkey": "^0.1.6",
 		"lodash": "^4.17.15",
 		"prismjs": "^1.19.0",

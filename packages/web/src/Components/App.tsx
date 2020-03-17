@@ -2,7 +2,7 @@ import React from "react"
 import styled from "styled-components"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 
-import { Editor } from "@writing-tool/react-components"
+import { Editor } from "@writing-tool/components"
 
 import { MediumAuthRedirectPage } from "Pages"
 

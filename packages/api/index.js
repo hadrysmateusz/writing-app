@@ -3,7 +3,7 @@ const express = require("express")
 const cors = require("cors")
 require("dotenv").config()
 // Local workspace dependencies
-const { API_ROUTES } = require("@writing-tool/constants")
+const { API_ROUTES } = require("@writing-tool/common")
 // Local files
 const mediumAuthorize = require("./mediumAuthorize")
 

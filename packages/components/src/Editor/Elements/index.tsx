@@ -1,6 +1,6 @@
 import React from "react"
 
-import { ELEMENTS } from "@writing-tool/constants/src/Slate"
+import { ELEMENTS } from "@writing-tool/common/src/constants/Slate"
 
 import Paragraph from "./Paragraph"
 import Embed from "./Embed"
