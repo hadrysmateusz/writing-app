@@ -1,7 +1,7 @@
 import React from "react"
 import { RenderElementProps } from "slate-react"
 
-import { getElement } from "@writing-tool/slate-plugins-system"
+import { getElement } from "@writing-tool/slate-plugin-system"
 
 import { ListType, RenderElementListOptions } from "./types"
 import { StyledUL, StyledOL } from "./components"

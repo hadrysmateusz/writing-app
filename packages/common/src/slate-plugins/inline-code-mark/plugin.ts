@@ -1,4 +1,4 @@
-import { SlatePlugin } from "@writing-tool/slate-plugins-system"
+import { SlatePlugin } from "@writing-tool/slate-plugin-system"
 import { onKeyDownMark } from "../../slate-helpers"
 
 import {

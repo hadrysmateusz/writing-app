@@ -1,4 +1,4 @@
-import { ElementPluginOptions } from "@writing-tool/slate-plugins-system"
+import { ElementPluginOptions } from "@writing-tool/slate-plugin-system"
 
 export const LINK = "link"
 

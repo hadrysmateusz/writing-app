@@ -1,4 +1,4 @@
-import { MarkPluginOptions } from "@writing-tool/slate-plugins-system"
+import { MarkPluginOptions } from "@writing-tool/slate-plugin-system"
 
 export const STRIKE = "strike"
 

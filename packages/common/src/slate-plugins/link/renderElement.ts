@@ -1,4 +1,4 @@
-import { getRenderElement } from "@writing-tool/slate-plugins-system"
+import { getRenderElement } from "@writing-tool/slate-plugin-system"
 
 import { LinkElement } from "./components"
 import { LINK } from "./types"

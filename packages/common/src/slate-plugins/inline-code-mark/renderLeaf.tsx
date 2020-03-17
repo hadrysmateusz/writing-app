@@ -1,6 +1,6 @@
 import React from "react"
 import { CODE_INLINE } from "./types"
-import { getRenderLeaf } from "@writing-tool/slate-plugins-system"
+import { getRenderLeaf } from "@writing-tool/slate-plugin-system"
 import styled from "styled-components/macro"
 
 const StyledCode = styled.code`

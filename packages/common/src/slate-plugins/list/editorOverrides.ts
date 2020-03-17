@@ -1,7 +1,7 @@
 import { Editor, Path, Point, Range, Transforms } from "slate"
 
 import { DEFAULT, withBreakEmptyReset, withDeleteStartReset } from "../../slate-helpers"
-import { compose } from "@writing-tool/slate-plugins-system"
+import { compose } from "@writing-tool/slate-plugin-system"
 
 import { ListType } from "./types"
 

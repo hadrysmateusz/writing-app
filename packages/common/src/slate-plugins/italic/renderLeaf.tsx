@@ -1,6 +1,6 @@
 import React from "react"
 import { ITALIC } from "./types"
-import { getRenderLeaf } from "@writing-tool/slate-plugins-system"
+import { getRenderLeaf } from "@writing-tool/slate-plugin-system"
 
 export const renderLeafItalic = getRenderLeaf({
 	type: ITALIC,

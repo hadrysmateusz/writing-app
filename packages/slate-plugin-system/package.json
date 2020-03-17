@@ -1,5 +1,5 @@
 {
-	"name": "@writing-tool/slate-plugins-system",
+	"name": "@writing-tool/slate-plugin-system",
 	"description": "Slate Plugins System",
 	"version": "0.1.0",
 	"private": true,

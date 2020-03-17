@@ -1,7 +1,7 @@
 import React from "react"
 import { RenderElementProps } from "slate-react"
 
-import { getElement } from "@writing-tool/slate-plugins-system"
+import { getElement } from "@writing-tool/slate-plugin-system"
 
 import { HeadingType, RenderElementHeadingOptions } from "./types"
 import { HeadingBig, HeadingSmall } from "./components"

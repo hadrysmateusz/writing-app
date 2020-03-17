@@ -11,7 +11,7 @@ module.exports = (config, env) => {
 			babelInclude([
 				path.resolve("src"),
 				fs.realpathSync("../common/src"),
-				fs.realpathSync("../slate-plugins-system/src")
+				fs.realpathSync("../slate-plugin-system/src")
 			])
 		)(config, env)
 	)

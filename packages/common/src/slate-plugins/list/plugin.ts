@@ -1,4 +1,4 @@
-import { SlatePlugin } from "@writing-tool/slate-plugins-system"
+import { SlatePlugin } from "@writing-tool/slate-plugin-system"
 import { RenderElementListOptions } from "./types"
 import { withList } from "./editorOverrides"
 import { renderElementList } from "./renderElement"

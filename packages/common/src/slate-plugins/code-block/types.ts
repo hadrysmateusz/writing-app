@@ -1,4 +1,4 @@
-import { ElementPluginOptions } from "@writing-tool/slate-plugins-system"
+import { ElementPluginOptions } from "@writing-tool/slate-plugin-system"
 
 export const CODE_BLOCK = "code_block"
 

@@ -3,7 +3,7 @@ import { Slate, withReact } from "slate-react"
 import { withHistory } from "slate-history"
 import styled from "styled-components"
 
-import { Editable, useCreateEditor } from "@writing-tool/slate-plugins-system"
+import { Editable, useCreateEditor } from "@writing-tool/slate-plugin-system"
 import {
 	LoggerPlugin,
 	InlineCodePlugin,
