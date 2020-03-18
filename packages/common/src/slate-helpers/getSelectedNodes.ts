@@ -2,7 +2,7 @@ import { Editor, Element, Path, Node, NodeEntry } from "slate"
 import { sortPaths } from "./sortPaths"
 import { getLastPathIndex } from "./getLastPathIndex"
 
-// TODO: make sure all returned paths are sorted (provide a parameter to set direction) and that there are no duplicates
+// TODO: make sure there are no duplicates in the result
 export const getSelectedNodes = (
 	editor,
 	direction: "asc" | "desc" = "asc"
