@@ -3,7 +3,7 @@ import { RenderElementProps } from "slate-react"
 import { GetRenderElementOptions, RenderElementOptions } from "./types"
 
 /**
- * get generic renderElement with a custom component
+ * get a generic renderElement function with a custom component
  */
 export const getRenderElement = ({ type, component }: GetRenderElementOptions) => ({
 	component: Component = component

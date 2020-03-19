@@ -3,7 +3,7 @@ import { RenderLeafProps } from "slate-react"
 import { GetRenderLeafOptions, RenderLeafOptions } from "./types"
 
 /**
- * get generic renderLeaf with a custom component
+ * get a generic renderLeaf function with a custom component
  */
 export const getRenderLeaf = ({ type, component }: GetRenderLeafOptions) => ({
 	component: Component = component
