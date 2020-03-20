@@ -22,7 +22,6 @@ import { Toolbar } from "./Toolbar"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import HoveringToolbar from "./HoveringToolbar"
-import { BlockWrapper } from "./BlockWrapper"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -72,7 +71,6 @@ function EditorComponent() {
 				<EditableContainer>
 					<Editable
 						plugins={plugins}
-						elementWrapper={BlockWrapper}
 						autoFocus
 						spellCheck={false}
 					/>
