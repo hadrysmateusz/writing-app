@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from "react"
-import { Slate, withReact } from "slate-react"
+import { Slate } from "slate-react"
 import { withHistory } from "slate-history"
 import styled from "styled-components"
 
-import { Editable, useCreateEditor } from "@writing-tool/slate-plugin-system"
+import { Editable, useCreateEditor } from "@slate-plugin-system/core"
+
 import {
 	LoggerPlugin,
 	InlineCodePlugin,
@@ -16,12 +17,11 @@ import {
 	StrikethroughPlugin,
 	ListPlugin
 } from "../../slate-plugins"
-
-// import { SuperPowers } from "./SuperPowers"
 import { Toolbar } from "./Toolbar"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
 import HoveringToolbar from "./HoveringToolbar"
+// import { SuperPowers } from "./SuperPowers"
 
 function loadFromLocalStorage() {
 	return deserialize(localStorage.getItem("content") || "")
@@ -39,7 +39,6 @@ const plugins = [
 	CodeBlockPlugin(),
 	ListPlugin(),
 	HeadingsPlugin({ levels: 6 }),
-	{ editorOverrides: withReact }
 ]
 
 const EditableContainer = styled.div`

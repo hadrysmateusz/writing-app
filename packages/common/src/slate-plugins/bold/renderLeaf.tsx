@@ -1,6 +1,6 @@
 import React from "react"
 import { BOLD } from "./types"
-import { getRenderLeaf } from "@writing-tool/slate-plugin-system"
+import { getRenderLeaf } from "@slate-plugin-system/core"
 
 export const renderLeafBold = getRenderLeaf({
 	type: BOLD,

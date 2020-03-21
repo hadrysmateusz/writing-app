@@ -1,4 +1,4 @@
-import { MarkPluginOptions } from "@writing-tool/slate-plugin-system"
+import { MarkPluginOptions } from "@slate-plugin-system/core"
 
 export const ITALIC = "italic"
 

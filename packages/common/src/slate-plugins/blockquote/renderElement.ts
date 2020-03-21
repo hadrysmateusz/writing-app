@@ -1,4 +1,4 @@
-import { getRenderElement } from "@writing-tool/slate-plugin-system"
+import { getRenderElement } from "@slate-plugin-system/core"
 
 import { BlockquoteElement } from "./components"
 import { BLOCKQUOTE } from "./types"

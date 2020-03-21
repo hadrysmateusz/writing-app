@@ -1,4 +1,4 @@
-import { getRenderElement } from "@writing-tool/slate-plugin-system"
+import { getRenderElement } from "@slate-plugin-system/core"
 
 import { CodeBlockElement } from "./components"
 import { CODE_BLOCK } from "./types"

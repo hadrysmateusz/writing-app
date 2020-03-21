@@ -1,4 +1,4 @@
-import { SlatePlugin } from "@writing-tool/slate-plugin-system"
+import { SlatePlugin } from "@slate-plugin-system/core"
 
 import { renderElementBlockquote } from "./renderElement"
 import { withBlockquote } from "./editorOverrides"

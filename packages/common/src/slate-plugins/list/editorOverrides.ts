@@ -1,7 +1,6 @@
 import { Editor, Path, Point, Range, Transforms } from "slate"
 
 import { DEFAULT, withBreakEmptyReset, withDeleteStartReset } from "../../slate-helpers"
-import { compose } from "@writing-tool/slate-plugin-system"
 
 import { ListType } from "./types"
 
@@ -112,8 +111,4 @@ const breakEmptyList = (editor) => {
 
 const commonOptions = { types: [ListType.LIST_ITEM], onUnwrap: breakEmptyList }
 
-export const withList = compose(
-	withBreakEmptyReset(commonOptions),
-	withDeleteStartReset(commonOptions),
-	withListCore
-)
+export const withList = withBreakEmptyReset(commonOptions)(withDeleteStartReset(commonOptions)(withListCore))

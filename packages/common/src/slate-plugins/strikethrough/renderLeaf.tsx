@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { getRenderLeaf } from "@writing-tool/slate-plugin-system"
+import { getRenderLeaf } from "@slate-plugin-system/core"
 import { STRIKE } from "./types"
 
 const Strikethrough = styled.span`
