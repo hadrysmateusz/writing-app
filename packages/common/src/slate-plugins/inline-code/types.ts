@@ -1,5 +1,5 @@
-import { InlinePluginOptions } from "@writing-tool/slate-plugins-system"
+import { MarkPluginOptions } from "@slate-plugin-system/core"
 
 export const CODE_INLINE = "code_inline"
 
-export interface InlineCodePluginOptions extends InlinePluginOptions {}
+export interface InlineCodePluginOptions extends MarkPluginOptions {}
