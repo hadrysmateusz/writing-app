@@ -1,7 +1,10 @@
 import { Transforms, Editor } from "slate"
 import { ReactEditor } from "slate-react"
 
-import { DEFAULT } from ".."
+interface BreakInsertDefaultOptions {
+  types: string[]
+  defaultType?: string
+}
 
 /* TODO: the current solution isn't perfect, when working with multi-block selections, 
   you can end up with different results after the first time a lineBreak is added and after undo+redoing.
@@ -19,41 +22,38 @@ import { DEFAULT } from ".."
 
  * This function is a factory that creates the overrides function based on the options
  */
-export const withBreakInsertDefault = (
-	{
-		types = []
-	}: {
-		types: string[]
-	} = { types: [] }
-) => <T extends ReactEditor>(editor: T) => {
-	const { insertBreak } = editor
+export const withBreakInsertDefault = ({
+  types = [],
+  defaultType = "paragraph"
+}: BreakInsertDefaultOptions) => <T extends ReactEditor>(editor: T) => {
+  const { insertBreak } = editor
 
-	editor.insertBreak = () => {
-		const oldSelection = editor.selection
-		insertBreak()
+  editor.insertBreak = () => {
+    const oldSelection = editor.selection
+    insertBreak()
 
-		try {
-			const pathToFirstNode = Editor.first(editor, oldSelection)[1]
-			const firstBlock = Editor.parent(editor, pathToFirstNode)[0]
+    try {
+      const pathToFirstNode = Editor.first(editor, oldSelection)[1]
+      const firstBlock = Editor.parent(editor, pathToFirstNode)[0]
 
-			if (firstBlock && firstBlock.type && types.includes(firstBlock.type)) {
-				const newSelection = editor.selection
-				const { anchor: originalAnchor, focus: originalFocus } = oldSelection
-				if (newSelection) {
-					const startIsSelected =
-						originalAnchor.offset === 0 || originalFocus.offset === 0
-					const transformPath = [newSelection.anchor.path[0] - (startIsSelected ? 1 : 0)]
-					Transforms.setNodes(editor, { type: DEFAULT }, { at: transformPath })
-				}
-			}
-		} catch (e) {
-			/* this trycatch block is here to prevent errors (mainly with lists)
+      if (firstBlock && firstBlock.type && types.includes(firstBlock.type)) {
+        const newSelection = editor.selection
+        const { anchor: originalAnchor, focus: originalFocus } = oldSelection
+        if (newSelection) {
+          const startIsSelected =
+            originalAnchor.offset === 0 || originalFocus.offset === 0
+          const transformPath = [newSelection.anchor.path[0] - (startIsSelected ? 1 : 0)]
+          Transforms.setNodes(editor, { type: defaultType }, { at: transformPath })
+        }
+      }
+    } catch (e) {
+      /* this trycatch block is here to prevent errors (mainly with lists)
 				if it encounters an error it just gives up which in most situations shouldn't be too bad
 
 				TODO: improve the logic of this function so that the trycatch block is not necessary
 			*/
-		}
-	}
+    }
+  }
 
-	return editor
+  return editor
 }
