@@ -6,7 +6,7 @@ import { Portal } from "react-portal"
 
 import FormatButton from "./FormatButton"
 import { MARKS } from "@writing-tool/common/src/constants/Slate"
-import { LINK, CODE_INLINE, insertLink } from "../../slate-plugins"
+import { LINK, CODE_INLINE, insertLink } from "../slate-plugins"
 
 const menuStyles = css`
 	padding: 4px 7px 1px;

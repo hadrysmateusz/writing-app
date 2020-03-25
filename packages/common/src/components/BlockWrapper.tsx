@@ -1,8 +1,8 @@
 import React from "react"
 import styled from "styled-components/macro"
 import { useSlate } from "slate-react"
-import Icon from "../Icon"
-import { ListType } from "../../slate-plugins"
+import Icon from "./Icon"
+import { ListType } from "../slate-plugins"
 
 const Toolbar = styled.div`
 	position: absolute;

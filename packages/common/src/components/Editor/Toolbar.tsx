@@ -8,7 +8,7 @@ import {
 	HeadingType,
 	toggleList
 } from "../../slate-plugins"
-import FormatButton from "./FormatButton"
+import FormatButton from "../FormatButton"
 
 export const Toolbar = () => {
 	const editor = useSlate()

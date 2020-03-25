@@ -7,8 +7,8 @@ import { Editable, useCreateEditor } from "@slate-plugin-system/core"
 import { plugins } from "./editorConfig"
 import { Toolbar } from "./Toolbar"
 import { serialize, deserialize } from "./serialization"
-import { useLogEditor, useLogValue } from "./devToolsUtils"
-import HoveringToolbar from "./HoveringToolbar"
+import { useLogEditor, useLogValue } from "../devToolsUtils"
+import HoveringToolbar from "../HoveringToolbar"
 // import { SuperPowers } from "./SuperPowers"
 
 function loadFromLocalStorage() {

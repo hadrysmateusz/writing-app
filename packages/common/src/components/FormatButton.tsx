@@ -1,9 +1,9 @@
 import React, { useCallback } from "react"
 import { useSlate } from "slate-react"
 
-import Icon from "../Icon"
-import Button from "../Button"
-import { isFormatActive, toggleFormat } from "./helpers"
+import Icon from "./Icon"
+import Button from "./Button"
+import { isFormatActive, toggleFormat } from "./Editor/helpers"
 
 const FormatButton = ({ format, text, onMouseDown }) => {
 	const editor = useSlate()
