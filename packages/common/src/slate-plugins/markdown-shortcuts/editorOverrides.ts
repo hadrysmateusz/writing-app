@@ -12,7 +12,6 @@ export const withShortcuts = ({
   const {
     UL = "bulleted_list",
     OL = "numbered_list",
-    LI = "list_item",
     BLOCKQUOTE = "blockquote",
     CODE_BLOCK = "code_block",
     H1 = "heading_1",
@@ -39,6 +38,7 @@ export const withShortcuts = ({
 
   editor.insertText = (text) => {
     const { selection } = editor
+    let wasShortcutTriggered = false
 
     if (text === " " && selection && Range.isCollapsed(selection)) {
       const { anchor } = selection
@@ -87,18 +87,18 @@ export const withShortcuts = ({
       // check all of the shortcuts for a match
       // Array.some is used to stop checking if a match is found
       const shortcutEntries = Object.entries(shortcuts)
-      shortcutEntries.some(([type, shortcutMatch]) => {
+      wasShortcutTriggered = shortcutEntries.some(([type, shortcutMatch]) => {
         // if the match is an array, check all of it's contents
         return Array.isArray(shortcutMatch)
           ? shortcutMatch.some((shortcut) => checkMatch(shortcut, type))
           : checkMatch(shortcutMatch, type)
       })
-
-    } else {
-      // the space shouldn't be inserted if a shortcut was triggered
-      insertText(text)
     }
 
+    if (!wasShortcutTriggered) {
+      // if the text was a space but no shortcut was triggered
+      insertText(text)
+    }
   }
 
   return editor
