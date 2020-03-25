@@ -2048,10 +2048,10 @@
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.3.tgz#5405ee8e444ed212db44e79351f0c70a582aae25"
   integrity sha512-DetpxZw1fzPD5xUBrIAoplLChO2VB8DlL5Gg+I1IR9b2wPqYIca2WSUxL5g1vLeR4MsQq1NeWriXAVffV+U1Fw==
 
-"@slate-plugin-system/core@^0.1.13-1":
-  version "0.1.13-1"
-  resolved "https://registry.yarnpkg.com/@slate-plugin-system/core/-/core-0.1.13-1.tgz#59d0d4efa7bd3e3ad2318fd0bb2e283fb49c412c"
-  integrity sha512-qk1v8y8kCvFEi+qPSCBk9MDqKodt1Hzf+RUm7kDlXzU6y34hpwNAkIxn6L8OQ5wVADoq4WhMgYLoNBF2z9GoNw==
+"@slate-plugin-system/core@^0.1.14-1":
+  version "0.1.14-1"
+  resolved "https://registry.yarnpkg.com/@slate-plugin-system/core/-/core-0.1.14-1.tgz#93cb0915e59617eb55ccb65ca3fb47b1b7c9fb77"
+  integrity sha512-WmoeWuHdN25ezB0Ibw2WkTXRDU/pEncMGudA7U3SCf4AO9RuQR9KyiNpxZE8HC0W6Yppni/vx8xku1ab4CynMA==
 
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
