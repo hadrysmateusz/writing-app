@@ -18,7 +18,8 @@ import {
   ListPlugin,
   MarkdownShortcutsPlugin,
   toggleList,
-  ListType
+  ListType,
+  SoftBreakPlugin
 } from "../../slate-plugins"
 import { Toolbar } from "./Toolbar"
 import { serialize, deserialize } from "./serialization"
@@ -32,6 +33,7 @@ function loadFromLocalStorage() {
 
 const plugins = [
   { editorOverrides: withHistory },
+  SoftBreakPlugin(),
   LoggerPlugin(),
   BoldPlugin({ hotkey: "mod+b" }),
   ItalicPlugin({ hotkey: "mod+i" }),
