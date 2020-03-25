@@ -28,5 +28,14 @@ export const Block = {
     const { at = editor.selection } = options
     const startPoint = Range.start(at)
     return Block.closest(editor, { at: startPoint })
+  },
+
+  /**
+   * Get last block at given location
+   */
+  last(editor, options: { at?: Range } = {}): NodeEntry {
+    const { at = editor.selection } = options
+    const endPoint = Range.end(at)
+    return Block.closest(editor, { at: endPoint })
   }
 }
