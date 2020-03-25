@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components/macro"
 
 const listCommon = css`
+	margin: 14px 0;
 	padding: 0;
 	list-style-position: inside;
 

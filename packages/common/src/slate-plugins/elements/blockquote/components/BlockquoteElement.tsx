@@ -6,9 +6,8 @@ import { BLOCKQUOTE } from "../types"
 
 const StyledBlockquote = styled.blockquote`
 	border-left: 2px solid #ddd;
+	margin: 14px 0;
 	padding-left: 10px;
-	margin-left: 0;
-	margin-right: 0;
 	color: #aaa;
 	font-style: italic;
 `
