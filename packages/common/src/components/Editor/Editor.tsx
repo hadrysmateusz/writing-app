@@ -19,7 +19,9 @@ import {
   MarkdownShortcutsPlugin,
   toggleList,
   ListType,
-  SoftBreakPlugin
+  SoftBreakPlugin,
+  InsertBlockPlugin,
+  HeadingType
 } from "../../slate-plugins"
 import { Toolbar } from "./Toolbar"
 import { serialize, deserialize } from "./serialization"
@@ -33,7 +35,20 @@ function loadFromLocalStorage() {
 
 const plugins = [
   { editorOverrides: withHistory },
-  SoftBreakPlugin(),
+  SoftBreakPlugin({
+    exclude: [
+      HeadingType.H1,
+      HeadingType.H2,
+      HeadingType.H3,
+      HeadingType.H4,
+      HeadingType.H5,
+      HeadingType.H6
+    ]
+  }),
+  MarkdownShortcutsPlugin({
+    onToggleOverrides: { [ListType.UL_LIST]: toggleList, [ListType.OL_LIST]: toggleList }
+  }),
+  InsertBlockPlugin(),
   LoggerPlugin(),
   BoldPlugin({ hotkey: "mod+b" }),
   ItalicPlugin({ hotkey: "mod+i" }),
@@ -43,9 +58,6 @@ const plugins = [
   BlockquotePlugin(),
   CodeBlockPlugin(),
   ListPlugin(),
-  MarkdownShortcutsPlugin({
-    onToggleOverrides: { [ListType.UL_LIST]: toggleList, [ListType.OL_LIST]: toggleList }
-  }),
   HeadingsPlugin({ levels: 6 })
 ]
 
