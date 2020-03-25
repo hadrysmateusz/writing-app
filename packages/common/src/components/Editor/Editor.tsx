@@ -1,28 +1,10 @@
 import React, { useState, useCallback } from "react"
 import { Slate } from "slate-react"
-import { withHistory } from "slate-history"
 import styled from "styled-components"
 
 import { Editable, useCreateEditor } from "@slate-plugin-system/core"
 
-import {
-  LoggerPlugin,
-  InlineCodePlugin,
-  LinkPlugin,
-  HeadingsPlugin,
-  BlockquotePlugin,
-  CodeBlockPlugin,
-  BoldPlugin,
-  ItalicPlugin,
-  StrikethroughPlugin,
-  ListPlugin,
-  MarkdownShortcutsPlugin,
-  toggleList,
-  ListType,
-  SoftBreakPlugin,
-  InsertBlockPlugin,
-  HeadingType
-} from "../../slate-plugins"
+import { plugins } from "./editorConfig"
 import { Toolbar } from "./Toolbar"
 import { serialize, deserialize } from "./serialization"
 import { useLogEditor, useLogValue } from "./devToolsUtils"
@@ -32,34 +14,6 @@ import HoveringToolbar from "./HoveringToolbar"
 function loadFromLocalStorage() {
   return deserialize(localStorage.getItem("content") || "")
 }
-
-const plugins = [
-  { editorOverrides: withHistory },
-  SoftBreakPlugin({
-    exclude: [
-      HeadingType.H1,
-      HeadingType.H2,
-      HeadingType.H3,
-      HeadingType.H4,
-      HeadingType.H5,
-      HeadingType.H6
-    ]
-  }),
-  MarkdownShortcutsPlugin({
-    onToggleOverrides: { [ListType.UL_LIST]: toggleList, [ListType.OL_LIST]: toggleList }
-  }),
-  InsertBlockPlugin(),
-  LoggerPlugin(),
-  BoldPlugin({ hotkey: "mod+b" }),
-  ItalicPlugin({ hotkey: "mod+i" }),
-  StrikethroughPlugin({ hotkey: "mod+shift+k" }),
-  InlineCodePlugin({ hotkey: "mod+e" }),
-  LinkPlugin(),
-  BlockquotePlugin(),
-  CodeBlockPlugin(),
-  ListPlugin(),
-  HeadingsPlugin({ levels: 6 })
-]
 
 const EditableContainer = styled.div`
   margin: 20px 0;
