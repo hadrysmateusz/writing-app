@@ -3,7 +3,7 @@ import { useSlate } from "slate-react"
 
 import Icon from "./Icon"
 import Button from "./Button"
-import { isFormatActive, toggleFormat } from "./Editor/helpers"
+import { isFormatActive, toggleFormat } from "../slate-helpers"
 
 const FormatButton = ({ format, text, onMouseDown }) => {
 	const editor = useSlate()
