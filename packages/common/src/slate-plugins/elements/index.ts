@@ -1,5 +1,6 @@
 export * from "./blockquote"
 export * from "./code-block"
 export * from "./headings"
+export * from "./horizontal-rule"
 export * from "./list"
 export * from "./paragraph"

@@ -2,7 +2,7 @@ import isHotkey from "is-hotkey"
 import { Block, isNodeIncluded } from "../../../slate-helpers"
 import { Editor, Transforms, Path } from "slate"
 import { InsertBlockPluginOptions } from "./types"
-import {cloneDeep} from "lodash"
+import { cloneDeep } from "lodash"
 
 const defaultNode = { type: "paragraph", children: [{ text: "" }] }
 

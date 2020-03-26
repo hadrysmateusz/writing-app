@@ -16,30 +16,31 @@ import {
   SoftBreakPlugin,
   InsertBlockPlugin,
   HeadingType,
-  ParagraphPlugin
+  ParagraphPlugin,
+  HorizontalRulePlugin
 } from "../../slate-plugins"
 
 const HistoryPlugin = () => ({ editorOverrides: withHistory })
 
 export const plugins = [
   HistoryPlugin(),
-  // Exclude headings from the soft-break plugin
-  SoftBreakPlugin({
-    exclude: [...Object.values(HeadingType)]
-  }),
   MarkdownShortcutsPlugin({
     onToggleOverrides: { [ListType.UL_LIST]: toggleList, [ListType.OL_LIST]: toggleList }
   }),
-  InsertBlockPlugin(),
   LoggerPlugin(),
+  LinkPlugin(),
+  BlockquotePlugin(),
+  ListPlugin(),
+  HeadingsPlugin({ levels: 6 }),
+  HorizontalRulePlugin(),
+  CodeBlockPlugin(),
+  InsertBlockPlugin(),
   BoldPlugin({ hotkey: "mod+b" }),
   ItalicPlugin({ hotkey: "mod+i" }),
   StrikethroughPlugin({ hotkey: "mod+shift+k" }),
   InlineCodePlugin({ hotkey: "mod+e" }),
-  LinkPlugin(),
-  BlockquotePlugin(),
-  CodeBlockPlugin(),
-  ListPlugin(),
-  HeadingsPlugin({ levels: 6 }),
+  SoftBreakPlugin({
+    exclude: [...Object.values(HeadingType)]
+  }),
   ParagraphPlugin()
 ]

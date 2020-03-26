@@ -6,7 +6,9 @@ import {
 	BLOCKQUOTE,
 	CODE_BLOCK,
 	HeadingType,
-	toggleList
+	toggleList,
+	insertHorizontalRule,
+	HORIZONTAL_RULE
 } from "../../slate-plugins"
 import FormatButton from "../FormatButton"
 
@@ -17,6 +19,11 @@ export const Toolbar = () => {
 	const onToggleList = (type: ListType) => (event: Event) => {
 		event.preventDefault()
 		toggleList(editor, type)
+	}
+
+	const onInsertHorizontalRule = (event:Event) => {
+		event.preventDefault()
+		insertHorizontalRule(editor)
 	}
 
 	return (
@@ -40,6 +47,11 @@ export const Toolbar = () => {
 				onMouseDown={onToggleList(ListType.UL_LIST)}
 			/>
 			&nbsp;
+			<FormatButton
+				text="hr"
+				format={HORIZONTAL_RULE}
+				onMouseDown={onInsertHorizontalRule}
+			/>
 			{/* Embeds */}
 			{/* <FormatButton format={ELEMENTS.EMBED} text="Embed" /> */}
 		</div>
