@@ -17,13 +17,15 @@ import {
   InsertBlockPlugin,
   HeadingType,
   ParagraphPlugin,
-  HorizontalRulePlugin
+  HorizontalRulePlugin,
+  MoveNodesPlugin
 } from "../../slate-plugins"
 
 const HistoryPlugin = () => ({ editorOverrides: withHistory })
 
 export const plugins = [
   HistoryPlugin(),
+  MoveNodesPlugin(),
   MarkdownShortcutsPlugin({
     onToggleOverrides: { [ListType.UL_LIST]: toggleList, [ListType.OL_LIST]: toggleList }
   }),

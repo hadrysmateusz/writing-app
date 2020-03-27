@@ -1,8 +1,9 @@
 import { Operation } from "slate"
 import { ReactEditor } from "slate-react"
 import { getSelectedNodes, isSelectionMultiLine } from "../../../slate-helpers"
+import { EditorOverridesFactory } from "@slate-plugin-system/core"
 
-export const withMoveNodes = (editor) => {
+export const withMoveNodes: EditorOverridesFactory = () => (editor) => {
 	const { apply } = editor
 
 	editor.apply = (op) => {
@@ -18,7 +19,7 @@ export const withMoveNodes = (editor) => {
 				const { nodes } = getSelectedNodes(editor)
 
 				nodes.forEach((node) => {
-					const DOMNode = ReactEditor.toDOMNode(editor, node)
+					const DOMNode = ReactEditor.toDOMNode(editor as ReactEditor, node)
 					DOMNode.classList.add("slate-node-selected")
 				})
 			}
