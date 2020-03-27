@@ -7,10 +7,10 @@ import {
 	FaCode,
 	FaLink,
 	FaQuoteRight,
-	// FaRegFileImage,
+	FaImage,
 	FaListOl,
 	FaListUl,
-	FaPlus
+	FaPlus,
 } from "react-icons/fa"
 
 import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
@@ -25,7 +25,8 @@ import {
 	BOLD,
 	ITALIC,
 	STRIKE,
-	CODE_INLINE
+	CODE_INLINE,
+	IMAGE
 } from "../../slate-plugins"
 
 const Icons = {
@@ -36,7 +37,7 @@ const Icons = {
 	[LINK]: FaLink,
 	[CODE_BLOCK]: FaCode,
 	[BLOCKQUOTE]: FaQuoteRight,
-	// [ELEMENTS.IMAGE]: FaRegFileImage,
+	[IMAGE]: FaImage,
 	[ListType.OL_LIST]: FaListOl,
 	[ListType.UL_LIST]: FaListUl,
 	[HeadingType.H1]: Heading1,

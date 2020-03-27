@@ -8,7 +8,9 @@ import {
 	HeadingType,
 	toggleList,
 	insertHorizontalRule,
-	HORIZONTAL_RULE
+	HORIZONTAL_RULE,
+	IMAGE,
+	insertImage
 } from "../../slate-plugins"
 import FormatButton from "../FormatButton"
 
@@ -26,6 +28,14 @@ export const Toolbar = () => {
 		insertHorizontalRule(editor)
 	}
 
+	const onInsertImage = (event: Event) => {
+		event.preventDefault()
+
+		const url = window.prompt("Enter the URL of the image:")
+		if (!url) return
+		insertImage(editor, url)
+	}
+
 	return (
 		<div>
 			{/* Headings */}
@@ -35,7 +45,10 @@ export const Toolbar = () => {
 			{/* Common */}
 			<FormatButton format={BLOCKQUOTE} />
 			<FormatButton format={CODE_BLOCK} />
-			{/* <FormatButton format={ELEMENTS.IMAGE} /> */}
+			<FormatButton
+				format={IMAGE}
+				onMouseDown={onInsertImage}
+			/>
 			&nbsp;
 			{/* Lists */}
 			<FormatButton

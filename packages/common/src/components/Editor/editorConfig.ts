@@ -18,7 +18,7 @@ import {
   HeadingType,
   ParagraphPlugin,
   HorizontalRulePlugin,
-  MoveNodesPlugin
+  MoveNodesPlugin,ImagePlugin
 } from "../../slate-plugins"
 
 const HistoryPlugin = () => ({ editorOverrides: withHistory })
@@ -26,6 +26,7 @@ const HistoryPlugin = () => ({ editorOverrides: withHistory })
 export const plugins = [
   HistoryPlugin(),
   MoveNodesPlugin(),
+  ImagePlugin(),
   MarkdownShortcutsPlugin({
     onToggleOverrides: { [ListType.UL_LIST]: toggleList, [ListType.OL_LIST]: toggleList }
   }),
