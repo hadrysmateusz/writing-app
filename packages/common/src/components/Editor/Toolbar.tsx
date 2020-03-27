@@ -41,7 +41,7 @@ export const Toolbar = () => {
 			{/* Headings */}
 			<FormatButton format={HeadingType.H1} />
 			<FormatButton format={HeadingType.H2} />
-			&nbsp;
+			&nbsp;&nbsp;
 			{/* Common */}
 			<FormatButton format={BLOCKQUOTE} />
 			<FormatButton format={CODE_BLOCK} />
@@ -49,7 +49,7 @@ export const Toolbar = () => {
 				format={IMAGE}
 				onMouseDown={onInsertImage}
 			/>
-			&nbsp;
+			&nbsp;&nbsp;
 			{/* Lists */}
 			<FormatButton
 				format={ListType.OL_LIST}
@@ -59,7 +59,7 @@ export const Toolbar = () => {
 				format={ListType.UL_LIST}
 				onMouseDown={onToggleList(ListType.UL_LIST)}
 			/>
-			&nbsp;
+			&nbsp;&nbsp;
 			<FormatButton
 				text="hr"
 				format={HORIZONTAL_RULE}
