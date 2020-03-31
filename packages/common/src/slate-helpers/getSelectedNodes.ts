@@ -30,7 +30,7 @@ export const getSelectedNodes = (
 		0
 	)
 
-	const sortedFullPaths = sortPaths(fullPaths)
+	const sortedFullPaths = sortPaths(fullPaths,direction)
 	const sortedNodes = sortedFullPaths.map((path) => Node.get(editor, path))
 
 	return {
