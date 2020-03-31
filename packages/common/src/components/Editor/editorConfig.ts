@@ -18,7 +18,9 @@ import {
   HeadingType,
   ParagraphPlugin,
   HorizontalRulePlugin,
-  MoveNodesPlugin,ImagePlugin
+  MoveNodesPlugin,
+  ImagePlugin,
+  OnBreakSetDefaultPlugin
 } from "../../slate-plugins"
 
 const HistoryPlugin = () => ({ editorOverrides: withHistory })
@@ -33,7 +35,7 @@ export const plugins = [
   LoggerPlugin(),
   LinkPlugin(),
   BlockquotePlugin(),
-  ListPlugin(),
+  OnBreakSetDefaultPlugin(),
   HeadingsPlugin({ levels: 6 }),
   HorizontalRulePlugin(),
   CodeBlockPlugin(),
