@@ -1,12 +1,14 @@
 import { Editor, Path, Point, Range, Transforms } from "slate"
 
-import { EditorOverridesFactory, composeOverrides } from "@slate-plugin-system/core"
+import { EditorOverrides, composeOverrides } from "@slate-plugin-system/core"
 
-import { DEFAULT, withBreakEmptyReset, withDeleteStartReset } from "../../../slate-helpers"
+import { withBreakEmptyReset, withDeleteStartReset } from "../../../slate-helpers"
 
-import { ListType } from "./types"
+import { ListType, ListOptions } from "./types"
 
-const withListCore: EditorOverridesFactory = () => <T extends Editor>(editor: T) => {
+// TODO: add options for overriding types
+const withListCore = (options: ListOptions): EditorOverrides => (editor) => {
+  const { defaultType = "paragraph" } = options
   const { insertBreak } = editor
 
   /**
@@ -15,7 +17,7 @@ const withListCore: EditorOverridesFactory = () => <T extends Editor>(editor: T)
   editor.insertBreak = () => {
     if (editor.selection) {
       const [paragraphNode, paragraphPath] = Editor.parent(editor, editor.selection)
-      if (paragraphNode.type === DEFAULT) {
+      if (paragraphNode.type === defaultType) {
         const [listItemNode, listItemPath] = Editor.parent(editor, paragraphPath)
 
         if (listItemNode.type === ListType.LIST_ITEM) {
@@ -40,7 +42,7 @@ const withListCore: EditorOverridesFactory = () => <T extends Editor>(editor: T)
               editor,
               {
                 type: ListType.LIST_ITEM,
-                children: [{ type: DEFAULT, children: [{ text: "" }] }]
+                children: [{ type: defaultType, children: [{ text: "" }] }]
               },
               { at: listItemPath }
             )
@@ -72,7 +74,7 @@ const withListCore: EditorOverridesFactory = () => <T extends Editor>(editor: T)
               editor,
               {
                 type: ListType.LIST_ITEM,
-                children: [{ type: DEFAULT, children: [{ text: "" }] }]
+                children: [{ type: defaultType, children: [{ text: "" }] }]
               },
               { at: nextListItemPath }
             )
@@ -100,7 +102,7 @@ const withListCore: EditorOverridesFactory = () => <T extends Editor>(editor: T)
   return editor
 }
 
-const breakEmptyList = (editor) => {
+const breakEmptyList = (editor: Editor) => {
   Transforms.unwrapNodes(editor, {
     match: (n) => n.type === ListType.LIST_ITEM,
     split: true
@@ -113,8 +115,9 @@ const breakEmptyList = (editor) => {
 
 const commonResetOptions = { types: [ListType.LIST_ITEM], onUnwrap: breakEmptyList }
 
-export const withList = composeOverrides([
-  withListCore(),
-  withBreakEmptyReset(commonResetOptions),
-  withDeleteStartReset(commonResetOptions)
-])
+export const withList = (options: ListOptions) =>
+  composeOverrides([
+    withListCore(options),
+    withDeleteStartReset(commonResetOptions),
+    withBreakEmptyReset(commonResetOptions)
+  ])

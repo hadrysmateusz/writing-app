@@ -3,8 +3,15 @@ import { EditorOverrides } from "@slate-plugin-system/core"
 import { OnBreakSetDefaultOptions } from "./types"
 import { isSelectionMultiLine, getSelectedPaths } from "../../../slate-helpers"
 
+
+/* TODO: when inserting line break while all text is selected except for whitespace (like newline characters)
+  you end up with a lot of empty lines.
+
+  A regex check should be done to prevent this as it's extremely unintuitive
+*/
+
 /**
- * Improve line break behavior by making it more intuitive
+ * Improves line break behavior by making it more intuitive
  *
  * It will set the node selected after the line break to the default
  * type and in case of multi-block selections: preserve the last node's type

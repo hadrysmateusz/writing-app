@@ -35,6 +35,7 @@ export const plugins = [
   LoggerPlugin(),
   LinkPlugin(),
   BlockquotePlugin(),
+  ListPlugin(),
   OnBreakSetDefaultPlugin(),
   HeadingsPlugin({ levels: 6 }),
   HorizontalRulePlugin(),

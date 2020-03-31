@@ -3,7 +3,7 @@ import { Ancestor, Editor, Path, Transforms } from "slate"
 import { DEFAULT, isBlockTextEmpty, isFirstChild } from "../../../slate-helpers"
 
 import { isList, isSelectionInList } from "./helpers"
-import { ListType } from "./types"
+import { ListType, ListOptions } from "./types"
 
 /**
  * Move a list item next to its parent.
@@ -96,7 +96,7 @@ const moveDown = (editor: Editor, listNode: Ancestor, listItemPath: number[]) =>
 	}
 }
 
-export const onKeyDownList = () => (e: KeyboardEvent, editor: Editor) => {
+export const onKeyDownList = ({}: ListOptions) => (e: KeyboardEvent, editor: Editor) => {
 	if (["Tab", "Enter", "Backspace"].includes(e.key)) {
 		if (editor.selection && isSelectionInList(editor)) {
 			if (e.key === "Tab") {

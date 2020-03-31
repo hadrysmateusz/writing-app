@@ -11,3 +11,7 @@ export interface RenderElementListOptions {
 	OL?: React.ComponentType
 	LI?: React.ComponentType
 }
+
+export interface ListOptions extends RenderElementListOptions  {
+  defaultType?: string
+}
