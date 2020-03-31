@@ -1,6 +1,5 @@
-import { EditorOverridesFactory, composeOverrides } from "@slate-plugin-system/core"
+import { EditorOverrides } from "@slate-plugin-system/core"
 import {
-  withBreakInsertDefault,
   Block,
   isBlockTextEmpty,
   isFirstChild,
@@ -10,7 +9,7 @@ import { isImageUrl, insertImage } from "./helpers"
 import { IMAGE } from "./types"
 import { Range, Node, Path, Transforms } from "slate"
 
-const withImageCore: EditorOverridesFactory = () => (editor) => {
+export const withImage= (): EditorOverrides => (editor) => {
   const { insertData, isVoid, deleteBackward, deleteForward } = editor
 
   // TODO: consider preventing removing image nodes when they are not selected (this requires checking if the cursor is at the first/last position)
@@ -84,11 +83,4 @@ const withImageCore: EditorOverridesFactory = () => (editor) => {
   }
 
   return editor
-}
-
-export const withImage: EditorOverridesFactory = (options) => {
-  return composeOverrides([
-    withImageCore(options),
-    withBreakInsertDefault({ types: [IMAGE] })
-  ])
 }
