@@ -8,22 +8,36 @@ import {
   BOLD,
   ITALIC,
   CODE_INLINE,
-  STRIKE
+  STRIKE,
+  HORIZONTAL_RULE,
+  IMAGE
 } from "./../../slate-plugins"
 import { Node } from "slate"
 
 export function parseToMarkdown(chunk: Node & { parentType?: string }) {
   const isElement = chunk.type !== undefined
 
+  // if the node is a leaf get its text content, otherwise recursively parse child nodes
   let children = !isElement
     ? chunk.text
     : chunk.children
         .map((c) => parseToMarkdown({ ...c, parentType: chunk.type }))
         .join("")
 
-  if (children === "") return
+  // handle void nodes or simply return
+  if (children === "") {
+    switch (chunk.type) {
+      case HORIZONTAL_RULE:
+        return `---\n`
+      case IMAGE:
+        // TODO: add alt text
+        return `[image](${chunk.url})\n`
+      default:
+        return
+    }
+  }
 
-  // marks
+  // wrap leaf nodes
   if (chunk[BOLD]) {
     children = `**${children}**`
   }
@@ -37,9 +51,10 @@ export function parseToMarkdown(chunk: Node & { parentType?: string }) {
     children = `\`${children}\``
   }
 
+  // if the node isn't an element there is no need to check for element types
   if (!isElement) return children
 
-  // node type
+  // node type (blocks and inlines)
   switch (chunk.type) {
     case HeadingType.H1:
       return `# ${children}\n`
@@ -69,7 +84,6 @@ export function parseToMarkdown(chunk: Node & { parentType?: string }) {
     case PARAGRAPH:
       return `${children}\n`
     default:
-      console.log(`Markdown Serializer encountered unknown type: ${chunk.type}`)
-      return children
+      throw new Error(`Markdown Serializer encountered unknown type: ${chunk.type}`)
   }
 }
