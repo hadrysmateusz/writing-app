@@ -4,6 +4,8 @@ import { DEFAULT, isBlockTextEmpty } from ".."
 /**
  * On insert break at the start of an empty block in types,
  * replace it with a new paragraph.
+ * 
+ * TODO: Only works in nodes where the text node is an immediate and only child, improve this 
  */
 export const withBreakEmptyReset = ({
 	types,
