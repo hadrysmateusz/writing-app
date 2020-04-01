@@ -28,8 +28,11 @@
 	},
 	"scripts": {
 		"start": "react-app-rewired start",
-		"build": "react-app-rewired build",
 		"test": "react-app-rewired test",
+		"prebuild": "lerna bootstrap",
+		"build": "react-app-rewired build",
+		"predeploy": "yarn build",
+		"deploy": "netlify deploy --prod",
 		"eject": "react-scripts eject"
 	},
 	"eslintConfig": {
