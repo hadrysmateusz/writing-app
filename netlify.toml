@@ -1,7 +1,7 @@
 [build]
-  base = "packages/react-app"
+  base = "packages/web"
   command = "yarn build"
-  publish = "packages/react-app/build/"
+  publish = "packages/web/build/"
 
 [[redirects]]
   from = "/*"
