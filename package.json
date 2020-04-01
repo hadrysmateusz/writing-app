@@ -12,11 +12,12 @@
 		"list-packages": "lerna la",
 		"kill-server": "lsof -ti tcp:3000 | xargs kill",
 		"refresh-dependencies": "rm -rf node_modules yarn.lock && lerna clean -y && yarn cache clean && lerna bootstrap",
-		"start": "lerna run start --scope @writing-tool/web --stream",
-		"start-server": "lerna run start --scope @writing-tool/api --stream",
-		"build": "lerna run build --scope @writing-tool/web --stream",
+		"start": "lerna run start --stream",
+		"start-server": "yarn --cwd packages/api start",
+		"start-web": "yarn --cwd packages/react start",
+		"build": "lerna run build --stream",
 		"predeploy": "yarn build",
 		"deploy": "netlify deploy --prod",
-		"test": "lerna run test --scope @writing-tool/web --stream"
+		"test": "lerna run test --stream"
 	}
 }
