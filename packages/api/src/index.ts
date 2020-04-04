@@ -1,23 +1,45 @@
-// Local workspace dependencies
-const { API_ROUTES } = require("@writing-tool/shared")
-
 // Third-Party dependencies
-const express = require("express")
-const cors = require("cors")
-require("dotenv").config()
+import express, { Application, Request, Response, NextFunction } from "express"
+import cors from "cors"
+import dotenv from "dotenv"
+
+// Local workspace dependencies
+import { API_ROUTES } from "@writing-tool/shared"
 
 // Local files
-const mediumAuthorize = require("./mediumAuthorize")
+import mediumAuthorize from "./mediumAuthorize"
 
-const port = 4000
-const app = express()
+// Read environment variables from .env file
+dotenv.config()
 
-// MIDDLEWARE
+const PORT: any = process.env.PORT || 4000
+
+const app: Application = express()
+
 app.use(cors({ origin: true })) // Allow cross-origin requests
 app.use(express.json()) // Parse JSON requests
 
-// ROUTES
 app.post(API_ROUTES.MEDIUM_AUTHORIZE, mediumAuthorize) // Request access token from the Medium API
-app.get("/", (req, res) => res.send("Hello World!"))
+app.get("/", (_req, res) => {
+  return res.json({ message: "Hello World" })
+})
 
-app.listen(port, () => console.log(`Listening on port ${port}`))
+// Throw error when the route is not found
+app.use((_req: Request, _res: Response, next: NextFunction) => {
+  const error = new Error("Route Not found");
+  next(error);
+});
+
+// Return the error in the response
+app.use((error: { message: string; status: number }, _req: Request, res: Response,next: NextFunction
+  ) => {
+    res.status(error.status || 500);
+    res.json({
+      status: "error",
+      message: error.message
+    });
+    next();
+  }
+);
+
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`))

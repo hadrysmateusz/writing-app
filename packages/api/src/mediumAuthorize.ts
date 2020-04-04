@@ -1,7 +1,9 @@
-const fetch = require("node-fetch")
-const { MEDIUM_API_BASE_URL, MEDIUM_CLIENT_ID } = require("@writing-tool/shared")
+import fetch from "node-fetch"
+import { Request, Response } from "express"
 
-module.exports = async (req, res) => {
+import { MEDIUM_API_BASE_URL, MEDIUM_CLIENT_ID } from "@writing-tool/shared"
+
+export default async (req: Request, res: Response) => {
   try {
     const body = req.body
     const { code, redirect_uri } = body
@@ -27,14 +29,14 @@ async function requestMediumAccessToken(code, redirect_uri) {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json",
-        "Accept-Charset": "utf-8"
+        "Accept-Charset": "utf-8",
       },
       body:
         `code=${code}` +
         `&client_id=${client_id}` +
         `&client_secret=${client_secret}` +
         `&grant_type=${grant_type}` +
-        `&redirect_uri=${redirect_uri}`
+        `&redirect_uri=${redirect_uri}`,
     })
 
     const data = await res.json()
@@ -63,8 +65,8 @@ async function getUserDetails(access_token) {
     const res = await fetch(`${MEDIUM_API_BASE_URL}/me`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${access_token}`
-      }
+        Authorization: `Bearer ${access_token}`,
+      },
     })
 
     // Handle status codes outside the 200-299 range
