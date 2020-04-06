@@ -29,12 +29,16 @@ app.get("/", (_req, res) => {
 app.use(notFound) // Throw error when the route is not found
 app.use(sendError) // Return the error in the response
 
-mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true }, (error) => {
-  if (error) {
-    console.log("Couldn't connect to database: " + error.message)
-    return
+mongoose.connect(
+  process.env.DB_CONNECTION,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  (error) => {
+    if (error) {
+      console.log("Couldn't connect to database: " + error.message)
+      return
+    }
+    console.log("Successfully connected to database!")
   }
-  console.log("Successfully connected to database!")
-})
+)
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`))
