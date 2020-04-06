@@ -26,20 +26,25 @@ app.get("/", (_req, res) => {
 
 // Throw error when the route is not found
 app.use((_req: Request, _res: Response, next: NextFunction) => {
-  const error = new Error("Route Not found");
-  next(error);
-});
+  const error = new Error("Route Not found")
+  next(error)
+})
 
 // Return the error in the response
-app.use((error: { message: string; status: number }, _req: Request, res: Response,next: NextFunction
+app.use(
+  (
+    error: { message: string; status: number },
+    _req: Request,
+    res: Response,
+    next: NextFunction
   ) => {
-    res.status(error.status || 500);
+    res.status(error.status || 500)
     res.json({
       status: "error",
-      message: error.message
-    });
-    next();
+      message: error.message,
+    })
+    next()
   }
-);
+)
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
