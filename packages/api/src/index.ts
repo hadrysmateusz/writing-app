@@ -1,5 +1,6 @@
 // Third-Party dependencies
-import express, { Application, Request, Response, NextFunction } from "express"
+import express, { Application } from "express"
+import mongoose from "mongoose"
 import cors from "cors"
 import dotenv from "dotenv"
 
@@ -7,7 +8,8 @@ import dotenv from "dotenv"
 import { API_ROUTES } from "@writing-tool/shared"
 
 // Local files
-import mediumAuthorize from "./mediumAuthorize"
+import { mediumAuthorize } from "./routes"
+import { notFound, sendError } from "./middleware"
 
 // Read environment variables from .env file
 dotenv.config()
@@ -24,27 +26,15 @@ app.get("/", (_req, res) => {
   return res.json({ message: "Hello World" })
 })
 
-// Throw error when the route is not found
-app.use((_req: Request, _res: Response, next: NextFunction) => {
-  const error = new Error("Route Not found")
-  next(error)
+app.use(notFound) // Throw error when the route is not found
+app.use(sendError) // Return the error in the response
+
+mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true }, (error) => {
+  if (error) {
+    console.log("Couldn't connect to database: " + error.message)
+    return
+  }
+  console.log("Successfully connected to database!")
 })
 
-// Return the error in the response
-app.use(
-  (
-    error: { message: string; status: number },
-    _req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    res.status(error.status || 500)
-    res.json({
-      status: "error",
-      message: error.message,
-    })
-    next()
-  }
-)
-
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`))
