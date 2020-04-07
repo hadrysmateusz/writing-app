@@ -8,7 +8,7 @@ import dotenv from "dotenv"
 import { API_ROUTES } from "@writing-tool/shared"
 
 // Local files
-import { mediumAuthorize } from "./routes"
+import { mediumAuthorize, userRoutes } from "./routes"
 import { notFound, sendError } from "./middleware"
 
 // Read environment variables from .env file
@@ -22,9 +22,8 @@ app.use(cors({ origin: true })) // Allow cross-origin requests
 app.use(express.json()) // Parse JSON requests
 
 app.post(API_ROUTES.MEDIUM_AUTHORIZE, mediumAuthorize) // Request access token from the Medium API
-app.get("/", (_req, res) => {
-  return res.json({ message: "Hello World" })
-})
+
+app.use("/user", userRoutes)
 
 app.use(notFound) // Throw error when the route is not found
 app.use(sendError) // Return the error in the response
@@ -32,11 +31,7 @@ app.use(sendError) // Return the error in the response
 mongoose.connect(
   process.env.DB_CONNECTION,
   { useNewUrlParser: true, useUnifiedTopology: true },
-  (error) => {
-    if (error) {
-      console.log("Couldn't connect to database: " + error.message)
-      return
-    }
+  () => {
     console.log("Successfully connected to database!")
   }
 )
