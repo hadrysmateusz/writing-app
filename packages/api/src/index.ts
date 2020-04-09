@@ -8,7 +8,7 @@ import dotenv from "dotenv"
 import { API_ROUTES } from "@writing-tool/shared"
 
 // Local files
-import { mediumAuthorize, userRoutes } from "./routes"
+import { mediumAuthorize, userRoutes, documentRoutes } from "./routes"
 import { notFound, sendError } from "./middleware"
 
 // Read environment variables from .env file
@@ -24,6 +24,7 @@ app.use(express.json()) // Parse JSON requests
 app.post(API_ROUTES.MEDIUM_AUTHORIZE, mediumAuthorize) // Request access token from the Medium API
 
 app.use("/user", userRoutes)
+app.use("/documents", documentRoutes)
 
 app.use(notFound) // Throw error when the route is not found
 app.use(sendError) // Return the error in the response
