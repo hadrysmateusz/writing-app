@@ -1,8 +1,9 @@
+# Node
 **/node_modules
 node_modules
 
-# Yarn
-**/yarn-error.log
+# OS
+.DS_Store
 
 # Local Netlify folder
 .netlify
@@ -10,5 +11,15 @@ node_modules
 # Any local overrides
 *.local.*
 
-# Lerna
-**/lerna-debug.log
+# Typescript incremental build files
+**/*.tsbuildinfo
+
+# Production code
+**/build
+**/dist
+
+# Any logs
+**/*.log
+
+# VS Code
+.vscode

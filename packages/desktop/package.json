@@ -1,0 +1,50 @@
+{
+  "name": "@writing-tool/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "yarn compile && yarn build:web && yarn build:web:post && electron-builder",
+    "build:web": "yarn --cwd ../web build",
+    "build:web:post": "shx cp -Rf ../web/build dist/web",
+    "clean": "shx rm -f *.tsbuildinfo && shx rm -rf build &&shx rm -rf dist && mkdirp dist",
+    "start": "nodemon --watch dist --watch assets --exec \"electron .\"",
+    "compile": "tsc -b --incremental"
+  },
+  "build": {
+    "appId": "com.electron.writing-tool",
+    "productName": "Writing Tool",
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "extraMetadata": {
+      "name": "writing-tool-electron"
+    },
+    "linux": {
+      "desktop": {
+        "MimeType": "x-scheme-handler/writing-tool;"
+      },
+      "target": [
+        {
+          "target": "AppImage"
+        }
+      ]
+    },
+    "win": {
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "files": [
+      "assets",
+      "dist"
+    ]
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "electron": "8.2.1",
+    "electron-builder": "^22.4.1",
+    "nodemon": "^2.0.3",
+    "typescript": "^3.8.3",
+    "wait-on": "^4.0.2"
+  }
+}

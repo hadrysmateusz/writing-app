@@ -3,6 +3,7 @@
 	"description": "React Web application",
 	"version": "0.1.0",
 	"private": true,
+  "homepage": "./",
 	"dependencies": {
 		"@testing-library/jest-dom": "^4.2.4",
 		"@testing-library/react": "^9.3.2",
@@ -27,13 +28,13 @@
 		"typeface-ibm-plex-mono": "0.0.61"
 	},
 	"scripts": {
+    "clean": "shx rm -f *.tsbuildinfo && shx rm -rf build",
 		"start": "react-app-rewired start",
 		"test": "react-app-rewired test",
-		"prebuild": "lerna bootstrap",
-		"build": "react-app-rewired build",
+    "build": "react-app-rewired build",
 		"predeploy": "yarn build",
 		"deploy": "netlify deploy --prod",
-		"eject": "react-scripts eject"
+		"eject": "react-app-rewired eject"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
