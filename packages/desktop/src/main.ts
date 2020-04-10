@@ -9,11 +9,8 @@ const START_URL = IS_DEV
 function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: false
-    }
+    width: 1320,
+    height: 860
   })
 
   // and load the index.html of the app.
