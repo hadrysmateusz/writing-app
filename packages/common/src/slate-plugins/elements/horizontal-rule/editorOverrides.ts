@@ -1,8 +1,8 @@
-import { EditorOverridesFactory } from "@slate-plugin-system/core"
+import { EditorOverrides } from "@slate-plugin-system/core"
 import { Editor } from "slate"
 import { HORIZONTAL_RULE } from "./types"
 
-export const withHorizontalRule: EditorOverridesFactory = () => (editor: Editor) => {
+export const withHorizontalRule = (): EditorOverrides => (editor: Editor) => {
   const { isVoid } = editor
 
   editor.isVoid = (node) => {

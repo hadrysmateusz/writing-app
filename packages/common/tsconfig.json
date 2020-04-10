@@ -1,8 +1,11 @@
 {
-	"extends": "../../tsconfig.json",
-	"compilerOptions": {
-		"baseUrl": "src"
-	},
-	"include": ["src"],
-	"exclude": ["node_modules"]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "typeRoots": [
+      "@types"
+    ]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "build"]
 }

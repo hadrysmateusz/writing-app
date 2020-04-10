@@ -1,14 +1,16 @@
 import React, { useRef, useEffect } from "react"
 import { ReactEditor, useSlate } from "slate-react"
 import { Editor, Range } from "slate"
-import { css } from "styled-components/macro"
+import styled from "styled-components/macro"
 import { Portal } from "react-portal"
 
 import FormatButton from "./FormatButton"
 import { MARKS } from "@writing-tool/common/src/constants/Slate"
 import { LINK, CODE_INLINE, insertLink } from "../slate-plugins"
 
-const menuStyles = css`
+
+
+const Div = styled.div`
 	padding: 4px 7px 1px;
 	position: absolute;
 	z-index: 1;
@@ -23,7 +25,7 @@ const menuStyles = css`
 `
 
 const HoveringToolbar = () => {
-	const ref = useRef()
+	const ref = useRef<HTMLDivElement>(null)
 	const editor = useSlate()
 
 	useEffect(() => {
@@ -45,9 +47,13 @@ const HoveringToolbar = () => {
 		}
 
 		const domSelection = window.getSelection()
+		if(domSelection === null) {
+			// TODO: better handle this
+			return
+		}
 		const domRange = domSelection.getRangeAt(0)
 		const rect = domRange.getBoundingClientRect()
-		el.style.opacity = 1
+		el.style.opacity = "1"
 		el.style.top = `${rect.top + window.pageYOffset - el.offsetHeight}px`
 		el.style.left = `${rect.left +
 			window.pageXOffset -
@@ -55,7 +61,7 @@ const HoveringToolbar = () => {
 			rect.width / 2}px`
 	})
 
-	const onToggleLink = (event: Event) => {
+	const onToggleLink = (event: React.MouseEvent) => {
 		event.preventDefault()
 
 		const url = window.prompt("Enter the URL of the link:")
@@ -65,13 +71,13 @@ const HoveringToolbar = () => {
 
 	return (
 		<Portal>
-			<div ref={ref} css={menuStyles}>
+			<Div ref={ref}>
 				<FormatButton format={MARKS.BOLD} />
 				<FormatButton format={MARKS.ITALIC} />
 				<FormatButton format={MARKS.STRIKE} />
 				<FormatButton format={CODE_INLINE} />
 				<FormatButton format={LINK} onMouseDown={onToggleLink} />
-			</div>
+			</Div>
 		</Portal>
 	)
 }

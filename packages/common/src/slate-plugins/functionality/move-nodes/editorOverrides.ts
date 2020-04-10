@@ -1,9 +1,9 @@
 import { Operation } from "slate"
 import { ReactEditor } from "slate-react"
 import { getSelectedNodes, isSelectionMultiLine } from "../../../slate-helpers"
-import { EditorOverridesFactory } from "@slate-plugin-system/core"
+import { EditorOverrides } from "@slate-plugin-system/core"
 
-export const withMoveNodes: EditorOverridesFactory = () => (editor) => {
+export const withMoveNodes = (): EditorOverrides => (editor) => {
 	const { apply } = editor
 
 	editor.apply = (op) => {
