@@ -7,7 +7,7 @@ import {
   config,
   addDevToolsEventHandler,
   removeDevToolsEventHandler
-} from "@writing-tool/common"
+} from "@writing-tool/core"
 
 export const useLogValue = (value) => {
   useEffect(() => {

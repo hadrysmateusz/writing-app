@@ -4,7 +4,7 @@ import {
 	LIST_TYPES,
 	BLOCKS,
 	MARKS
-} from "@writing-tool/common/src/constants/Slate"
+} from "@writing-tool/core/src/constants/Slate"
 import { isFormatActive } from "../queries"
 
 /**

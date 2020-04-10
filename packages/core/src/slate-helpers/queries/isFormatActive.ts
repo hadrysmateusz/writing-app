@@ -1,6 +1,6 @@
 import { Editor } from "slate"
 
-import {MARKS} from "@writing-tool/common/src/constants/Slate"
+import {MARKS} from "@writing-tool/core/src/constants/Slate"
 import { matchType } from "../../slate-helpers"
 
 /**

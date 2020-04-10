@@ -1,4 +1,4 @@
-import { config } from "@writing-tool/common"
+import { config } from "@writing-tool/core"
 import { Operation, Editor } from "slate"
 
 export const withLogger = <T extends Editor>(editor: T) => {

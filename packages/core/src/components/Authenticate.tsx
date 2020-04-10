@@ -8,7 +8,7 @@ import {
   MEDIUM_API_AUTH_URL,
   API_BASE_URL,
   MESSAGE_TYPES
-} from "@writing-tool/common"
+} from "@writing-tool/core"
 
 export const Authenticate = () => {
   const popupWindow = useRef(null)

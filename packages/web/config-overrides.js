@@ -10,7 +10,7 @@ module.exports = (config, env) => {
 			// Make sure Babel compiles related react packages
 			babelInclude([
 				path.resolve("src"),
-				fs.realpathSync("../common/src"),
+				fs.realpathSync("../core/src"),
 			])
 		)(config, env)
 	)
