@@ -10,7 +10,7 @@ import {
   MESSAGE_TYPES
 } from "@writing-tool/core"
 
-export const Authenticate = () => {
+export const ConnectWithMedium = () => {
   const popupWindow = useRef(null)
   const [oAuthState] = useState("asdf") // TODO: generate proper state string
   const redirect_uri = encodeURIComponent(HOSTING_URL + ROUTES.MEDIUM_AUTH_CALLBACK)
@@ -118,5 +118,5 @@ export const Authenticate = () => {
     )
   }
 
-  return <button onMouseDown={initMediumAuthentication}>Authenticate</button>
+  return <button onMouseDown={initMediumAuthentication}>Connect with Medium</button>
 }

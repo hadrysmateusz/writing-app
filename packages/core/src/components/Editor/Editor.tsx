@@ -8,7 +8,7 @@ import { useLogEditor, useLogValue } from "../devToolsUtils"
 import HoveringToolbar from "../HoveringToolbar"
 import { EditableContainer } from "./styledComponents"
 import { useSlateState } from "./useSlateState"
-import { Authenticate } from "../Authenticate"
+import { ConnectWithMedium } from "../ConnectWithMedium"
 
 function EditorComponent() {
   const editor = useCreateEditor(plugins)
@@ -20,7 +20,7 @@ function EditorComponent() {
 
   return (
     <Slate editor={editor} value={value} onChange={onChange}>
-      <Authenticate />
+      <ConnectWithMedium />
       <HoveringToolbar />
       <Toolbar />
       <EditableContainer>
