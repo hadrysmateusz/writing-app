@@ -1,46 +1,49 @@
 import React from "react"
-import { css } from "styled-components/macro"
+import styled from "styled-components/macro"
 
 import { FeatureToggles, TriggerEvent } from "../Components"
 
-const containerStyles = css`
-	position: absolute;
-	bottom: 0;
-	background: black;
-	opacity: 0.4;
-	color: white;
-	width: 100%;
-	padding: 20px;
-	height: 60px;
-	width: 60px;
-	transition: all 0.3s;
+const Toggle = styled.div`
+  font-size: 13px;
+`
 
-	:hover {
-		height: 300px;
-		width: 100%;
-		opacity: 0.9;
-	}
+const Container = styled.div`
+  transition: all 0.3s;
+  position: fixed;
+  bottom: 0;
+  background: black;
+  opacity: 0.36;
+  color: white;
+  padding: 10px;
 
-	.tools {
-		display: none;
-	}
+  :hover {
+    opacity: 0.84;
 
-	:hover .tools {
-		display: block;
-	}
+    ${Toggle} {
+      display: none;
+    }
+  }
+
+  .tools {
+    display: none;
+  }
+
+  :hover .tools {
+    display: block;
+  }
 `
 
 const DevTools = ({ local = null }) => {
-	return (
-		<div css={containerStyles}>
-			<div>🛠</div>
-			<div className="tools">
-				{local}
-				<FeatureToggles />
-				<TriggerEvent name="logEditor" />
-			</div>
-		</div>
-	)
+  return (
+    <Container>
+      <Toggle>🛠</Toggle>
+      <div className="tools">
+        {local}
+        <FeatureToggles />
+        <TriggerEvent name="logEditor" />
+      </div>
+    </Container>
+  )
 }
 
 export default DevTools
