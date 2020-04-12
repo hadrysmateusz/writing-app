@@ -1,10 +1,11 @@
-import { Editor, Range, Transforms } from "slate"
+import { Editor, Range, Transforms, Text } from "slate"
+import { composeOverrides } from "@slate-plugin-system/core"
 import { MarkdownShortcutsPluginOptions, ShortcutUnit, ShortcutsList } from "./types"
 
-export const withShortcuts = ({
+export const withBlockShortcuts = ({
   types = {},
   shortcutOverrides = {},
-  onToggleOverrides = {}
+  onToggleOverrides = {},
 }: MarkdownShortcutsPluginOptions = {}) => <T extends Editor>(editor: T) => {
   const { insertText } = editor
 
@@ -19,7 +20,7 @@ export const withShortcuts = ({
     H3 = "heading_3",
     H4 = "heading_4",
     H5 = "heading_5",
-    H6 = "heading_6"
+    H6 = "heading_6",
   } = types
 
   const shortcuts: ShortcutsList = {
@@ -33,7 +34,7 @@ export const withShortcuts = ({
     [H4]: "####",
     [H5]: "#####",
     [H6]: "######",
-    ...shortcutOverrides
+    ...shortcutOverrides,
   }
 
   editor.insertText = (text) => {
@@ -43,7 +44,7 @@ export const withShortcuts = ({
     if (text === " " && selection && Range.isCollapsed(selection)) {
       const { anchor } = selection
       const block = Editor.above(editor, {
-        match: (n) => Editor.isBlock(editor, n)
+        match: (n) => Editor.isBlock(editor, n),
       })
       const path = block ? block[1] : []
       const start = Editor.start(editor, path)
@@ -103,3 +104,59 @@ export const withShortcuts = ({
 
   return editor
 }
+
+export const withInlineShortcuts = ({
+  types = {},
+  shortcutOverrides = {},
+  onToggleOverrides = {},
+}: MarkdownShortcutsPluginOptions = {}) => <T extends Editor>(editor: T) => {
+  const { normalizeNode } = editor
+
+  const matchers = {
+    bold: /(\*\*|__)(.*?)(\*\*|__)/,
+    italic: /(\*|_)(.*?)(\*|_)\1/g,
+  }
+
+  editor.normalizeNode = (entry) => {
+    const [node, path] = entry
+
+    const result = matchers.bold.exec(node.text)
+    if (result) {
+      const textContent = result[2]
+      const textLength = textContent.length
+      if (textLength === 0) {
+        // don't do shit
+      }
+      const fullMatch = result[0]
+      const startIndex = result.index
+      const endIndex = result.index + textContent.length
+
+
+      Transforms.delete(editor, {
+        at: { path, offset: startIndex },
+        distance: fullMatch.length,
+      })
+
+      Transforms.insertText(editor, textContent)
+
+      Transforms.setNodes(
+        editor,
+        { bold: true },
+        {
+          match: Text.isText,
+          split: true,
+          at: { anchor: { path, offset: startIndex }, focus: { path, offset: endIndex } },
+        }
+      )
+
+      console.log(fullMatch, textContent, startIndex, endIndex)
+    }
+
+    normalizeNode(entry)
+  }
+
+  return editor
+}
+
+export const withShortcuts = (options: MarkdownShortcutsPluginOptions) =>
+  composeOverrides([withBlockShortcuts(options), withInlineShortcuts(options)])
