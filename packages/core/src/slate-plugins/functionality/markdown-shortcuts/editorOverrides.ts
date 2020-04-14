@@ -1,6 +1,7 @@
 import { Editor, Range, Transforms, Text } from "slate"
 import { composeOverrides } from "@slate-plugin-system/core"
 import { MarkdownShortcutsPluginOptions, ShortcutUnit, ShortcutsList } from "./types"
+import { BOLD, ITALIC } from "../../marks"
 
 export const withBlockShortcuts = ({
   types = {},
@@ -105,52 +106,72 @@ export const withBlockShortcuts = ({
   return editor
 }
 
-export const withInlineShortcuts = ({
-  types = {},
-  shortcutOverrides = {},
-  onToggleOverrides = {},
-}: MarkdownShortcutsPluginOptions = {}) => <T extends Editor>(editor: T) => {
+export const withInlineShortcuts = ({}: MarkdownShortcutsPluginOptions) => <
+  T extends Editor
+>(
+  editor: T
+) => {
   const { normalizeNode } = editor
 
   const matchers = {
-    bold: /(\*\*|__)(.*?)(\*\*|__)/,
-    italic: /(\*|_)(.*?)(\*|_)\1/g,
+    [BOLD]: /(\*\*|__)(.*?)\1/,
+    [ITALIC]: /(\*|_)(.*?)\1/,
   }
 
   editor.normalizeNode = (entry) => {
     const [node, path] = entry
 
-    const result = matchers.bold.exec(node.text)
-    if (result) {
-      const textContent = result[2]
+
+    Object.entries(matchers).some(([format, matcher]) => {
+      const match = matcher.exec(node.text)
+      if (!match) return false
+      const textContent = match[2]
       const textLength = textContent.length
-      if (textLength === 0) {
-        // don't do shit
-      }
-      const fullMatch = result[0]
-      const startIndex = result.index
-      const endIndex = result.index + textContent.length
+      if (textLength === 0) return false
 
+      const fullMatch = match[0]
+      const startIndex = match.index
+      const endIndex = match.index + textContent.length
 
+      // delete the matched text (including the shortcut characters)
       Transforms.delete(editor, {
         at: { path, offset: startIndex },
         distance: fullMatch.length,
       })
 
+      // insert only the text content (without the shortcut characters)
       Transforms.insertText(editor, textContent)
 
+      // set the correct mark on the new text content
       Transforms.setNodes(
         editor,
-        { bold: true },
+        { [format]: true },
         {
           match: Text.isText,
           split: true,
-          at: { anchor: { path, offset: startIndex }, focus: { path, offset: endIndex } },
+          at: {
+            anchor: { path, offset: startIndex },
+            focus: { path, offset: endIndex },
+          },
         }
       )
 
-      console.log(fullMatch, textContent, startIndex, endIndex)
-    }
+      // TODO: this doesn't work fi there is any text afterwards
+      // The setTimeout is necessary for the removeMark to work, but it might not be bullet-proof so more testing is required
+      setTimeout(() => {
+        console.log("children",JSON.stringify(editor.children,null,2))
+        console.log("selection",JSON.stringify(editor.selection,null,2))
+        console.log("marks", editor.marks)
+        // clear the mark, so that whatever is typed next doesn't have it
+        Editor.removeMark(editor, format)
+        Transforms.insertText(editor, "")
+        console.log("children",JSON.stringify(editor.children,null,2))
+        console.log("selection",JSON.stringify(editor.selection,null,2))
+        console.log("marks", editor.marks)
+      }, 0)
+
+      return true
+    })
 
     normalizeNode(entry)
   }
