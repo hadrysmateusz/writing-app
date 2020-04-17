@@ -1,2 +1,2 @@
 export * from "./requestMediumAccessToken"
-export * from "./getUserDetails"
+export * from "./getMediumUserDetails"

@@ -1,7 +1,7 @@
 import fetch from "node-fetch"
 import { MEDIUM_API_BASE_URL } from "@writing-tool/shared"
 
-export async function getUserDetails(access_token) {
+export async function getMediumUserDetails(access_token) {
   try {
     // Throw instantly if the access_token provided is invalid
     if (typeof access_token !== "string") {
