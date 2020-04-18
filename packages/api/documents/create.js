@@ -4,12 +4,11 @@ const handler = require("../utils/handler")
 
 module.exports.main = handler(async (event, context) => {
   const body = JSON.parse(event.body)
-  const content = body.content
 
   const item = {
     userId: event.requestContext.identity.cognitoIdentityId,
     documentId: uuid.v1(),
-    content: content,
+    content: body.content || "",
   }
 
   await dynamodb.put({
