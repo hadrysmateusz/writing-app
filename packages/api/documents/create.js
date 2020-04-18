@@ -1,35 +1,21 @@
-const AWS = require("aws-sdk")
+const uuid = require("uuid")
+const dynamodb = require("../utils/dynamodb")
+const handler = require("../utils/handler")
 
-const dynamodb = new AWS.DynamoDB.DocumentClient()
-
-module.exports.main = async (event, context, callback) => {
+module.exports.main = handler(async (event, context) => {
   const body = JSON.parse(event.body)
-  const userId = body.userId
-  const documentId = body.documentId
   const content = body.content
 
-  const params = {
-    TableName: process.env.DYNAMODB_TABLE,
-    Item: {
-      userId: userId,
-      documentId: documentId,
-      content: content,
-    }
+  const item = {
+    userId: event.requestContext.identity.cognitoIdentityId,
+    documentId: uuid.v1(),
+    content: content,
   }
 
-  try {
-    await dynamodb.put(params).promise()
-    const response = {
-      statusCode: 201,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({ message: "successfully added"}),
-    }
-    callback(null, response)
-  } catch (error) {
-    console.log(error)
-    callback(error)
-  }
-}
+  await dynamodb.put({
+    TableName: process.env.DYNAMODB_TABLE,
+    Item: item,
+  })
+
+  return { data: item }
+})
