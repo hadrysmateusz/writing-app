@@ -28,13 +28,6 @@ provider:
       Resource: "arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
-  list:
-    handler: documents/list.main
-    events:
-      - http:
-          path: documents
-          method: get
-          cors: true
   create:
     handler: documents/create.main
     events:
@@ -42,6 +35,23 @@ functions:
           path: documents
           method: post
           cors: true
+          authorizer: aws_iam
+  get:
+    handler: documents/get.main
+    events:
+      - http:
+          path: documents/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+  list:
+    handler: documents/list.main
+    events:
+      - http:
+          path: documents
+          method: get
+          cors: true
+          authorizer: aws_iam
 
 resources:
   Resources:
