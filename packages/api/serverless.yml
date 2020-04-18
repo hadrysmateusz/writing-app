@@ -49,7 +49,7 @@ functions:
     events:
       - http:
           path: documents/{id}
-          mathod: put
+          method: put
           cors: true
           authorizer: aws_iam
   list:
