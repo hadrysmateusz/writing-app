@@ -29,17 +29,17 @@ provider:
 
 functions:
   list:
-    handler: todos/list.main
+    handler: documents/list.main
     events:
       - http:
-          path: todos
+          path: documents
           method: get
           cors: true
   create:
-    handler: todos/create.main
+    handler: documents/create.main
     events:
       - http:
-          path: todos
+          path: documents
           method: post
           cors: true
 
