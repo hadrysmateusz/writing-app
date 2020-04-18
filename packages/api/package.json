@@ -1,23 +1,24 @@
 {
-	"name": "@writing-tool/api",
-	"description": "Express API",
-	"version": "0.1.0",
-	"private": true,
+  "name": "@writing-tool/api",
+  "description": "Express API",
+  "version": "0.1.0",
+  "private": true,
   "devDependencies": {
     "@types/aws-sdk": "2.7.0",
     "@types/node": "^13.11.1",
+    "serverless-pseudo-parameters": "^2.5.0",
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "uuid": "^7.0.3",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "uuid": "^7.0.3"
   },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc -w"
   },
-	"eslintConfig": {
-		"extends": "react-app"
-	}
+  "eslintConfig": {
+    "extends": "react-app"
+  }
 }

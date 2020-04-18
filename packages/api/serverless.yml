@@ -25,18 +25,23 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+      Resource: "arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
-  create:
-    handler: todos/create.create
+  list:
+    handler: todos/list.main
     events:
       - http:
           path: todos
           method: get
           cors: true
-          
-
+  create:
+    handler: todos/create.main
+    events:
+      - http:
+          path: todos
+          method: post
+          cors: true
 
 resources:
   Resources:
@@ -58,3 +63,6 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+plugins:
+  - serverless-pseudo-parameters
