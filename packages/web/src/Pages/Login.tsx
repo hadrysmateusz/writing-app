@@ -1,6 +1,9 @@
 import React, { useState, FormEvent } from "react"
+import { Auth } from "aws-amplify"
+import { useAppContext } from "../utils/appContext"
 
 const Login = () => {
+  const { setIsAuthenticated } = useAppContext()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -8,8 +11,15 @@ const Login = () => {
     return email.length > 0 && password.length > 0
   }
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
+
+    try {
+      await Auth.signIn(email, password)
+      setIsAuthenticated(true)
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
   return (
