@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react"
 import { Auth } from "aws-amplify"
 import styled from "styled-components"
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
 
 import { MediumAuthRedirectPage, LoginPage, EditorPage } from "Pages"
 import { AppContextProvider } from "../utils/appContext"
+import { LogoutButton } from "./LogoutButton"
 
 export const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -26,15 +27,10 @@ export const App = () => {
     setIsAuthenticating(false)
   }
 
-  const handleLogout = async () => {
-    await Auth.signOut()
-    setIsAuthenticated(false)
-  }
-
   return isAuthenticating ? null : (
     <AppContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
-      <button onClick={()=>handleLogout()}>Logout</button>
       <Router>
+        {isAuthenticated ? <LogoutButton /> : <Link to="/login">Login</Link>}
         <Container>
           <Switch>
             <Route exact path="/login">

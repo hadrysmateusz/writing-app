@@ -1,11 +1,13 @@
 import React, { useState, FormEvent } from "react"
 import { Auth } from "aws-amplify"
 import { useAppContext } from "../utils/appContext"
+import {useHistory} from "react-router-dom"
 
 const Login = () => {
   const { setIsAuthenticated } = useAppContext()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+	const history = useHistory()
 
   const validate = () => {
     return email.length > 0 && password.length > 0
@@ -17,6 +19,7 @@ const Login = () => {
     try {
       await Auth.signIn(email, password)
       setIsAuthenticated(true)
+      history.push("/")
     } catch (error) {
       alert(error.message)
     }
