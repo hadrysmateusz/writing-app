@@ -3,7 +3,7 @@ import { Auth } from "aws-amplify"
 import styled from "styled-components"
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
 
-import { MediumAuthRedirectPage, LoginPage, EditorPage } from "Pages"
+import { MediumAuthRedirectPage, LoginPage, EditorPage, SignupPage } from "Pages"
 import { AppContextProvider } from "../utils/appContext"
 import { LogoutButton } from "./LogoutButton"
 
@@ -30,11 +30,21 @@ export const App = () => {
   return isAuthenticating ? null : (
     <AppContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
       <Router>
-        {isAuthenticated ? <LogoutButton /> : <Link to="/login">Login</Link>}
+        {isAuthenticated ? (
+          <LogoutButton />
+        ) : (
+          <>
+            <Link to="/login">Login</Link>&nbsp;
+            <Link to="/signup">Signup</Link>
+          </>
+        )}
         <Container>
           <Switch>
             <Route exact path="/login">
               <LoginPage />
+            </Route>
+            <Route exact path="/signup">
+              <SignupPage />
             </Route>
             <Route path="/medium-auth-callback">
               <MediumAuthRedirectPage />
