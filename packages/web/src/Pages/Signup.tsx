@@ -1,6 +1,7 @@
 import React, { useState, FormEvent } from "react"
 import { useHistory } from "react-router-dom"
 import { useAppContext } from "../utils/appContext"
+import { Auth } from "aws-amplify"
 
 const Signup = () => {
   const [email, setEmail] = useState("")
@@ -8,7 +9,7 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [confirmationCode, setConfirmationCode] = useState("")
   const history = useHistory()
-  const [newUser, setNewUser] = useState<null | string>(null)
+  const [newUser, setNewUser] = useState<any>(null)
   const { setIsAuthenticated } = useAppContext()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -20,19 +21,51 @@ const Signup = () => {
     return confirmationCode.length > 0
   }
 
+  /*
+    TODO: A quick note on the signup flow here. If the user refreshes their page at the confirm step, they won’t be able to get back and confirm that account. It forces them to create a new account instead. We are keeping things intentionally simple but here are a couple of hints on how to fix it.
+
+    Check for the UsernameExistsException in the handleSubmit function’s catch block.
+
+    Use the Auth.resendSignUp() method to resend the code if the user has not been previously confirmed. Here is a link to the Amplify API docs. https://aws-amplify.github.io/amplify-js/api/classes/authclass.html
+
+    Confirm the code just as we did before.
+  */
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
 
     setIsLoading(true)
 
-    setNewUser("test")
-
-    setIsLoading(false)
+    try {
+      const newUser = await Auth.signUp({
+        username: email,
+        password: password,
+      })
+      setNewUser(newUser)
+    } catch (error) {
+      // TODO: better error handling
+      alert("error")
+      console.error(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleConfirmationSubmit = (event: FormEvent) => {
+  const handleConfirmationSubmit = async (event: FormEvent) => {
     event.preventDefault()
     setIsLoading(true)
+
+    try {
+      await Auth.confirmSignUp(email, confirmationCode)
+      await Auth.signIn(email, password)
+      setIsAuthenticated(true)
+      history.push("/")
+    } catch (error) {
+      // TODO: better error handling
+      alert("error")
+      console.error(error)
+      setIsLoading(false)
+    }
   }
 
   const renderForm = () => (
