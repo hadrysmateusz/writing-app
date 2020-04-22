@@ -7,8 +7,8 @@ import { App } from "Components/App"
 import "./index.css"
 import * as serviceWorker from "./serviceWorker"
 import config from "./config"
-import awsConfig from "./awsConfig"
 
+import { awsConfig } from "@writing-tool/shared"
 import { loadDevTools, loadConfig } from "@writing-tool/core"
 
 Amplify.configure({

@@ -1,4 +1,4 @@
-export default {
+export const awsConfig = {
   apiGateway: {
     REGION: "us-east-1",
     URL: "https://2misc0p76f.execute-api.us-east-1.amazonaws.com/dev"
