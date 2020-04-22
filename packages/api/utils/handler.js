@@ -7,6 +7,7 @@ module.exports = (lambda) => async (event, context) => {
       .then((responseBody) => [200, responseBody])
       // On failure
       .catch((e) => {
+        console.log(error)
         return [500, { error: e.message }]
       })
       // Return HTTP response
