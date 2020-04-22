@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
 
 import { MediumAuthRedirectPage, LoginPage, EditorPage, SignupPage } from "Pages"
 import { AppContextProvider } from "../utils/appContext"
-import { LogoutButton } from "./LogoutButton"
 
 export const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -30,34 +29,24 @@ export const App = () => {
   return isAuthenticating ? null : (
     <AppContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
       <Router>
-        <Container>
-          <Switch>
-            <Route exact path="/login">
-              <LoginPage />
-            </Route>
-            <Route exact path="/signup">
-              <SignupPage />
-            </Route>
-            <Route path="/medium-auth-callback">
-              <MediumAuthRedirectPage />
-            </Route>
-            <Route path="/" exact>
-              <EditorPage />
-            </Route>
-            <Route>
-              <h2>Page not found!</h2>
-            </Route>
-          </Switch>
-        </Container>
+        <Switch>
+          <Route exact path="/login">
+            <LoginPage />
+          </Route>
+          <Route exact path="/signup">
+            <SignupPage />
+          </Route>
+          <Route path="/medium-auth-callback">
+            <MediumAuthRedirectPage />
+          </Route>
+          <Route path="/" exact>
+            <EditorPage />
+          </Route>
+          <Route>
+            <h2>Page not found!</h2>
+          </Route>
+        </Switch>
       </Router>
     </AppContextProvider>
   )
 }
-
-const Container = styled.div`
-  margin: 40px auto;
-  padding: 20px;
-  max-width: 540px;
-  font-size: 20px;
-  box-sizing: content-box;
-`
