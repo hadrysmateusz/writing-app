@@ -11,7 +11,7 @@
 		"noImplicitReturns": true,
     "noImplicitThis": true,
 		"noImplicitAny": true,
-		"noUnusedLocals": true,
+		// "noUnusedLocals": true,
 		"suppressImplicitAnyIndexErrors": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
