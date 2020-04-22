@@ -1,7 +1,8 @@
 import React from "react"
-import { Slate } from "slate-react"
+import { Slate, ReactEditor } from "slate-react"
 import styled from "styled-components/macro"
 import { Editable, useCreateEditor } from "@slate-plugin-system/core"
+import { API } from "aws-amplify"
 
 import { plugins } from "./editorConfig"
 import { Toolbar } from "./Toolbar"
@@ -11,15 +12,27 @@ import { EditableContainer } from "./styledComponents"
 import { useSlateState } from "./useSlateState"
 
 function EditorComponent() {
-  const editor = useCreateEditor(plugins)
+  const editor = useCreateEditor(plugins) as ReactEditor
   const [value, onChange] = useSlateState()
 
   // DevTools utils
   useLogEditor(editor)
   useLogValue(value)
 
-  const save = () => {
-    alert("saving")
+  const save = async () => {
+    // TODO: I need to determine if the document is new on the client-side and choose to either create or update based on that (I could also take the local/cloud nature of the document into consideration)
+    // TODO: add progress and error states
+    try {
+      await API.post("documents", "/documents", {
+        body: {
+          content: JSON.stringify(value),
+        },
+      })
+      alert("Saved")
+    } catch (error) {
+      console.error(error)
+      alert("Error while saving")
+    }
   }
 
   return (
