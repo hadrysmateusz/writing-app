@@ -30,14 +30,6 @@ export const App = () => {
   return isAuthenticating ? null : (
     <AppContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
       <Router>
-        {isAuthenticated ? (
-          <LogoutButton />
-        ) : (
-          <>
-            <Link to="/login">Login</Link>&nbsp;
-            <Link to="/signup">Signup</Link>
-          </>
-        )}
         <Container>
           <Switch>
             <Route exact path="/login">

@@ -23,7 +23,8 @@
     "slate-history": "0.57.1",
     "slate-hyperscript": "0.57.1",
     "slate-react": "0.57.1",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "aws-amplify": "^3.0.8"
   },
   "eslintConfig": {
     "extends": "react-app"
