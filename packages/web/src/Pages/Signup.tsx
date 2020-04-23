@@ -128,7 +128,7 @@ const Signup = () => {
     </form>
   )
 
-  return <div>{newUser === null ? renderForm() : renderConfirmationForm()}</div>
+  return <div>{isLoading ? "Please wait" : newUser === null ? renderForm() : renderConfirmationForm()}</div>
 }
 
 export default Signup
