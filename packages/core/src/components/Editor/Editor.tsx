@@ -23,9 +23,11 @@ function EditorComponent() {
     // TODO: I need to determine if the document is new on the client-side and choose to either create or update based on that (I could also take the local/cloud nature of the document into consideration)
     // TODO: add progress and error states
     try {
+      const title = prompt("Title")
       await API.post("documents", "/documents", {
         body: {
           content: JSON.stringify(value),
+          title: title
         },
       })
       alert("Saved")

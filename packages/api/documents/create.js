@@ -8,6 +8,7 @@ module.exports.main = handler(async (event, context) => {
   const item = {
     userId: event.requestContext.identity.cognitoIdentityId,
     documentId: uuid.v1(),
+    title: body.title || "Untitled",
     content: body.content || "",
   }
 
