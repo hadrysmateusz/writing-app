@@ -11,8 +11,8 @@ import {
 	HORIZONTAL_RULE,
 	IMAGE,
 	insertImage
-} from "../../slate-plugins"
-import FormatButton from "../FormatButton"
+} from "../slate-plugins"
+import FormatButton from "./FormatButton"
 
 export const Toolbar = () => {
 	const editor = useSlate()

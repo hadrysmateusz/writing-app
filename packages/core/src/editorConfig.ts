@@ -21,7 +21,7 @@ import {
   MoveNodesPlugin,
   ImagePlugin,
   OnBreakSetDefaultPlugin
-} from "../../slate-plugins"
+} from "./slate-plugins"
 
 const HistoryPlugin = () => ({ editorOverrides: withHistory })
 

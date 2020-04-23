@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react"
-import { serialize, deserialize } from "./serialization"
+import { serialize, deserialize } from "../components/Editor/serialization"
 import { Node } from "slate"
 
 export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
