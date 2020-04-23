@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { Auth } from "aws-amplify"
-import styled from "styled-components"
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 
 import { MediumAuthRedirectPage, LoginPage, EditorPage, SignupPage } from "Pages"
 import { AppContextProvider } from "../utils/appContext"
