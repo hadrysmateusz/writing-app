@@ -8,25 +8,29 @@ import { AppContextProvider } from "../utils/appContext"
 export const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isAuthenticating, setIsAuthenticating] = useState(true)
+  // contains the documentId of the currently active document
+  const [currentDocument, setCurrentDocument] = useState<string | null>(null)
 
   useEffect(() => {
+    const onLoad = async () => {
+      try {
+        await Auth.currentSession()
+        setIsAuthenticated(true)
+      } catch (error) {
+        if (error !== "No current user") {
+          alert(error)
+        }
+      }
+      setIsAuthenticating(false)
+    }
+
     onLoad()
   }, [])
 
-  const onLoad = async () => {
-    try {
-      await Auth.currentSession()
-      setIsAuthenticated(true)
-    } catch (error) {
-      if (error !== "No current user") {
-        alert(error)
-      }
-    }
-    setIsAuthenticating(false)
-  }
-
   return isAuthenticating ? null : (
-    <AppContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AppContextProvider
+      value={{ isAuthenticated, setIsAuthenticated, currentDocument, setCurrentDocument }}
+    >
       <Router>
         <Switch>
           <Route exact path="/login">
