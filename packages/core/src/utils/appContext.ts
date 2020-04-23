@@ -1,4 +1,4 @@
-import createContext from "../utils/createContext"
+import createContext from "./createContext"
 
 export const [useAppContext, AppContextProvider] = createContext<{
   isAuthenticated: boolean

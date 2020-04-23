@@ -1,13 +1,14 @@
 import React, { useState, FormEvent } from "react"
 import { Auth } from "aws-amplify"
-import { useAppContext } from "../utils/appContext"
-import {useHistory} from "react-router-dom"
+import { useHistory, Link } from "react-router-dom"
+
+import { useAppContext } from "@writing-tool/core"
 
 const Login = () => {
   const { setIsAuthenticated } = useAppContext()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-	const history = useHistory()
+  const history = useHistory()
 
   const validate = () => {
     return email.length > 0 && password.length > 0
@@ -27,6 +28,7 @@ const Login = () => {
 
   return (
     <div>
+      <div>Log in to use the editor</div>
       <form onSubmit={handleSubmit}>
         <div>
           <label>
@@ -52,6 +54,9 @@ const Login = () => {
           Login
         </button>
       </form>
+      <div>
+        or <Link to="/signup">Signup</Link>
+      </div>
     </div>
   )
 }

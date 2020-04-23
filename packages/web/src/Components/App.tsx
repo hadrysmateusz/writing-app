@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react"
 import { Auth } from "aws-amplify"
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom"
+
+import { AppContextProvider } from "@writing-tool/core"
 
 import { MediumAuthRedirectPage, LoginPage, EditorPage, SignupPage } from "Pages"
-import { AppContextProvider } from "../utils/appContext"
 
 export const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -43,7 +44,7 @@ export const App = () => {
             <MediumAuthRedirectPage />
           </Route>
           <Route path="/" exact>
-            <EditorPage />
+            {isAuthenticated ? <EditorPage /> : <Redirect to="/login" />}
           </Route>
           <Route>
             <h2>Page not found!</h2>

@@ -1,10 +1,14 @@
 import React from "react"
-import { useAppContext } from "../utils/appContext"
-import { Editor, Sidebar } from "@writing-tool/core"
-import { ConnectWithMedium } from "@writing-tool/core/src/components/ConnectWithMedium"
-import { LogoutButton } from "Components/LogoutButton"
 import { Link } from "react-router-dom"
 import styled from "styled-components/macro"
+
+import {
+  Editor,
+  Sidebar,
+  useAppContext,
+  LogoutButton,
+  ConnectWithMedium,
+} from "@writing-tool/core"
 
 const Container = styled.div`
   display: grid;
@@ -24,32 +28,13 @@ const EditorPage = () => {
   const { isAuthenticated } = useAppContext()
 
   return (
-    <div>
-      {isAuthenticated ? (
-        <Container>
-          <Sidebar>
-            {isAuthenticated ? (
-              <LogoutButton />
-            ) : (
-              <>
-                <Link to="/login">Login</Link>&nbsp;
-                <Link to="/signup">Signup</Link>
-              </>
-            )}
-            <ConnectWithMedium />
-          </Sidebar>
-          <Editor />
-        </Container>
-      ) : (
-        <UnauthContainer>
-          <div>Log in to use the editor</div>
-          <div>
-            <Link to="/login">Login</Link>&nbsp;
-            <Link to="/signup">Signup</Link>
-          </div>
-        </UnauthContainer>
-      )}
-    </div>
+    <Container>
+      <Sidebar>
+        <LogoutButton />
+        <ConnectWithMedium />
+      </Sidebar>
+      <Editor />
+    </Container>
   )
 }
 

@@ -1,7 +1,8 @@
 import React, { useState, FormEvent } from "react"
-import { useHistory } from "react-router-dom"
-import { useAppContext } from "../utils/appContext"
+import { useHistory, Link } from "react-router-dom"
 import { Auth } from "aws-amplify"
+
+import { useAppContext } from "@writing-tool/core"
 
 const Signup = () => {
   const [email, setEmail] = useState("")
@@ -128,7 +129,21 @@ const Signup = () => {
     </form>
   )
 
-  return <div>{isLoading ? "Please wait" : newUser === null ? renderForm() : renderConfirmationForm()}</div>
+  return (
+    <div>
+      <div>Create an account to get started</div>
+      <div>
+        {isLoading
+          ? "Please wait"
+          : newUser === null
+          ? renderForm()
+          : renderConfirmationForm()}
+      </div>
+      <div>
+        or <Link to="/login">Login</Link>&nbsp;
+      </div>
+    </div>
+  )
 }
 
 export default Signup
