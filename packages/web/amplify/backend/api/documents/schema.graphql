@@ -1,0 +1,6 @@
+type Document @model {
+  userId: String!
+  documentId: String!
+  content: String!
+  title: String!
+}

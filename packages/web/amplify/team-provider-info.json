@@ -10,6 +10,11 @@
             "StackName": "amplify-writing-tool-amplify-dev-170439",
             "StackId": "arn:aws:cloudformation:us-east-1:873625242402:stack/amplify-writing-tool-amplify-dev-170439/17cac660-8706-11ea-b257-1201663355d3",
             "AmplifyAppId": "d13ktk9dt5un27"
+        },
+        "categories": {
+            "auth": {
+                "writingtoolauth": {}
+            }
         }
     }
 }
