@@ -23,7 +23,7 @@ function EditorComponent({ saveDocument }: { saveDocument: () => void }) {
 const Container = styled.div`
   margin: 40px auto;
   padding: 20px;
-  max-width: 600px;
+  width: 600px;
   font-size: 20px;
   box-sizing: content-box;
 `
