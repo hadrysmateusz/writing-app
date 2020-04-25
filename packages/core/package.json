@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "main": "src/index.ts",
+  "scripts": {
+    "link-models": "cd src && ln -s ../../web/src/models models && cd ..",
+    "unlink-models": "unlink src/models",
+    "postinstall": "yarn link-models"
+  },
   "dependencies": {
     "@slate-plugin-system/core": "0.1.16-1",
     "@types/is-url": "^1.2.28",
