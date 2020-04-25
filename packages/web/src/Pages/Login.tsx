@@ -1,14 +1,13 @@
 import React, { useState, FormEvent } from "react"
 import { Auth } from "aws-amplify"
-import { useHistory, Link } from "react-router-dom"
+import { Link, Redirect } from "react-router-dom"
 
 import { useAppContext } from "@writing-tool/core"
 
 const Login = () => {
-  const { setIsAuthenticated } = useAppContext()
+  const { setIsAuthenticated, isAuthenticated } = useAppContext()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const history = useHistory()
 
   const validate = () => {
     return email.length > 0 && password.length > 0
@@ -20,13 +19,14 @@ const Login = () => {
     try {
       await Auth.signIn(email, password)
       setIsAuthenticated(true)
-      history.push("/")
     } catch (error) {
       alert(error.message)
     }
   }
 
-  return (
+  return isAuthenticated ? (
+    <Redirect to="/" />
+  ) : (
     <div>
       <div>Log in to use the editor</div>
       <form onSubmit={handleSubmit}>

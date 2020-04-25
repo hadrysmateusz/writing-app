@@ -1,5 +1,5 @@
 import React, { useState, FormEvent } from "react"
-import { useHistory, Link } from "react-router-dom"
+import { Link, Redirect } from "react-router-dom"
 import { Auth } from "aws-amplify"
 
 import { useAppContext } from "@writing-tool/core"
@@ -9,9 +9,8 @@ const Signup = () => {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [confirmationCode, setConfirmationCode] = useState("")
-  const history = useHistory()
   const [newUser, setNewUser] = useState<any>(null)
-  const { setIsAuthenticated } = useAppContext()
+  const { setIsAuthenticated, isAuthenticated } = useAppContext()
   const [isLoading, setIsLoading] = useState(false)
 
   const validateForm = () => {
@@ -60,7 +59,6 @@ const Signup = () => {
       await Auth.confirmSignUp(email, confirmationCode)
       await Auth.signIn(email, password)
       setIsAuthenticated(true)
-      history.push("/")
     } catch (error) {
       // TODO: better error handling
       alert("error")
@@ -129,7 +127,9 @@ const Signup = () => {
     </form>
   )
 
-  return (
+  return isAuthenticated ? (
+    <Redirect to="/" />
+  ) : (
     <div>
       <div>Create an account to get started</div>
       <div>
