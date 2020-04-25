@@ -1,31 +1,27 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { Auth } from "aws-amplify"
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom"
 
 import { AppContextProvider } from "@writing-tool/core"
 
 import { MediumAuthRedirectPage, LoginPage, EditorPage, SignupPage } from "Pages"
+import { useAsyncEffect } from "@writing-tool/core/src/hooks"
 
 export const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isAuthenticating, setIsAuthenticating] = useState(true)
-  // contains the documentId of the currently active document
   const [currentDocument, setCurrentDocument] = useState<string | null>(null)
 
-  useEffect(() => {
-    const onLoad = async () => {
-      try {
-        await Auth.currentSession()
-        setIsAuthenticated(true)
-      } catch (error) {
-        if (error !== "No current user") {
-          alert(error)
-        }
+  useAsyncEffect(async () => {
+    try {
+      await Auth.currentSession()
+      setIsAuthenticated(true)
+    } catch (error) {
+      if (error !== "No current user") {
+        alert(error)
       }
-      setIsAuthenticating(false)
     }
-
-    onLoad()
+    setIsAuthenticating(false)
   }, [])
 
   return isAuthenticating ? null : (
