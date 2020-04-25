@@ -7,29 +7,11 @@ import { App } from "Components/App"
 import "./index.css"
 import * as serviceWorker from "./serviceWorker"
 import config from "./config"
+import aws_exports from "./aws-exports"
 
-import { awsConfig } from "@writing-tool/shared"
 import { loadDevTools, loadConfig } from "@writing-tool/core"
 
-Amplify.configure({
-  Auth: {
-    mandatorySignIn: true,
-    region: awsConfig.cognito.REGION,
-    userPoolId: awsConfig.cognito.USER_POOL_ID,
-    identityPoolId: awsConfig.cognito.IDENTITY_POOL_ID,
-    userPoolWebClientId: awsConfig.cognito.APP_CLIENT_ID,
-  },
-
-  API: {
-    endpoints: [
-      {
-        name: "documents",
-        endpoint: awsConfig.apiGateway.URL,
-        region: awsConfig.apiGateway.REGION,
-      },
-    ],
-  },
-})
+Amplify.configure(aws_exports)
 
 // load and install the dev tools (if they need to be)
 // and when that's done, let's render the app
