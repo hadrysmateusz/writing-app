@@ -35,7 +35,8 @@
 		"build": "react-app-rewired build",
 		"predeploy": "yarn build",
 		"deploy": "netlify deploy --prod",
-		"eject": "react-app-rewired eject"
+		"eject": "react-app-rewired eject",
+		"generate-models": "amplify codegen models"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
