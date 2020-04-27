@@ -1,56 +1,50 @@
 import React, { useState, useCallback } from "react"
-import { API } from "aws-amplify"
+import { DataStore } from "aws-amplify"
 
 import { LogoutButton } from "../LogoutButton"
 import { ConnectWithMedium } from "../ConnectWithMedium"
 import { useAsyncEffect } from "../../hooks"
-import { Document } from "../../types"
-import { useAppContext } from "../../utils"
+import { Document } from "../../models"
+import { createDocument } from "../../helpers"
 
 export const Sidebar: React.FC = () => {
-  // TODO: replace any type with the proper document object interface
-  const [documents, setDocuments] = useState<any[]>([])
+  const [documents, setDocuments] = useState<Document[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useAsyncEffect(async () => {
-    // TODO: handle unauthenticated calls
     try {
-      // TODO: check if an error is thrown instead of returned when the status of response is 4xx or 5xx
-      const { data, error } = await API.get("documents", "/documents", undefined)
-      if (error) {
-        setError(error)
-        return
-      }
-
-      setDocuments(data)
-      console.log(data)
+      const documents = await DataStore.query(Document)
+      setDocuments(documents)
     } catch (error) {
-      console.error(error)
       setError(error.message)
     }
   }, [])
+
+  const handleCreateDocument = async () => {
+    const title = prompt("Title") ?? ""
+    createDocument({ title, content: "" })
+  }
 
   return (
     <div>
       <div>
         <LogoutButton />
         <ConnectWithMedium />
+        <button onClick={handleCreateDocument}>Create New</button>
       </div>
       <div>
         {error ??
-          documents.map((doc) => (
-            <SidebarDocumentItem key={doc.documentId} document={doc} />
-          ))}
+          documents.map((doc) => <SidebarDocumentItem key={doc.id} document={doc} />)}
       </div>
     </div>
   )
 }
 
 const SidebarDocumentItem = ({ document }: { document: Document }) => {
-  const { setCurrentDocument } = useAppContext()
+  // const { setCurrentDocument } = useAppContext()
 
   const openDocument = useCallback(() => {
-    setCurrentDocument(document.documentId)
+    // setCurrentDocument(document.documentId)
   }, [])
 
   // const createdAt = new Date(document.createdAt).toLocaleString()
