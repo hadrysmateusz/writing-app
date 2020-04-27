@@ -10,15 +10,8 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "userId": {
-                    "name": "userId",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "documentId": {
-                    "name": "documentId",
+                "title": {
+                    "name": "title",
                     "isArray": false,
                     "type": "String",
                     "isRequired": true,
@@ -26,13 +19,6 @@ export const schema = {
                 },
                 "content": {
                     "name": "content",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "title": {
-                    "name": "title",
                     "isArray": false,
                     "type": "String",
                     "isRequired": true,
@@ -45,11 +31,29 @@ export const schema = {
                 {
                     "type": "model",
                     "properties": {}
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "provider": "userPools",
+                                "ownerField": "owner",
+                                "allow": "owner",
+                                "identityClaim": "cognito:username",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete"
+                                ]
+                            }
+                        ]
+                    }
                 }
             ]
         }
     },
     "enums": {},
     "nonModels": {},
-    "version": "d7da5df60c98281c02d91736340a6830"
+    "version": "069f63b9de9838300f2597db9befedd1"
 };
