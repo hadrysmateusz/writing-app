@@ -9,6 +9,7 @@ import { Document } from "../../models"
 
 export const Sidebar: React.FC<{
   switchEditor: SwitchEditor
+  currentContent: Node[]
   documents: Document[]
   saveDocument: () => void
   createDocument: (doc: CreateDocumentType) => void
@@ -27,8 +28,10 @@ export const Sidebar: React.FC<{
       <div>
         <LogoutButton />
         <ConnectWithMedium />
-        <button onClick={handleCreateDocument}>Create New</button>
+      </div>
+      <div>
         <button onClick={handleSaveDocument}>Save</button>
+        <button onClick={handleCreateDocument}>Create New</button>
       </div>
       <div>
         {documents.map((doc) => (
