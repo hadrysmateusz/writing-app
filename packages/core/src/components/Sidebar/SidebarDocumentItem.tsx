@@ -30,6 +30,7 @@ const Container = styled.div`
   justify-content: space-between;
 `
 const Title = styled.div`
+  cursor: pointer;
   font-weight: bold;
 `
 const DeleteButton = styled.div`
