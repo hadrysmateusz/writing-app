@@ -20,7 +20,7 @@ import {
   HorizontalRulePlugin,
   MoveNodesPlugin,
   ImagePlugin,
-  OnBreakSetDefaultPlugin
+  OnBreakSetDefaultPlugin,
 } from "./slate-plugins"
 
 const HistoryPlugin = () => ({ editorOverrides: withHistory })
@@ -30,7 +30,7 @@ export const plugins = [
   MoveNodesPlugin(),
   ImagePlugin(),
   MarkdownShortcutsPlugin({
-    onToggleOverrides: { [ListType.UL_LIST]: toggleList, [ListType.OL_LIST]: toggleList }
+    onToggleOverrides: { [ListType.UL_LIST]: toggleList, [ListType.OL_LIST]: toggleList },
   }),
   LoggerPlugin(),
   LinkPlugin(),
@@ -46,7 +46,7 @@ export const plugins = [
   StrikethroughPlugin({ hotkey: "mod+shift+k" }),
   InlineCodePlugin({ hotkey: "mod+e" }),
   SoftBreakPlugin({
-    exclude: [...Object.values(HeadingType)]
+    exclude: [...Object.values(HeadingType)],
   }),
-  ParagraphPlugin()
+  ParagraphPlugin(),
 ]

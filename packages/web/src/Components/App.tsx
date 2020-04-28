@@ -10,7 +10,6 @@ import { useAsyncEffect } from "@writing-tool/core/src/hooks"
 export const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isAuthenticating, setIsAuthenticating] = useState(true)
-  const [currentDocument, setCurrentDocument] = useState<string | null>(null)
 
   useAsyncEffect(async () => {
     try {
@@ -25,9 +24,7 @@ export const App = () => {
   }, [])
 
   return isAuthenticating ? null : (
-    <AppContextProvider
-      value={{ isAuthenticated, setIsAuthenticated, currentDocument, setCurrentDocument }}
-    >
+    <AppContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
       <Router>
         <Switch>
           <Route exact path="/login">

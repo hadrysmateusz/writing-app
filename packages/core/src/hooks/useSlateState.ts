@@ -1,23 +1,14 @@
-import { useState, useCallback } from "react"
-import { serialize, deserialize } from "../components/Editor/serialization"
 import { Node } from "slate"
+
+import { serialize, deserialize } from "../components/Editor/serialization"
 
 export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
 
 export const loadFromLocalStorage = () => {
-  return deserialize(localStorage.getItem("content") || defaultState)
+  const serializedContent = localStorage.getItem("content")
+  return serializedContent ? deserialize(serializedContent) : defaultState
 }
 
-export const saveToLocalStorage = (value) => {
+export const saveToLocalStorage = (value: Node[]) => {
   localStorage.setItem("content", serialize(value))
-}
-
-export const useSlateState = (): [Node[], (value: Node[]) => void] => {
-  const [value, setValue] = useState<Node[]>(loadFromLocalStorage())
-  const onChange = useCallback((value: Node[]) => {
-    setValue(value)
-    saveToLocalStorage(value)
-  }, [])
-
-  return [value, onChange]
 }

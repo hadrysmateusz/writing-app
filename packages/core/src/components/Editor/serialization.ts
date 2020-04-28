@@ -1,15 +1,19 @@
-// TODO: optimize this
+import { Node } from "slate"
 
-const EMPTY = [{ children: [{ text: "" }] }]
-
-export const serialize = (value) => {
+export const serialize = (value: Node[]) => {
 	return JSON.stringify(value)
 }
 
-export const deserialize = (value) => {
+export const deserialize = (value: string): Node[] => {
 	try {
-		return JSON.parse(value)
+		return JSON.parse(value) as Node[]
 	} catch (err) {
-		return EMPTY
+		console.group("Couldn't deserialize JSON to slate value")
+		console.log("VALUE:")
+		console.log(value)
+		console.log("ERROR:")
+		console.log(err)
+		console.groupEnd()
+		throw new Error("Couldn't deserialize JSON to slate value")
 	}
 }

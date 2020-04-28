@@ -2634,10 +2634,10 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@slate-plugin-system/core@0.1.16-1":
-  version "0.1.16-1"
-  resolved "https://registry.yarnpkg.com/@slate-plugin-system/core/-/core-0.1.16-1.tgz#6da8eeb806503405e768e36a7b43a19c5948aece"
-  integrity sha512-PKVk2245H83YlMnj5Uych7e3mZmtnd3RByyuezp/lOL6flHjQp7ckt0hZe2t87nW25SmKnbJzL5Q9g5qrWdtFQ==
+"@slate-plugin-system/core@^0.1.15":
+  version "0.1.1504"
+  resolved "https://registry.yarnpkg.com/@slate-plugin-system/core/-/core-0.1.1504.tgz#37ff3a7cd34b689d8249100833274aaf9f3477a6"
+  integrity sha512-Q6pS9nnHu8qSrulll/DE/BGxIedR2o9MwMA3dlXWlqqHNVqZB4UJMKwRBmQvXvQGeUK10EKeA1VrH1Ifm/wQVQ==
   dependencies:
     "@types/react" "16.9.26"
     "@types/react-dom" "16.9.5"
