@@ -1,23 +1,24 @@
 {
-	"name": "writing-tool",
-	"private": true,
+  "name": "writing-tool",
+  "private": true,
   "workspaces": {
     "packages": [
       "packages/*"
     ],
     "nohoist": []
   },
-	"devDependencies": {
+  "devDependencies": {
     "concurrently": "^5.1.0",
     "cross-env": "^7.0.2",
     "shx": "^0.3.2",
     "typescript": "^3.8.3",
-    "wait-on": "^4.0.2"
-	},
-	"scripts": {
-		"kill-server": "lsof -ti tcp:3000 | xargs kill",
-		"clean": "yarn workspaces run clean",
+    "wait-on": "^4.0.2",
+    "prettier": "2.0.5"
+  },
+  "scripts": {
+    "kill-server": "lsof -ti tcp:3000 | xargs kill",
+    "clean": "yarn workspaces run clean",
     "dev:desktop": "cross-env BROWSER=none concurrently --kill-others \"yarn dev:web\" \"yarn workspace @writing-tool/desktop compile -w\" \"wait-on http://localhost:3000 && yarn workspace @writing-tool/desktop start\"",
     "dev:web": "yarn workspace @writing-tool/web start"
-	}
+  }
 }
