@@ -5,4 +5,4 @@ import { Ancestor } from "slate"
  * TODO: this might return a false positive when a node has some marks
  */
 export const isBlockTextEmpty = (node: Ancestor) =>
-	node.children && node.children[node.children.length - 1]?.text?.length === 0
+  node.children && node.children[node.children.length - 1]?.text?.length === 0

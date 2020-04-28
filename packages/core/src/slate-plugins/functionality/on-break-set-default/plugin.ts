@@ -3,12 +3,14 @@ import { OnBreakSetDefaultOptions } from "./types"
 import { withOnBreakSetDefault } from "./editorOverrides"
 
 const defaultOptions: OnBreakSetDefaultOptions = {
-  defaultType: "paragraph"
+  defaultType: "paragraph",
 }
 
-export const OnBreakSetDefaultPlugin = (options: OnBreakSetDefaultOptions = {}): SlatePlugin => {
+export const OnBreakSetDefaultPlugin = (
+  options: OnBreakSetDefaultOptions = {}
+): SlatePlugin => {
   Object.assign(defaultOptions, options)
   return {
-    editorOverrides: withOnBreakSetDefault(options)
+    editorOverrides: withOnBreakSetDefault(options),
   }
 }

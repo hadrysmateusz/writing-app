@@ -30,7 +30,10 @@ export const plugins = [
   MoveNodesPlugin(),
   ImagePlugin(),
   MarkdownShortcutsPlugin({
-    onToggleOverrides: { [ListType.UL_LIST]: toggleList, [ListType.OL_LIST]: toggleList },
+    onToggleOverrides: {
+      [ListType.UL_LIST]: toggleList,
+      [ListType.OL_LIST]: toggleList,
+    },
   }),
   LoggerPlugin(),
   LinkPlugin(),

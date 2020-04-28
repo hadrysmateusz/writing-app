@@ -3,7 +3,10 @@ import { Block } from "../../../slate-helpers"
 import { SoftBreakEditor } from "../../functionality/soft-break/types"
 import { CODE_BLOCK } from "./types"
 
-export const onKeyDownCodeBlock = () => (event: KeyboardEvent, editor: SoftBreakEditor) => {
+export const onKeyDownCodeBlock = () => (
+  event: KeyboardEvent,
+  editor: SoftBreakEditor
+) => {
   if (isHotkey("Enter", event)) {
     const [firstNode] = Block.first(editor)
 

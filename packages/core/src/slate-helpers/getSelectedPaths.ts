@@ -4,14 +4,18 @@ import { sortPaths } from "./sortPaths"
 // Simplified version of getSelectedNodes
 
 // TODO: make sure there are no duplicates in the result
-export const getSelectedPaths = (editor: Editor, direction: "asc" | "desc" = "asc"): Path[] => {
+export const getSelectedPaths = (
+  editor: Editor,
+  direction: "asc" | "desc" = "asc"
+): Path[] => {
   // TODO: better handle this scenario
   if (!editor.selection) return []
 
-	// narrow down the selection
+  // narrow down the selection
   const [...nodeEntries] = Editor.nodes(editor, {
     mode: "lowest",
-    match: (n) => !Editor.isEditor(n) && Element.isElement(n) && !editor.isInline(n)
+    match: (n) =>
+      !Editor.isEditor(n) && Element.isElement(n) && !editor.isInline(n),
   })
 
   // if there are no nodes there will be no commonPath paths
@@ -49,12 +53,19 @@ const getCommonPaths = (
 
   // this should never happen but it's here just in case
   if (numUnique === 0) {
-    throw new Error("Unexpected scenario, nodeEntries might have been duplicated")
+    throw new Error(
+      "Unexpected scenario, nodeEntries might have been duplicated"
+    )
   }
 
   // if there is only one unique value it means that we are still in the common part and we need to move further
   if (numUnique === 1) {
-    return getCommonPaths(editor, nodeEntries, [...commonPath, values[0]], index + 1)
+    return getCommonPaths(
+      editor,
+      nodeEntries,
+      [...commonPath, values[0]],
+      index + 1
+    )
   }
 
   // if all children of the parent node are selected return the parent, else return all selected child nodes
@@ -77,7 +88,11 @@ const getUniqueValues = (nodeEntries: NodeEntry[], index: number): number[] => {
   return Array.from(set)
 }
 
-const shouldRoundSelection = (editor: Editor, commonPath: Path, numSelected: number) => {
+const shouldRoundSelection = (
+  editor: Editor,
+  commonPath: Path,
+  numSelected: number
+) => {
   const commonNode = Node.get(editor, commonPath)
   // if the commonNode is the editor, don't round
   if (Editor.isEditor(commonNode)) return false

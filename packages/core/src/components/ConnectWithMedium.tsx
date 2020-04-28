@@ -7,13 +7,15 @@ import {
   HOSTING_URL,
   MEDIUM_API_AUTH_URL,
   API_BASE_URL,
-  MESSAGE_TYPES
+  MESSAGE_TYPES,
 } from "@writing-tool/core"
 
 export const ConnectWithMedium = () => {
   const popupWindow = useRef(null)
   const [oAuthState] = useState("asdf") // TODO: generate proper state string
-  const redirect_uri = encodeURIComponent(HOSTING_URL + ROUTES.MEDIUM_AUTH_CALLBACK)
+  const redirect_uri = encodeURIComponent(
+    HOSTING_URL + ROUTES.MEDIUM_AUTH_CALLBACK
+  )
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -40,13 +42,13 @@ export const ConnectWithMedium = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
-          "Accept-Charset": "utf-8"
+          "Accept": "application/json",
+          "Accept-Charset": "utf-8",
         },
         body: {
           code,
-          redirect_uri
-        }
+          redirect_uri,
+        },
       })
 
       const data = await apiRes.json()
@@ -118,5 +120,7 @@ export const ConnectWithMedium = () => {
     )
   }
 
-  return <button onMouseDown={initMediumAuthentication}>Connect with Medium</button>
+  return (
+    <button onMouseDown={initMediumAuthentication}>Connect with Medium</button>
+  )
 }

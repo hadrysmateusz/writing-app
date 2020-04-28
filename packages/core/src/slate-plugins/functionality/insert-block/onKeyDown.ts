@@ -10,13 +10,16 @@ export const onKeyDownInsertBlock = ({
   hotkey = "mod+Enter",
   node = defaultNode,
   include,
-  exclude
+  exclude,
 }: InsertBlockPluginOptions = {}) => (event: KeyboardEvent, editor: Editor) => {
   if (isHotkey(hotkey, event)) {
     const [lastNode, lastPath] = Block.last(editor)
     if (!isNodeIncluded(lastNode, include, exclude)) return
     const nextPath = Path.next(lastPath)
     // the node has to be deep cloned or else the react-keys will get duplicated
-    Transforms.insertNodes(editor, cloneDeep(node), { at: nextPath, select: true })
+    Transforms.insertNodes(editor, cloneDeep(node), {
+      at: nextPath,
+      select: true,
+    })
   }
 }

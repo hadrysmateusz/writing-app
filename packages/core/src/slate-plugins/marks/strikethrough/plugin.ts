@@ -5,8 +5,8 @@ import { renderLeafStrikethrough } from "./renderLeaf"
 import { StrikethroughPluginOptions, STRIKE } from "./types"
 
 export const StrikethroughPlugin = ({
-	hotkey = "mod+shift+k"
+  hotkey = "mod+shift+k",
 }: StrikethroughPluginOptions): SlatePlugin => ({
-	renderLeaf: renderLeafStrikethrough(),
-	onKeyDown: onKeyDownMark({ mark: STRIKE, hotkey })
+  renderLeaf: renderLeafStrikethrough(),
+  onKeyDown: onKeyDownMark({ mark: STRIKE, hotkey }),
 })

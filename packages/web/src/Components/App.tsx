@@ -1,10 +1,20 @@
 import React, { useState } from "react"
 import { Auth } from "aws-amplify"
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom"
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom"
 
 import { AppContextProvider } from "@writing-tool/core"
 
-import { MediumAuthRedirectPage, LoginPage, EditorPage, SignupPage } from "Pages"
+import {
+  MediumAuthRedirectPage,
+  LoginPage,
+  EditorPage,
+  SignupPage,
+} from "Pages"
 import { useAsyncEffect } from "@writing-tool/core/src/hooks"
 
 export const App = () => {

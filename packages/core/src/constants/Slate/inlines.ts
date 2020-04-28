@@ -3,7 +3,7 @@
  */
 
 const INLINES = {
-	LINK: "link"
+  LINK: "link",
 }
 
 export default INLINES

@@ -1,4 +1,4 @@
-import { Transforms, Path, Node, Point, Editor, Range } from 'slate'
+import { Transforms, Path, Node, Point, Editor, Range } from "slate"
 
 import { getLastPathIndex } from "../../../../slate-helpers"
 
@@ -52,7 +52,7 @@ const getNewPathBase = (
   assume the length of one path is the same as the other */
   const commonLength = oldPaths[0].length
 
-  const index = oldPaths.findIndex(oldPath => {
+  const index = oldPaths.findIndex((oldPath) => {
     const oldCommon = oldSelectionPoint.path.slice(0, commonLength)
     return oldPath.every((value, i) => value === oldCommon[i])
   })
@@ -69,11 +69,11 @@ const mapSelection = (oldPaths: Path[], newPaths: Path[], selection: Range) => {
   return {
     anchor: {
       path: newAnchorBase.concat(selection.anchor.path.slice(commonLength)),
-      offset: selection.anchor.offset
+      offset: selection.anchor.offset,
     },
     focus: {
       path: newFocusBase.concat(selection.focus.path.slice(commonLength)),
-      offset: selection.focus.offset
-    }
+      offset: selection.focus.offset,
+    },
   }
 }

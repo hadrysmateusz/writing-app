@@ -5,8 +5,8 @@ import { renderLeafBold } from "./renderLeaf"
 import { BoldPluginOptions, BOLD } from "./types"
 
 export const BoldPlugin = ({
-	hotkey = "mod+b"
+  hotkey = "mod+b",
 }: BoldPluginOptions = {}): SlatePlugin => ({
-	renderLeaf: renderLeafBold(),
-	onKeyDown: onKeyDownMark({ mark: BOLD, hotkey })
+  renderLeaf: renderLeafBold(),
+  onKeyDown: onKeyDownMark({ mark: BOLD, hotkey }),
 })

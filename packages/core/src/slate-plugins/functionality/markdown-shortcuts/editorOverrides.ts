@@ -1,6 +1,10 @@
 import { Editor, Range, Transforms, Text } from "slate"
 import { composeOverrides } from "@slate-plugin-system/core"
-import { MarkdownShortcutsPluginOptions, ShortcutUnit, ShortcutsList } from "./types"
+import {
+  MarkdownShortcutsPluginOptions,
+  ShortcutUnit,
+  ShortcutsList,
+} from "./types"
 import { BOLD, ITALIC } from "../../marks"
 
 export const withBlockShortcuts = ({
@@ -79,7 +83,9 @@ export const withBlockShortcuts = ({
       const checkMatch = (shortcut: ShortcutUnit, type: string): boolean => {
         // check if the text matches the shortcut
         let isMatch =
-          shortcut instanceof RegExp ? shortcut.test(beforeText) : shortcut === beforeText
+          shortcut instanceof RegExp
+            ? shortcut.test(beforeText)
+            : shortcut === beforeText
         // if it does, trigger the handler
         if (isMatch) doShortcut(type, shortcut)
         // return the result of the check to let the caller know if a match was found
@@ -121,7 +127,6 @@ export const withInlineShortcuts = ({}: MarkdownShortcutsPluginOptions) => <
   editor.normalizeNode = (entry) => {
     const [node, path] = entry
 
-
     Object.entries(matchers).some(([format, matcher]) => {
       const match = matcher.exec(node.text)
       if (!match) return false
@@ -159,14 +164,14 @@ export const withInlineShortcuts = ({}: MarkdownShortcutsPluginOptions) => <
       // TODO: this doesn't work fi there is any text afterwards
       // The setTimeout is necessary for the removeMark to work, but it might not be bullet-proof so more testing is required
       setTimeout(() => {
-        console.log("children",JSON.stringify(editor.children,null,2))
-        console.log("selection",JSON.stringify(editor.selection,null,2))
+        console.log("children", JSON.stringify(editor.children, null, 2))
+        console.log("selection", JSON.stringify(editor.selection, null, 2))
         console.log("marks", editor.marks)
         // clear the mark, so that whatever is typed next doesn't have it
         Editor.removeMark(editor, format)
         Transforms.insertText(editor, "")
-        console.log("children",JSON.stringify(editor.children,null,2))
-        console.log("selection",JSON.stringify(editor.selection,null,2))
+        console.log("children", JSON.stringify(editor.children, null, 2))
+        console.log("selection", JSON.stringify(editor.selection, null, 2))
         console.log("marks", editor.marks)
       }, 0)
 

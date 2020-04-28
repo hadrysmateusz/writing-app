@@ -1,13 +1,17 @@
-import { Transforms, Path, Editor } from 'slate'
+import { Transforms, Path, Editor } from "slate"
 
-import { ReactEditor } from 'slate-react'
-import { getSelectedNodes, isFirstChild, isLastChild } from "../../../slate-helpers"
-import { setSelectionAfterMoving } from './helpers'
+import { ReactEditor } from "slate-react"
+import {
+  getSelectedNodes,
+  isFirstChild,
+  isLastChild,
+} from "../../../slate-helpers"
+import { setSelectionAfterMoving } from "./helpers"
 
 const moveNodes = (editor: Editor, from: Path[], to: Path) => {
   if (!editor.selection) {
     // TODO: better handle this
-    console.log('no selection')
+    console.log("no selection")
     return
   }
 
@@ -20,9 +24,9 @@ const moveNodes = (editor: Editor, from: Path[], to: Path) => {
   Transforms.moveNodes(editor, {
     at: oldSelection,
     to,
-    match: node => {
+    match: (node) => {
       const path = ReactEditor.findPath(editor as ReactEditor, node)
-      const matches = from.some(fullPath => {
+      const matches = from.some((fullPath) => {
         if (path.length === fullPath.length) {
           return fullPath.every((index, i) => path[i] === index)
         }
@@ -30,24 +34,21 @@ const moveNodes = (editor: Editor, from: Path[], to: Path) => {
       })
       return matches
     },
-    mode: 'all'
+    mode: "all",
   })
 
   // Without this the selection is messed up after moving (may be a slate bug)
   setSelectionAfterMoving(editor, from, to, oldSelection)
 }
 
-export const onKeyDownMoveNodes = () => (
-  e: KeyboardEvent,
-  editor: Editor
-) => {
-  if (e.altKey && ['ArrowUp', 'ArrowDown'].includes(e.key)) {
+export const onKeyDownMoveNodes = () => (e: KeyboardEvent, editor: Editor) => {
+  if (e.altKey && ["ArrowUp", "ArrowDown"].includes(e.key)) {
     e.preventDefault()
 
     if (!editor.selection) return
 
     // This gets the common paths at the shallowest possible depth
-    const { fullPaths } = getSelectedNodes(editor, 'asc')
+    const { fullPaths } = getSelectedNodes(editor, "asc")
 
     const firstPath = fullPaths[0]
     const lastPath = fullPaths[fullPaths.length - 1]
@@ -57,12 +58,12 @@ export const onKeyDownMoveNodes = () => (
        isFirstChild/isLastChild checks to prevent errors but eventually 
        it should be replaced by moving into the parent node */
     switch (e.key) {
-      case 'ArrowUp':
+      case "ArrowUp":
         if (isFirstChild(firstPath)) break
         newPath = Path.previous(firstPath)
         moveNodes(editor, fullPaths, newPath)
         break
-      case 'ArrowDown':
+      case "ArrowDown":
         if (isLastChild(editor, lastPath)) break
         newPath = Path.next(lastPath)
         moveNodes(editor, fullPaths, newPath)

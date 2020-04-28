@@ -4,14 +4,14 @@ import { getRenderLeaf } from "@slate-plugin-system/core"
 import styled from "styled-components/macro"
 
 const StyledCode = styled.code`
-	font-family: monospace;
-	color: #151515;
-	background: #eee;
-	padding: 3px;
-	font-size: 0.91em;
+  font-family: monospace;
+  color: #151515;
+  background: #eee;
+  padding: 3px;
+  font-size: 0.91em;
 `
 
 export const renderLeafInlineCode = getRenderLeaf({
-	type: CODE_INLINE,
-	component: (props) => <StyledCode>{props.children}</StyledCode>
+  type: CODE_INLINE,
+  component: (props) => <StyledCode>{props.children}</StyledCode>,
 })

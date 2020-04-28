@@ -10,7 +10,7 @@ import {
   CODE_INLINE,
   STRIKE,
   HORIZONTAL_RULE,
-  IMAGE
+  IMAGE,
 } from "./../../slate-plugins"
 import { Node } from "slate"
 
@@ -84,6 +84,8 @@ export function parseToMarkdown(chunk: Node & { parentType?: string }) {
     case PARAGRAPH:
       return `${children}\n`
     default:
-      throw new Error(`Markdown Serializer encountered unknown type: ${chunk.type}`)
+      throw new Error(
+        `Markdown Serializer encountered unknown type: ${chunk.type}`
+      )
   }
 }

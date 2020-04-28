@@ -7,18 +7,16 @@ import React from "react"
  */
 
 function createContext<ContextType>() {
-  const ctx = React.createContext<
-    ContextType | undefined
-  >(undefined);
+  const ctx = React.createContext<ContextType | undefined>(undefined)
   function useContext() {
-    const c = React.useContext(ctx);
+    const c = React.useContext(ctx)
     if (!c)
       throw new Error(
         "This context can't be accessed outside a Provider with a value"
-      );
-    return c;
+      )
+    return c
   }
-  return [useContext, ctx.Provider] as const;
+  return [useContext, ctx.Provider] as const
 }
 
 export default createContext

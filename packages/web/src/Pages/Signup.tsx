@@ -14,7 +14,9 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const validateForm = () => {
-    return email.length > 0 && password.length > 0 && password === confirmPassword
+    return (
+      email.length > 0 && password.length > 0 && password === confirmPassword
+    )
   }
 
   const validateConfirmationForm = () => {

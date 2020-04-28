@@ -140,8 +140,12 @@ const Main = () => {
 
     try {
       // only get the first document (it should be the only one)
-      const [document] = await DataStore.query(Document, (c) => c.id("eq", currentEditor))
-      const content = document.content ? deserialize(document.content) : defaultState
+      const [document] = await DataStore.query(Document, (c) =>
+        c.id("eq", currentEditor)
+      )
+      const content = document.content
+        ? deserialize(document.content)
+        : defaultState
       setContent(content)
       // TODO: save history to be restored later
       // reset history

@@ -4,7 +4,9 @@ import { renderElementCodeBlock } from "./renderElement"
 import { CodeBlockPluginOptions } from "./types"
 import { onKeyDownCodeBlock } from "./onKeyDown"
 
-export const CodeBlockPlugin = (options?: CodeBlockPluginOptions): SlatePlugin => ({
-	renderElement: renderElementCodeBlock(options),
-	onKeyDown: onKeyDownCodeBlock()
+export const CodeBlockPlugin = (
+  options?: CodeBlockPluginOptions
+): SlatePlugin => ({
+  renderElement: renderElementCodeBlock(options),
+  onKeyDown: onKeyDownCodeBlock(),
 })

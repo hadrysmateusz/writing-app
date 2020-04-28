@@ -34,7 +34,11 @@ export const Sidebar: React.FC<{
       </div>
       <div>
         {documents.map((doc) => (
-          <SidebarDocumentItem key={doc.id} document={doc} switchEditor={switchEditor} />
+          <SidebarDocumentItem
+            key={doc.id}
+            document={doc}
+            switchEditor={switchEditor}
+          />
         ))}
       </div>
     </div>

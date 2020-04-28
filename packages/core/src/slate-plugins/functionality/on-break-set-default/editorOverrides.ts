@@ -3,7 +3,6 @@ import { EditorOverrides } from "@slate-plugin-system/core"
 import { OnBreakSetDefaultOptions } from "./types"
 import { isSelectionMultiLine, getSelectedPaths } from "../../../slate-helpers"
 
-
 /* TODO: when inserting line break while all text is selected except for whitespace (like newline characters)
   you end up with a lot of empty lines.
 
@@ -48,7 +47,11 @@ export const withOnBreakSetDefault = (
       }
 
       // set type of last node to its original type (because insertBreak caused it to take the first node's type)
-      Transforms.setNodes(editor, { type: lastNodeType }, { at: lastPathRef.current })
+      Transforms.setNodes(
+        editor,
+        { type: lastNodeType },
+        { at: lastPathRef.current }
+      )
 
       // remove the reference
       lastPathRef.unref()
@@ -66,7 +69,9 @@ export const withOnBreakSetDefault = (
       // TODO: this might cause issues in nested paths
       // we need to account for a case where the line break was inserted at the start of a block
       // in that case we want to reset the type of the previous node and not the currently selected one's
-      const transformPath = [newSelection.anchor.path[0] - (startWasSelected ? 1 : 0)]
+      const transformPath = [
+        newSelection.anchor.path[0] - (startWasSelected ? 1 : 0),
+      ]
 
       // set type of last node to its original type (because insertBreak caused it to take the first node's type)
       Transforms.setNodes(editor, { type: defaultType }, { at: transformPath })

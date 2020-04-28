@@ -15,7 +15,7 @@ export const Block = {
   closest(editor, options: { at?: Location } = {}): NodeEntry<Ancestor> {
     const nodeEntry = Editor.above(editor, {
       at: options.at,
-      match: (n) => Editor.isBlock(editor, n)
+      match: (n) => Editor.isBlock(editor, n),
     })
     if (!nodeEntry) throw new Error("There is no closest block")
     return nodeEntry
@@ -37,5 +37,5 @@ export const Block = {
     const { at = editor.selection } = options
     const endPoint = Range.end(at)
     return Block.closest(editor, { at: endPoint })
-  }
+  },
 }

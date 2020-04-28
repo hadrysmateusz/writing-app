@@ -12,14 +12,23 @@ const StyledImage = styled.img<{ selected: boolean; focused: boolean }>`
     props.selected && props.focused ? "0 0 0 3px #B4D5FF" : "none"};
 `
 
-export const ImageElement = ({ attributes, children, element }: RenderElementProps) => {
+export const ImageElement = ({
+  attributes,
+  children,
+  element,
+}: RenderElementProps) => {
   const selected = useSelected()
   const focused = useFocused()
 
   return (
     <div {...attributes} data-slate-type={IMAGE}>
       <div contentEditable={false}>
-        <StyledImage src={element.url} alt="" selected={selected} focused={focused} />
+        <StyledImage
+          src={element.url}
+          alt=""
+          selected={selected}
+          focused={focused}
+        />
       </div>
       {children}
     </div>

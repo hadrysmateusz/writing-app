@@ -1,6 +1,6 @@
 export interface OnKeyDownMarkOptions {
-	mark: string
-	hotkey: string
+  mark: string
+  hotkey: string
 }
 
 export const DEFAULT = "paragraph"

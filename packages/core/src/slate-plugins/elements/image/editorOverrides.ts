@@ -3,13 +3,13 @@ import {
   Block,
   isBlockTextEmpty,
   isFirstChild,
-  isLastChild
+  isLastChild,
 } from "../../../slate-helpers"
 import { isImageUrl, insertImage } from "./helpers"
 import { IMAGE } from "./types"
 import { Range, Node, Path, Transforms } from "slate"
 
-export const withImage= (): EditorOverrides => (editor) => {
+export const withImage = (): EditorOverrides => (editor) => {
   const { insertData, isVoid, deleteBackward, deleteForward } = editor
 
   // TODO: consider preventing removing image nodes when they are not selected (this requires checking if the cursor is at the first/last position)

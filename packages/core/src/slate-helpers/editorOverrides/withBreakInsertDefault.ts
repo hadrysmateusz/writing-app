@@ -24,7 +24,7 @@ interface BreakInsertDefaultOptions {
  */
 export const withBreakInsertDefault = ({
   types = [],
-  defaultType = "paragraph"
+  defaultType = "paragraph",
 }: BreakInsertDefaultOptions) => <T extends ReactEditor>(editor: T) => {
   const { insertBreak } = editor
 
@@ -42,8 +42,14 @@ export const withBreakInsertDefault = ({
         if (newSelection) {
           const startIsSelected =
             originalAnchor.offset === 0 || originalFocus.offset === 0
-          const transformPath = [newSelection.anchor.path[0] - (startIsSelected ? 1 : 0)]
-          Transforms.setNodes(editor, { type: defaultType }, { at: transformPath })
+          const transformPath = [
+            newSelection.anchor.path[0] - (startIsSelected ? 1 : 0),
+          ]
+          Transforms.setNodes(
+            editor,
+            { type: defaultType },
+            { at: transformPath }
+          )
         }
       }
     } catch (e) {

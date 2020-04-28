@@ -17,7 +17,10 @@ const HR = styled.div<{ selected: boolean; focused: boolean }>`
     props.selected && props.focused ? "0 0 0 3px #B4D5FF" : "none"};
 `
 
-export const HorizontalRuleElement = ({ attributes, children }: RenderElementProps) => {
+export const HorizontalRuleElement = ({
+  attributes,
+  children,
+}: RenderElementProps) => {
   const selected = useSelected()
   const focused = useFocused()
 

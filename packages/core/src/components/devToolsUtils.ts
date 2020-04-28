@@ -6,7 +6,7 @@ import { parseToMarkdown } from "./../slate-helpers"
 import {
   config,
   addDevToolsEventHandler,
-  removeDevToolsEventHandler
+  removeDevToolsEventHandler,
 } from "@writing-tool/core"
 
 export const useLogValue = (value) => {

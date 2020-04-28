@@ -1,16 +1,16 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow } from "electron"
 import IS_DEV from "./helpers/electron-is-dev"
 import path from "path"
 
 const START_URL = IS_DEV
-  ? 'http://localhost:3000'
-  : `file://${path.join(__dirname, 'web/index.html')}`
+  ? "http://localhost:3000"
+  : `file://${path.join(__dirname, "web/index.html")}`
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 1320,
-    height: 860
+    height: 860,
   })
 
   // and load the index.html of the app.
@@ -26,15 +26,15 @@ function createWindow () {
 app.whenReady().then(createWindow)
 
 // Quit when all windows are closed.
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
+  if (process.platform !== "darwin") {
     app.quit()
   }
 })
 
-app.on('activate', () => {
+app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {

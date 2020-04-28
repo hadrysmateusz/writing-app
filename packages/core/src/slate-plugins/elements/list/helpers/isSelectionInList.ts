@@ -3,4 +3,4 @@ import { isBlockActive } from "../../../../slate-helpers"
 import { ListType } from "../types"
 
 export const isSelectionInList = (editor: Editor): boolean =>
-	isBlockActive(editor, ListType.LIST_ITEM)
+  isBlockActive(editor, ListType.LIST_ITEM)

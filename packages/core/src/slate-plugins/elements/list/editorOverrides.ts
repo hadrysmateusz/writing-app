@@ -2,7 +2,10 @@ import { Editor, Path, Point, Range, Transforms } from "slate"
 
 import { EditorOverrides, composeOverrides } from "@slate-plugin-system/core"
 
-import { withBreakEmptyReset, withDeleteStartReset } from "../../../slate-helpers"
+import {
+  withBreakEmptyReset,
+  withDeleteStartReset,
+} from "../../../slate-helpers"
 
 import { ListType, ListOptions } from "./types"
 
@@ -16,9 +19,15 @@ const withListCore = (options: ListOptions): EditorOverrides => (editor) => {
    */
   editor.insertBreak = () => {
     if (editor.selection) {
-      const [paragraphNode, paragraphPath] = Editor.parent(editor, editor.selection)
+      const [paragraphNode, paragraphPath] = Editor.parent(
+        editor,
+        editor.selection
+      )
       if (paragraphNode.type === defaultType) {
-        const [listItemNode, listItemPath] = Editor.parent(editor, paragraphPath)
+        const [listItemNode, listItemPath] = Editor.parent(
+          editor,
+          paragraphPath
+        )
 
         if (listItemNode.type === ListType.LIST_ITEM) {
           if (!Range.isCollapsed(editor.selection)) {
@@ -42,7 +51,7 @@ const withListCore = (options: ListOptions): EditorOverrides => (editor) => {
               editor,
               {
                 type: ListType.LIST_ITEM,
-                children: [{ type: defaultType, children: [{ text: "" }] }]
+                children: [{ type: defaultType, children: [{ text: "" }] }],
               },
               { at: listItemPath }
             )
@@ -58,13 +67,13 @@ const withListCore = (options: ListOptions): EditorOverrides => (editor) => {
               editor,
               {
                 type: ListType.LIST_ITEM,
-                children: []
+                children: [],
               },
               { at: nextParagraphPath }
             )
             Transforms.moveNodes(editor, {
               at: nextParagraphPath,
-              to: nextListItemPath
+              to: nextListItemPath,
             })
           } else {
             /**
@@ -74,7 +83,7 @@ const withListCore = (options: ListOptions): EditorOverrides => (editor) => {
               editor,
               {
                 type: ListType.LIST_ITEM,
-                children: [{ type: defaultType, children: [{ text: "" }] }]
+                children: [{ type: defaultType, children: [{ text: "" }] }],
               },
               { at: nextListItemPath }
             )
@@ -87,7 +96,7 @@ const withListCore = (options: ListOptions): EditorOverrides => (editor) => {
           if (listItemNode.children.length > 1) {
             Transforms.moveNodes(editor, {
               at: nextParagraphPath,
-              to: nextListItemPath.concat(1)
+              to: nextListItemPath.concat(1),
             })
           }
 
@@ -105,19 +114,22 @@ const withListCore = (options: ListOptions): EditorOverrides => (editor) => {
 const breakEmptyList = (editor: Editor) => {
   Transforms.unwrapNodes(editor, {
     match: (n) => n.type === ListType.LIST_ITEM,
-    split: true
+    split: true,
   })
   Transforms.unwrapNodes(editor, {
     match: (n) => [ListType.UL_LIST, ListType.OL_LIST].includes(n.type),
-    split: true
+    split: true,
   })
 }
 
-const commonResetOptions = { types: [ListType.LIST_ITEM], onUnwrap: breakEmptyList }
+const commonResetOptions = {
+  types: [ListType.LIST_ITEM],
+  onUnwrap: breakEmptyList,
+}
 
 export const withList = (options: ListOptions) =>
   composeOverrides([
     withListCore(options),
     withDeleteStartReset(commonResetOptions),
-    withBreakEmptyReset(commonResetOptions)
+    withBreakEmptyReset(commonResetOptions),
   ])

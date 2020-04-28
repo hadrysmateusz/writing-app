@@ -3,5 +3,5 @@
  * It's a higher-order function that returns a matcher function checking the node's type
  */
 export const matchType = (type) => {
-	return (n) => n.type === type
+  return (n) => n.type === type
 }
