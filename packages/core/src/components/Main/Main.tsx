@@ -1,17 +1,17 @@
-import React, { useState, useCallback, useMemo } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import styled from "styled-components/macro"
-import { Node, createEditor, Editor } from "slate"
-import { DataStore } from "aws-amplify"
-import { Slate, ReactEditor, withReact } from "slate-react"
+import { Node } from "slate"
+import { DataStore, Predicates } from "aws-amplify"
+import { Slate, ReactEditor } from "slate-react"
 
-import { SlatePlugin } from "@slate-plugin-system/core"
+import { useCreateEditor } from "@slate-plugin-system/core"
 
 import { plugins } from "../../editorConfig"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
 import { Sidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
 import { useAsyncEffect } from "../../hooks"
-import { deserialize } from "../Editor/serialization"
+import { deserialize, serialize } from "../Editor/serialization"
 import { Document } from "../../models"
 
 const InnerContainer = styled.div`
@@ -20,21 +20,55 @@ const InnerContainer = styled.div`
   width: 100vw;
 `
 
+export type CreateDocumentType = {
+  title: string
+  content: string
+}
+
 export type SwitchEditor = (documentId: string) => void
 
 export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
 
-const initialize = () => {
-  return defaultState
-  // return loadFromLocalStorage()
-}
-
 const Main = () => {
   // currently selected editor - represented by the document id
   const [currentEditor, setCurrentEditor] = useState<string | null>(null)
-
+  const [documents, setDocuments] = useState<Document[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   // content of the currently selected editor
-  const [content, setContent] = useState<Node[]>(initialize())
+  const [content, setContent] = useState<Node[]>(defaultState)
+
+  /**
+   * Load documents from db
+   */
+  const loadDocuments = async () => {
+    try {
+      // TODO: This could be optimized by manually modifying state based on the subscription message type and content
+      const documents = await DataStore.query(Document, Predicates.ALL)
+      setDocuments(documents)
+      return documents
+    } catch (error) {
+      setError(error.message)
+      return []
+    }
+  }
+
+  useEffect(() => {
+    const initialize = async () => {
+      setIsLoading(true)
+      const documents = await loadDocuments()
+      if (!documents[0]) {
+        // TODO: create new document
+        throw new Error("No documents found")
+      }
+      setCurrentEditor(documents[0].id)
+      setIsLoading(false)
+
+      DataStore.observe(Document).subscribe(loadDocuments)
+    }
+
+    initialize()
+  }, [])
 
   /**
    * Switch the current editor based on the id of the document in it
@@ -44,6 +78,50 @@ const Main = () => {
     // TODO: maybe save the state of the editor (children, history, selection)
     setCurrentEditor(documentId)
   }, [])
+
+  /**
+   * Save document
+   */
+  const saveDocument = async () => {
+    try {
+      if (currentEditor === null) {
+        throw new Error("no editor is currently selected")
+      }
+
+      const original = documents.find((doc) => doc.id === currentEditor)
+
+      if (original === undefined) {
+        throw new Error("no document found matching current editor id")
+      }
+
+      const serializedContent = serialize(content)
+
+      const updatedDocument = await DataStore.save(
+        Document.copyOf(original, (updated) => {
+          updated.content = serializedContent
+        })
+      )
+
+      console.log(updatedDocument)
+    } catch (error) {
+      const msgBase = "Can't save the current document"
+      console.error(`${msgBase}: ${error.message}`)
+      setError(msgBase)
+    }
+  }
+
+  /**
+   * Create document
+   */
+  const createDocument = async ({ title, content }: CreateDocumentType) => {
+    const newDocument = await DataStore.save(
+      new Document({
+        title,
+        content,
+      })
+    )
+    return newDocument
+  }
 
   /**
    * onChange event handler for the Slate component
@@ -75,21 +153,8 @@ const Main = () => {
     }
   }, [currentEditor])
 
-  const applyPlugins = (editor: Editor, plugins: SlatePlugin[]): Editor => {
-    // we reverse the array to execute functions from right to left
-    plugins.reverse().forEach((plugin) => {
-      if (plugin.editorOverrides) {
-        editor = plugin.editorOverrides(editor)
-      }
-    })
-    return editor
-  }
-
-  const editor = useMemo(() => {
-    let editor = withReact(createEditor()) as Editor
-    editor = applyPlugins(editor, plugins)
-    return editor
-  }, []) as ReactEditor
+  // Create the editor object
+  const editor = useCreateEditor(plugins) as ReactEditor
 
   // DevTools utils
   useLogEditor(editor)
@@ -98,12 +163,19 @@ const Main = () => {
   return (
     <Slate editor={editor} value={content} onChange={onChange}>
       <InnerContainer>
-        <Sidebar
-          switchEditor={switchEditor}
-          currentEditor={currentEditor}
-          currentContent={content}
-        />
-        <EditorComponent />
+        {isLoading
+          ? "Loading..."
+          : error ?? (
+              <>
+                <Sidebar
+                  switchEditor={switchEditor}
+                  documents={documents}
+                  createDocument={createDocument}
+                  saveDocument={saveDocument}
+                />
+                <EditorComponent />
+              </>
+            )}
       </InnerContainer>
     </Slate>
   )
