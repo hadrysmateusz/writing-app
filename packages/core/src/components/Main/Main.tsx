@@ -6,7 +6,7 @@ import { Slate, ReactEditor } from "slate-react"
 
 import { useCreateEditor } from "@slate-plugin-system/core"
 
-import { plugins } from "../../editorConfig"
+import { plugins } from "../../pluginsList"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
 import { Sidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"

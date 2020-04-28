@@ -2,7 +2,7 @@ import React from "react"
 import styled from "styled-components/macro"
 import { Editable } from "@slate-plugin-system/core"
 
-import { plugins } from "../../editorConfig"
+import { plugins } from "../../pluginsList"
 import { Toolbar } from "../Toolbar"
 import HoveringToolbar from "../HoveringToolbar"
 import { EditableContainer } from "./styledComponents"
