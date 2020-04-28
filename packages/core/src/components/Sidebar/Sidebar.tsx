@@ -9,7 +9,6 @@ import { Document } from "../../models"
 
 export const Sidebar: React.FC<{
   switchEditor: SwitchEditor
-  currentContent: Node[]
   documents: Document[]
   saveDocument: () => void
   createDocument: (doc: CreateDocumentType) => void
