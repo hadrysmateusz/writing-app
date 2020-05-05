@@ -1,21 +1,26 @@
 import React from "react"
-import { Node } from "slate"
 
 import { LogoutButton } from "../LogoutButton"
 import { ConnectWithMedium } from "../ConnectWithMedium"
 import SidebarDocumentItem from "./SidebarDocumentItem"
-import { SwitchEditor, CreateDocumentType } from "../Main"
+import { SwitchEditor } from "../Main"
 import { Document } from "../../models"
 
-export const Sidebar: React.FC<{
+type SidebarProps = {
   switchEditor: SwitchEditor
   documents: Document[]
   saveDocument: () => void
-  createDocument: (doc: CreateDocumentType) => void
-}> = ({ switchEditor, saveDocument, createDocument, documents }) => {
+  newDocument: (shouldSwitch?: boolean) => Promise<Document | null>
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({
+  switchEditor,
+  saveDocument,
+  newDocument,
+  documents,
+}) => {
   const handleCreateDocument = async () => {
-    const title = prompt("Title") ?? ""
-    createDocument({ title, content: "" })
+    newDocument()
   }
 
   const handleSaveDocument = async () => {

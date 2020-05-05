@@ -6,12 +6,12 @@ import { Slate, ReactEditor } from "slate-react"
 
 import { useCreateEditor } from "@slate-plugin-system/core"
 
-import { plugins } from "../../pluginsList"
-import { useLogEditor, useLogValue } from "../devToolsUtils"
+import { deserialize, serialize } from "../Editor/serialization"
 import { Sidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
+import { useLogEditor, useLogValue } from "../devToolsUtils"
+import { plugins } from "../../pluginsList"
 import { useAsyncEffect } from "../../hooks"
-import { deserialize, serialize } from "../Editor/serialization"
 import { Document } from "../../models"
 
 const InnerContainer = styled.div`
@@ -23,6 +23,19 @@ const InnerContainer = styled.div`
 export type CreateDocumentType = {
   title: string
   content: string
+}
+
+/**
+ * Create document in datastore
+ */
+const createDocument = async ({ title, content }: CreateDocumentType) => {
+  const newDocument = await DataStore.save(
+    new Document({
+      title,
+      content,
+    })
+  )
+  return newDocument
 }
 
 export type SwitchEditor = (documentId: string) => void
@@ -53,13 +66,19 @@ const Main = () => {
     }
   }
 
+  /**
+   * Initialization effect
+   *
+   * - Fetches all of the user's documents
+   * - Sets up a documents subscription
+   */
   useEffect(() => {
     const initialize = async () => {
       setIsLoading(true)
       const documents = await loadDocuments()
       if (!documents[0]) {
         // TODO: create new document
-        throw new Error("No documents found")
+        setCurrentEditor(null)
       }
       setCurrentEditor(documents[0].id)
       setIsLoading(false)
@@ -111,15 +130,35 @@ const Main = () => {
   }
 
   /**
-   * Create document
+   * Handles creating a new document by asking for a name, creating a document
+   * in DataStore and switching the editor to the new document
    */
-  const createDocument = async ({ title, content }: CreateDocumentType) => {
-    const newDocument = await DataStore.save(
-      new Document({
-        title,
-        content,
-      })
-    )
+  const newDocument = async (shouldSwitch: boolean = true) => {
+    let title: string | null = null
+    const content = JSON.stringify(defaultState)
+    let isFirstPrompt = true
+
+    while (title === null) {
+      const t = prompt(isFirstPrompt ? "Title" : "Title (Can't be empty)")
+
+      // return null if the user cancels the prompt
+      if (t === null) return null
+
+      // if the title is empty set it to null to repeat the loop
+      title = t === "" ? null : t
+
+      // set the isFirstPrompt flag to false to modify the prompt message
+      isFirstPrompt = false
+    }
+
+    const newDocument = await createDocument({ title, content })
+
+    if (shouldSwitch) {
+      switchEditor(newDocument.id)
+    }
+
+    // TODO: focus the editable area
+
     return newDocument
   }
 
@@ -165,23 +204,23 @@ const Main = () => {
   useLogValue(content)
 
   return (
-    <Slate editor={editor} value={content} onChange={onChange}>
-      <InnerContainer>
-        {isLoading
-          ? "Loading..."
-          : error ?? (
-              <>
-                <Sidebar
-                  switchEditor={switchEditor}
-                  documents={documents}
-                  createDocument={createDocument}
-                  saveDocument={saveDocument}
-                />
-                <EditorComponent />
-              </>
-            )}
-      </InnerContainer>
-    </Slate>
+      <Slate editor={editor} value={content} onChange={onChange}>
+        <InnerContainer>
+          {isLoading
+            ? "Loading..."
+            : error ?? (
+                <>
+                  <Sidebar
+                    switchEditor={switchEditor}
+                    documents={documents}
+                    newDocument={newDocument}
+                    saveDocument={saveDocument}
+                  />
+                  <EditorComponent />
+                </>
+              )}
+        </InnerContainer>
+      </Slate>
   )
 }
 
