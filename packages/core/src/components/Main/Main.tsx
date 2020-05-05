@@ -121,11 +121,12 @@ const Main = () => {
         })
       )
 
-      console.log(updatedDocument)
+      return updatedDocument
     } catch (error) {
       const msgBase = "Can't save the current document"
       console.error(`${msgBase}: ${error.message}`)
       setError(msgBase)
+      return null
     }
   }
 
@@ -216,7 +217,7 @@ const Main = () => {
                     newDocument={newDocument}
                     saveDocument={saveDocument}
                   />
-                  <EditorComponent />
+                  <EditorComponent saveDocument={saveDocument} />
                 </>
               )}
         </InnerContainer>
