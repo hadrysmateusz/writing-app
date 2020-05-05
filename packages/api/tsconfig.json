@@ -3,11 +3,6 @@
     "target": "es6",
     "module": "commonjs"
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "types": [
-    "node",
-    "aws-sdk"
-  ]
+  "exclude": ["node_modules"],
+  "types": ["node", "aws-sdk"]
 }
