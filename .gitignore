@@ -22,4 +22,4 @@ node_modules
 **/*.log
 
 # VS Code
-.vscode
+.vscode/**
