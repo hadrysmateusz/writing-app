@@ -205,23 +205,23 @@ const Main = () => {
   useLogValue(content)
 
   return (
-      <Slate editor={editor} value={content} onChange={onChange}>
-        <InnerContainer>
-          {isLoading
-            ? "Loading..."
-            : error ?? (
-                <>
-                  <Sidebar
-                    switchEditor={switchEditor}
-                    documents={documents}
-                    newDocument={newDocument}
-                    saveDocument={saveDocument}
-                  />
-                  <EditorComponent saveDocument={saveDocument} />
-                </>
-              )}
-        </InnerContainer>
-      </Slate>
+    <Slate editor={editor} value={content} onChange={onChange}>
+      <InnerContainer>
+        {isLoading
+          ? "Loading..."
+          : error ?? (
+              <>
+                <Sidebar
+                  switchEditor={switchEditor}
+                  documents={documents}
+                  newDocument={newDocument}
+                  saveDocument={saveDocument}
+                />
+                <EditorComponent saveDocument={saveDocument} />
+              </>
+            )}
+      </InnerContainer>
+    </Slate>
   )
 }
 
