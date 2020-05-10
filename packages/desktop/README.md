@@ -1,0 +1,1 @@
+Maybe remove concurrently as it complicates some stuff. Instead run the web dev in one terminal and the electron in the other. Maybe display some custom message when running electron without the web server running as a reminder. This will be great with the split terminal in VS Code and having both things run side-by-side.
