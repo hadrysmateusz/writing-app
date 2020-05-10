@@ -4,8 +4,8 @@
   "private": true,
   "main": "src/index.ts",
   "scripts": {
-    "link-models": "cd src && ln -s ../../web/src/models models && cd ..",
-    "unlink-models": "unlink src/models"
+    "link-models": "echo Check README.md for linking instructions",
+    "unlink-models": "echo Check README.md for unlinking instructions"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.3.5",
