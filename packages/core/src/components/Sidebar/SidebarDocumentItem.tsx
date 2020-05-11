@@ -24,21 +24,31 @@ const SidebarDocumentItem: React.FC<{
   )
 }
 
+const DeleteButton = styled.div`
+  cursor: pointer;
+  opacity: 0;
+  font-size: 11px;
+  color: #afb3b6;
+  padding: 5px;
+  margin-right: -5px;
+  :hover {
+    color: white;
+    font-weight: bold;
+  }
+`
+
 const Container = styled.div`
-  padding: 4px 10px;
+  padding: 4px 0;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  :hover ${DeleteButton} {
+    opacity: 1;
+  }
 `
 const Title = styled.div`
   cursor: pointer;
-  font-weight: bold;
-`
-const DeleteButton = styled.div`
-  cursor: pointer;
-  :hover {
-    color: red;
-    font-weight: bold;
-  }
+  color: #fbfbfb;
+  flex: 1;
 `
 
 export default SidebarDocumentItem

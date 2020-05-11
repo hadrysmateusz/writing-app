@@ -55,6 +55,8 @@ function Icon({ icon, ...rest }) {
   ) : null
 }
 
-const IconContainer = styled.div``
+const IconContainer = styled.div`
+  color: #afb3b6;
+`
 
 export default Icon

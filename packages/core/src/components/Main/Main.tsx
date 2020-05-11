@@ -18,6 +18,10 @@ const InnerContainer = styled.div`
   display: grid;
   grid-template-columns: 250px 1fr;
   width: 100vw;
+  height: 100vh; /* TODO: this needs to be improved */
+  background-color: #24292e;
+  color: white;
+  font-family: "Segoe UI", "Open sans", "sans-serif";
 `
 
 export type CreateDocumentType = {
@@ -79,8 +83,9 @@ const Main = () => {
       if (!documents[0]) {
         // TODO: create new document
         setCurrentEditor(null)
+      } else {
+        setCurrentEditor(documents[0].id)
       }
-      setCurrentEditor(documents[0].id)
       setIsLoading(false)
 
       DataStore.observe(Document).subscribe(loadDocuments)
@@ -135,7 +140,7 @@ const Main = () => {
    * in DataStore and switching the editor to the new document
    */
   const newDocument = async (shouldSwitch: boolean = true) => {
-    let title: string | null = null
+    let title: string | null = "New " + Date.now().toString().slice(9, 13) // TODO: this should be null (it is temporarily changed because prompt() is not supported in electron)
     const content = JSON.stringify(defaultState)
     let isFirstPrompt = true
 
