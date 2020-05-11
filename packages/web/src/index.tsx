@@ -1,7 +1,10 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import "typeface-ibm-plex-mono"
 import { Amplify } from "aws-amplify"
+
+import "typeface-ibm-plex-mono"
+import "typeface-open-sans"
+import "typeface-poppins"
 
 import { App } from "Components/App"
 import "./index.css"

@@ -37,7 +37,9 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
     "styled-components": "^5.0.1",
-    "typeface-ibm-plex-mono": "0.0.61"
+    "typeface-ibm-plex-mono": "^0.0.61",
+    "typeface-poppins": "^0.0.72",
+    "typeface-open-sans": "^0.0.75"
   },
   "eslintConfig": {
     "extends": "react-app"
