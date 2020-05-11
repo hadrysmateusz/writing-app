@@ -30,10 +30,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <OuterContainer>
-      {/* <div>
-        <LogoutButton />
-        <ConnectWithMedium />
-      </div> */}
       <Header>Drafts</Header>
       <List>
         {documents.map((doc) => (
@@ -48,6 +44,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <NewButton onClick={handleCreateDocument}>+ Create New</NewButton>
         </div>
       </List>
+      <div style={{ margin: "16px" }}>
+        <LogoutButton />
+        <ConnectWithMedium />
+      </div>
     </OuterContainer>
   )
 }
