@@ -15,7 +15,7 @@ const SidebarDocumentItem: React.FC<{
 
   const openDocument = useCallback(() => {
     switchEditor(document.id)
-  }, [])
+  }, [document.id, switchEditor])
 
   // const createdAt = new Date(document.createdAt).toLocaleString()
   return (

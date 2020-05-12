@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 import styled from "styled-components/macro"
 import { Node } from "slate"
 import { DataStore, Predicates } from "aws-amplify"
@@ -6,13 +6,12 @@ import { Slate, ReactEditor } from "slate-react"
 
 import { useCreateEditor } from "@slate-plugin-system/core"
 
-import { deserialize, serialize } from "../Editor/serialization"
 import { Sidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
-import { useLogEditor, useLogValue } from "../devToolsUtils"
 import { plugins } from "../../pluginsList"
-import { useAsyncEffect } from "../../hooks"
 import { Document } from "../../models"
+import { deserialize, serialize } from "../Editor/serialization"
+import { useLogEditor, useLogValue } from "../devToolsUtils"
 
 const InnerContainer = styled.div`
   display: grid;
@@ -23,11 +22,6 @@ const InnerContainer = styled.div`
   color: white;
   font-family: "Segoe UI", "Open sans", "sans-serif";
 `
-
-export type CreateDocumentType = {
-  title: string
-  content: string
-}
 
 /**
  * Create document in datastore
@@ -42,6 +36,11 @@ const createDocument = async ({ title, content }: CreateDocumentType) => {
   return newDocument
 }
 
+export type CreateDocumentType = {
+  title: string
+  content: string
+}
+
 export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
 
 const Main = () => {
@@ -52,15 +51,11 @@ const Main = () => {
   const [content, setContent] = useState<Node[]>(defaultState)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const currentDocument = useMemo(
-    () => documents.find((doc) => doc.id === currentEditor),
-    [documents, currentEditor]
-  )
 
   /**
    * Load documents from db
    */
-  const loadDocuments = async () => {
+  const loadDocuments = useCallback(async () => {
     try {
       // TODO: This could be optimized by manually modifying state based on the subscription message type and content
       const documents = await DataStore.query(Document, Predicates.ALL)
@@ -74,7 +69,7 @@ const Main = () => {
       setError(error.message)
       return []
     }
-  }
+  }, [])
 
   /**
    * Initialization effect
@@ -88,9 +83,9 @@ const Main = () => {
       const documents = await loadDocuments()
       if (!documents[0]) {
         // TODO: create new document
-        switchEditor(null)
+        setCurrentEditor(null)
       } else {
-        switchEditor(documents[0].id)
+        setCurrentEditor(documents[0].id)
       }
       setIsLoading(false)
 
@@ -98,15 +93,7 @@ const Main = () => {
     }
 
     initialize()
-  }, [])
-
-  /**
-   * Switch the current editor based on the id of the document in it
-   * @param documentId id of the document open in the editor you want to switch to
-   */
-  const switchEditor = useCallback((documentId: string | null) => {
-    // TODO: maybe save the state of the editor (children, history, selection)
-    setCurrentEditor(documentId)
+    // eslint-disable-next-line
   }, [])
 
   /**
@@ -190,7 +177,7 @@ const Main = () => {
     const newDocument = await createDocument({ title, content })
 
     if (shouldSwitch) {
-      switchEditor(newDocument.id)
+      setCurrentEditor(newDocument.id)
     }
 
     // TODO: focus the editable area
@@ -205,39 +192,46 @@ const Main = () => {
     setContent(value)
   }, [])
 
-  // Handle changing all of the state and side-effects of switching editors
-  useAsyncEffect(async () => {
-    console.log("switched editor", currentEditor)
-    if (currentEditor === null) {
-      setContent(defaultState)
-      return
-    }
-
-    try {
-      // only get the first document (it should be the only one)
-      const [document] = await DataStore.query(Document, (c) =>
-        c.id("eq", currentEditor)
-      )
-      const content = document.content
-        ? deserialize(document.content)
-        : defaultState
-      setContent(content)
-      // TODO: save history to be restored later
-      // reset history
-      editor.history = { undos: [], redos: [] }
-    } catch (error) {
-      // TODO: better handle error (show error state)
-      setContent(defaultState)
-      throw error
-    }
-  }, [currentEditor])
-
   // Create the editor object
   const editor = useCreateEditor(plugins) as ReactEditor
 
   // DevTools utils
   useLogEditor(editor)
   useLogValue(content)
+
+  // Handle changing all of the state and side-effects of switching editors
+  useEffect(() => {
+    const fn = async () => {
+      if (currentEditor === null) {
+        setContent(defaultState)
+        return
+      }
+
+      try {
+        // only get the first document (it should be the only one)
+        const [document] = await DataStore.query(Document, (c) =>
+          c.id("eq", currentEditor)
+        )
+        const content = document.content
+          ? deserialize(document.content)
+          : defaultState
+        setContent(content)
+        // TODO: save history to be restored later
+        // reset history
+        editor.history = { undos: [], redos: [] }
+      } catch (error) {
+        // TODO: better handle error (show error state)
+        setContent(defaultState)
+        throw error
+      }
+    }
+
+    fn()
+    // eslint-disable-next-line
+  }, [currentEditor])
+
+  const currentDocument =
+    documents.find((doc) => doc.id === currentEditor) || null
 
   return (
     <Slate editor={editor} value={content} onChange={onChange}>
@@ -247,16 +241,16 @@ const Main = () => {
           : error ?? (
               <>
                 <Sidebar
-                  switchEditor={switchEditor}
+                  switchEditor={setCurrentEditor}
                   documents={documents}
                   newDocument={newDocument}
-                  saveDocument={saveDocument}
                 />
                 {currentDocument && (
                   <EditorComponent
+                    key={currentDocument.id} // Necessary to reload the component on id change
+                    currentDocument={currentDocument}
                     saveDocument={saveDocument}
                     renameDocument={renameDocument}
-                    currentDocument={currentDocument}
                   />
                 )}
               </>

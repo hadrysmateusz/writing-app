@@ -3,29 +3,22 @@ import React from "react"
 import { LogoutButton } from "../LogoutButton"
 import { ConnectWithMedium } from "../ConnectWithMedium"
 import SidebarDocumentItem from "./SidebarDocumentItem"
-import { SwitchEditor } from "../Main"
 import { Document } from "../../models"
 import styled from "styled-components/macro"
 
 type SidebarProps = {
-  switchEditor: SwitchEditor
+  switchEditor: (documentId: string | null) => void
   documents: Document[]
-  saveDocument: () => void
   newDocument: (shouldSwitch?: boolean) => Promise<Document | null>
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   switchEditor,
-  saveDocument,
-  newDocument,
   documents,
+  newDocument,
 }) => {
   const handleCreateDocument = async () => {
     newDocument()
-  }
-
-  const handleSaveDocument = async () => {
-    saveDocument()
   }
 
   return (
@@ -40,7 +33,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           />
         ))}
         <div>
-          {/* <button onClick={handleSaveDocument}>Save</button> */}
           <NewButton onClick={handleCreateDocument}>+ Create New</NewButton>
         </div>
       </List>
