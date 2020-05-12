@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useCallback, useEffect, useMemo } from "react"
 import styled from "styled-components/macro"
 import { Node } from "slate"
 import { DataStore, Predicates } from "aws-amplify"
@@ -42,18 +42,20 @@ const createDocument = async ({ title, content }: CreateDocumentType) => {
   return newDocument
 }
 
-export type SwitchEditor = (documentId: string) => void
-
 export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
 
 const Main = () => {
+  const [documents, setDocuments] = useState<Document[]>([])
   // currently selected editor - represented by the document id
   const [currentEditor, setCurrentEditor] = useState<string | null>(null)
-  const [documents, setDocuments] = useState<Document[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   // content of the currently selected editor
   const [content, setContent] = useState<Node[]>(defaultState)
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const currentDocument = useMemo(
+    () => documents.find((doc) => doc.id === currentEditor),
+    [documents, currentEditor]
+  )
 
   /**
    * Load documents from db
@@ -62,6 +64,10 @@ const Main = () => {
     try {
       // TODO: This could be optimized by manually modifying state based on the subscription message type and content
       const documents = await DataStore.query(Document, Predicates.ALL)
+      // if there are no current documents deselect current editor
+      if (documents.length === 0) {
+        setCurrentEditor(null)
+      }
       setDocuments(documents)
       return documents
     } catch (error) {
@@ -82,9 +88,9 @@ const Main = () => {
       const documents = await loadDocuments()
       if (!documents[0]) {
         // TODO: create new document
-        setCurrentEditor(null)
+        switchEditor(null)
       } else {
-        setCurrentEditor(documents[0].id)
+        switchEditor(documents[0].id)
       }
       setIsLoading(false)
 
@@ -98,15 +104,17 @@ const Main = () => {
    * Switch the current editor based on the id of the document in it
    * @param documentId id of the document open in the editor you want to switch to
    */
-  const switchEditor: SwitchEditor = useCallback((documentId) => {
+  const switchEditor = useCallback((documentId: string | null) => {
     // TODO: maybe save the state of the editor (children, history, selection)
     setCurrentEditor(documentId)
   }, [])
 
   /**
-   * Save document
+   * Update document
    */
-  const saveDocument = async () => {
+  const updateDocument = async (
+    updaterFn: (original: Document) => Promise<Document>
+  ) => {
     try {
       if (currentEditor === null) {
         throw new Error("no editor is currently selected")
@@ -118,21 +126,43 @@ const Main = () => {
         throw new Error("no document found matching current editor id")
       }
 
-      const serializedContent = serialize(content)
-
-      const updatedDocument = await DataStore.save(
-        Document.copyOf(original, (updated) => {
-          updated.content = serializedContent
-        })
-      )
+      const updatedDocument = await updaterFn(original)
 
       return updatedDocument
     } catch (error) {
-      const msgBase = "Can't save the current document"
+      const msgBase = "Can't update the current document"
       console.error(`${msgBase}: ${error.message}`)
       setError(msgBase)
       return null
     }
+  }
+
+  /**
+   * Save document
+   */
+  const saveDocument = () => {
+    return updateDocument((original) => {
+      const serializedContent = serialize(content)
+
+      return DataStore.save(
+        Document.copyOf(original, (updated) => {
+          updated.content = serializedContent
+        })
+      )
+    })
+  }
+
+  /**
+   * Rename document
+   */
+  const renameDocument = async (title: string) => {
+    return updateDocument((original) =>
+      DataStore.save(
+        Document.copyOf(original, (updated) => {
+          updated.title = title
+        })
+      )
+    )
   }
 
   /**
@@ -222,7 +252,13 @@ const Main = () => {
                   newDocument={newDocument}
                   saveDocument={saveDocument}
                 />
-                <EditorComponent saveDocument={saveDocument} />
+                {currentDocument && (
+                  <EditorComponent
+                    saveDocument={saveDocument}
+                    renameDocument={renameDocument}
+                    currentDocument={currentDocument}
+                  />
+                )}
               </>
             )}
       </InnerContainer>

@@ -34,7 +34,8 @@
     "slate-history": "0.57.3",
     "slate-hyperscript": "0.57.3",
     "slate-react": "0.57.3",
-    "styled-components": "^5.1.0"
+    "styled-components": "^5.1.0",
+    "use-debounce": "^3.4.2"
   },
   "eslintConfig": {
     "extends": "react-app"

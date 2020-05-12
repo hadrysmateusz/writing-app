@@ -1,17 +1,44 @@
-import React, { KeyboardEvent } from "react"
+import React, { KeyboardEvent, useState, useEffect } from "react"
 import styled from "styled-components/macro"
 import { Editable, OnKeyDown } from "@slate-plugin-system/core"
+import isHotkey from "is-hotkey"
+import { useDebounce } from "use-debounce"
 
 import { plugins } from "../../pluginsList"
 import { Toolbar } from "../Toolbar"
 import HoveringToolbar from "../HoveringToolbar"
 import { EditableContainer } from "./styledComponents"
-import isHotkey from "is-hotkey"
 import { Document } from "models"
+
+// TODO: sync and allow updating title
 
 const EditorComponent: React.FC<{
   saveDocument: () => Promise<Document | null>
-}> = ({ saveDocument }) => {
+  renameDocument: (title: string) => Promise<Document | null>
+  currentDocument: Document
+}> = ({ saveDocument, renameDocument, currentDocument }) => {
+  const [title, setTitle] = useState<string>(
+    currentDocument ? currentDocument.title : "Untitled"
+  )
+  const [debouncedTitle] = useDebounce(title, 550)
+
+  useEffect(() => {
+    console.log("document changed")
+  }, [currentDocument.id])
+
+  // When the document title changes elsewhere, update the state here
+  useEffect(() => {
+    setTitle(currentDocument.title)
+  }, [currentDocument.title])
+
+  // Rename document when the title value changes here
+  useEffect(() => {
+    const newTitle = debouncedTitle.trim() === "" ? "Untitled" : debouncedTitle
+    if (currentDocument.title !== newTitle) {
+      renameDocument(newTitle)
+    }
+  }, [currentDocument.title, debouncedTitle, renameDocument])
+
   const handleSaveDocument: OnKeyDown = async (event: KeyboardEvent) => {
     if (isHotkey("mod+s", event)) {
       event.preventDefault()
@@ -26,6 +53,13 @@ const EditorComponent: React.FC<{
     <Container>
       <HoveringToolbar />
       <Toolbar />
+      {/* <Title /> */}
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Untitled"
+      />
       <EditableContainer>
         <Editable
           plugins={plugins}
@@ -37,6 +71,8 @@ const EditorComponent: React.FC<{
     </Container>
   )
 }
+
+const Title: React.FC<{ documentId: string }> = () => {}
 
 const Container = styled.div`
   margin: 40px auto;

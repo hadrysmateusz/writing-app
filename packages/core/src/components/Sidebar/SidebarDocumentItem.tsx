@@ -3,13 +3,15 @@ import { DataStore } from "aws-amplify"
 
 import { Document } from "../../models"
 import styled from "styled-components"
-import { SwitchEditor } from "../Main"
 
 const SidebarDocumentItem: React.FC<{
   document: Document
-  switchEditor: SwitchEditor
+  switchEditor: (id: string | null) => void
 }> = ({ document, switchEditor }) => {
-  const removeDocument = () => DataStore.delete(document)
+  const removeDocument = () => {
+    switchEditor(null)
+    DataStore.delete(document)
+  }
 
   const openDocument = useCallback(() => {
     switchEditor(document.id)
@@ -29,8 +31,8 @@ const DeleteButton = styled.div`
   opacity: 0;
   font-size: 11px;
   color: #afb3b6;
-  padding: 5px;
-  margin-right: -5px;
+  padding: 8px;
+  margin-right: -8px;
   :hover {
     color: white;
     font-weight: bold;
@@ -38,7 +40,7 @@ const DeleteButton = styled.div`
 `
 
 const Container = styled.div`
-  padding: 4px 0;
+  padding: 3px 0;
   display: flex;
   align-items: center;
   :hover ${DeleteButton} {
