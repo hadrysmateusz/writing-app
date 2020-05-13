@@ -49,14 +49,8 @@ function Icon({ icon, ...rest }) {
   const iconComponent = Icons[icon]
   if (!iconComponent) console.error("invalid icon:", icon)
   return iconComponent ? (
-    <IconContainer {...rest}>
-      {React.createElement(iconComponent, null, null)}
-    </IconContainer>
+    <div {...rest}>{React.createElement(iconComponent, null, null)}</div>
   ) : null
 }
-
-const IconContainer = styled.div`
-  color: #afb3b6;
-`
 
 export default Icon
