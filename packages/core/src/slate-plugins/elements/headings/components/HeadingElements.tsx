@@ -1,7 +1,9 @@
 import styled from "styled-components"
 
 const Heading = styled.div`
-  font-weight: 600;
+  font-weight: bold;
+  font-family: "Poppins";
+  letter-spacing: 0.01em;
 `
 
 export const HeadingBig = styled(Heading)`
@@ -11,8 +13,8 @@ export const HeadingBig = styled(Heading)`
   :not(:last-child) {
     margin-bottom: 12px;
   }
-  font-size: 30px;
-  line-height: 36px;
+  font-size: 32px;
+  line-height: 44px;
 `
 
 export const HeadingSmall = styled(Heading)`
@@ -22,6 +24,6 @@ export const HeadingSmall = styled(Heading)`
   :not(:last-child) {
     margin-bottom: 6px;
   }
-  font-size: 22px;
-  line-height: 28px;
+  font-size: 26px;
+  line-height: 40px;
 `

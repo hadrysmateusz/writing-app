@@ -1,12 +1,11 @@
 import React, { KeyboardEvent, useState } from "react"
-import styled from "styled-components/macro"
 import { Editable, OnKeyDown } from "@slate-plugin-system/core"
 import isHotkey from "is-hotkey"
 
 import { plugins } from "../../pluginsList"
 import { Toolbar } from "../Toolbar"
 import HoveringToolbar from "../HoveringToolbar"
-import { EditableContainer } from "./styledComponents"
+import { EditableContainer, Container, TitleInput } from "./styledComponents"
 import { Document } from "models"
 
 const EditorComponent: React.FC<{
@@ -65,24 +64,5 @@ const EditorComponent: React.FC<{
     </Container>
   )
 }
-
-const Container = styled.div`
-  margin: 40px auto;
-  padding: 20px;
-  width: 600px;
-  font-size: 20px;
-  box-sizing: content-box;
-`
-
-const TitleInput = styled.input`
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 28px;
-  margin-top: 20px;
-  color: white;
-  font-weight: bold;
-  outline: none;
-`
 
 export default EditorComponent

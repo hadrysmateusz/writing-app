@@ -3,7 +3,10 @@ import styled, { css } from "styled-components/macro"
 const listCommon = css`
   margin: 14px 0;
   padding: 0;
-  list-style-position: inside;
+
+  li {
+    margin: 6px 0;
+  }
 
   li > * {
     display: inline-block;
@@ -11,9 +14,23 @@ const listCommon = css`
 `
 
 export const StyledUL = styled.ul`
+  list-style-type: none;
+  li::before {
+    content: "";
+    color: #41474d;
+    display: inline-block;
+    background: #41474d;
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    margin-bottom: 3px;
+    margin-right: 12px;
+    margin-left: -1px;
+  }
   ${listCommon}
 `
 
 export const StyledOL = styled.ol`
+  list-style-position: inside;
   ${listCommon}
 `

@@ -5,11 +5,11 @@ import styled from "styled-components/macro"
 import { BLOCKQUOTE } from "../types"
 
 const StyledBlockquote = styled.blockquote`
-  border-left: 2px solid #ddd;
+  border-left: 3px solid #41474d;
   margin: 14px 0;
-  padding-left: 10px;
-  color: #aaa;
-  font-style: italic;
+  padding-left: 14px;
+  color: #afb3b6;
+  /* font-style: italic; */
 `
 
 export const BlockquoteElement = ({
