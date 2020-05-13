@@ -3,8 +3,6 @@ import styled from "styled-components/macro"
 import { Node } from "slate"
 import { DataStore, Predicates } from "aws-amplify"
 import { Slate, ReactEditor } from "slate-react"
-import isElectron from "is-electron"
-import { IpcRendererEvent } from "electron"
 
 import { useCreateEditor } from "@slate-plugin-system/core"
 
@@ -14,10 +12,10 @@ import { plugins } from "../../pluginsList"
 import { Document } from "../../models"
 import { deserialize, serialize } from "../Editor/serialization"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
+import { listenForIpcEvent } from "../../utils"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
-// TODO: this should be moved somewhere else, where it can be reused (it's also used in the electron preload script)
 declare global {
   interface Window {
     ipcRenderer: any
@@ -37,7 +35,13 @@ const InnerContainer = styled.div`
 /**
  * Create document in datastore
  */
-const createDocument = async ({ title, content }: CreateDocumentType) => {
+const createDocument = async ({
+  title,
+  content,
+}: {
+  title: string
+  content: string
+}) => {
   const newDocument = await DataStore.save(
     new Document({
       title,
@@ -45,11 +49,6 @@ const createDocument = async ({ title, content }: CreateDocumentType) => {
     })
   )
   return newDocument
-}
-
-export type CreateDocumentType = {
-  title: string
-  content: string
 }
 
 export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
@@ -62,26 +61,6 @@ const Main = () => {
   const [content, setContent] = useState<Node[]>(defaultState)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    if (isElectron()) {
-      const onNewDocument = (_event: IpcRendererEvent, args: any[]) => {
-        // for some reason changing current editor from inside the newDocument function fails so we do it here
-        newDocument(false).then((doc) => {
-          if (doc) {
-            ReactEditor.blur(editor)
-            setCurrentEditor(doc.id)
-          }
-        })
-      }
-
-      window.ipcRenderer.on("new-document", onNewDocument)
-      return () => {
-        window.ipcRenderer.removeListener("new-document", onNewDocument)
-      }
-    }
-    return
-  }, [])
 
   /**
    * Load documents from db
@@ -184,44 +163,6 @@ const Main = () => {
   }
 
   /**
-   * Handles creating a new document by asking for a name, creating a document
-   * in DataStore and switching the editor to the new document
-   */
-  const newDocument = async (shouldSwitch: boolean = true) => {
-    let title: string | null = "New " + Date.now().toString().slice(9, 13) // TODO: this should be null (it is temporarily changed because prompt() is not supported in electron)
-    const content = JSON.stringify(defaultState)
-    let isFirstPrompt = true
-
-    while (title === null) {
-      const t = prompt(isFirstPrompt ? "Title" : "Title (Can't be empty)")
-
-      // return null if the user cancels the prompt
-      if (t === null) return null
-
-      // if the title is empty set it to null to repeat the loop
-      title = t === "" ? null : t
-
-      // set the isFirstPrompt flag to false to modify the prompt message
-      isFirstPrompt = false
-    }
-
-    const newDocument = await createDocument({ title, content })
-
-    if (shouldSwitch) {
-      // changing the selected editor with a selection present can cause an error so we blur it
-      // it's probably because the editor object retains the selection like it does with history and tries to set it on the new editor content where a given range might not exist
-      // TODO: the blur should be done somewhere else so that it always happens when changing the current editor
-
-      ReactEditor.blur(editor)
-      setCurrentEditor(newDocument.id)
-    }
-
-    // TODO: focus the editable area
-
-    return newDocument
-  }
-
-  /**
    * onChange event handler for the Slate component
    */
   const onChange = useCallback((value: Node[]) => {
@@ -230,6 +171,47 @@ const Main = () => {
 
   // Create the editor object
   const editor = useCreateEditor(plugins) as ReactEditor
+
+  /**
+   * Handles creating a new document by asking for a name, creating a document
+   * in DataStore and switching the editor to the new document
+   */
+  const newDocument = useCallback(
+    async (shouldSwitch: boolean = true) => {
+      let title: string | null = "New " + Date.now().toString().slice(9, 13) // TODO: this should be null (it is temporarily changed because prompt() is not supported in electron)
+      const content = JSON.stringify(defaultState)
+      let isFirstPrompt = true
+
+      while (title === null) {
+        const t = prompt(isFirstPrompt ? "Title" : "Title (Can't be empty)")
+
+        // return null if the user cancels the prompt
+        if (t === null) return null
+
+        // if the title is empty set it to null to repeat the loop
+        title = t === "" ? null : t
+
+        // set the isFirstPrompt flag to false to modify the prompt message
+        isFirstPrompt = false
+      }
+
+      const newDocument = await createDocument({ title, content })
+
+      if (shouldSwitch) {
+        // changing the selected editor with a selection present can cause an error so we blur it
+        // it's probably because the editor object retains the selection like it does with history and tries to set it on the new editor content where a given range might not exist
+        // TODO: the blur should be done somewhere else so that it always happens when changing the current editor
+
+        ReactEditor.blur(editor)
+        setCurrentEditor(newDocument.id)
+      }
+
+      // TODO: focus the editable area
+
+      return newDocument
+    },
+    [editor]
+  )
 
   // DevTools utils
   useLogEditor(editor)
@@ -266,6 +248,15 @@ const Main = () => {
     fn()
     // eslint-disable-next-line
   }, [currentEditor])
+
+  // Handle "new-document" messages from the main process
+  useEffect(
+    () =>
+      listenForIpcEvent("new-document", () => {
+        newDocument()
+      }),
+    [newDocument]
+  )
 
   const currentDocument =
     documents.find((doc) => doc.id === currentEditor) || null
