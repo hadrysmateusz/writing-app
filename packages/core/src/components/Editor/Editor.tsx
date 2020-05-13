@@ -2,7 +2,6 @@ import React, { KeyboardEvent, useState } from "react"
 import styled from "styled-components/macro"
 import { Editable, OnKeyDown } from "@slate-plugin-system/core"
 import isHotkey from "is-hotkey"
-// import { useDebounce } from "use-debounce"
 
 import { plugins } from "../../pluginsList"
 import { Toolbar } from "../Toolbar"
@@ -10,32 +9,17 @@ import HoveringToolbar from "../HoveringToolbar"
 import { EditableContainer } from "./styledComponents"
 import { Document } from "models"
 
-// TODO: sync and allow updating title
-
 const EditorComponent: React.FC<{
   saveDocument: () => Promise<Document | null>
   renameDocument: (title: string) => Promise<Document | null>
   currentDocument: Document
 }> = ({ saveDocument, renameDocument, currentDocument }) => {
   const [title, setTitle] = useState<string | null>(currentDocument.title)
-  // const [debouncedTitle] = useDebounce(title, 550)
 
   // // When the document title changes elsewhere, update the state here
   // useEffect(() => {
   //   setTitle(currentDocument.title)
   // }, [currentDocument.title, setTitle])
-
-  // // Rename document when the title value changes here
-  // useEffect(() => {
-  //   if (debouncedTitle === null) {
-  //     console.log("title is null")
-  //     return
-  //   }
-  //   const newTitle = debouncedTitle.trim() === "" ? "Untitled" : debouncedTitle
-  //   if (currentDocument.title !== newTitle) {
-  //     renameDocument(newTitle)
-  //   }
-  // }, [currentDocument.title, debouncedTitle, renameDocument])
 
   const handleSaveDocument: OnKeyDown = async (event: KeyboardEvent) => {
     if (isHotkey("mod+s", event)) {
@@ -47,6 +31,11 @@ const EditorComponent: React.FC<{
     }
   }
 
+  const handleRename = () => {
+    const newTitle = title === null || title.trim() === "" ? "Untitled" : title
+    renameDocument(newTitle)
+  }
+
   return (
     <Container>
       {/* {currentDocument.id} */}
@@ -56,11 +45,11 @@ const EditorComponent: React.FC<{
         "Untitled"
       ) : (
         <>
-          <input
+          <TitleInput
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            onBlur={() => renameDocument(title)}
+            onBlur={handleRename}
             placeholder="Untitled"
           />
         </>
@@ -83,6 +72,17 @@ const Container = styled.div`
   width: 600px;
   font-size: 20px;
   box-sizing: content-box;
+`
+
+const TitleInput = styled.input`
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 28px;
+  margin-top: 20px;
+  color: white;
+  font-weight: bold;
+  outline: none;
 `
 
 export default EditorComponent
