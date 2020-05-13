@@ -12,6 +12,10 @@ function createWindow() {
     width: 1320,
     height: 860,
     backgroundColor: "#24292E",
+    webPreferences: {
+      nodeIntegration: false,
+      preload: __dirname + "/preload.js",
+    },
   })
 
   // and load the index.html of the app.
