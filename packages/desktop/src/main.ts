@@ -11,8 +11,9 @@ const START_URL = IS_DEV
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1320,
+    width: 1480,
     height: 860,
+    minWidth: 980,
     backgroundColor: "#24292E",
     webPreferences: {
       nodeIntegration: false,
