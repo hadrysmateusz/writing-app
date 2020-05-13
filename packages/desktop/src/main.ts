@@ -1,6 +1,8 @@
 import { app, BrowserWindow } from "electron"
-import IS_DEV from "./helpers/electron-is-dev"
 import path from "path"
+
+import IS_DEV from "./helpers/electron-is-dev"
+import { setUpApplicationMenu } from "./menu"
 
 const START_URL = IS_DEV
   ? "http://localhost:3000"
@@ -23,6 +25,9 @@ function createWindow() {
 
   // Open the DevTools.
   win.webContents.openDevTools()
+
+  // Set up application menu
+  setUpApplicationMenu()
 }
 
 // This method will be called when Electron has finished

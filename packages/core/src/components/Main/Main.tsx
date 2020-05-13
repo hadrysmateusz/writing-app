@@ -3,6 +3,8 @@ import styled from "styled-components/macro"
 import { Node } from "slate"
 import { DataStore, Predicates } from "aws-amplify"
 import { Slate, ReactEditor } from "slate-react"
+import isElectron from "is-electron"
+import { IpcRendererEvent } from "electron"
 
 import { useCreateEditor } from "@slate-plugin-system/core"
 
@@ -12,6 +14,15 @@ import { plugins } from "../../pluginsList"
 import { Document } from "../../models"
 import { deserialize, serialize } from "../Editor/serialization"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
+
+// TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
+
+// TODO: this should be moved somewhere else, where it can be reused (it's also used in the electron preload script)
+declare global {
+  interface Window {
+    ipcRenderer: any
+  }
+}
 
 const InnerContainer = styled.div`
   display: grid;
@@ -51,6 +62,26 @@ const Main = () => {
   const [content, setContent] = useState<Node[]>(defaultState)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    if (isElectron()) {
+      const onNewDocument = (_event: IpcRendererEvent, args: any[]) => {
+        // for some reason changing current editor from inside the newDocument function fails so we do it here
+        newDocument(false).then((doc) => {
+          if (doc) {
+            ReactEditor.blur(editor)
+            setCurrentEditor(doc.id)
+          }
+        })
+      }
+
+      window.ipcRenderer.on("new-document", onNewDocument)
+      return () => {
+        window.ipcRenderer.removeListener("new-document", onNewDocument)
+      }
+    }
+    return
+  }, [])
 
   /**
    * Load documents from db
@@ -177,6 +208,11 @@ const Main = () => {
     const newDocument = await createDocument({ title, content })
 
     if (shouldSwitch) {
+      // changing the selected editor with a selection present can cause an error so we blur it
+      // it's probably because the editor object retains the selection like it does with history and tries to set it on the new editor content where a given range might not exist
+      // TODO: the blur should be done somewhere else so that it always happens when changing the current editor
+
+      ReactEditor.blur(editor)
       setCurrentEditor(newDocument.id)
     }
 
@@ -215,10 +251,11 @@ const Main = () => {
         const content = document.content
           ? deserialize(document.content)
           : defaultState
-        setContent(content)
         // TODO: save history to be restored later
         // reset history
         editor.history = { undos: [], redos: [] }
+        ReactEditor.blur(editor) // TODO: replace with either selecting the start of the document or eventually restoring the saved selection for a given document (with some kind of fallback in case it doesn't exist anymore)
+        setContent(content)
       } catch (error) {
         // TODO: better handle error (show error state)
         setContent(defaultState)
