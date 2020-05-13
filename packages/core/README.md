@@ -1,3 +1,7 @@
+# Electron
+
+Removing electron from the core package should be investigated. Either through Code-Splitting or by moving all electron-related logic to the desktop package - this might require having desktop to use a different react app - with most components coming from the core package and electron-specific ones along with some setup coming from the desktop package itself.
+
 # Symbolic links
 
 Currently using generated models from aws amplify's graphql api requires using symbolic links
