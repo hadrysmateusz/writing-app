@@ -49,7 +49,7 @@ const EditorComponent: React.FC<{
 
   return (
     <Container>
-      {currentDocument.id}
+      {/* {currentDocument.id} */}
       <HoveringToolbar />
       <Toolbar />
       {title === null ? (
@@ -60,9 +60,9 @@ const EditorComponent: React.FC<{
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            onBlur={() => renameDocument(title)}
             placeholder="Untitled"
           />
-          <button onClick={() => renameDocument(title)}>Rename</button>
         </>
       )}
       <EditableContainer>

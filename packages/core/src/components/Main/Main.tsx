@@ -22,16 +22,6 @@ declare global {
   }
 }
 
-const InnerContainer = styled.div`
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  width: 100vw;
-  height: 100vh; /* TODO: this needs to be improved */
-  background-color: #24292e;
-  color: white;
-  font-family: "Segoe UI", "Open sans", "sans-serif";
-`
-
 /**
  * Create document in datastore
  */
@@ -287,5 +277,15 @@ const Main = () => {
     </Slate>
   )
 }
+
+const InnerContainer = styled.div`
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  width: 100vw;
+  height: 100vh; /* TODO: this needs to be improved */
+  background-color: #24292e;
+  color: white;
+  font-family: "Segoe UI", "Open sans", "sans-serif";
+`
 
 export default Main
