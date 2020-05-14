@@ -59,6 +59,7 @@ const List = styled.div`
 `
 
 const NewButton = styled.div`
+  user-select: none;
   background: none;
   border: none;
   padding: 6px 0;

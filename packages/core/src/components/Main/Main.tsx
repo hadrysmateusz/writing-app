@@ -52,6 +52,49 @@ const Main = () => {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Handle changing all of the state and side-effects of switching editors
+  useEffect(() => {
+    // Reset any properties on the editor objects that shouldn't be shared between documents
+    // TODO; eventually I should save and restore these per documentID
+    const resetEditor = () => {
+      editor.history = { undos: [], redos: [] }
+      editor.selection = {
+        anchor: { path: [0, 0], offset: 0 },
+        focus: { path: [0, 0], offset: 0 },
+      }
+    }
+
+    const setEditorContent = async () => {
+      if (currentEditor === null) {
+        setContent(defaultState)
+        return
+      }
+
+      // only get the first document (it should be the only one)
+      DataStore.query(Document, (c) => c.id("eq", currentEditor))
+        .then((documents) => {
+          const document = documents[0]
+          const content = document.content
+            ? deserialize(document.content)
+            : defaultState
+
+          setContent(content)
+        })
+        .catch((error) => {
+          // TODO: better handle error (show error state)
+          setContent(defaultState)
+          throw error
+        })
+    }
+
+    ;(async () => {
+      resetEditor()
+      await setEditorContent()
+    })()
+
+    // eslint-disable-next-line
+  }, [currentEditor])
+
   /**
    * Load documents from db
    */
@@ -166,83 +209,44 @@ const Main = () => {
    * Handles creating a new document by asking for a name, creating a document
    * in DataStore and switching the editor to the new document
    */
-  const newDocument = useCallback(
-    async (shouldSwitch: boolean = true) => {
-      let title: string | null = "New " + Date.now().toString().slice(9, 13) // TODO: this should be null (it is temporarily changed because prompt() is not supported in electron)
-      const content = JSON.stringify(defaultState)
-      let isFirstPrompt = true
+  const newDocument = useCallback(async (shouldSwitch: boolean = true) => {
+    let title: string | null = "New " + Date.now().toString().slice(9, 13) // TODO: this should be null (it is temporarily changed because prompt() is not supported in electron)
+    const content = JSON.stringify(defaultState)
+    let isFirstPrompt = true
 
-      while (title === null) {
-        const t = prompt(isFirstPrompt ? "Title" : "Title (Can't be empty)")
+    while (title === null) {
+      const t = prompt(isFirstPrompt ? "Title" : "Title (Can't be empty)")
 
-        // return null if the user cancels the prompt
-        if (t === null) return null
+      // return null if the user cancels the prompt
+      if (t === null) return null
 
-        // if the title is empty set it to null to repeat the loop
-        title = t === "" ? null : t
+      // if the title is empty set it to null to repeat the loop
+      title = t === "" ? null : t
 
-        // set the isFirstPrompt flag to false to modify the prompt message
-        isFirstPrompt = false
-      }
+      // set the isFirstPrompt flag to false to modify the prompt message
+      isFirstPrompt = false
+    }
 
-      const newDocument = await createDocument({ title, content })
+    const newDocument = await createDocument({ title, content })
 
-      if (shouldSwitch) {
-        // changing the selected editor with a selection present can cause an error so we blur it
-        // it's probably because the editor object retains the selection like it does with history and tries to set it on the new editor content where a given range might not exist
-        // TODO: the blur should be done somewhere else so that it always happens when changing the current editor
+    if (shouldSwitch) {
+      setCurrentEditor(newDocument.id)
+    }
 
-        ReactEditor.blur(editor)
-        setCurrentEditor(newDocument.id)
-      }
-
-      // TODO: focus the editable area
-
-      return newDocument
-    },
-    [editor]
-  )
+    return newDocument
+  }, [])
 
   // DevTools utils
   useLogEditor(editor)
   useLogValue(content)
 
-  // Handle changing all of the state and side-effects of switching editors
-  useEffect(() => {
-    const fn = async () => {
-      if (currentEditor === null) {
-        setContent(defaultState)
-        return
-      }
-
-      try {
-        // only get the first document (it should be the only one)
-        const [document] = await DataStore.query(Document, (c) =>
-          c.id("eq", currentEditor)
-        )
-        const content = document.content
-          ? deserialize(document.content)
-          : defaultState
-        // TODO: save history to be restored later
-        // reset history
-        editor.history = { undos: [], redos: [] }
-        ReactEditor.blur(editor) // TODO: replace with either selecting the start of the document or eventually restoring the saved selection for a given document (with some kind of fallback in case it doesn't exist anymore)
-        setContent(content)
-      } catch (error) {
-        // TODO: better handle error (show error state)
-        setContent(defaultState)
-        throw error
-      }
-    }
-
-    fn()
-    // eslint-disable-next-line
-  }, [currentEditor])
-
   // Handle "new-document" messages from the main process
   useEffect(
     () =>
       listenForIpcEvent("new-document", () => {
+        // Remove domSelection to prevent errors
+        window.getSelection()?.removeAllRanges()
+        // Create the new document
         newDocument()
       }),
     [newDocument]
