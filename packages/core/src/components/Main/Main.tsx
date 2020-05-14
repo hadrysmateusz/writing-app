@@ -22,25 +22,6 @@ declare global {
   }
 }
 
-/**
- * Create document in datastore
- */
-const createDocument = async ({
-  title,
-  content,
-}: {
-  title: string
-  content: string
-}) => {
-  const newDocument = await DataStore.save(
-    new Document({
-      title,
-      content,
-    })
-  )
-  return newDocument
-}
-
 export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
 
 const Main = () => {
@@ -227,7 +208,12 @@ const Main = () => {
       isFirstPrompt = false
     }
 
-    const newDocument = await createDocument({ title, content })
+    const newDocument = await DataStore.save(
+      new Document({
+        title,
+        content,
+      })
+    )
 
     if (shouldSwitch) {
       setCurrentEditor(newDocument.id)
