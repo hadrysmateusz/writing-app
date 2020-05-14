@@ -13,7 +13,7 @@ const EditorComponent: React.FC<{
   renameDocument: (title: string) => Promise<Document | null>
   currentDocument: Document
 }> = ({ saveDocument, renameDocument, currentDocument }) => {
-  const [title, setTitle] = useState<string | null>(currentDocument.title)
+  const [title, setTitle] = useState<string>(currentDocument.title)
 
   // // When the document title changes elsewhere, update the state here
   // useEffect(() => {
@@ -30,8 +30,9 @@ const EditorComponent: React.FC<{
     }
   }
 
-  const handleRename = () => {
-    const newTitle = title === null || title.trim() === "" ? "Untitled" : title
+  const handleBlur = () => {
+    if (title?.trim() === "") setTitle("")
+    const newTitle = title === null || title.trim() === "" ? "" : title
     renameDocument(newTitle)
   }
 
@@ -40,19 +41,17 @@ const EditorComponent: React.FC<{
       {/* {currentDocument.id} */}
       <HoveringToolbar />
       <Toolbar />
-      {title === null ? (
-        "Untitled"
-      ) : (
+      {
         <>
           <TitleInput
             type="text"
-            value={title}
+            value={title || ""}
             onChange={(e) => setTitle(e.target.value)}
-            onBlur={handleRename}
+            onBlur={handleBlur}
             placeholder="Untitled"
           />
         </>
-      )}
+      }
       <EditableContainer>
         <Editable
           plugins={plugins}

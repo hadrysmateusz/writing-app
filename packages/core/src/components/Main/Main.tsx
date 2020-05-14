@@ -191,26 +191,11 @@ const Main = () => {
    * in DataStore and switching the editor to the new document
    */
   const newDocument = useCallback(async (shouldSwitch: boolean = true) => {
-    let title: string | null = "New " + Date.now().toString().slice(9, 13) // TODO: this should be null (it is temporarily changed because prompt() is not supported in electron)
     const content = JSON.stringify(defaultState)
-    let isFirstPrompt = true
-
-    while (title === null) {
-      const t = prompt(isFirstPrompt ? "Title" : "Title (Can't be empty)")
-
-      // return null if the user cancels the prompt
-      if (t === null) return null
-
-      // if the title is empty set it to null to repeat the loop
-      title = t === "" ? null : t
-
-      // set the isFirstPrompt flag to false to modify the prompt message
-      isFirstPrompt = false
-    }
 
     const newDocument = await DataStore.save(
       new Document({
-        title,
+        title: "",
         content,
       })
     )

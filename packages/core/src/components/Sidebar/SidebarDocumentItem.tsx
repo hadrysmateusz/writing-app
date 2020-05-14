@@ -1,8 +1,8 @@
 import React, { useCallback } from "react"
 import { DataStore } from "aws-amplify"
+import styled from "styled-components"
 
 import { Document } from "../../models"
-import styled from "styled-components"
 
 const SidebarDocumentItem: React.FC<{
   document: Document
@@ -17,10 +17,11 @@ const SidebarDocumentItem: React.FC<{
     switchEditor(document.id)
   }, [document.id, switchEditor])
 
-  // const createdAt = new Date(document.createdAt).toLocaleString()
+  const title = document.title.trim() === "" ? "Untitled" : document.title
+
   return (
     <Container>
-      <Title onClick={openDocument}>{document.title}</Title>
+      <Title onClick={openDocument}>{title}</Title>
       <DeleteButton onClick={removeDocument}>X</DeleteButton>
     </Container>
   )
