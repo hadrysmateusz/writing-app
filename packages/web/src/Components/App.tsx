@@ -16,6 +16,8 @@ import {
   SignupPage,
 } from "Pages"
 import { useAsyncEffect } from "@writing-tool/core/src/hooks"
+import DocumentAdd from "./DocumentAdd"
+import DocumentsList from "./DocumentsList"
 
 export const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -33,27 +35,34 @@ export const App = () => {
     setIsAuthenticating(false)
   }, [])
 
-  return isAuthenticating ? null : (
-    <AppContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
-      <Router>
-        <Switch>
-          <Route exact path="/login">
-            <LoginPage />
-          </Route>
-          <Route exact path="/signup">
-            <SignupPage />
-          </Route>
-          <Route path="/medium-auth-callback">
-            <MediumAuthRedirectPage />
-          </Route>
-          <Route path="/" exact>
-            {isAuthenticated ? <EditorPage /> : <Redirect to="/login" />}
-          </Route>
-          <Route>
-            <h2>Page not found!</h2>
-          </Route>
-        </Switch>
-      </Router>
-    </AppContextProvider>
+  return (
+    <div>
+      <DocumentAdd />
+      <DocumentsList />
+    </div>
   )
+
+  // return isAuthenticating ? null : (
+  //   <AppContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
+  //     <Router>
+  //       <Switch>
+  //         <Route exact path="/login">
+  //           <LoginPage />
+  //         </Route>
+  //         <Route exact path="/signup">
+  //           <SignupPage />
+  //         </Route>
+  //         <Route path="/medium-auth-callback">
+  //           <MediumAuthRedirectPage />
+  //         </Route>
+  //         <Route path="/" exact>
+  //           {isAuthenticated ? <EditorPage /> : <Redirect to="/login" />}
+  //         </Route>
+  //         <Route>
+  //           <h2>Page not found!</h2>
+  //         </Route>
+  //       </Switch>
+  //     </Router>
+  //   </AppContextProvider>
+  // )
 }
