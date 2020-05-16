@@ -96,6 +96,7 @@ const _create = async () => {
   return db
 }
 
+// TODO: this could probably be improved to not require await everywhere I want to access the database (it should probably be created once at launch and then accessible normally)
 export const getDatabase = () => {
   if (!dbPromise) dbPromise = _create()
   return dbPromise
