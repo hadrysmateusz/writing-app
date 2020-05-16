@@ -13,6 +13,7 @@ addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) //enable syncing over http
 
 export type DocumentDocType = {
+  id: string
   title: string
   content: string
 }
@@ -39,9 +40,13 @@ const documentSchema: RxJsonSchema<DocumentDocType> = {
   version: 0,
   type: "object",
   properties: {
-    title: {
+    id: {
       type: "string",
       primary: true,
+      final: true,
+    },
+    title: {
+      type: "string",
     },
     content: {
       type: "string",

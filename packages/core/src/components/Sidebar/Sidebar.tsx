@@ -3,13 +3,13 @@ import React from "react"
 import { LogoutButton } from "../LogoutButton"
 import { ConnectWithMedium } from "../ConnectWithMedium"
 import SidebarDocumentItem from "./SidebarDocumentItem"
-import { Document } from "../../models"
 import styled from "styled-components/macro"
+import { DocumentDoc } from "Database"
 
 type SidebarProps = {
   switchEditor: (documentId: string | null) => void
-  documents: Document[]
-  newDocument: (shouldSwitch?: boolean) => Promise<Document | null>
+  documents: DocumentDoc[]
+  newDocument: (shouldSwitch?: boolean) => Promise<DocumentDoc | null>
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({

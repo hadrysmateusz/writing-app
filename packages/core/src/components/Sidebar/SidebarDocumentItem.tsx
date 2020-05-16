@@ -1,16 +1,16 @@
 import React, { useCallback } from "react"
-import { DataStore } from "aws-amplify"
+// import { DataStore } from "aws-amplify"
 import styled from "styled-components"
 
-import { Document } from "../../models"
+import { DocumentDoc } from "Database"
 
 const SidebarDocumentItem: React.FC<{
-  document: Document
+  document: DocumentDoc
   switchEditor: (id: string | null) => void
 }> = ({ document, switchEditor }) => {
   const removeDocument = () => {
+    document.remove()
     switchEditor(null)
-    DataStore.delete(document)
   }
 
   const openDocument = useCallback(() => {
