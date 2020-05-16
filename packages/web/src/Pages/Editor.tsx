@@ -1,7 +1,7 @@
 import React from "react"
 
-import Main from "@writing-tool/core/src/components/Main/Main"
+import Root from "@writing-tool/core/src/components/Root"
 
-const EditorPage = () => <Main />
+const EditorPage = () => <Root />
 
 export default EditorPage

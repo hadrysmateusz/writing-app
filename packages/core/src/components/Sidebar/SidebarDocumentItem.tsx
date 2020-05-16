@@ -2,7 +2,7 @@ import React, { useCallback } from "react"
 // import { DataStore } from "aws-amplify"
 import styled from "styled-components"
 
-import { DocumentDoc } from "Database"
+import { DocumentDoc } from "../Database"
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc

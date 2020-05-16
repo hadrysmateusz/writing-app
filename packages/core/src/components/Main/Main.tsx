@@ -12,7 +12,7 @@ import { plugins } from "../../pluginsList"
 import { deserialize, serialize } from "../Editor/serialization"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
 import { listenForIpcEvent } from "../../utils"
-import { getDatabase, DocumentDoc, DocumentDocType } from "../../Database"
+import { useDatabase, DocumentDoc, DocumentDocType } from "../Database"
 import { Subscription } from "rxjs"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
@@ -33,6 +33,7 @@ const Main = () => {
   const [content, setContent] = useState<Node[]>(defaultState)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const db = useDatabase()
 
   /**
    * Initialization effect
@@ -44,8 +45,6 @@ const Main = () => {
     let sub: Subscription | undefined
 
     const subscribeToDocuments = async () => {
-      const db = await getDatabase()
-
       // TODO: add sorting (it probably requires creating indexes)
       sub = db.documents.find().$.subscribe((documents) => {
         if (!documents[0]) {
@@ -176,8 +175,6 @@ const Main = () => {
    * in DataStore and switching the editor to the new document
    */
   const newDocument = useCallback(async (shouldSwitch: boolean = true) => {
-    const db = await getDatabase()
-
     // TODO: support null value for content for empty documents
 
     const newDocument = await db.documents.insert({

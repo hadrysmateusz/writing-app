@@ -1,10 +1,10 @@
 import React from "react"
+import styled from "styled-components/macro"
 
 import { LogoutButton } from "../LogoutButton"
 import { ConnectWithMedium } from "../ConnectWithMedium"
 import SidebarDocumentItem from "./SidebarDocumentItem"
-import styled from "styled-components/macro"
-import { DocumentDoc } from "Database"
+import { DocumentDoc } from "../Database"
 
 type SidebarProps = {
   switchEditor: (documentId: string | null) => void
