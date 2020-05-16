@@ -143,11 +143,13 @@ const Main = () => {
   /**
    * Save document
    */
-  const saveDocument = () => {
+  const saveDocument = async () => {
     const serializedContent = serialize(content)
-    return updateDocument({
+    const updatedDocument = await updateDocument({
       content: serializedContent,
     })
+    setIsModified(false)
+    return updatedDocument
   }
 
   /**
@@ -172,9 +174,12 @@ const Main = () => {
     }
 
     // This might need to change if I implement persistent history
-    if (editor.history.undos.length === 0) {
-      setIsModified(false)
-    }
+    /* TODO: this breaks after manual saves because history doesn't get removed when saving (no undos doesn't mean no changes when the user saved after some changes)
+       When saving the history length should be saved as well and the comparison should be against that, this should solve both the problem of manual saves and persistent history at once
+    */
+    // if (editor.history.undos.length === 0) {
+    //   setIsModified(false)
+    // }
   }
 
   // Create the editor object
