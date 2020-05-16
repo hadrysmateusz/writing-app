@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useState } from "react"
+import React, { KeyboardEvent, useState, useRef, useEffect } from "react"
 import { Editable, OnKeyDown } from "@slate-plugin-system/core"
 import isHotkey from "is-hotkey"
 
@@ -7,6 +7,7 @@ import { Toolbar } from "../Toolbar"
 import HoveringToolbar from "../HoveringToolbar"
 import { EditableContainer, Container, TitleInput } from "./styledComponents"
 import { Document } from "models"
+import { useEditor, ReactEditor } from "slate-react"
 
 const EditorComponent: React.FC<{
   saveDocument: () => Promise<Document | null>
@@ -14,23 +15,39 @@ const EditorComponent: React.FC<{
   currentDocument: Document
 }> = ({ saveDocument, renameDocument, currentDocument }) => {
   const [title, setTitle] = useState<string>(currentDocument.title)
+  const titleRef = useRef<HTMLInputElement | null>(null)
+  const editor = useEditor()
 
   // // When the document title changes elsewhere, update the state here
   // useEffect(() => {
   //   setTitle(currentDocument.title)
   // }, [currentDocument.title, setTitle])
 
+  /**
+   * Focus the correct element on mount
+   */
+  useEffect(() => {
+    if (title === "") {
+      titleRef.current?.focus()
+    } else {
+      ReactEditor.focus(editor)
+    }
+    // eslint-disable-next-line
+  }, [])
+
   const handleSaveDocument: OnKeyDown = async (event: KeyboardEvent) => {
     if (isHotkey("mod+s", event)) {
       event.preventDefault()
-      const updatedDocument = saveDocument()
-      if (updatedDocument === null) {
-        alert("There was a problem while saving the document")
-      }
+      await saveDocument()
     }
   }
 
-  const handleBlur = () => {
+  const handleContentBlur = async () => {
+    // TODO: if you close the window or reload without clicking on something else the blur doesn't trigger and the content doesn't get saved
+    await saveDocument()
+  }
+
+  const handleTitleBlur = () => {
     if (title?.trim() === "") setTitle("")
     const newTitle = title === null || title.trim() === "" ? "" : title
     renameDocument(newTitle)
@@ -38,25 +55,20 @@ const EditorComponent: React.FC<{
 
   return (
     <Container>
-      {/* {currentDocument.id} */}
       <HoveringToolbar />
       <Toolbar />
-      {
-        <>
-          <TitleInput
-            type="text"
-            value={title || ""}
-            onChange={(e) => setTitle(e.target.value)}
-            onBlur={handleBlur}
-            placeholder="Untitled"
-          />
-        </>
-      }
-      <EditableContainer>
+      <TitleInput
+        ref={titleRef}
+        type="text"
+        value={title || ""}
+        onChange={(e) => setTitle(e.target.value)}
+        onBlur={handleTitleBlur}
+        placeholder="Untitled"
+      />
+      <EditableContainer onBlur={handleContentBlur}>
         <Editable
           plugins={plugins}
           onKeyDown={[handleSaveDocument]}
-          autoFocus
           spellCheck={false}
         />
       </EditableContainer>

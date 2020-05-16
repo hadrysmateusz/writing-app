@@ -7,15 +7,19 @@ import SidebarDocumentItem from "./SidebarDocumentItem"
 import { DocumentDoc } from "../Database"
 
 type SidebarProps = {
-  switchEditor: (documentId: string | null) => void
   documents: DocumentDoc[]
+  currentDocument: DocumentDoc | null
+  switchEditor: (documentId: string | null) => void
   newDocument: (shouldSwitch?: boolean) => Promise<DocumentDoc | null>
+  isCurrentModified: boolean
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
-  switchEditor,
   documents,
+  currentDocument,
+  switchEditor,
   newDocument,
+  isCurrentModified,
 }) => {
   const handleCreateDocument = async () => {
     newDocument()
@@ -25,13 +29,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <OuterContainer>
       <Header>Drafts</Header>
       <List>
-        {documents.map((doc) => (
-          <SidebarDocumentItem
-            key={doc.id}
-            document={doc}
-            switchEditor={switchEditor}
-          />
-        ))}
+        {documents.map((doc) => {
+          const isCurrent = !!currentDocument && currentDocument.id === doc.id
+          const isModified = isCurrent && isCurrentModified
+
+          return (
+            <SidebarDocumentItem
+              key={doc.id}
+              document={doc}
+              switchEditor={switchEditor}
+              isCurrent={isCurrent}
+              isModified={isModified}
+            />
+          )
+        })}
         <div>
           <NewButton onClick={handleCreateDocument}>+ Create New</NewButton>
         </div>

@@ -6,11 +6,15 @@ import { DocumentDoc } from "../Database"
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
+  isCurrent: boolean
+  isModified: boolean
   switchEditor: (id: string | null) => void
-}> = ({ document, switchEditor }) => {
+}> = ({ document, switchEditor, isCurrent, isModified }) => {
   const removeDocument = () => {
     document.remove()
-    switchEditor(null)
+    if (isCurrent) {
+      switchEditor(null)
+    }
   }
 
   const openDocument = useCallback(() => {
@@ -20,8 +24,10 @@ const SidebarDocumentItem: React.FC<{
   const title = document.title.trim() === "" ? "Untitled" : document.title
 
   return (
-    <Container>
-      <Title onClick={openDocument}>{title}</Title>
+    <Container isCurrent={isCurrent}>
+      <Title onClick={openDocument}>
+        {title} {isModified && " *"}
+      </Title>
       <DeleteButton onClick={removeDocument}>X</DeleteButton>
     </Container>
   )
@@ -40,7 +46,8 @@ const DeleteButton = styled.div`
   }
 `
 
-const Container = styled.div`
+const Container = styled.div<{ isCurrent: boolean }>`
+  ${(p) => p.isCurrent && `font-weight: bold;`}
   padding: 3px 0;
   display: flex;
   align-items: center;

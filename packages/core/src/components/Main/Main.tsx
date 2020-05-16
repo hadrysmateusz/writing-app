@@ -3,6 +3,7 @@ import styled from "styled-components/macro"
 import { Node } from "slate"
 import { Slate, ReactEditor } from "slate-react"
 import { v4 as uuidv4 } from "uuid"
+import { isEqual } from "lodash"
 
 import { useCreateEditor } from "@slate-plugin-system/core"
 
@@ -34,6 +35,7 @@ const Main = () => {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const db = useDatabase()
+  const [isModified, setIsModified] = useState(false) // This might only be necessary for local documents (although it might be useful see if the document needs saving when the window closes or reloads etc.)
 
   /**
    * Initialization effect
@@ -47,15 +49,12 @@ const Main = () => {
     const subscribeToDocuments = async () => {
       // TODO: add sorting (it probably requires creating indexes)
       sub = db.documents.find().$.subscribe((documents) => {
-        if (!documents[0]) {
-          console.log("no documents")
-          // TODO: create new document
-          setCurrentEditor(null)
-        }
-
-        console.log("reload documents-list ")
-        console.dir(documents)
         setDocuments(documents)
+        if (!documents[0]) {
+          setCurrentEditor(null)
+        } else if (currentEditor === null) {
+          setCurrentEditor(documents[0].id)
+        }
         setIsLoading(false)
       })
     }
@@ -70,6 +69,8 @@ const Main = () => {
 
   // Handle changing all of the state and side-effects of switching editors
   useEffect(() => {
+    setIsModified(false) // TODO: this will have to change when/if multi-tab is implemented
+
     // Reset any properties on the editor objects that shouldn't be shared between documents
     // TODO; eventually I should save and restore these per documentID
     const resetEditor = () => {
@@ -89,8 +90,6 @@ const Main = () => {
 
       // TODO: if I move to redux I will have to query the document first by id
       const document = documents.find((doc) => doc.id === currentEditor)
-
-      console.log(document)
 
       if (!document) {
         setContent(defaultState)
@@ -163,9 +162,20 @@ const Main = () => {
   /**
    * onChange event handler for the Slate component
    */
-  const onChange = useCallback((value: Node[]) => {
+  const onChange = (value: Node[]) => {
+    // TODO: I could debounced-save in here
     setContent(value)
-  }, [])
+
+    // if the content has changed then set the modified flag (skip the expensive check if it's already true)
+    if (!isModified) {
+      setIsModified(!isEqual(content, value))
+    }
+
+    // This might need to change if I implement persistent history
+    if (editor.history.undos.length === 0) {
+      setIsModified(false)
+    }
+  }
 
   // Create the editor object
   const editor = useCreateEditor(plugins) as ReactEditor
@@ -221,6 +231,8 @@ const Main = () => {
                   switchEditor={setCurrentEditor}
                   documents={documents}
                   newDocument={newDocument}
+                  currentDocument={currentDocument}
+                  isCurrentModified={isModified}
                 />
                 {currentDocument && (
                   <EditorComponent
