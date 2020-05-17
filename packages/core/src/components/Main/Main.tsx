@@ -36,7 +36,7 @@ const Main = () => {
   const [isLoading, setIsLoading] = useState(true)
   const db = useDatabase()
   const [isModified, setIsModified] = useState(false) // This might only be necessary for local documents (although it might be useful see if the document needs saving when the window closes or reloads etc.)
-
+  const [isInitialLoad, setIsInitialLoad] = useState(true) // Flag to manage whether this is the first time documents are loaded
   /**
    * Initialization effect
    *
@@ -49,12 +49,17 @@ const Main = () => {
     const subscribeToDocuments = async () => {
       // TODO: add sorting (it probably requires creating indexes)
       sub = db.documents.find().$.subscribe((documents) => {
+        setIsInitialLoad(() => false)
+        console.log("reloading documents list")
         setDocuments(documents)
+
+        // If there are no documents, clear the selected editor to prevent errors and show empty state
         if (!documents[0]) {
           setCurrentEditor(null)
-        } else if (currentEditor === null) {
-          setCurrentEditor(documents[0].id)
         }
+
+        if (isInitialLoad) setCurrentEditor(documents[0].id)
+
         setIsLoading(false)
       })
     }
@@ -65,7 +70,7 @@ const Main = () => {
       if (!sub) return
       sub.unsubscribe()
     }
-  }, [])
+  }, [db.documents, isInitialLoad])
 
   // Handle changing all of the state and side-effects of switching editors
   useEffect(() => {
@@ -144,12 +149,15 @@ const Main = () => {
    * Save document
    */
   const saveDocument = async () => {
-    const serializedContent = serialize(content)
-    const updatedDocument = await updateDocument({
-      content: serializedContent,
-    })
-    setIsModified(false)
-    return updatedDocument
+    if (isModified) {
+      const serializedContent = serialize(content)
+      const updatedDocument = await updateDocument({
+        content: serializedContent,
+      })
+      setIsModified(false)
+      return updatedDocument
+    }
+    return null
   }
 
   /**
