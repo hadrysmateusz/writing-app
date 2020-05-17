@@ -112,6 +112,8 @@ export const onKeyDownList = ({}: ListOptions) => (
         e.preventDefault()
       }
 
+      /* TODO: when deleting selections around the end of a list an error is sometimes 
+      thrown along the lines of: "cannot find parent path of []" */
       const [paragraphNode, paragraphPath] = Editor.parent(
         editor,
         editor.selection

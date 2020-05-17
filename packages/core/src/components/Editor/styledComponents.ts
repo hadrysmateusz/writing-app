@@ -1,11 +1,18 @@
 import styled from "styled-components/macro"
 
 export const EditableContainer = styled.div`
-  margin: 20px 0;
   /* font-family: "IBM Plex Mono"; */
+  margin: 20px 0;
   font-size: 16px;
   line-height: 26px;
   color: #f3f3f3;
+  height: 100%;
+`
+
+export const InsertBlockField = styled.div`
+  /* background: rgba(0, 0, 0, 0.2); */
+  height: 100px;
+  cursor: text;
 `
 
 export const Container = styled.div`

@@ -4,6 +4,8 @@ import { withList } from "./editorOverrides"
 import { renderElementList } from "./renderElement"
 import { onKeyDownList } from "./onKeyDown"
 
+// TODO: indented list items are broken and show up on the same line
+
 /**
  * IMPORTANT: has to be added before the OnBreakSetDefault plugin
  */
