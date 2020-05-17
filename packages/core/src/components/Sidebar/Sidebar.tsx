@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, ChangeEvent } from "react"
 import styled from "styled-components/macro"
 
 import { LogoutButton } from "../LogoutButton"
@@ -6,62 +6,127 @@ import { ConnectWithMedium } from "../ConnectWithMedium"
 import SidebarDocumentItem from "./SidebarDocumentItem"
 import { DocumentDoc } from "../Database"
 
-type SidebarProps = {
+// TODO: maybe replace with an enum or something to be able to use this type with the onChange event
+type MenuType = "CLOUD_DOCUMENTS" | "LOCAL_DOCUMENTS" | "AUTH" | "OUTLINE"
+
+export const Sidebar: React.FC<{
   documents: DocumentDoc[]
   currentDocument: DocumentDoc | null
+  isCurrentModified: boolean
   switchEditor: (documentId: string | null) => void
   newDocument: (shouldSwitch?: boolean) => Promise<DocumentDoc | null>
-  isCurrentModified: boolean
-}
-
-export const Sidebar: React.FC<SidebarProps> = ({
+}> = ({
   documents,
   currentDocument,
+  isCurrentModified,
   switchEditor,
   newDocument,
+}) => {
+  // TODO: replace with a more constrained set of types
+  const [menuType, setMenuType] = useState<string>("CLOUD_DOCUMENTS")
+
+  const renderContent = () => {
+    switch (menuType) {
+      case "CLOUD_DOCUMENTS":
+        return (
+          <CloudDocumentsSidebar
+            documents={documents}
+            currentDocument={currentDocument}
+            isCurrentModified={isCurrentModified}
+            switchEditor={switchEditor}
+            newDocument={newDocument}
+          />
+        )
+      case "LOCAL_DOCUMENTS":
+        return <div>Local Documents</div>
+      case "OUTLINE":
+        return <div>Outline View</div>
+      case "AUTH":
+        return (
+          <div style={{ margin: "16px" }}>
+            <LogoutButton />
+            <ConnectWithMedium />
+          </div>
+        )
+      default:
+        return <div>Nothing's here</div>
+    }
+  }
+
+  return (
+    <OuterContainer>
+      {/* TODO: replace the placeholder dropdown */}
+      <HeaderSelect
+        value={menuType}
+        onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+          setMenuType(e.target.value)
+        }}
+      >
+        <option value="CLOUD_DOCUMENTS">Cloud</option>
+        <option value="LOCAL_DOCUMENTS">Local</option>
+        <option value="OUTLINE">Outline</option>
+        <option value="AUTH">My Account</option>
+      </HeaderSelect>
+      {renderContent()}
+    </OuterContainer>
+  )
+}
+
+const CloudDocumentsSidebar: React.FC<{
+  documents: DocumentDoc[]
+  currentDocument: DocumentDoc | null
+  isCurrentModified: boolean
+  switchEditor: (documentId: string | null) => void
+  newDocument: (shouldSwitch?: boolean) => Promise<DocumentDoc | null>
+}> = ({
+  documents,
+  currentDocument,
   isCurrentModified,
+  switchEditor,
+  newDocument,
 }) => {
   const handleCreateDocument = async () => {
     newDocument()
   }
 
   return (
-    <OuterContainer>
-      <Header>Drafts</Header>
-      <List>
-        {documents.map((doc) => {
-          const isCurrent = !!currentDocument && currentDocument.id === doc.id
-          const isModified = isCurrent && isCurrentModified
-
-          return (
-            <SidebarDocumentItem
-              key={doc.id}
-              document={doc}
-              switchEditor={switchEditor}
-              isCurrent={isCurrent}
-              isModified={isModified}
-            />
-          )
-        })}
-        <div>
-          <NewButton onClick={handleCreateDocument}>+ Create New</NewButton>
-        </div>
-      </List>
-      <div style={{ margin: "16px" }}>
-        <LogoutButton />
-        <ConnectWithMedium />
+    <List>
+      {documents.map((doc) => {
+        const isCurrent = !!currentDocument && currentDocument.id === doc.id
+        const isModified = isCurrent && isCurrentModified
+        return (
+          <SidebarDocumentItem
+            key={doc.id}
+            document={doc}
+            switchEditor={switchEditor}
+            isCurrent={isCurrent}
+            isModified={isModified}
+          />
+        )
+      })}
+      <div>
+        <NewButton onClick={handleCreateDocument}>+ Create New</NewButton>
       </div>
-    </OuterContainer>
+    </List>
   )
 }
 
-const Header = styled.div`
+const HeaderSelect = styled.select`
+  color: white;
+  width: calc(100% - 16px);
+  outline: none;
   padding: 13px 16px;
   font-family: "Poppins";
   font-weight: 600;
   font-size: 15px;
   line-height: 19px;
   letter-spacing: 0.03em;
+  background: none;
+  border: none;
+  > * {
+    color: black;
+    font-size: 14px;
+  }
 `
 
 const List = styled.div`
