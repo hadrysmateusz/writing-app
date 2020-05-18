@@ -6,13 +6,13 @@ import { HORIZONTAL_RULE } from "../types"
 
 const HRContainer = styled.div`
   margin: 14px 0;
-  padding: 16px 8px;
+  padding: 16px 20%;
   cursor: pointer;
 `
 
 const HR = styled.div<{ selected: boolean; focused: boolean }>`
   height: 2px;
-  background: #efefef;
+  background: #41474d;
   box-shadow: ${(props) =>
     props.selected && props.focused ? "0 0 0 3px #B4D5FF" : "none"};
 `
