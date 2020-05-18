@@ -243,6 +243,7 @@ const Main = () => {
                 <Sidebar
                   switchEditor={setCurrentEditor}
                   documents={documents}
+                  editorContent={content}
                   newDocument={newDocument}
                   currentDocument={currentDocument}
                   isCurrentModified={isModified}

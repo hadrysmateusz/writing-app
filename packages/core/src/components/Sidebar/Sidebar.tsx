@@ -1,10 +1,15 @@
-import React, { useState, ChangeEvent } from "react"
+import React, { useState, ChangeEvent, useEffect } from "react"
 import styled from "styled-components/macro"
 
 import { LogoutButton } from "../LogoutButton"
 import { ConnectWithMedium } from "../ConnectWithMedium"
 import SidebarDocumentItem from "./SidebarDocumentItem"
 import { DocumentDoc } from "../Database"
+import { Node } from "slate"
+
+const OUTLINE_HEADING_MAX_LENGTH = 40 // TODO: this might need to change to fit a resized sidebar
+
+type OutlineItem = { level: number; textContent: string }
 
 // TODO: maybe replace with an enum or something to be able to use this type with the onChange event
 type MenuType = "CLOUD_DOCUMENTS" | "LOCAL_DOCUMENTS" | "AUTH" | "OUTLINE"
@@ -13,12 +18,14 @@ export const Sidebar: React.FC<{
   documents: DocumentDoc[]
   currentDocument: DocumentDoc | null
   isCurrentModified: boolean
+  editorContent: Node[]
   switchEditor: (documentId: string | null) => void
   newDocument: (shouldSwitch?: boolean) => Promise<DocumentDoc | null>
 }> = ({
   documents,
   currentDocument,
   isCurrentModified,
+  editorContent,
   switchEditor,
   newDocument,
 }) => {
@@ -40,7 +47,7 @@ export const Sidebar: React.FC<{
       case "LOCAL_DOCUMENTS":
         return <div>Local Documents</div>
       case "OUTLINE":
-        return <div>Outline View</div>
+        return <OutlineSidebar editorContent={editorContent} />
       case "AUTH":
         return (
           <div style={{ margin: "16px" }}>
@@ -71,6 +78,66 @@ export const Sidebar: React.FC<{
     </OuterContainer>
   )
 }
+
+const OutlineSidebar: React.FC<{ editorContent: Node[] }> = ({
+  editorContent,
+}) => {
+  const [outline, setOutline] = useState<OutlineItem[]>([])
+
+  useEffect(() => {
+    setOutline(() => {
+      const newOutline: OutlineItem[] = []
+      editorContent.forEach((node) => {
+        if (node?.type.startsWith("heading_")) {
+          const textContent = node?.children[0]?.text
+          if (textContent !== undefined && textContent.trim() !== "") {
+            console.log(node)
+            const headingLevel = node.type[node.type.length - 1]
+            const trimmedContent = textContent.slice(
+              0,
+              Math.min(textContent.length, OUTLINE_HEADING_MAX_LENGTH)
+            )
+
+            // const headingText =
+            newOutline.push({
+              level: headingLevel,
+              textContent: trimmedContent,
+            })
+          }
+        }
+      })
+      console.log(newOutline)
+      return newOutline
+    })
+  }, [editorContent])
+
+  return (
+    <div>
+      {outline.map((item) => (
+        <OutlineItem level={item.level}>
+          <OutlineIcon>H{item.level}</OutlineIcon>
+          {item.textContent}
+        </OutlineItem>
+      ))}
+    </div>
+  )
+}
+
+const OutlineItem = styled.div<{ level: number }>`
+  padding: 4px 0;
+  padding-left: ${(p) => p.level * 16}px;
+  color: #afb3b6;
+  display: flex;
+  font-size: 12px;
+  align-items: center;
+`
+
+const OutlineIcon = styled.span`
+  font-weight: bold;
+  margin-right: 6px;
+  font-size: 12px;
+  color: #41474d;
+`
 
 const CloudDocumentsSidebar: React.FC<{
   documents: DocumentDoc[]
