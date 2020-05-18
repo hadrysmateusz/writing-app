@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import styled from "styled-components"
+import styled from "styled-components/macro"
 import { Node } from "slate"
 
 const OUTLINE_HEADING_MAX_LENGTH = 40 // TODO: this might need to change to fit a resized sidebar

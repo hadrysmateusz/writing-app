@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import styled from "styled-components"
+import styled from "styled-components/macro"
 import { Node } from "slate"
 
 import { Outline } from "./Outline"

@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from "styled-components/macro"
 
 const Heading = styled.div`
   font-weight: bold;
