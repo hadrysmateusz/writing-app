@@ -62,6 +62,11 @@ const EditorComponent: React.FC<{
   /*
     TODO: this solution might be a bit too basic and might need to be replaced with normalization
     It should also take into account the depth of the path and the type of the node (e.g. list items)
+    TODO: this should probably be merged with a solution for selecting the correct block by clicking 
+    next to it - my best guess is, it would be an event listener on the entire editor area that would 
+    get the position of the click and compare it to the bounding boxes of blocks until it finds the 
+    correct one (this would be a good place to use a more efficient search algorithm as it's not 
+    insignificantly expensive to compare the positions of many nodes)
   */
   const insertEmptyBlock = () => {
     const newPath = [editor.children.length]
