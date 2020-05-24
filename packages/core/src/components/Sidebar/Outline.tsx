@@ -54,7 +54,12 @@ export const Outline: React.FC<{ editorContent: Node[] }> = ({
   return (
     <OutlineContainer>
       {outline.tree.map((item) => (
-        <OutlineItem level={item.level} baseLevel={outline.baseLevel}>
+        // TODO: replace the key with something that is guaranteed to be unique
+        <OutlineItem
+          key={item.level + item.textContent}
+          level={item.level}
+          baseLevel={outline.baseLevel}
+        >
           <OutlineIcon>H{item.level}</OutlineIcon>
           {item.textContent}
         </OutlineItem>
@@ -63,7 +68,11 @@ export const Outline: React.FC<{ editorContent: Node[] }> = ({
   )
 }
 
-const OutlineContainer = styled.div``
+const OutlineContainer = styled.div`
+  :not(:empty) {
+    padding-top: 4px;
+  }
+`
 
 const OutlineItem = styled.div<{ level: number; baseLevel: number }>`
   cursor: default;

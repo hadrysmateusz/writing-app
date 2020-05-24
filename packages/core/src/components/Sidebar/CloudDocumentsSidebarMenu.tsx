@@ -4,13 +4,16 @@ import { Node } from "slate"
 
 import SidebarDocumentItem from "./SidebarDocumentItem"
 import { DocumentDoc } from "../Database"
-import { useContextMenu } from "../ContextMenu"
 
 export const CloudDocumentsSidebarMenu: React.FC<{
   documents: DocumentDoc[]
   currentDocument: DocumentDoc | null
-  isCurrentModified: boolean
   editorContent: Node[]
+  isCurrentModified: boolean
+  renameDocument: (
+    documentId: string,
+    title: string
+  ) => Promise<Document | null>
   switchEditor: (documentId: string | null) => void
   newDocument: (shouldSwitch?: boolean) => Promise<DocumentDoc | null>
 }> = ({
@@ -18,6 +21,7 @@ export const CloudDocumentsSidebarMenu: React.FC<{
   currentDocument,
   isCurrentModified,
   editorContent,
+  renameDocument,
   switchEditor,
   newDocument,
 }) => {
@@ -40,6 +44,7 @@ export const CloudDocumentsSidebarMenu: React.FC<{
             isCurrent={isCurrent}
             isModified={isModified}
             switchEditor={switchEditor}
+            renameDocument={renameDocument}
           />
         )
       })}

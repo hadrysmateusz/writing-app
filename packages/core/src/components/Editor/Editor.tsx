@@ -18,7 +18,10 @@ import { Transforms, Path, Editor } from "slate"
 
 const EditorComponent: React.FC<{
   saveDocument: () => Promise<Document | null>
-  renameDocument: (title: string) => Promise<Document | null>
+  renameDocument: (
+    documentId: string,
+    title: string
+  ) => Promise<Document | null>
   currentDocument: Document
 }> = ({ saveDocument, renameDocument, currentDocument }) => {
   const [title, setTitle] = useState<string>(currentDocument.title)
@@ -41,6 +44,8 @@ const EditorComponent: React.FC<{
     // eslint-disable-next-line
   }, [])
 
+  // TODO: try using this event in the entire editor area as it would be more intuitive I think
+  // TODO: also apply renaming (if focus is in the title input)
   const handleSaveDocument: OnKeyDown = async (event: KeyboardEvent) => {
     if (isHotkey("mod+s", event)) {
       event.preventDefault()
@@ -55,8 +60,7 @@ const EditorComponent: React.FC<{
 
   const handleTitleBlur = () => {
     if (title?.trim() === "") setTitle("")
-    const newTitle = title === null || title.trim() === "" ? "" : title
-    renameDocument(newTitle)
+    renameDocument(currentDocument.id, title)
   }
 
   /*
@@ -88,6 +92,13 @@ const EditorComponent: React.FC<{
     ReactEditor.focus(editor)
   }
 
+  const handleTitleKeydown = (event: React.KeyboardEvent) => {
+    if (isHotkey(["Enter", "Esc"], event)) {
+      // move focus to the editor (as if the title was a part of the editable area) - this will automatically trigger a rename
+      ReactEditor.focus(editor)
+    }
+  }
+
   return (
     <Container>
       <HoveringToolbar />
@@ -98,6 +109,7 @@ const EditorComponent: React.FC<{
         value={title || ""}
         onChange={(e) => setTitle(e.target.value)}
         onBlur={handleTitleBlur}
+        onKeyDown={handleTitleKeydown}
         placeholder="Untitled"
       />
       <EditableContainer onBlur={handleContentBlur}>

@@ -118,20 +118,23 @@ const Main = () => {
 
   /**
    * Update document
+   *
+   * TODO: use a more generic update document function inside that will query a document based on id
    */
-  const updateDocument = async (newValues: Partial<DocumentDocType>) => {
+  const updateCurrentDocument = async (newValues: Partial<DocumentDocType>) => {
     try {
       if (currentEditor === null) {
         throw new Error("no editor is currently selected")
       }
 
+      // TODO: replace with a db query (to avoid some potential issues and edge-cases)
       const original = documents.find((doc) => doc.id === currentEditor)
 
       if (original === undefined) {
         throw new Error("no document found matching current editor id")
       }
 
-      // TODO: if I move to redux I'will have to query the original based on id first
+      // TODO: if I move to redux I'll have to query the original based on id first
       const updatedDocument = await original.update({
         $set: newValues,
       })
@@ -147,11 +150,13 @@ const Main = () => {
 
   /**
    * Save document
+   *
+   * Works on the current document
    */
   const saveDocument = async () => {
     if (isModified) {
       const serializedContent = serialize(content)
-      const updatedDocument = await updateDocument({
+      const updatedDocument = await updateCurrentDocument({
         content: serializedContent,
       })
       setIsModified(false)
@@ -161,12 +166,27 @@ const Main = () => {
   }
 
   /**
-   * Rename document
+   * Rename document by id
    */
-  const renameDocument = (title: string) => {
-    return updateDocument({
-      title: title,
+  const renameDocument = async (documentId: string, title: string) => {
+    // TODO: replace with a db query (to avoid some potential issues and edge-cases)
+    const original = documents.find((doc) => doc.id === documentId)
+
+    if (original === undefined) {
+      throw new Error(`no document found matching this id (${documentId})`)
+    }
+
+    const newTitle = title.trim()
+
+    const updatedDocument = await original.update({
+      $set: {
+        title: newTitle,
+      },
     })
+
+    // TODO: error handling
+
+    return updatedDocument
   }
 
   /**
@@ -242,9 +262,10 @@ const Main = () => {
               <>
                 <Sidebar
                   switchEditor={setCurrentEditor}
+                  renameDocument={renameDocument}
+                  newDocument={newDocument}
                   documents={documents}
                   editorContent={content}
-                  newDocument={newDocument}
                   currentDocument={currentDocument}
                   isCurrentModified={isModified}
                 />

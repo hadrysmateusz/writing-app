@@ -15,6 +15,10 @@ export const Sidebar: React.FC<{
   currentDocument: DocumentDoc | null
   isCurrentModified: boolean
   editorContent: Node[]
+  renameDocument: (
+    documentId: string,
+    title: string
+  ) => Promise<Document | null>
   switchEditor: (documentId: string | null) => void
   newDocument: (shouldSwitch?: boolean) => Promise<DocumentDoc | null>
 }> = ({
@@ -22,6 +26,7 @@ export const Sidebar: React.FC<{
   currentDocument,
   isCurrentModified,
   editorContent,
+  renameDocument,
   switchEditor,
   newDocument,
 }) => {
@@ -39,6 +44,7 @@ export const Sidebar: React.FC<{
             editorContent={editorContent}
             switchEditor={switchEditor}
             newDocument={newDocument}
+            renameDocument={renameDocument}
           />
         )
       case "LOCAL_DOCUMENTS":
