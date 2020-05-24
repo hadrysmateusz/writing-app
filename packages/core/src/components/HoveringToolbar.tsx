@@ -16,10 +16,10 @@ const Div = styled.div`
   left: -10000px;
   margin-top: -6px;
   opacity: 0;
-  background-color: #24292e;
-  border: 1px solid #1f2428;
-  color: red;
-  border-radius: 3px;
+  color: #9da3a8;
+  background-color: #41474d;
+  border: 1px solid #1b1f23;
+  border-radius: 4px;
   transition: opacity 0.75s;
 `
 

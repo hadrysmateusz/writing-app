@@ -2,7 +2,7 @@ import styled from "styled-components/macro"
 
 export const EditableContainer = styled.div`
   /* font-family: "IBM Plex Mono"; */
-  margin: 40px 0 0;
+  margin: 24px 0 0;
   font-size: 16px;
   line-height: 26px;
   color: #f3f3f3;

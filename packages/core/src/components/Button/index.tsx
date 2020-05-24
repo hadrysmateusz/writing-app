@@ -6,7 +6,7 @@ const StyledButton = styled.button<{ active: boolean }>`
   border: none;
   border-radius: none;
   padding: 6px;
-  color: ${(p) => (p.active ? "#EC92A8" : "#AFB3B6")};
+  color: ${(p) => (p.active ? "white" : "inherit")};
 `
 
 const Button: React.FC<{

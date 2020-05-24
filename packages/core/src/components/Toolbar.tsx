@@ -37,7 +37,7 @@ export const Toolbar = () => {
   }
 
   return (
-    <div>
+    <div style={{ color: "#afb3b6" }}>
       {/* Headings */}
       <FormatButton format={HeadingType.H1} />
       <FormatButton format={HeadingType.H2} />
