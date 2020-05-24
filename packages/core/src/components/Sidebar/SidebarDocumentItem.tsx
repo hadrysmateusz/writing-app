@@ -4,6 +4,7 @@ import { Node } from "slate"
 
 import { Outline } from "./Outline"
 import { DocumentDoc } from "../Database"
+import { useContextMenu, ContextMenuItem } from "../ContextMenu"
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
@@ -12,6 +13,8 @@ const SidebarDocumentItem: React.FC<{
   editorContent: Node[]
   switchEditor: (id: string | null) => void
 }> = ({ document, switchEditor, isCurrent, isModified, editorContent }) => {
+  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+
   const removeDocument = () => {
     document.remove()
     if (isCurrent) {
@@ -26,7 +29,7 @@ const SidebarDocumentItem: React.FC<{
   const title = document.title.trim() === "" ? "Untitled" : document.title
 
   return (
-    <Container isCurrent={isCurrent}>
+    <Container isCurrent={isCurrent} onContextMenu={openMenu}>
       <MainContainer>
         <Title onClick={openDocument}>
           {title} {isModified && " *"}
@@ -34,6 +37,11 @@ const SidebarDocumentItem: React.FC<{
         <DeleteButton onClick={removeDocument}>X</DeleteButton>
       </MainContainer>
       {isCurrent && <Outline editorContent={editorContent} />}
+      {isMenuOpen && (
+        <ContextMenu>
+          <ContextMenuItem onClick={removeDocument}>Delete</ContextMenuItem>
+        </ContextMenu>
+      )}
     </Container>
   )
 }

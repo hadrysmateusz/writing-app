@@ -4,6 +4,7 @@ import { Node } from "slate"
 
 import SidebarDocumentItem from "./SidebarDocumentItem"
 import { DocumentDoc } from "../Database"
+import { useContextMenu } from "../ContextMenu"
 
 export const CloudDocumentsSidebarMenu: React.FC<{
   documents: DocumentDoc[]
@@ -20,6 +21,8 @@ export const CloudDocumentsSidebarMenu: React.FC<{
   switchEditor,
   newDocument,
 }) => {
+  // TODO: hovering toolbar and dev-tools are also using portals but from a different library - these should be unified
+
   const handleCreateDocument = async () => {
     newDocument()
   }
