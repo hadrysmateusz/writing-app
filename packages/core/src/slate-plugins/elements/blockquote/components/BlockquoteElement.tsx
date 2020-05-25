@@ -4,19 +4,24 @@ import styled from "styled-components/macro"
 
 import { BLOCKQUOTE } from "../types"
 
-const StyledBlockquote = styled.blockquote`
+import { Toolbar } from "../../../../components/NodeToolbar"
+
+const StyledBlockquote = styled.blockquote<{ isSelected?: boolean }>`
   border-left: 3px solid #41474d;
+  position: relative;
   margin: 14px 0;
   padding-left: 14px;
   color: #afb3b6;
-  /* font-style: italic; */
 `
 
 export const BlockquoteElement = ({
   attributes,
   children,
-}: RenderElementProps) => (
-  <StyledBlockquote {...attributes} data-slate-type={BLOCKQUOTE}>
-    {children}
-  </StyledBlockquote>
-)
+}: RenderElementProps) => {
+  return (
+    <StyledBlockquote {...attributes} data-slate-type={BLOCKQUOTE}>
+      {children}
+      <Toolbar nodeRef={attributes.ref} />
+    </StyledBlockquote>
+  )
+}

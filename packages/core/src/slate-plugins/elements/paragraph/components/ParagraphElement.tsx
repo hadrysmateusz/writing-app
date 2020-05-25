@@ -3,8 +3,10 @@ import { RenderElementProps } from "slate-react"
 import styled from "styled-components/macro"
 
 import { PARAGRAPH } from "../types"
+import { Toolbar } from "../../../../components/NodeToolbar"
 
 const StyledParagraph = styled.div`
+  position: relative;
   --margin: 14px;
   :not(:first-child) {
     margin-top: var(--margin);
@@ -17,8 +19,11 @@ const StyledParagraph = styled.div`
 export const ParagraphElement = ({
   attributes,
   children,
-}: RenderElementProps) => (
-  <StyledParagraph {...attributes} data-slate-type={PARAGRAPH}>
-    {children}
-  </StyledParagraph>
-)
+}: RenderElementProps) => {
+  return (
+    <StyledParagraph {...attributes} data-slate-type={PARAGRAPH}>
+      {children}
+      <Toolbar nodeRef={attributes.ref} />
+    </StyledParagraph>
+  )
+}

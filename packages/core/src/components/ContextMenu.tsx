@@ -3,6 +3,8 @@ import React, { useState, useRef, useCallback } from "react"
 import styled from "styled-components/macro"
 import { useOnClickOutside } from "../hooks/useOnClickOutside"
 
+// TODO: create components for submenus and separators
+
 export const useContextMenu = () => {
   // TODO: capture focus inside the context menu and restore it when it closes
   // TODO: maybe - replace the usePortal hook for more control (try using a single designated root DOM node instead of creating millions of empty divs)
@@ -26,14 +28,13 @@ export const useContextMenu = () => {
     closePortal()
   }, [closePortal])
 
-  useOnClickOutside(containerRef, () => {
-    closeMenu()
-  })
-
   /**
    * A component returned from the hook that will render the context menu inside a portal at the correct position
    */
   const ContextMenu: React.FC<{}> = ({ children }) => {
+    useOnClickOutside(containerRef, () => {
+      closeMenu()
+    })
     return (
       <Portal>
         <MenuContainer xPos={x} yPos={y} ref={containerRef}>
@@ -43,7 +44,7 @@ export const useContextMenu = () => {
     )
   }
 
-  return { openMenu, closeMenu: closePortal, isMenuOpen: isOpen, ContextMenu }
+  return { openMenu, closeMenu, isMenuOpen: isOpen, ContextMenu }
 }
 
 const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
@@ -55,12 +56,18 @@ const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
   background: #41474d;
   border: 1px solid #1b1f23;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-  padding: 4px 0;
+  padding: 6px 0;
   min-width: 160px;
 `
 
+export const ContextMenuSeparator = styled.div`
+  height: 1px;
+  background: #4b5257;
+  margin: 6px 0;
+`
+
 export const ContextMenuItem = styled.div`
-  padding: 6px 12px;
+  padding: 6px 20px;
   color: white;
   font-size: 12px;
   cursor: pointer;

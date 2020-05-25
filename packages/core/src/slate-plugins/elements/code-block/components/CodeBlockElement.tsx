@@ -3,6 +3,7 @@ import { RenderElementProps } from "slate-react"
 import styled from "styled-components/macro"
 
 import { CODE_BLOCK } from "../types"
+import { Toolbar } from "../../../../components/NodeToolbar"
 
 const StyledPre = styled.pre`
   position: relative;
@@ -20,10 +21,15 @@ const StyledPre = styled.pre`
 export const CodeBlockElement = ({
   attributes,
   children,
-}: RenderElementProps) => (
-  <StyledPre>
-    <code {...attributes} data-slate-type={CODE_BLOCK}>
-      {children}
-    </code>
-  </StyledPre>
-)
+}: RenderElementProps) => {
+  // TODO: when inside a code block handle line breaks like soft-breaks because otherwise it creates a separate block for every line
+
+  return (
+    <StyledPre>
+      <code {...attributes} data-slate-type={CODE_BLOCK}>
+        {children}
+      </code>
+      <Toolbar nodeRef={attributes.ref} />
+    </StyledPre>
+  )
+}
