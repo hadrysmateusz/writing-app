@@ -8,14 +8,14 @@ import { Toolbar } from "../../../../components/NodeToolbar"
 const StyledPre = styled.pre`
   position: relative;
   font-family: monospace;
-  background-color: #41474d;
+  background-color: #2e3338;
   color: #f3f3f3;
   padding: 14px 18px;
   font-size: 15px;
   line-height: 24px;
   border-radius: 5px;
   white-space: pre-wrap;
-  border: 1px solid #1b1f23;
+  /* border: 1px solid #1b1f23; */
 `
 
 export const CodeBlockElement = ({
