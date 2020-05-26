@@ -21,7 +21,6 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "baseUrl": "src"
+    "noEmit": true
   }
 }
