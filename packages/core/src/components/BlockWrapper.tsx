@@ -30,6 +30,9 @@ const Wrapper = styled.div`
   }
 `
 
+/**
+ * DEPRECATED
+ */
 export const BlockWrapper = ({ children, element }) => {
   const editor = useSlate()
 
