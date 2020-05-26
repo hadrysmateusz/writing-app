@@ -20,8 +20,8 @@ export const BlockquoteElement = ({
 }: RenderElementProps) => {
   return (
     <StyledBlockquote {...attributes} data-slate-type={BLOCKQUOTE}>
-      {children}
       <Toolbar nodeRef={attributes.ref} />
+      {children}
     </StyledBlockquote>
   )
 }

@@ -22,8 +22,8 @@ export const ParagraphElement = ({
 }: RenderElementProps) => {
   return (
     <StyledParagraph {...attributes} data-slate-type={PARAGRAPH}>
-      {children}
       <Toolbar nodeRef={attributes.ref} />
+      {children}
     </StyledParagraph>
   )
 }

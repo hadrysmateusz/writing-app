@@ -14,6 +14,7 @@ import { PARAGRAPH } from "../slate-plugins/elements/paragraph"
 import { HeadingType } from "../slate-plugins"
 
 // The toolbar requires the parent element to have position: relative
+// The toolbar needs to not be put after the contentEditable contents of a slate node because it will result in the caret moving into it if the users clicks downarrow in the last block in the document (there might be other related issues with this)
 
 // TODO: this is incompatible with list items having other nodes inside (which is extremely problematic in many situations and should probably go)
 
@@ -67,7 +68,7 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
         contentEditable={false}
       />
       {isMenuOpen && (
-        <ContextMenu>
+        <ContextMenu contentEditable={false}>
           {/* TODO: replace with heading submenu  */}
           <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
             Heading 1

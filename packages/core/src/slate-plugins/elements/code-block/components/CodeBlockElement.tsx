@@ -26,10 +26,10 @@ export const CodeBlockElement = ({
 
   return (
     <StyledPre>
+      <Toolbar nodeRef={attributes.ref} />
       <code {...attributes} data-slate-type={CODE_BLOCK}>
         {children}
       </code>
-      <Toolbar nodeRef={attributes.ref} />
     </StyledPre>
   )
 }
