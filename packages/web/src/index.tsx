@@ -6,7 +6,7 @@ import "typeface-ibm-plex-mono"
 import "typeface-open-sans"
 import "typeface-poppins"
 
-import { App } from "Components/App"
+import { App } from "./Components/App"
 import "./index.css"
 import * as serviceWorker from "./serviceWorker"
 import config from "./config"

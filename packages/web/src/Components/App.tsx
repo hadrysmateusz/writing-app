@@ -15,7 +15,7 @@ import {
   LoginPage,
   EditorPage,
   SignupPage,
-} from "Pages"
+} from "../Pages"
 
 export const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
