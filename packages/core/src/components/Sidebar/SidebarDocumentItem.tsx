@@ -37,12 +37,13 @@ const SidebarDocumentItem: React.FC<{
     renameDocument(document.id, titleValue)
   }
 
-  useOnClickOutside(containerRef, () => {
-    // TODO: this solution doesn't take into account other ways the menu could be closed like moving focus with tab etc. ( I could try using a simple onBlur, but that might not fire when the input is unmounted, I could try using a usePrevious hook with a useEffect to rename when they are different but that might not handle setting isRenaming state)
-    if (isRenaming) {
-      commitRename()
-    }
-  })
+  // TODO: replace this logic
+  // useOnClickOutside(containerRef, () => {
+  //   // TODO: this solution doesn't take into account other ways the menu could be closed like moving focus with tab etc. ( I could try using a simple onBlur, but that might not fire when the input is unmounted, I could try using a usePrevious hook with a useEffect to rename when they are different but that might not handle setting isRenaming state)
+  //   if (isRenaming) {
+  //     commitRename()
+  //   }
+  // })
 
   useEffect(() => {
     // Focus and select the input
