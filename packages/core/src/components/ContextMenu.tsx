@@ -30,6 +30,8 @@ export const useContextMenu = () => {
 
   /**
    * A component returned from the hook that will render the context menu inside a portal at the correct position
+   *
+   * TODO: this component should take a prop that would set the value for react context that all contextmenuitem children should have access to
    */
   const ContextMenu: React.FC<{}> = ({ children }) => {
     useOnClickOutside(containerRef, () => {
