@@ -1,5 +1,5 @@
 import { Transforms, Node } from "slate"
-import React, { useState, useRef, useEffect } from "react"
+import React, { useRef } from "react"
 import { useEditor, ReactEditor, useFocused, useSelected } from "slate-react"
 import styled from "styled-components/macro"
 
@@ -19,45 +19,10 @@ import { HeadingType } from "../slate-plugins"
 
 export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const selectionTimeoutRef = useRef<number | null>(null)
   const node = useRef<Node | null>(null)
   const editor = useEditor()
-  const [isSelecting, setIsSelecting] = useState(false)
   const isFocused = useFocused()
   const isSelected = useSelected()
-
-  useEffect(() => {
-    /* 
-      when the selection goes through the toolbar element slate throws an error, I need to figure out a way to stop it
-      this is an imperfect attempt at fixing it
-    */
-    const selectStartListener = (e) => {
-      if (selectionTimeoutRef.current) {
-        clearTimeout(selectionTimeoutRef.current)
-      }
-      setIsSelecting(true)
-      /* 
-        TODO: this solution is not perfect
-
-        Even with the timeout you can sometimes accidentally set a selection inside the toolbar element,
-        especially if you just leave your cursor where it will reappear
-
-        An error boundary for the "Cannot resolve a Slate point from DOM point" error might help with this 
-        and many other issues but it will probably not be perfect (although when it's implemented 
-        this disappearing logic should probably be removed)
-      */
-      const timeoutId = setTimeout(() => {
-        setIsSelecting(false)
-      }, 400)
-
-      selectionTimeoutRef.current = timeoutId
-    }
-
-    document.addEventListener("selectionchange", selectStartListener)
-    return () => {
-      document.removeEventListener("selectionchange", selectStartListener)
-    }
-  })
 
   const handleMouseDown = (event) => {
     event.preventDefault()
@@ -89,12 +54,18 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
     closeMenu()
   }
 
-  return !isSelecting && isSelected && isFocused ? (
+  /*
+    TODO: a possible solution to the selection error could be using a portal - but it would
+    require positioning the toolbar with js in a way that would react to every change in position 
+    of the node in real-time
+  */
+  return isSelected && isFocused ? (
     <>
       <SideToolbarContainer
         onMouseDown={handleMouseDown}
         onSelect={(e) => console.log(e)}
-      ></SideToolbarContainer>
+        contentEditable={false}
+      />
       {isMenuOpen && (
         <ContextMenu>
           {/* TODO: replace with heading submenu  */}
