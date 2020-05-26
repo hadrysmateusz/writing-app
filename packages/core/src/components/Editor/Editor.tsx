@@ -25,7 +25,7 @@ const EditorComponent: React.FC<{
   currentDocument: Document
 }> = ({ saveDocument, renameDocument, currentDocument }) => {
   const [title, setTitle] = useState<string>(currentDocument.title)
-  const titleRef = useRef<HTMLInputElement | null>(null)
+  const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const editor = useEditor()
 
   // // When the document title changes elsewhere, update the state here
@@ -105,7 +105,6 @@ const EditorComponent: React.FC<{
       <Toolbar />
       <TitleInput
         ref={titleRef}
-        type="text"
         value={title || ""}
         onChange={(e) => setTitle(e.target.value)}
         onBlur={handleTitleBlur}

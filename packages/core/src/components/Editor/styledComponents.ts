@@ -1,4 +1,5 @@
 import styled from "styled-components/macro"
+import TextareaAutosize from "react-autosize-textarea"
 
 export const EditableContainer = styled.div`
   /* font-family: "IBM Plex Mono"; */
@@ -22,8 +23,16 @@ export const Container = styled.div`
   box-sizing: content-box;
 `
 
-export const TitleInput = styled.input`
+export const TitleInput = styled(TextareaAutosize)`
+  display: block;
   background: none;
+  appearance: none;
+  width: 100%;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  resize: none;
+
   border: none;
   outline: none;
   padding: 0;
