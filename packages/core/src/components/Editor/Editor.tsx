@@ -16,6 +16,18 @@ import { Document } from "models"
 import { useEditor, ReactEditor } from "slate-react"
 import { Transforms, Path, Editor } from "slate"
 
+/**
+ * Helper for creating a basic empty node
+ *
+ * The deep cloning prevents issues with react keys
+ */
+const createEmptyNode = () => {
+  return cloneDeep({
+    type: "paragraph",
+    children: [{ text: "" }],
+  })
+}
+
 const EditorComponent: React.FC<{
   saveDocument: () => Promise<Document | null>
   renameDocument: (
