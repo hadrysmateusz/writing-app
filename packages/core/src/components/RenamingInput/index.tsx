@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react"
+import React, { forwardRef } from "react"
 import TextareaAutosize from "react-autosize-textarea"
 import styled from "styled-components/macro"
 import isHotkey from "is-hotkey"
@@ -12,12 +12,10 @@ export const StyledTextarea = styled(TextareaAutosize)`
   white-space: pre-wrap;
   word-break: break-word;
   resize: none;
-
   border: none;
   outline: none;
   padding: 0;
   margin-top: 16px;
-
   font-weight: bold;
   font-family: "Poppins";
   letter-spacing: 0.01em;
@@ -28,10 +26,14 @@ export const StyledTextarea = styled(TextareaAutosize)`
 
 export type Props = {
   placeholder?: string
-  initialValue?: string
+  value: string
+  onChange: (value: string) => void
   /**
    * The equivalent of onSubmit - it's the handler that's called to actually
    * trigger the backend renaming logic and other side-effects
+   *
+   * The value argument should be used instead of whatever the state is in the parent
+   * component because it will be sanitized
    */
   onRename: (value: string) => void
   /**
@@ -49,13 +51,15 @@ type RefType = HTMLTextAreaElement
 export const RenamingInput = forwardRef<RefType, Props>((props, ref) => {
   const {
     placeholder = "Untitled",
-    initialValue = "",
+    value,
+    onChange,
     onRename,
     onKeyDown = () => true,
   } = props
 
-  const [value, setValue] = useState<string>(initialValue)
-
+  /**
+   * TODO: this sanitizing logic might need some improvements
+   */
   const sanitizeValue = (value: string) => value.trim()
 
   const rename = () => {
@@ -64,11 +68,17 @@ export const RenamingInput = forwardRef<RefType, Props>((props, ref) => {
   }
 
   const handleBlur = () => {
+    /* 
+      Make sure that if the title only contains whitespace it gets
+      reduced to an empty string to display the placeholder text 
+    */
+    if (value.trim() === "") onChange("")
+
     rename()
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(event.target.value)
+    onChange(event.target.value)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
