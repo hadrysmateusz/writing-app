@@ -44,12 +44,9 @@ export const Outline: React.FC<{ editorContent: Node[] }> = ({
           }
         }
       })
-      console.log(newOutline)
       return newOutline
     })
   }, [editorContent])
-
-  console.log(outline)
 
   return (
     <OutlineContainer>
