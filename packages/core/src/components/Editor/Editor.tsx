@@ -9,12 +9,12 @@ import HoveringToolbar from "../HoveringToolbar"
 import {
   EditableContainer,
   Container,
-  TitleInput,
   InsertBlockField,
 } from "./styledComponents"
 import { Document } from "models"
 import { useEditor, ReactEditor } from "slate-react"
 import { Transforms, Path, Editor } from "slate"
+import { RenamingInput } from "../RenamingInput"
 
 /**
  * Helper for creating a basic empty node
@@ -39,6 +39,17 @@ const EditorComponent: React.FC<{
   const [title, setTitle] = useState<string>(currentDocument.title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const editor = useEditor()
+
+  // For debugging purposes only
+  useEffect(() => {
+    const listener = (event) => {
+      console.log(document.getSelection())
+    }
+    document.addEventListener("selectionchange", listener)
+    return () => {
+      document.removeEventListener("selectionchange", listener)
+    }
+  }, [])
 
   // // When the document title changes elsewhere, update the state here
   // useEffect(() => {
@@ -70,11 +81,6 @@ const EditorComponent: React.FC<{
     await saveDocument()
   }
 
-  const handleTitleBlur = () => {
-    if (title?.trim() === "") setTitle("")
-    renameDocument(currentDocument.id, title)
-  }
-
   /*
     TODO: this solution might be a bit too basic and might need to be replaced with normalization
     It should also take into account the depth of the path and the type of the node (e.g. list items)
@@ -92,36 +98,49 @@ const EditorComponent: React.FC<{
     if (lastNode.text === "") {
       Transforms.select(editor, lastPath)
     } else {
-      Transforms.insertNodes(
-        editor,
-        cloneDeep({ type: "paragraph", children: [{ text: "" }] }),
-        {
-          at: newPath,
-          select: true,
-        }
-      )
+      Transforms.insertNodes(editor, createEmptyNode(), {
+        at: newPath,
+        select: true,
+      })
     }
     ReactEditor.focus(editor)
   }
 
+  const handleRename = (newValue: string) => {
+    renameDocument(currentDocument.id, newValue)
+  }
+
   const handleTitleKeydown = (event: React.KeyboardEvent) => {
+    // TODO: allow other ways of navigating between the title and editor content like arrow down and up (there are many multi-line considerations there)
     if (isHotkey(["Enter", "Esc"], event)) {
+      // prevent the line break from being inserted into the title (TODO: some version of this behavior might be desirable)
+      event.preventDefault()
+      // TODO: insert an empty block at the start of the editor
+      Transforms.insertNodes(editor, createEmptyNode(), {
+        at: [0],
+        select: true,
+      })
       // move focus to the editor (as if the title was a part of the editable area) - this will automatically trigger a rename
       ReactEditor.focus(editor)
+      return false
     }
+    return true
+  }
+
+  const handleTitleChange = (newValue: string) => {
+    setTitle(newValue)
   }
 
   return (
     <Container>
       <HoveringToolbar />
       <Toolbar />
-      <TitleInput
+      <RenamingInput
         ref={titleRef}
-        value={title || ""}
-        onChange={(e) => setTitle(e.target.value)}
-        onBlur={handleTitleBlur}
+        value={title}
+        onChange={handleTitleChange}
         onKeyDown={handleTitleKeydown}
-        placeholder="Untitled"
+        onRename={handleRename}
       />
       <EditableContainer onBlur={handleContentBlur}>
         <Editable
