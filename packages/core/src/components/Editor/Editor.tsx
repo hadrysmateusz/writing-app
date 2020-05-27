@@ -2,6 +2,7 @@ import React, { KeyboardEvent, useState, useRef, useEffect } from "react"
 import { Editable, OnKeyDown } from "@slate-plugin-system/core"
 import isHotkey from "is-hotkey"
 import { cloneDeep } from "lodash"
+import styled from "styled-components/macro"
 
 import { plugins } from "../../pluginsList"
 import { Toolbar } from "../Toolbar"
@@ -14,7 +15,7 @@ import {
 import { Document } from "models"
 import { useEditor, ReactEditor } from "slate-react"
 import { Transforms, Path, Editor } from "slate"
-import { RenamingInput } from "../RenamingInput"
+import { NamingInput } from "../RenamingInput"
 
 /**
  * Helper for creating a basic empty node
@@ -135,7 +136,7 @@ const EditorComponent: React.FC<{
     <Container>
       <HoveringToolbar />
       <Toolbar />
-      <RenamingInput
+      <StyledNamingInput
         ref={titleRef}
         value={title}
         onChange={handleTitleChange}
@@ -154,5 +155,15 @@ const EditorComponent: React.FC<{
     </Container>
   )
 }
+
+const StyledNamingInput = styled(NamingInput)`
+  margin-top: 16px;
+  font-weight: bold;
+  font-family: "Poppins";
+  letter-spacing: 0.01em;
+  font-size: 36px;
+  line-height: 54px;
+  color: #f8f8f8;
+`
 
 export default EditorComponent

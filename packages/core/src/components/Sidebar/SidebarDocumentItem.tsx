@@ -2,11 +2,11 @@ import React, { useCallback, useState, useRef, useEffect } from "react"
 import styled from "styled-components/macro"
 import { Node } from "slate"
 
-import { useOnClickOutside } from "../../hooks/useOnClickOutside"
+// import { useOnClickOutside } from "../../hooks/useOnClickOutside"
 import { Outline } from "./Outline"
 import { DocumentDoc } from "../Database"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
-import isHotkey from "is-hotkey"
+import { EditableText } from "../RenamingInput"
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
@@ -32,7 +32,8 @@ const SidebarDocumentItem: React.FC<{
   const containerRef = useRef<any>()
   const titleInputRef = useRef<any>()
 
-  const commitRename = () => {
+  const onRename = () => {
+    if (!isRenaming) return
     setIsRenaming(false)
     renameDocument(document.id, titleValue)
   }
@@ -63,11 +64,11 @@ const SidebarDocumentItem: React.FC<{
     }
   }, [document.title, isRenaming])
 
-  const handleTitleInputKeydown = (event: React.KeyboardEvent) => {
-    if (isRenaming && isHotkey(["Enter", "Esc"], event)) {
-      commitRename()
-    }
-  }
+  // const handleTitleInputKeydown = (event: React.KeyboardEvent) => {
+  //   if (isRenaming && isHotkey(["Enter", "Esc"], event)) {
+  //     onRename()
+  //   }
+  // }
 
   const handleRenameDocument = () => {
     closeMenu()
@@ -87,6 +88,14 @@ const SidebarDocumentItem: React.FC<{
 
   const title = document.title.trim() === "" ? "Untitled" : document.title
 
+  const handleChange = (newValue: string) => {
+    setTitleValue(newValue)
+  }
+
+  const handleClick = () => {
+    openDocument()
+  }
+
   return (
     <Container
       isCurrent={isCurrent}
@@ -94,23 +103,19 @@ const SidebarDocumentItem: React.FC<{
       ref={containerRef}
     >
       <MainContainer>
-        {isRenaming ? (
-          <input
-            type="text"
-            ref={titleInputRef}
-            value={titleValue}
-            onBlur={(e) => console.log("blurred")}
-            onChange={(e) => setTitleValue(e.target.value)}
-            onKeyDown={handleTitleInputKeydown}
-          />
-        ) : (
-          <Title onClick={openDocument}>
-            {title} {isModified && " *"}
-          </Title>
-        )}
-        {/* <DeleteButton onClick={removeDocument}>X</DeleteButton> */}
+        <EditableText
+          ref={titleInputRef}
+          isRenaming={isRenaming}
+          value={titleValue}
+          onChange={handleChange}
+          onClick={handleClick}
+          onRename={onRename}
+          staticValue={`${title} ${isModified && " *"}`}
+        />
       </MainContainer>
+
       {isCurrent && <Outline editorContent={editorContent} />}
+
       {isMenuOpen && (
         <ContextMenu>
           <ContextMenuItem onClick={handleRenameDocument}>
@@ -148,12 +153,12 @@ const Container = styled.div<{ isCurrent: boolean }>`
 const MainContainer = styled.div`
   display: flex;
   align-items: center;
-`
 
-const Title = styled.div`
-  cursor: pointer;
-  color: #fbfbfb;
-  flex: 1;
+  .EditableText_editable {
+    border: 1px solid #41474d;
+    border-radius: 3px;
+    padding: 3px 5px;
+  }
 `
 
 export default SidebarDocumentItem
