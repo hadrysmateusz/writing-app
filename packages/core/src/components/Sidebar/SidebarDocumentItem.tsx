@@ -110,7 +110,7 @@ const SidebarDocumentItem: React.FC<{
           onChange={handleChange}
           onClick={handleClick}
           onRename={onRename}
-          staticValue={`${title} ${isModified && " *"}`}
+          staticValue={`${title} ${isModified ? " *" : ""}`}
         />
       </MainContainer>
 
