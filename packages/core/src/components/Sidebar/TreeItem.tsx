@@ -9,28 +9,37 @@ type RenderProps = {
   toggle: () => void
 }
 
+/* TODO: abstract and refactor into multiple components: 
+  - one for a generic collapsible component with no assumptions about its render output
+  - one for a static tree item that can't be expanded and takes simplified props
+  - one for an expandable tree item that will automatically handle rendering a list of children and assigning them their depth
+*/
+
 const TreeItem: React.FC<{
+  icon?: string
   expandable?: boolean
   startExpanded?: boolean
-  isRoot?: boolean
-  icon?: string
+  depth?: number
   text?: string
   onBeforeExpand?: () => void
   renderStatic?: (renderProps: RenderProps) => React.ReactNode
   renderExpanded?: (renderProps: RenderProps) => React.ReactNode
 }> = ({
+  icon,
   expandable = false,
   startExpanded = false,
-  isRoot = false,
-  icon,
+  depth = 0,
   text = "",
   onBeforeExpand,
   renderStatic,
-  renderExpanded = () => {
-    throw Error("expandable TreeItem needs a renderExpanded prop")
-  },
+  renderExpanded,
 }) => {
+  const isRoot = depth === 0
   const [isExpanded, setIsExpanded] = useState(startExpanded)
+
+  if (expandable && !renderExpanded) {
+    throw new Error("Expandable TreeItem needs a renderExpanded prop")
+  }
 
   const handleClick = (_event: React.MouseEvent<HTMLDivElement>) => {
     // If the renderStatic prop is provided don't automatically open on click
@@ -56,31 +65,64 @@ const TreeItem: React.FC<{
 
   const renderProps: RenderProps = { isExpanded, expand, collapse, toggle }
 
+  // TODO: add a chevron to indicate that the item is collapsible/expandable
+
   return (
-    <OuterContainer>
+    <OuterContainer depth={depth}>
       <MainContainer onClick={handleClick}>
         {icon && (
           <IconContainer isRoot={isRoot}>
             <Icon icon={icon} />
           </IconContainer>
         )}
-        <StaticContainer>
+        <StaticContainer isRoot={isRoot}>
           {renderStatic ? renderStatic(renderProps) : text}
         </StaticContainer>
       </MainContainer>
       {expandable && isExpanded && (
-        <DetailsConainer>{renderExpanded(renderProps)}</DetailsConainer>
+        <DetailsContainer>
+          {renderExpanded && renderExpanded(renderProps)}
+        </DetailsContainer>
       )}
     </OuterContainer>
   )
 }
 
-const OuterContainer = styled.div``
-const MainContainer = styled.div``
-const StaticContainer = styled.div``
-const DetailsConainer = styled.div`
-  margin-left: 16px;
+const OuterContainer = styled.div<{ depth: number }>`
+  margin-left: ${(p) => p.depth * 16}px;
 `
-const IconContainer = styled.div<{ isRoot: boolean }>``
+const MainContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  /* margin: 10px 0; */
+`
+const StaticContainer = styled.div<{ isRoot: boolean }>`
+  font-family: "Segoe UI"; /* TODO: create global font-stacks */
+  font-size: 12px;
+  /* font-size: ${(p) => (p.isRoot ? "12px" : "11px")}; */
+  color: ${(p) => (p.isRoot ? "#f2f2f2" : "#f0f0f0")};
+  font-weight: ${(p) => (p.isRoot ? "bold" : "normal")};
+  text-rendering: optimizeLegibility;
+  letter-spacing: 0.02em;
+  padding: 5px 0;
+  :hover { 
+    color: white;
+  }
+`
+const DetailsContainer = styled.div`
+  /* margin-left: 16px; */
+  margin-top: 2px;
+  margin-bottom: 8px; /* bottom is intentionally larger than top */
+`
+const IconContainer = styled.div<{ isRoot: boolean }>`
+  /* padding: 0 8px; */
+  margin-right: 8px;
+  margin-bottom: -4px; /* to help align the icon with the text */
+  color: ${(p) => (p.isRoot ? "#858585" : "#5D5D5D")};
+  font-size: 1.4em;
+`
 
 export default TreeItem
