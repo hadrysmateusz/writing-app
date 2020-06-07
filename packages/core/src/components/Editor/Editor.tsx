@@ -1,21 +1,21 @@
 import React, { KeyboardEvent, useState, useRef, useEffect } from "react"
+import styled from "styled-components/macro"
+import { useEditor, ReactEditor } from "slate-react"
+import { Transforms, Path, Editor } from "slate"
 import { Editable, OnKeyDown } from "@slate-plugin-system/core"
 import isHotkey from "is-hotkey"
 import { cloneDeep } from "lodash"
-import styled from "styled-components/macro"
 
 import { plugins } from "../../pluginsList"
 import { Toolbar } from "../Toolbar"
 import HoveringToolbar from "../HoveringToolbar"
+import { NamingInput } from "../RenamingInput"
+import { RenameDocumentFn } from "../Main/types"
 import {
   EditableContainer,
   Container,
   InsertBlockField,
 } from "./styledComponents"
-import { useEditor, ReactEditor } from "slate-react"
-import { Transforms, Path, Editor } from "slate"
-import { NamingInput } from "../RenamingInput"
-import { RenameDocumentFn } from "../Main/types"
 
 /**
  * Helper for creating a basic empty node

@@ -1,5 +1,5 @@
-import { DocumentDoc } from "../Database"
 import { Document } from "models"
+import { DocumentDoc } from "../Database"
 
 export type NewDocumentFn = (
   shouldSwitch: boolean,
