@@ -21,6 +21,7 @@ import {
 } from "../Database"
 import { Subscription } from "rxjs"
 import createGroupTree, { GroupTree } from "../../helpers/createGroupTree"
+import { NewDocumentFn, RenameDocumentFn, SwitchEditorFn } from "./types"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
@@ -32,19 +33,9 @@ declare global {
 
 export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
 
-type GroupTreeRoot = {
-  id: null
-  children: GroupTreeBranch[]
-}
-
-interface GroupTreeBranch {
-  id: string
-  children: GroupTreeBranch[]
-}
-
 const Main = () => {
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
-  const [groups, setGroups] = useState<GroupTree>({ children: [] })
+  const [groups, setGroups] = useState<GroupTree>([])
   // currently selected editor - represented by the document id
   const [currentEditor, setCurrentEditor] = useState<string | null>(null)
   // content of the currently selected editor
@@ -244,7 +235,10 @@ const Main = () => {
   /**
    * Rename document by id
    */
-  const renameDocument = async (documentId: string, title: string) => {
+  const renameDocument: RenameDocumentFn = async (
+    documentId: string,
+    title: string
+  ) => {
     // TODO: replace with a db query (to avoid some potential issues and edge-cases)
     const original = documents.find((doc) => doc.id === documentId)
 
@@ -293,7 +287,7 @@ const Main = () => {
    * Handles creating a new document by asking for a name, creating a document
    * in DataStore and switching the editor to the new document
    */
-  const newDocument = useCallback(
+  const newDocument: NewDocumentFn = useCallback(
     async (shouldSwitch: boolean, parentGroup: string | null) => {
       // TODO: support null value for content for empty documents
 

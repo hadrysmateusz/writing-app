@@ -7,6 +7,7 @@ import { LogoutButton } from "../LogoutButton"
 import { ConnectWithMedium } from "../ConnectWithMedium"
 import { DocumentDoc } from "../Database"
 import { GroupTree } from "../../helpers/createGroupTree"
+import { NewDocumentFn, RenameDocumentFn, SwitchEditorFn } from "../Main/types"
 
 // TODO: maybe replace with an enum or something to be able to use this type with the onChange event
 type MenuType = "CLOUD_DOCUMENTS" | "LOCAL_DOCUMENTS" | "AUTH"
@@ -17,15 +18,9 @@ export const Sidebar: React.FC<{
   currentDocument: DocumentDoc | null
   isCurrentModified: boolean
   editorContent: Node[]
-  renameDocument: (
-    documentId: string,
-    title: string
-  ) => Promise<Document | null>
-  switchEditor: (documentId: string | null) => void
-  newDocument: (
-    shouldSwitch: boolean,
-    parentGroup: string | null
-  ) => Promise<DocumentDoc | null>
+  renameDocument: RenameDocumentFn
+  switchEditor: SwitchEditorFn
+  newDocument: NewDocumentFn
 }> = ({
   documents,
   groups,

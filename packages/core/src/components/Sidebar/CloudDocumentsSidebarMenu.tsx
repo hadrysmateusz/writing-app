@@ -9,6 +9,7 @@ import ExpandableTreeItem from "../ExpandableTreeItem"
 import StaticTreeItem from "../TreeItem"
 import { GroupTree, GroupTreeBranch } from "../../helpers/createGroupTree"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
+import { NewDocumentFn, RenameDocumentFn, SwitchEditorFn } from "../Main/types"
 
 export const CloudDocumentsSidebarMenu: React.FC<{
   documents: DocumentDoc[]
@@ -16,15 +17,9 @@ export const CloudDocumentsSidebarMenu: React.FC<{
   currentDocument: DocumentDoc | null
   editorContent: Node[]
   isCurrentModified: boolean
-  renameDocument: (
-    documentId: string,
-    title: string
-  ) => Promise<Document | null>
-  switchEditor: (documentId: string | null) => void
-  newDocument: (
-    shouldSwitch: boolean,
-    parentGroup: string | null
-  ) => Promise<DocumentDoc | null>
+  renameDocument: RenameDocumentFn
+  switchEditor: SwitchEditorFn
+  newDocument: NewDocumentFn
 }> = ({
   documents,
   groups,

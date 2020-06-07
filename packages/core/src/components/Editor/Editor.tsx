@@ -12,10 +12,10 @@ import {
   Container,
   InsertBlockField,
 } from "./styledComponents"
-import { Document } from "models"
 import { useEditor, ReactEditor } from "slate-react"
 import { Transforms, Path, Editor } from "slate"
 import { NamingInput } from "../RenamingInput"
+import { RenameDocumentFn } from "../Main/types"
 
 /**
  * Helper for creating a basic empty node
@@ -31,10 +31,7 @@ const createEmptyNode = () => {
 
 const EditorComponent: React.FC<{
   saveDocument: () => Promise<Document | null>
-  renameDocument: (
-    documentId: string,
-    title: string
-  ) => Promise<Document | null>
+  renameDocument: RenameDocumentFn
   currentDocument: Document
 }> = ({ saveDocument, renameDocument, currentDocument }) => {
   const [title, setTitle] = useState<string>(currentDocument.title)
