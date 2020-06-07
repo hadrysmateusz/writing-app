@@ -3,13 +3,12 @@ import styled from "styled-components/macro"
 import { Node } from "slate"
 import { v4 as uuidv4 } from "uuid"
 
-// import SidebarDocumentItem from "./SidebarDocumentItem"
 import { DocumentDoc, useDatabase } from "../Database"
 import ExpandableTreeItem from "../ExpandableTreeItem"
 import StaticTreeItem from "../TreeItem"
-import { GroupTree, GroupTreeBranch } from "../../helpers/createGroupTree"
-import { useContextMenu, ContextMenuItem } from "../ContextMenu"
+import { GroupTree } from "../../helpers/createGroupTree"
 import { NewDocumentFn, RenameDocumentFn, SwitchEditorFn } from "../Main/types"
+import GroupTreeItem from "./GroupTreeItem"
 
 export const CloudDocumentsSidebarMenu: React.FC<{
   documents: DocumentDoc[]
@@ -36,8 +35,6 @@ export const CloudDocumentsSidebarMenu: React.FC<{
   const handleCreateDocument = async () => {
     newDocument(true, null)
   }
-
-  console.log("documents", documents)
 
   return (
     <List>
@@ -78,74 +75,7 @@ export const CloudDocumentsSidebarMenu: React.FC<{
       >
         New collection
       </button>
-
-      {/* {documents.map((doc) => {
-        const isCurrent = !!currentDocument && currentDocument.id === doc.id
-        const isModified = isCurrent && isCurrentModified
-        return (
-          <SidebarDocumentItem
-            key={doc.id}
-            document={doc}
-            editorContent={editorContent}
-            isCurrent={isCurrent}
-            isModified={isModified}
-            switchEditor={switchEditor}
-            renameDocument={renameDocument}
-          />
-        )
-      })} */}
     </List>
-  )
-}
-
-const GroupTreeItem: React.FC<{
-  group: GroupTreeBranch
-  depth?: number
-  newDocument: (
-    shouldSwitch: boolean,
-    parentGroup: string | null
-  ) => Promise<DocumentDoc | null>
-}> = ({ group, depth, newDocument }) => {
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const db = useDatabase()
-
-  const handleNewDocument = () => {
-    newDocument(true, group.id)
-  }
-
-  const handleNewGroup = () => {
-    // TODO: make it possible to actually name the group properly
-    db.groups.insert({
-      id: uuidv4(),
-      name: Date.now() + "",
-      parentGroup: null,
-    })
-  }
-
-  return (
-    <>
-      <ExpandableTreeItem
-        key={group.id}
-        depth={depth}
-        onContextMenu={openMenu}
-        startExpanded
-        childNodes={group.children.map((subgroup) => (
-          <GroupTreeItem group={subgroup} newDocument={newDocument} />
-        ))}
-      >
-        {group.name}
-      </ExpandableTreeItem>{" "}
-      {isMenuOpen && (
-        <ContextMenu>
-          <ContextMenuItem onClick={handleNewDocument}>
-            New Document
-          </ContextMenuItem>
-          <ContextMenuItem onClick={handleNewGroup}>
-            New Collection
-          </ContextMenuItem>
-        </ContextMenu>
-      )}
-    </>
   )
 }
 
