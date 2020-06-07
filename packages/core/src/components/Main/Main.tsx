@@ -21,7 +21,12 @@ import {
 } from "../Database"
 import { Subscription } from "rxjs"
 import createGroupTree, { GroupTree } from "../../helpers/createGroupTree"
-import { NewDocumentFn, RenameDocumentFn, SwitchEditorFn } from "./types"
+import {
+  NewDocumentFn,
+  RenameDocumentFn,
+  SaveDocumentFn,
+  UpdateCurrentDocumentFn,
+} from "./types"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
@@ -177,7 +182,9 @@ const Main = () => {
    *
    * TODO: use a more generic update document function inside that will query a document based on id
    */
-  const updateCurrentDocument = async (newValues: Partial<DocumentDocType>) => {
+  const updateCurrentDocument: UpdateCurrentDocumentFn = async (
+    newValues: Partial<DocumentDocType>
+  ) => {
     try {
       if (currentEditor === null) {
         throw new Error("no editor is currently selected")
@@ -191,16 +198,18 @@ const Main = () => {
       }
 
       // TODO: if I move to redux I'll have to query the original based on id first
-      const updatedDocument = await original.update({
+      const updatedDocument: DocumentDocType = await original.update({
         $set: newValues,
       })
 
       return updatedDocument
     } catch (error) {
-      const msgBase = "Can't update the current document"
-      console.error(`${msgBase}: ${error.message}`)
-      setError(msgBase)
-      return null
+      // TODO: better error handling
+      throw error
+      // const msgBase = "Can't update the current document"
+      // console.error(`${msgBase}: ${error.message}`)
+      // setError(msgBase)
+      // return null
     }
   }
 
@@ -209,7 +218,7 @@ const Main = () => {
    *
    * Works on the current document
    */
-  const saveDocument = async () => {
+  const saveDocument: SaveDocumentFn = async () => {
     if (isModified) {
       const serializedContent = serialize(content)
       const updatedDocument = await updateCurrentDocument({

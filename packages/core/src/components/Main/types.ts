@@ -1,5 +1,4 @@
-import { Document } from "models"
-import { DocumentDoc } from "../Database"
+import { DocumentDoc, DocumentDocType } from "../Database"
 
 export type NewDocumentFn = (
   shouldSwitch: boolean,
@@ -11,6 +10,10 @@ export type RenameDocumentFn = (
   title: string
 ) => Promise<Document | null>
 
-export type SaveDocumentFn = () => Promise<Document | null>
+export type UpdateCurrentDocumentFn = (
+  newValues: Partial<DocumentDocType>
+) => Promise<DocumentDocType>
+
+export type SaveDocumentFn = () => Promise<DocumentDocType | null>
 
 export type SwitchEditorFn = (documentId: string | null) => void
