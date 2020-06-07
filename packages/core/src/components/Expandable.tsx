@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import styled from "styled-components/macro"
-import Icon from "../Icon"
+import Icon from "./Icon"
 
 type RenderProps = {
   isExpanded: boolean
@@ -15,9 +15,7 @@ type RenderProps = {
   - one for an expandable tree item that will automatically handle rendering a list of children and assigning them their depth
 */
 
-const TreeItem: React.FC<{
-  icon?: string
-  expandable?: boolean
+const Expandable: React.FC<{
   startExpanded?: boolean
   depth?: number
   text?: string
@@ -125,4 +123,4 @@ const IconContainer = styled.div<{ isRoot: boolean }>`
   font-size: 1.4em;
 `
 
-export default TreeItem
+export default Expandable

@@ -2,7 +2,7 @@ import React, { useState, useContext, createContext, useEffect } from "react"
 import { addRxPlugin, createRxDatabase } from "rxdb"
 import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
-import { documentSchema } from "./Schema"
+import { documentSchema, groupSchema } from "./Schema"
 import { MyDatabaseCollections, MyDatabase } from "./types"
 
 addRxPlugin(PouchDbAdapterIdb)
@@ -14,9 +14,14 @@ const collections = [
     schema: documentSchema,
     sync: true,
   },
+  {
+    name: "groups",
+    schema: groupSchema,
+    sync: true,
+  },
 ]
 
-const dbName = "writingtooldocumentsdb"
+const dbName = "writingtooldocumentsdb" // TODO: rename to something more general
 const syncURL = "http://" + window.location.hostname + ":10102/"
 
 const DatabaseContext = createContext<MyDatabase | null>(null)
@@ -56,14 +61,15 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       // sync
       console.log("DatabaseService: setting up sync...")
       // TODO: check if sync returns a promise to be resolved
-      collections
-        .filter((col) => col.sync)
-        .map((col) => col.name)
-        .forEach((colName) =>
-          db[colName].sync({
-            remote: syncURL + colName + "/",
-          })
-        )
+      console.warn("Sync disabled: Check the Database.tsx file")
+      // collections
+      //   .filter((col) => col.sync)
+      //   .map((col) => col.name)
+      //   .forEach((colName) =>
+      //     db[colName].sync({
+      //       remote: syncURL + colName + "/",
+      //     })
+      //   )
       console.log("DatabaseService: sync set up")
 
       setDatabase(db) // TODO: check if a ref (or a simple global singleton) wouldn't be more appropriate

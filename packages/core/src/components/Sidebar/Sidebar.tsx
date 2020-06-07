@@ -6,12 +6,14 @@ import { CloudDocumentsSidebarMenu } from "./CloudDocumentsSidebarMenu"
 import { LogoutButton } from "../LogoutButton"
 import { ConnectWithMedium } from "../ConnectWithMedium"
 import { DocumentDoc } from "../Database"
+import { GroupTree } from "../../helpers/createGroupTree"
 
 // TODO: maybe replace with an enum or something to be able to use this type with the onChange event
 type MenuType = "CLOUD_DOCUMENTS" | "LOCAL_DOCUMENTS" | "AUTH"
 
 export const Sidebar: React.FC<{
   documents: DocumentDoc[]
+  groups: GroupTree
   currentDocument: DocumentDoc | null
   isCurrentModified: boolean
   editorContent: Node[]
@@ -20,9 +22,13 @@ export const Sidebar: React.FC<{
     title: string
   ) => Promise<Document | null>
   switchEditor: (documentId: string | null) => void
-  newDocument: (shouldSwitch?: boolean) => Promise<DocumentDoc | null>
+  newDocument: (
+    shouldSwitch: boolean,
+    parentGroup: string | null
+  ) => Promise<DocumentDoc | null>
 }> = ({
   documents,
+  groups,
   currentDocument,
   isCurrentModified,
   editorContent,
@@ -39,6 +45,7 @@ export const Sidebar: React.FC<{
         return (
           <CloudDocumentsSidebarMenu
             documents={documents}
+            groups={groups}
             currentDocument={currentDocument}
             isCurrentModified={isCurrentModified}
             editorContent={editorContent}
@@ -98,7 +105,7 @@ const HeaderSelect = styled.select`
 `
 
 const OuterContainer = styled.div`
-  background-color: #1f2428;
   border-right: 1px solid;
-  border-color: #1b1f23;
+  border-color: #363636;
+  background-color: #1e1e1e;
 `

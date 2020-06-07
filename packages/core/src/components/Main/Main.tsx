@@ -13,8 +13,14 @@ import { plugins } from "../../pluginsList"
 import { deserialize, serialize } from "../Editor/serialization"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
 import { listenForIpcEvent } from "../../utils"
-import { useDatabase, DocumentDoc, DocumentDocType } from "../Database"
+import {
+  useDatabase,
+  DocumentDoc,
+  DocumentDocType,
+  GroupDoc,
+} from "../Database"
 import { Subscription } from "rxjs"
+import createGroupTree, { GroupTree } from "../../helpers/createGroupTree"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
@@ -26,8 +32,19 @@ declare global {
 
 export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
 
+type GroupTreeRoot = {
+  id: null
+  children: GroupTreeBranch[]
+}
+
+interface GroupTreeBranch {
+  id: string
+  children: GroupTreeBranch[]
+}
+
 const Main = () => {
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
+  const [groups, setGroups] = useState<GroupTree>({ children: [] })
   // currently selected editor - represented by the document id
   const [currentEditor, setCurrentEditor] = useState<string | null>(null)
   // content of the currently selected editor
@@ -52,37 +69,80 @@ const Main = () => {
   /**
    * Initialization effect
    *
-   * - Fetches all of the user's documents
-   * - Sets up a documents subscription
+   * - Fetches all of the user's documents & groups
+   * - Sets up subscriptions
    */
   useEffect(() => {
-    let sub: Subscription | undefined
+    let documentsSub: Subscription | undefined
+    let groupsSub: Subscription | undefined
 
-    const subscribeToDocuments = async () => {
-      // TODO: add sorting (it probably requires creating indexes)
-      sub = db.documents.find().$.subscribe((documents) => {
-        setIsInitialLoad(() => false)
-        console.log("reloading documents list")
-        setDocuments(documents)
-
-        // If there are no documents, clear the selected editor to prevent errors and show empty state
-        if (!documents[0]) {
+    const setup = async () => {
+      const updateDocumentsList = (documents: DocumentDoc[]) => {
+        try {
+          if (!documents) {
+            throw new Error("Couldn't fetch documents")
+          }
+          // If there are no documents, throw an error - it will be caught and the currentEditor will be set to null
+          if (documents.length === 0) {
+            throw new Error("Empty")
+          }
+          setDocuments(documents)
+          setCurrentEditor(documents[0].id)
+        } catch (error) {
+          console.error(error)
+          /* TODO: This is to handle any errors gracefully in production, but a
+          better system should be in place to handle any unexpected errors */
           setCurrentEditor(null)
         }
+      }
 
-        if (isInitialLoad) setCurrentEditor(documents[0].id)
+      const updateGroupsList = (groups: GroupDoc[]) => {
+        const groupTree = createGroupTree(groups)
+        setGroups(groupTree)
+      }
 
+      const documentsQuery = db.documents.find()
+      const groupsQuery = db.groups.find()
+
+      // perform first-time setup
+
+      if (isInitialLoad) {
+        const documentsPromise = documentsQuery.exec()
+        const groupsPromise = groupsQuery.exec()
+
+        const [newGroups, newDocuments] = await Promise.all([
+          groupsPromise,
+          documentsPromise,
+        ])
+
+        setIsInitialLoad(false)
+        updateGroupsList(newGroups)
+        updateDocumentsList(newDocuments)
         setIsLoading(false)
+      }
+
+      // set up subscriptions
+
+      documentsSub = documentsQuery.$.subscribe((newDocuments) => {
+        updateDocumentsList(newDocuments)
+      })
+
+      groupsSub = groupsQuery.$.subscribe((newGroups) => {
+        updateGroupsList(newGroups)
       })
     }
 
-    subscribeToDocuments()
+    setup()
 
     return () => {
-      if (!sub) return
-      sub.unsubscribe()
+      if (documentsSub) {
+        documentsSub.unsubscribe()
+      }
+      if (groupsSub) {
+        groupsSub.unsubscribe()
+      }
     }
-  }, [db.documents, isInitialLoad])
+  }, [db.documents, db.groups, isInitialLoad])
 
   // Handle changing all of the state and side-effects of switching editors
   useEffect(() => {
@@ -127,6 +187,10 @@ const Main = () => {
 
     // eslint-disable-next-line
   }, [currentEditor])
+
+  const switchEditor = (id: string) => {
+    setCurrentEditor(id)
+  }
 
   /**
    * Update document
@@ -229,22 +293,26 @@ const Main = () => {
    * Handles creating a new document by asking for a name, creating a document
    * in DataStore and switching the editor to the new document
    */
-  const newDocument = useCallback(async (shouldSwitch: boolean = true) => {
-    // TODO: support null value for content for empty documents
+  const newDocument = useCallback(
+    async (shouldSwitch: boolean, parentGroup: string | null) => {
+      // TODO: support null value for content for empty documents
 
-    const newDocument = await db.documents.insert({
-      id: uuidv4(),
-      title: "",
-      content: JSON.stringify(defaultState),
-    })
+      const newDocument = await db.documents.insert({
+        id: uuidv4(),
+        title: "",
+        content: JSON.stringify(defaultState),
+        parentGroup: parentGroup,
+      })
 
-    if (shouldSwitch) {
-      console.log("switching to " + newDocument.id)
-      setCurrentEditor(newDocument.id)
-    }
+      if (shouldSwitch) {
+        console.log("switching to " + newDocument.id)
+        setCurrentEditor(newDocument.id)
+      }
 
-    return newDocument
-  }, [])
+      return newDocument
+    },
+    [db.documents]
+  )
 
   // DevTools utils
   useLogEditor(editor)
@@ -257,13 +325,16 @@ const Main = () => {
         // Remove domSelection to prevent errors
         window.getSelection()?.removeAllRanges()
         // Create the new document
-        newDocument()
+        // TODO: maybe infer the collection somehow from the current document or something else
+        newDocument(true, null)
       }),
     [newDocument]
   )
 
   const currentDocument =
     documents.find((doc) => doc.id === currentEditor) || null
+
+  console.log("groups", groups)
 
   return (
     <Slate editor={editor} value={content} onChange={onChange}>
@@ -277,6 +348,7 @@ const Main = () => {
                   renameDocument={renameDocument}
                   newDocument={newDocument}
                   documents={documents}
+                  groups={groups}
                   editorContent={content}
                   currentDocument={currentDocument}
                   isCurrentModified={isModified}
@@ -301,7 +373,7 @@ const InnerContainer = styled.div`
   grid-template-columns: 250px 1fr;
   width: 100vw;
   height: 100vh; /* TODO: this needs to be improved */
-  background-color: #24292e;
+  background-color: #1e1e1e;
   color: white;
   font-family: "Segoe UI", "Open sans", "sans-serif";
 `

@@ -2,7 +2,6 @@ import React, { useCallback, useState, useRef, useEffect } from "react"
 import styled from "styled-components/macro"
 import { Node } from "slate"
 
-// import { useOnClickOutside } from "../../hooks/useOnClickOutside"
 import { Outline } from "./Outline"
 import { DocumentDoc } from "../Database"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
@@ -38,14 +37,6 @@ const SidebarDocumentItem: React.FC<{
     renameDocument(document.id, titleValue)
   }
 
-  // TODO: replace this logic
-  // useOnClickOutside(containerRef, () => {
-  //   // TODO: this solution doesn't take into account other ways the menu could be closed like moving focus with tab etc. ( I could try using a simple onBlur, but that might not fire when the input is unmounted, I could try using a usePrevious hook with a useEffect to rename when they are different but that might not handle setting isRenaming state)
-  //   if (isRenaming) {
-  //     commitRename()
-  //   }
-  // })
-
   useEffect(() => {
     // Focus and select the input
     if (isRenaming && titleInputRef?.current) {
@@ -63,12 +54,6 @@ const SidebarDocumentItem: React.FC<{
       setTitleValue(document.title)
     }
   }, [document.title, isRenaming])
-
-  // const handleTitleInputKeydown = (event: React.KeyboardEvent) => {
-  //   if (isRenaming && isHotkey(["Enter", "Esc"], event)) {
-  //     onRename()
-  //   }
-  // }
 
   const handleRenameDocument = () => {
     closeMenu()
@@ -100,6 +85,7 @@ const SidebarDocumentItem: React.FC<{
     <Container
       isCurrent={isCurrent}
       onContextMenu={openMenu}
+      // TODO: investigate if this ref is required
       ref={containerRef}
     >
       <MainContainer>
@@ -113,8 +99,6 @@ const SidebarDocumentItem: React.FC<{
           staticValue={`${title} ${isModified ? " *" : ""}`}
         />
       </MainContainer>
-
-      {isCurrent && <Outline editorContent={editorContent} />}
 
       {isMenuOpen && (
         <ContextMenu>

@@ -1,6 +1,6 @@
 import { RxJsonSchema } from "rxdb"
 
-import { DocumentDocType } from "./types"
+import { DocumentDocType, GroupDocType } from "./types"
 
 export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
@@ -19,6 +19,29 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
     content: {
       type: "string",
     },
+    parentGroup: {
+      type: ["string", "null"],
+    },
   },
   required: ["title", "content"],
+}
+
+export const groupSchema: RxJsonSchema<GroupDocType> = {
+  title: "group schema",
+  description: "describes a group",
+  version: 0,
+  type: "object",
+  properties: {
+    id: {
+      type: "string",
+      primary: true,
+      final: true,
+    },
+    name: {
+      type: "string",
+    },
+    parentGroup: {
+      type: ["string", "null"],
+    },
+  },
 }
