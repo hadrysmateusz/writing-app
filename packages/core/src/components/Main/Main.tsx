@@ -46,17 +46,6 @@ const Main = () => {
   const [isModified, setIsModified] = useState(false) // This might only be necessary for local documents (although it might be useful see if the document needs saving when the window closes or reloads etc.)
   const [isInitialLoad, setIsInitialLoad] = useState(true) // Flag to manage whether this is the first time documents are loaded
 
-  useEffect(() => {
-    const listener = (event) => {
-      console.log(event.type, event)
-    }
-
-    document.addEventListener("mousedown", listener)
-    return () => {
-      document.removeEventListener("mousedown", listener)
-    }
-  })
-
   /**
    * Initialization effect
    *
