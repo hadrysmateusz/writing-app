@@ -29,6 +29,7 @@ const TreeItem: React.FC<{
 
 const OuterContainer = styled.div<{ depth: number }>`
   padding-left: ${(p) => (p.depth + 1) * 16}px;
+  width: 100%;
   :hover {
     color: white;
     background: #181818;
@@ -42,6 +43,7 @@ const OuterContainer = styled.div<{ depth: number }>`
 
 const InnerContainer = styled.div<{ isRoot: boolean }>`
   font-family: "Segoe UI"; /* TODO: create global font-stacks */
+  width: 100%;
   font-size: 12px;
   color: ${(p) => (p.isRoot ? "#f2f2f2" : "#f0f0f0")};
   font-weight: ${(p) => (p.isRoot ? "bold" : "normal")};

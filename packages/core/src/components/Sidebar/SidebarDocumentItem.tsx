@@ -1,41 +1,38 @@
-import React, { useCallback, useState, useRef, useEffect } from "react"
+import React, { useCallback, useState, useRef, useEffect, useMemo } from "react"
 import styled from "styled-components/macro"
-import { Node } from "slate"
+import { Editor, Text, Node } from "slate"
+import { useEditor } from "slate-react"
 
-import { Outline } from "./Outline"
 import { DocumentDoc } from "../Database"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
 import { EditableText } from "../RenamingInput"
+import { SwitchEditorFn, RenameDocumentFn } from "../Main/types"
+import { GroupTree } from "../../helpers/createGroupTree"
+
+const SNIPPET_LENGTH = 80
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
+  groups: GroupTree
   isCurrent: boolean
   isModified: boolean
-  editorContent: Node[]
-  renameDocument: (
-    documentId: string,
-    title: string
-  ) => Promise<Document | null>
-  switchEditor: (id: string | null) => void
+  renameDocument: RenameDocumentFn
+  switchEditor: SwitchEditorFn
 }> = ({
   switchEditor,
   renameDocument,
+  groups,
   isCurrent,
   document,
   isModified,
-  editorContent,
 }) => {
+  console.log(document)
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const [isRenaming, setIsRenaming] = useState(false)
   const [titleValue, setTitleValue] = useState("")
   const containerRef = useRef<any>()
   const titleInputRef = useRef<any>()
-
-  const onRename = () => {
-    if (!isRenaming) return
-    setIsRenaming(false)
-    renameDocument(document.id, titleValue)
-  }
+  const editor = useEditor()
 
   useEffect(() => {
     // Focus and select the input
@@ -55,6 +52,64 @@ const SidebarDocumentItem: React.FC<{
     }
   }, [document.title, isRenaming])
 
+  const title = useMemo(() => {
+    return document.title.trim() === "" ? "Untitled" : document.title
+  }, [document.title])
+
+  const snippet = useMemo(() => {
+    // TODO: replace with a better solution that simply limits the text to some number of lines (probably with css)
+
+    let textContent = ""
+
+    // we get and deserialize the content of the document
+    const serializedContent = document.content
+    const deserializedContent = JSON.parse(serializedContent)
+
+    // the Node.nodes function operates on a slate node but the content is an array of children so we create a fake node object
+    const fakeRootNode = {
+      children: deserializedContent,
+    }
+
+    // we iterate over all of the nodes and create a string of all of their text contents until we reach a desired length
+    for (let [node] of Node.nodes(fakeRootNode, {})) {
+      if (typeof node.text === "string") {
+        textContent += " " + node.text
+
+        if (textContent.length >= SNIPPET_LENGTH) {
+          break
+        }
+      }
+    }
+
+    return textContent.slice(0, SNIPPET_LENGTH)
+  }, [document.content])
+
+  const modifiedAt = useMemo(() => {
+    // TODO: replace with proper representation (using moment.js)
+    return new Date(Number(document.createdAt) * 1000).toLocaleString()
+  }, [document.createdAt])
+
+  const groupName = useMemo(() => {
+    if (document.parentGroup === null) {
+      // TODO: better handle documents at the root of the tree
+      return null
+    }
+
+    const group = groups.find((group) => group.id === document.parentGroup)
+
+    if (group === undefined) {
+      throw new Error(`couldn't find group with id: ${document.parentGroup}`)
+    }
+
+    return group.name
+  }, [document.parentGroup, groups])
+
+  const onRename = () => {
+    if (!isRenaming) return
+    setIsRenaming(false)
+    renameDocument(document.id, titleValue)
+  }
+
   const handleRenameDocument = () => {
     closeMenu()
     setIsRenaming(true)
@@ -71,8 +126,6 @@ const SidebarDocumentItem: React.FC<{
     switchEditor(document.id)
   }, [document.id, switchEditor])
 
-  const title = document.title.trim() === "" ? "Untitled" : document.title
-
   const handleChange = (newValue: string) => {
     setTitleValue(newValue)
   }
@@ -88,16 +141,20 @@ const SidebarDocumentItem: React.FC<{
       // TODO: investigate if this ref is required
       ref={containerRef}
     >
-      <MainContainer>
-        <EditableText
-          ref={titleInputRef}
-          isRenaming={isRenaming}
-          value={titleValue}
-          onChange={handleChange}
-          onClick={handleClick}
-          onRename={onRename}
-          staticValue={`${title} ${isModified ? " *" : ""}`}
-        />
+      <MainContainer onClick={handleClick}>
+        <Meta>{groupName}</Meta>
+        <Title>
+          <EditableText
+            ref={titleInputRef}
+            isRenaming={isRenaming}
+            value={titleValue}
+            onChange={handleChange}
+            onRename={onRename}
+            staticValue={`${title} ${isModified ? " *" : ""}`}
+          />
+        </Title>
+        <Snippet>{snippet}</Snippet>
+        <Meta>{modifiedAt}</Meta>
       </MainContainer>
 
       {isMenuOpen && (
@@ -125,9 +182,39 @@ const DeleteButton = styled.div`
   }
 `
 
+const Meta = styled.div`
+  font-size: 11px;
+  color: #717171;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const Title = styled.div`
+  width: 100%;
+  color: #e4e4e4;
+  font-family: Poppins;
+  font-weight: 500;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
+const Snippet = styled.div`
+  color: #bebebe;
+  font-size: 11px;
+  padding-bottom: 4px;
+
+  /* TODO: improve these styles */
+  overflow-wrap: break-word;
+  line-break: anywhere;
+  line-clamp: 2;
+`
+
 const Container = styled.div<{ isCurrent: boolean }>`
   ${(p) => p.isCurrent && `font-weight: bold;`}
-  padding: 5px 0;
+  width: 100%;
 
   :hover ${DeleteButton} {
     opacity: 1;
@@ -135,8 +222,19 @@ const Container = styled.div<{ isCurrent: boolean }>`
 `
 
 const MainContainer = styled.div`
-  display: flex;
-  align-items: center;
+  max-width: 100%;
+  overflow: hidden;
+  min-width: 0;
+  padding: 10px 20px;
+  border-bottom: 1px solid;
+  border-color: #363636;
+  cursor: pointer;
+
+  animation: background-color 200ms ease;
+
+  :hover {
+    background-color: #252525;
+  }
 
   .EditableText_editable {
     border: 1px solid #41474d;
