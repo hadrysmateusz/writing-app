@@ -289,11 +289,15 @@ const Main = () => {
     async (shouldSwitch: boolean, parentGroup: string | null) => {
       // TODO: support null value for content for empty documents
 
+      const timestamp = Date.now()
+
       const newDocument = await db.documents.insert({
         id: uuidv4(),
         title: "",
         content: JSON.stringify(defaultState),
         parentGroup: parentGroup,
+        createdAt: timestamp,
+        modifiedAt: timestamp,
       })
 
       if (shouldSwitch) {

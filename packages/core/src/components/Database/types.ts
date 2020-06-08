@@ -26,6 +26,14 @@ export type DocumentDocType = {
    * @todo handle top-level documents that aren't a part of any group
    */
   parentGroup: string | null
+  /**
+   * Timestamp of when the document was originally created
+   */
+  createdAt: number
+  /**
+   * Timestamp of when the document was last modified
+   */
+  modifiedAt: number
 }
 
 export type DocumentDocMethods = {}

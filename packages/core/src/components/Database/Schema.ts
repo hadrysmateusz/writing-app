@@ -22,6 +22,12 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
     parentGroup: {
       type: ["string", "null"],
     },
+    createdAt: {
+      type: "number",
+    },
+    modifiedAt: {
+      type: "number",
+    },
   },
   required: ["title", "content"],
 }
