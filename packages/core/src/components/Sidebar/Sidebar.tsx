@@ -1,6 +1,5 @@
 import React, { useState, ChangeEvent } from "react"
 import styled from "styled-components/macro"
-import { Node } from "slate"
 
 import { CloudDocumentsSidebarMenu } from "./CloudDocumentsSidebarMenu"
 import { LogoutButton } from "../LogoutButton"
@@ -16,8 +15,6 @@ export const Sidebar: React.FC<{
   documents: DocumentDoc[]
   groups: GroupTree
   currentDocument: DocumentDoc | null
-  isCurrentModified: boolean
-  editorContent: Node[]
   renameDocument: RenameDocumentFn
   switchEditor: SwitchEditorFn
   newDocument: NewDocumentFn
@@ -25,8 +22,6 @@ export const Sidebar: React.FC<{
   documents,
   groups,
   currentDocument,
-  isCurrentModified,
-  editorContent,
   renameDocument,
   switchEditor,
   newDocument,
@@ -42,8 +37,6 @@ export const Sidebar: React.FC<{
             documents={documents}
             groups={groups}
             currentDocument={currentDocument}
-            isCurrentModified={isCurrentModified}
-            editorContent={editorContent}
             switchEditor={switchEditor}
             newDocument={newDocument}
             renameDocument={renameDocument}

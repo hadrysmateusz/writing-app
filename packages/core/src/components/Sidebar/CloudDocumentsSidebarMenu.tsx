@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import styled from "styled-components/macro"
-import { Node } from "slate"
 import { v4 as uuidv4 } from "uuid"
 
 import { DocumentDoc, useDatabase } from "../Database"
@@ -17,21 +16,10 @@ export const CloudDocumentsSidebarMenu: React.FC<{
   documents: DocumentDoc[]
   groups: GroupTree
   currentDocument: DocumentDoc | null
-  editorContent: Node[]
-  isCurrentModified: boolean
   renameDocument: RenameDocumentFn
   switchEditor: SwitchEditorFn
   newDocument: NewDocumentFn
-}> = ({
-  documents,
-  groups,
-  currentDocument,
-  isCurrentModified,
-  editorContent,
-  renameDocument,
-  switchEditor,
-  newDocument,
-}) => {
+}> = ({ documents, groups, renameDocument, switchEditor, newDocument }) => {
   // Can be one of the special views or an id of a document group
   const [currentView, setCurrentView] = useState<string>(VIEWS.MAIN)
 

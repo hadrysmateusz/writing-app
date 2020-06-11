@@ -1,15 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react"
 import styled from "styled-components/macro"
-import { Node } from "slate"
-import { Slate, ReactEditor } from "slate-react"
-import { v4 as uuidv4 } from "uuid"
-import { isEqual } from "lodash"
 
-import { useCreateEditor } from "@slate-plugin-system/core"
+import { v4 as uuidv4 } from "uuid"
 
 import { Sidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
-import { plugins } from "../../pluginsList"
 import { deserialize, serialize } from "../Editor/serialization"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
 import { listenForIpcEvent } from "../../utils"
@@ -28,6 +23,8 @@ import {
   UpdateCurrentDocumentFn,
 } from "./types"
 import { useViewState } from "../ViewStateProvider"
+import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
+import { useEditor } from "slate-react"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
@@ -37,21 +34,23 @@ declare global {
   }
 }
 
-export const defaultState = [{ type: "paragraph", children: [{ text: "" }] }]
-
 const Main = () => {
+  const db = useDatabase()
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [groups, setGroups] = useState<GroupTree>([])
   // currently selected editor - represented by the document id
   const [currentEditor, setCurrentEditor] = useState<string | null>(null)
-  // content of the currently selected editor
-  const [content, setContent] = useState<Node[]>(defaultState)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const db = useDatabase()
-  const [isModified, setIsModified] = useState(false) // This might only be necessary for local documents (although it might be useful see if the document needs saving when the window closes or reloads etc.)
   const [isInitialLoad, setIsInitialLoad] = useState(true) // Flag to manage whether this is the first time documents are loaded
   const { navigatorSidebar, primarySidebar } = useViewState()
+  const {
+    editorValue,
+    isModified,
+    setEditorValue,
+    setIsModified,
+  } = useEditorState()
+  const editor = useEditor()
 
   /**
    * Initialization effect
@@ -148,7 +147,7 @@ const Main = () => {
     const setEditorContent = async () => {
       // TODO: better handle empty states
       if (currentEditor === null) {
-        setContent(defaultState)
+        setEditorValue(defaultEditorValue)
         return
       }
 
@@ -156,15 +155,15 @@ const Main = () => {
       const document = documents.find((doc) => doc.id === currentEditor)
 
       if (!document) {
-        setContent(defaultState)
+        setEditorValue(defaultEditorValue)
         return
       }
 
       const content = document.content
         ? deserialize(document.content)
-        : defaultState
+        : defaultEditorValue
 
-      setContent(content)
+      setEditorValue(content)
     }
 
     ;(async () => {
@@ -222,7 +221,7 @@ const Main = () => {
    */
   const saveDocument: SaveDocumentFn = async () => {
     if (isModified) {
-      const serializedContent = serialize(content)
+      const serializedContent = serialize(editorValue)
       const updatedDocument = await updateCurrentDocument({
         content: serializedContent,
       })
@@ -260,30 +259,6 @@ const Main = () => {
   }
 
   /**
-   * onChange event handler for the Slate component
-   */
-  const onChange = (value: Node[]) => {
-    // TODO: I could debounced-save in here
-    setContent(value)
-
-    // if the content has changed then set the modified flag (skip the expensive check if it's already true)
-    if (!isModified) {
-      setIsModified(!isEqual(content, value))
-    }
-
-    // This might need to change if I implement persistent history
-    /* TODO: this breaks after manual saves because history doesn't get removed when saving (no undos doesn't mean no changes when the user saved after some changes)
-       When saving the history length should be saved as well and the comparison should be against that, this should solve both the problem of manual saves and persistent history at once
-    */
-    // if (editor.history.undos.length === 0) {
-    //   setIsModified(false)
-    // }
-  }
-
-  // Create the editor object
-  const editor = useCreateEditor(plugins) as ReactEditor
-
-  /**
    * Handles creating a new document by asking for a name, creating a document
    * in DataStore and switching the editor to the new document
    */
@@ -296,7 +271,7 @@ const Main = () => {
       const newDocument = await db.documents.insert({
         id: uuidv4(),
         title: "",
-        content: JSON.stringify(defaultState),
+        content: JSON.stringify(defaultEditorValue),
         parentGroup: parentGroup,
         createdAt: timestamp,
         modifiedAt: timestamp,
@@ -314,7 +289,7 @@ const Main = () => {
 
   // DevTools utils
   useLogEditor(editor)
-  useLogValue(content)
+  useLogValue(editorValue)
 
   // Handle "new-document" messages from the main process
   useEffect(
@@ -333,46 +308,42 @@ const Main = () => {
     documents.find((doc) => doc.id === currentEditor) || null
 
   return (
-    <Slate editor={editor} value={content} onChange={onChange}>
-      <InnerContainer>
-        {isLoading
-          ? "Loading..."
-          : error ?? (
-              <>
-                {navigatorSidebar && (
-                  <div
-                    style={{
-                      borderRight: "1px solid #383838",
-                      background: "#171717",
-                    }}
-                  >
-                    navigator
-                  </div>
-                )}
-                {primarySidebar && (
-                  <Sidebar
-                    switchEditor={setCurrentEditor}
-                    renameDocument={renameDocument}
-                    newDocument={newDocument}
-                    documents={documents}
-                    groups={groups}
-                    editorContent={content}
-                    currentDocument={currentDocument}
-                    isCurrentModified={isModified}
-                  />
-                )}
-                {currentDocument && (
-                  <EditorComponent
-                    key={currentDocument.id} // Necessary to reload the component on id change
-                    currentDocument={currentDocument}
-                    saveDocument={saveDocument}
-                    renameDocument={renameDocument}
-                  />
-                )}
-              </>
-            )}
-      </InnerContainer>
-    </Slate>
+    <InnerContainer>
+      {isLoading
+        ? "Loading..."
+        : error ?? (
+            <>
+              {navigatorSidebar && (
+                <div
+                  style={{
+                    borderRight: "1px solid #383838",
+                    background: "#171717",
+                  }}
+                >
+                  navigator
+                </div>
+              )}
+              {primarySidebar && (
+                <Sidebar
+                  switchEditor={setCurrentEditor}
+                  renameDocument={renameDocument}
+                  newDocument={newDocument}
+                  documents={documents}
+                  groups={groups}
+                  currentDocument={currentDocument}
+                />
+              )}
+              {currentDocument && (
+                <EditorComponent
+                  key={currentDocument.id} // Necessary to reload the component on id change
+                  currentDocument={currentDocument}
+                  saveDocument={saveDocument}
+                  renameDocument={renameDocument}
+                />
+              )}
+            </>
+          )}
+    </InnerContainer>
   )
 }
 
