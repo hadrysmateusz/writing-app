@@ -12,6 +12,7 @@ import {
   FaPlus,
 } from "react-icons/fa"
 import { AiFillCloud } from "react-icons/ai"
+import { BsCaretRightFill, BsCaretDownFill } from "react-icons/bs"
 
 // First-Party icons
 import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
@@ -47,6 +48,8 @@ const iconLibrary = {
   [HeadingType.H2]: Heading2,
   plus: FaPlus,
   cloud: AiFillCloud,
+  caretRight: BsCaretRightFill,
+  caretDown: BsCaretDownFill,
 }
 
 export default iconLibrary
