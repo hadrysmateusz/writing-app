@@ -27,6 +27,7 @@ import {
   SaveDocumentFn,
   UpdateCurrentDocumentFn,
 } from "./types"
+import { useViewState } from "../ViewStateProvider"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
@@ -50,6 +51,7 @@ const Main = () => {
   const db = useDatabase()
   const [isModified, setIsModified] = useState(false) // This might only be necessary for local documents (although it might be useful see if the document needs saving when the window closes or reloads etc.)
   const [isInitialLoad, setIsInitialLoad] = useState(true) // Flag to manage whether this is the first time documents are loaded
+  const { navigatorSidebar, primarySidebar } = useViewState()
 
   /**
    * Initialization effect
@@ -330,8 +332,6 @@ const Main = () => {
   const currentDocument =
     documents.find((doc) => doc.id === currentEditor) || null
 
-  console.log("groups", groups)
-
   return (
     <Slate editor={editor} value={content} onChange={onChange}>
       <InnerContainer>
@@ -339,16 +339,28 @@ const Main = () => {
           ? "Loading..."
           : error ?? (
               <>
-                <Sidebar
-                  switchEditor={setCurrentEditor}
-                  renameDocument={renameDocument}
-                  newDocument={newDocument}
-                  documents={documents}
-                  groups={groups}
-                  editorContent={content}
-                  currentDocument={currentDocument}
-                  isCurrentModified={isModified}
-                />
+                {navigatorSidebar && (
+                  <div
+                    style={{
+                      borderRight: "1px solid #383838",
+                      background: "#171717",
+                    }}
+                  >
+                    navigator
+                  </div>
+                )}
+                {primarySidebar && (
+                  <Sidebar
+                    switchEditor={setCurrentEditor}
+                    renameDocument={renameDocument}
+                    newDocument={newDocument}
+                    documents={documents}
+                    groups={groups}
+                    editorContent={content}
+                    currentDocument={currentDocument}
+                    isCurrentModified={isModified}
+                  />
+                )}
                 {currentDocument && (
                   <EditorComponent
                     key={currentDocument.id} // Necessary to reload the component on id change
@@ -366,7 +378,7 @@ const Main = () => {
 
 const InnerContainer = styled.div`
   display: grid;
-  grid-template-columns: 250px 1fr;
+  grid-template-columns: 150px 250px 1fr;
   width: 100vw;
   height: 100vh; /* TODO: this needs to be improved */
   background-color: #1e1e1e;

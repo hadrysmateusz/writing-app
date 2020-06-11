@@ -10,12 +10,13 @@ import { plugins } from "../../pluginsList"
 import { Toolbar } from "../Toolbar"
 import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
-import { RenameDocumentFn } from "../Main/types"
+import { RenameDocumentFn, SaveDocumentFn } from "../Main/types"
 import {
   EditableContainer,
   Container,
   InsertBlockField,
 } from "./styledComponents"
+import { DocumentDoc } from "../Database"
 
 /**
  * Helper for creating a basic empty node
@@ -30,24 +31,24 @@ const createEmptyNode = () => {
 }
 
 const EditorComponent: React.FC<{
-  saveDocument: () => Promise<Document | null>
+  saveDocument: SaveDocumentFn
   renameDocument: RenameDocumentFn
-  currentDocument: Document
+  currentDocument: DocumentDoc
 }> = ({ saveDocument, renameDocument, currentDocument }) => {
   const [title, setTitle] = useState<string>(currentDocument.title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const editor = useEditor()
 
-  // For debugging purposes only
-  useEffect(() => {
-    const listener = (event) => {
-      console.log(document.getSelection())
-    }
-    document.addEventListener("selectionchange", listener)
-    return () => {
-      document.removeEventListener("selectionchange", listener)
-    }
-  }, [])
+  // // For debugging purposes only
+  // useEffect(() => {
+  //   const listener = (event) => {
+  //     console.log(document.getSelection())
+  //   }
+  //   document.addEventListener("selectionchange", listener)
+  //   return () => {
+  //     document.removeEventListener("selectionchange", listener)
+  //   }
+  // }, [])
 
   // // When the document title changes elsewhere, update the state here
   // useEffect(() => {
