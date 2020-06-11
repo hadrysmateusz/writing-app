@@ -1,9 +1,7 @@
 import React from "react"
 import { VIEWS, ChangeViewFn } from "./types"
-import { DocumentDoc } from "../Database"
 import SidebarDocumentItem from "./SidebarDocumentItem"
-import { RenameDocumentFn, SwitchEditorFn } from "../Main/types"
-import { GroupTree } from "../../helpers/createGroupTree"
+import { useMainState } from "../MainStateProvider"
 
 /**
  * Base presentational component
@@ -12,13 +10,11 @@ import { GroupTree } from "../../helpers/createGroupTree"
  * for more customisability in advanced views
  */
 export const DocumentsList: React.FC<{
-  documents: DocumentDoc[]
-  groups: GroupTree
   title: string
   onBack: () => void
-  renameDocument: RenameDocumentFn
-  switchEditor: SwitchEditorFn
-}> = ({ documents, title, onBack, switchEditor, renameDocument, groups }) => {
+}> = ({ title, onBack }) => {
+  const { documents } = useMainState()
+
   return (
     <div>
       <div
@@ -32,15 +28,7 @@ export const DocumentsList: React.FC<{
       </div>
       <div>
         {documents.map((document) => (
-          <SidebarDocumentItem
-            key={document.id}
-            document={document}
-            groups={groups}
-            isCurrent={false}
-            isModified={false}
-            switchEditor={switchEditor}
-            renameDocument={renameDocument}
-          />
+          <SidebarDocumentItem key={document.id} document={document} />
         ))}
       </div>
     </div>
@@ -52,19 +40,11 @@ export const DocumentsList: React.FC<{
  */
 export const AllDocumentsList: React.FC<{
   changeView: ChangeViewFn
-  groups: GroupTree
-  documents: DocumentDoc[]
-  renameDocument: RenameDocumentFn
-  switchEditor: SwitchEditorFn
-}> = ({ documents, groups, switchEditor, renameDocument, changeView }) => {
+}> = ({ changeView }) => {
   return (
     <DocumentsList
-      documents={documents}
-      groups={groups}
       title="All Documents"
       onBack={() => changeView(VIEWS.MAIN)}
-      switchEditor={switchEditor}
-      renameDocument={renameDocument}
     />
   )
 }

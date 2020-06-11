@@ -2,26 +2,19 @@ import React, { useState } from "react"
 import styled from "styled-components/macro"
 import { v4 as uuidv4 } from "uuid"
 
-import { DocumentDoc, useDatabase } from "../Database"
+import { useDatabase } from "../Database"
 import ExpandableTreeItem from "../ExpandableTreeItem"
 import StaticTreeItem from "../TreeItem"
-import { NewDocumentFn, RenameDocumentFn, SwitchEditorFn } from "../Main/types"
-import { GroupTree } from "../../helpers/createGroupTree"
 
 import GroupTreeItem from "./GroupTreeItem"
 import { VIEWS } from "./types"
 import { AllDocumentsList } from "./DocumentsList"
+import { useMainState } from "../MainStateProvider"
 
-export const CloudDocumentsSidebarMenu: React.FC<{
-  documents: DocumentDoc[]
-  groups: GroupTree
-  currentDocument: DocumentDoc | null
-  renameDocument: RenameDocumentFn
-  switchEditor: SwitchEditorFn
-  newDocument: NewDocumentFn
-}> = ({ documents, groups, renameDocument, switchEditor, newDocument }) => {
+export const CloudDocumentsSidebarMenu: React.FC<{}> = () => {
   // Can be one of the special views or an id of a document group
   const [currentView, setCurrentView] = useState<string>(VIEWS.MAIN)
+  const { newDocument, groups } = useMainState()
 
   const db = useDatabase()
 
@@ -81,15 +74,7 @@ export const CloudDocumentsSidebarMenu: React.FC<{
       )
     }
     case VIEWS.ALL: {
-      return (
-        <AllDocumentsList
-          groups={groups}
-          documents={documents}
-          changeView={setCurrentView}
-          switchEditor={switchEditor}
-          renameDocument={renameDocument}
-        />
-      )
+      return <AllDocumentsList changeView={setCurrentView} />
     }
     default: {
       // TODO: treat the view as a group id and render a document list for that group

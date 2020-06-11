@@ -1,10 +1,11 @@
 import React, { createContext, useState } from "react"
-import { useRequiredContext } from "../hooks/useRequiredContext"
-import { useCreateEditor } from "@slate-plugin-system/core"
-import { ReactEditor, Slate } from "slate-react"
-import { plugins } from "../pluginsList"
 import { isEqual } from "lodash"
 import { Node } from "slate"
+import { ReactEditor, Slate } from "slate-react"
+import { useCreateEditor } from "@slate-plugin-system/core"
+
+import { useRequiredContext } from "../hooks/useRequiredContext"
+import { plugins } from "../pluginsList"
 
 export type EditorState = {
   editorValue: Node[]
@@ -29,7 +30,6 @@ export const defaultEditorValue = [
 export const EditorStateProvider: React.FC<{}> = ({ children }) => {
   // content of the currently selected editor
   const [content, setContent] = useState<Node[]>(defaultEditorValue)
-  // This might only be necessary for local documents (although it might be useful see if the document needs saving when the window closes or reloads etc.)
   const [isModified, setIsModified] = useState(false)
 
   // Create the editor object

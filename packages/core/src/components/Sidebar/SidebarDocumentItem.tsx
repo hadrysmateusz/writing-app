@@ -1,56 +1,35 @@
 import React, { useCallback, useState, useRef, useEffect, useMemo } from "react"
 import styled from "styled-components/macro"
-import { Editor, Text, Node } from "slate"
-import { useEditor } from "slate-react"
+import { Node } from "slate"
 
 import { DocumentDoc } from "../Database"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
 import { EditableText } from "../RenamingInput"
-import { SwitchEditorFn, RenameDocumentFn } from "../Main/types"
-import { GroupTree } from "../../helpers/createGroupTree"
+import { useMainState } from "../MainStateProvider"
 
 const SNIPPET_LENGTH = 80
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
-  groups: GroupTree
-  isCurrent: boolean
-  isModified: boolean
-  renameDocument: RenameDocumentFn
-  switchEditor: SwitchEditorFn
-}> = ({
-  switchEditor,
-  renameDocument,
-  groups,
-  isCurrent,
-  document,
-  isModified,
-}) => {
+}> = ({ document }) => {
   console.log(document)
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const [isRenaming, setIsRenaming] = useState(false)
   const [titleValue, setTitleValue] = useState("")
   const containerRef = useRef<any>()
   const titleInputRef = useRef<any>()
-  const editor = useEditor()
 
-  useEffect(() => {
-    // Focus and select the input
-    if (isRenaming && titleInputRef?.current) {
-      console.log("focus and select")
-      titleInputRef.current.focus()
-      titleInputRef.current.setSelectionRange(
-        0,
-        titleInputRef.current.value.length
-      )
-    }
-  }, [document.id, isRenaming, renameDocument])
+  const {
+    groups,
+    currentDocument,
+    switchDocument,
+    renameDocument,
+  } = useMainState()
 
-  useEffect(() => {
-    if (!isRenaming) {
-      setTitleValue(document.title)
-    }
-  }, [document.title, isRenaming])
+  const isCurrent = useMemo(() => {
+    if (currentDocument === null) return false
+    return document.id === currentDocument.id
+  }, [currentDocument, document.id])
 
   const title = useMemo(() => {
     return document.title.trim() === "" ? "Untitled" : document.title
@@ -118,13 +97,13 @@ const SidebarDocumentItem: React.FC<{
   const removeDocument = () => {
     document.remove()
     if (isCurrent) {
-      switchEditor(null)
+      switchDocument(null)
     }
   }
 
   const openDocument = useCallback(() => {
-    switchEditor(document.id)
-  }, [document.id, switchEditor])
+    switchDocument(document.id)
+  }, [document.id, switchDocument])
 
   const handleChange = (newValue: string) => {
     setTitleValue(newValue)
@@ -133,6 +112,24 @@ const SidebarDocumentItem: React.FC<{
   const handleClick = () => {
     openDocument()
   }
+
+  useEffect(() => {
+    // Focus and select the input
+    if (isRenaming && titleInputRef?.current) {
+      console.log("focus and select")
+      titleInputRef.current.focus()
+      titleInputRef.current.setSelectionRange(
+        0,
+        titleInputRef.current.value.length
+      )
+    }
+  }, [document.id, isRenaming, renameDocument])
+
+  useEffect(() => {
+    if (!isRenaming) {
+      setTitleValue(document.title)
+    }
+  }, [document.title, isRenaming])
 
   return (
     <Container
@@ -150,7 +147,7 @@ const SidebarDocumentItem: React.FC<{
             value={titleValue}
             onChange={handleChange}
             onRename={onRename}
-            staticValue={`${title} ${isModified ? " *" : ""}`}
+            staticValue={title}
           />
         </Title>
         <Snippet>{snippet}</Snippet>

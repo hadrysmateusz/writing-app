@@ -4,44 +4,18 @@ import styled from "styled-components/macro"
 import { CloudDocumentsSidebarMenu } from "./CloudDocumentsSidebarMenu"
 import { LogoutButton } from "../LogoutButton"
 import { ConnectWithMedium } from "../ConnectWithMedium"
-import { DocumentDoc } from "../Database"
-import { GroupTree } from "../../helpers/createGroupTree"
-import { NewDocumentFn, RenameDocumentFn, SwitchEditorFn } from "../Main/types"
 
 // TODO: maybe replace with an enum or something to be able to use this type with the onChange event
 type MenuType = "CLOUD_DOCUMENTS" | "LOCAL_DOCUMENTS" | "AUTH"
 
-export const Sidebar: React.FC<{
-  documents: DocumentDoc[]
-  groups: GroupTree
-  currentDocument: DocumentDoc | null
-  renameDocument: RenameDocumentFn
-  switchEditor: SwitchEditorFn
-  newDocument: NewDocumentFn
-}> = ({
-  documents,
-  groups,
-  currentDocument,
-  renameDocument,
-  switchEditor,
-  newDocument,
-}) => {
+export const Sidebar: React.FC<{}> = () => {
   // TODO: replace with a more constrained set of types
   const [menuType, setMenuType] = useState<string>("CLOUD_DOCUMENTS")
 
   const renderContent = () => {
     switch (menuType) {
       case "CLOUD_DOCUMENTS":
-        return (
-          <CloudDocumentsSidebarMenu
-            documents={documents}
-            groups={groups}
-            currentDocument={currentDocument}
-            switchEditor={switchEditor}
-            newDocument={newDocument}
-            renameDocument={renameDocument}
-          />
-        )
+        return <CloudDocumentsSidebarMenu />
       case "LOCAL_DOCUMENTS":
         return <div>Local Documents</div>
       case "AUTH":

@@ -1,4 +1,4 @@
-import { DocumentDoc, DocumentDocType } from "../Database"
+import { DocumentDoc, DocumentDocType } from "./Database"
 
 export type NewDocumentFn = (
   shouldSwitch: boolean,
@@ -16,4 +16,4 @@ export type UpdateCurrentDocumentFn = (
 
 export type SaveDocumentFn = () => Promise<DocumentDocType | null>
 
-export type SwitchEditorFn = (documentId: string | null) => void
+export type SwitchDocumentFn = (documentId: string | null) => void
