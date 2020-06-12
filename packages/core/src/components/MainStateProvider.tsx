@@ -23,6 +23,7 @@ import {
   SaveDocumentFn,
   UpdateCurrentDocumentFn,
   SwitchDocumentFn,
+  NewGroupFn,
 } from "./types"
 
 declare global {
@@ -40,6 +41,7 @@ export type MainState = {
   renameDocument: RenameDocumentFn
   switchDocument: SwitchDocumentFn
   newDocument: NewDocumentFn
+  newGroup: NewGroupFn
 }
 
 const MainStateContext = createContext<MainState | null>(null)
@@ -149,8 +151,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   }
 
   /**
-   * Handles creating a new document by asking for a name, creating a document
-   * in DataStore and switching the editor to the new document
+   * Handles creating a new document
    */
   const newDocument: NewDocumentFn = useCallback(
     async (shouldSwitch: boolean, parentGroup: string | null) => {
@@ -176,6 +177,31 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
     },
     [db.documents]
   )
+
+  /**
+   * Handles creating a new document by asking for a name, creating a document
+   * in DataStore and switching the editor to the new document
+   */
+  const newGroup: NewGroupFn = useCallback(
+    async (parentGroup: string | null) => {
+      const newGroup = await db.groups.insert({
+        id: uuidv4(),
+        name: "",
+        parentGroup: parentGroup,
+      })
+
+      return newGroup
+    },
+    [db.groups]
+  )
+
+  /**
+   * Handles deleting groups and its children
+   * TODO: add a function type
+   */
+  const deleteGroup = useCallback(async () => {
+    // TODO: add the logic for deleting a group and its subgroups and the child documents
+  }, [])
 
   const switchDocument = (id: string | null) => {
     setCurrentEditor(id)
@@ -334,6 +360,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         newDocument,
         saveDocument,
         renameDocument,
+        newGroup,
       }}
     >
       {children}

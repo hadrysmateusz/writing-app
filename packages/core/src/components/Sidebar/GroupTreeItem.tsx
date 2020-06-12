@@ -1,35 +1,28 @@
-import React from "react"
-import { v4 as uuidv4 } from "uuid"
+import React, { useMemo } from "react"
 
-import { DocumentDoc, useDatabase } from "../Database"
 import ExpandableTreeItem from "../ExpandableTreeItem"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
+import { useMainState } from "../MainStateProvider"
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
   depth?: number
-  newDocument: (
-    shouldSwitch: boolean,
-    parentGroup: string | null
-  ) => Promise<DocumentDoc | null>
-}> = ({ group, depth, newDocument }) => {
+}> = ({ group, depth }) => {
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  // TODO: move the group creation logic up
-  const db = useDatabase()
+  const { newGroup, newDocument } = useMainState()
 
   const handleNewDocument = () => {
     newDocument(true, group.id)
   }
 
   const handleNewGroup = () => {
-    // TODO: make it possible to actually name the group properly
-    db.groups.insert({
-      id: uuidv4(),
-      name: Date.now() + "",
-      parentGroup: null,
-    })
+    newGroup(group.id)
   }
+
+  const groupName = useMemo(() => {
+    return group.name.trim() === "" ? "Unnamed Collection" : group.name
+  }, [group.name])
 
   return (
     <>
@@ -39,10 +32,10 @@ const GroupTreeItem: React.FC<{
         onContextMenu={openMenu}
         startExpanded
         childNodes={group.children.map((subgroup) => (
-          <GroupTreeItem group={subgroup} newDocument={newDocument} />
+          <GroupTreeItem group={subgroup} />
         ))}
       >
-        {group.name}
+        {groupName}
       </ExpandableTreeItem>
       {isMenuOpen && (
         <ContextMenu>

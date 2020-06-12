@@ -1,7 +1,6 @@
 import React from "react"
 import styled from "styled-components/macro"
 
-import ExpandableTreeItem from "../ExpandableTreeItem"
 import StaticTreeItem from "../TreeItem"
 import { useMainState } from "../MainStateProvider"
 
@@ -11,7 +10,7 @@ import { useViewState } from "../ViewStateProvider"
 import { VIEWS } from "../Sidebar/types"
 
 export const NavigatorSidebar: React.FC<{}> = () => {
-  const { newDocument, groups } = useMainState()
+  const { groups } = useMainState()
   const { primarySidebar } = useViewState()
 
   return (
@@ -25,31 +24,11 @@ export const NavigatorSidebar: React.FC<{}> = () => {
         All Documents
       </StaticTreeItem>
 
-      <ExpandableTreeItem
-        startExpanded
-        icon="cloud"
-        childNodes={groups.map((group) => (
-          <GroupTreeItem
-            key={group.id}
-            group={group}
-            newDocument={newDocument}
-          />
-        ))}
-      >
-        Collections
-      </ExpandableTreeItem>
+      <SectionHeader>Collections</SectionHeader>
 
-      {/* <button
-        onClick={() => {
-          db.groups.insert({
-            id: uuidv4(),
-            name: Date.now() + "",
-            parentGroup: null,
-          })
-        }}
-      >
-        New collection
-      </button> */}
+      {groups.map((group) => (
+        <GroupTreeItem key={group.id} group={group} />
+      ))}
     </OuterContainer>
   )
 }
