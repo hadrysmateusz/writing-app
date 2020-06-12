@@ -2,13 +2,14 @@ import React from "react"
 import styled from "styled-components/macro"
 import { useEditor } from "slate-react"
 
-import { Sidebar } from "../Sidebar"
+import { PrimarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
 
 import { useViewState } from "../ViewStateProvider"
 import { useEditorState } from "../EditorStateProvider"
 import { useMainState } from "../MainStateProvider"
+import { NavigatorSidebar } from "../NavigatorSidebar"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
@@ -30,17 +31,8 @@ const Main = () => {
         ? "Loading..."
         : error ?? (
             <>
-              {navigatorSidebar && (
-                <div
-                  style={{
-                    borderRight: "1px solid #383838",
-                    background: "#171717",
-                  }}
-                >
-                  navigator
-                </div>
-              )}
-              {primarySidebar && <Sidebar />}
+              {navigatorSidebar && <NavigatorSidebar />}
+              {primarySidebar && <PrimarySidebar />}
               {currentDocument && (
                 <EditorComponent
                   key={currentDocument.id} // Necessary to reload the component on id change
@@ -55,7 +47,7 @@ const Main = () => {
 
 const InnerContainer = styled.div`
   display: grid;
-  grid-template-columns: 150px 250px 1fr;
+  grid-template-columns: 180px 280px 1fr;
   width: 100vw;
   height: 100vh; /* TODO: this needs to be improved */
   background-color: #1e1e1e;

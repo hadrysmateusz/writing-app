@@ -1,7 +1,9 @@
 import React from "react"
-import { VIEWS, ChangeViewFn } from "./types"
+import styled from "styled-components/macro"
+
 import SidebarDocumentItem from "./SidebarDocumentItem"
 import { useMainState } from "../MainStateProvider"
+import { VIEWS, ChangeViewFn } from "./types"
 
 /**
  * Base presentational component
@@ -17,20 +19,13 @@ export const DocumentsList: React.FC<{
 
   return (
     <div>
-      <div
-        style={{
-          paddingBottom: "16px",
-          borderBottom: "1px solid #363636",
-        }}
-      >
-        <button onClick={onBack}>Back</button>
+      <SectionHeader>
+        {/* <button onClick={onBack}>Back</button> */}
         <span>{" " + title}</span>
-      </div>
-      <div>
-        {documents.map((document) => (
-          <SidebarDocumentItem key={document.id} document={document} />
-        ))}
-      </div>
+      </SectionHeader>
+      {documents.map((document) => (
+        <SidebarDocumentItem key={document.id} document={document} />
+      ))}
     </div>
   )
 }
@@ -42,10 +37,7 @@ export const AllDocumentsList: React.FC<{
   changeView: ChangeViewFn
 }> = ({ changeView }) => {
   return (
-    <DocumentsList
-      title="All Documents"
-      onBack={() => changeView(VIEWS.MAIN)}
-    />
+    <DocumentsList title="All Documents" onBack={() => changeView(VIEWS.ALL)} />
   )
 }
 
@@ -69,3 +61,17 @@ export const AllDocumentsList: React.FC<{
 //     />
 //   )
 // }
+
+const SectionHeader = styled.div`
+  font-family: Poppins;
+  font-weight: bold;
+  font-size: 10px;
+  user-select: none;
+
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border-bottom: 1px solid;
+  border-color: #383838;
+  color: #a3a3a3;
+`

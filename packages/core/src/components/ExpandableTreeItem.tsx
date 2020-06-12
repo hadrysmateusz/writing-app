@@ -1,6 +1,7 @@
-import React, { useState, isValidElement, cloneElement } from "react"
+import React, { useState, isValidElement, cloneElement, useMemo } from "react"
 import styled from "styled-components/macro"
 import TreeItem from "./TreeItem"
+import Icon from "./Icon"
 
 type RenderProps = {
   isExpanded: boolean
@@ -67,17 +68,36 @@ const ExpandableTreeItem: React.FC<{
     return child
   })
 
-  return (
-    <OuterContainer depth={depth}>
-      {/* TODO: add a chevron to indicate that the item is collapsible/expandable */}
+  const isCaretShown = useMemo(() => {
+    // TODO: add some conditional rendering and props for manual control
+    return true
+  }, [])
 
-      <TreeItem
-        depth={depth}
-        icon={icon}
-        onClick={handleClick}
-        onContextMenu={onContextMenu}
-      >
-        {typeof children === "function" ? children(renderProps) : children}
+  // TODO: make the hover styles render consistently
+
+  return (
+    <OuterContainer
+      depth={depth}
+      onClick={handleClick}
+      onContextMenu={onContextMenu}
+    >
+      <TreeItem depth={depth}>
+        <InnerContainer>
+          {isCaretShown && (
+            <CaretContainer>
+              <Icon
+                icon={isExpanded ? "caretDown" : "caretRight"}
+                color="#414141"
+              />
+            </CaretContainer>
+          )}
+          {icon && (
+            <IconContainer isRoot={depth === 0}>
+              <Icon icon={icon} />
+            </IconContainer>
+          )}
+          {typeof children === "function" ? children(renderProps) : children}
+        </InnerContainer>
       </TreeItem>
 
       {isExpanded && !isEmpty && (
@@ -88,6 +108,27 @@ const ExpandableTreeItem: React.FC<{
 }
 
 const OuterContainer = styled.div<{ depth: number }>``
+
+const IconContainer = styled.div<{ isRoot: boolean }>`
+  margin-right: 8px;
+  margin-bottom: -4px; /* to help align the icon with the text */
+  color: ${(p) => (p.isRoot ? "#858585" : "#5D5D5D")};
+  font-size: 1.4em;
+`
+
+const CaretContainer = styled.div`
+  margin-right: 5px;
+  position: absolute;
+  top: 3px;
+  left: -15px;
+  font-size: 0.85em;
+`
+
+const InnerContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`
 
 const DetailsContainer = styled.div`
   margin-top: 2px;

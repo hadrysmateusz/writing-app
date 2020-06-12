@@ -43,7 +43,7 @@ const GroupTreeItem: React.FC<{
         ))}
       >
         {group.name}
-      </ExpandableTreeItem>{" "}
+      </ExpandableTreeItem>
       {isMenuOpen && (
         <ContextMenu>
           <ContextMenuItem onClick={handleNewDocument}>
