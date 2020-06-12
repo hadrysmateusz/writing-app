@@ -57,6 +57,16 @@ const ExpandableTreeItem: React.FC<{
       onClick(event)
     }
     toggle()
+    /* Stops parent tree items from being toggled as well
+    TODO: find a way to accomplish that without using stopPropagation */
+    event.stopPropagation()
+  }
+
+  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (onContextMenu) {
+      onContextMenu(event)
+      event.stopPropagation()
+    }
   }
 
   const childrenWithProps = childNodes.map((child) => {
@@ -76,11 +86,7 @@ const ExpandableTreeItem: React.FC<{
   // TODO: make the hover styles render consistently
 
   return (
-    <OuterContainer
-      depth={depth}
-      onClick={handleClick}
-      onContextMenu={onContextMenu}
-    >
+    <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
       <TreeItem depth={depth}>
         <InnerContainer>
           {isCaretShown && (
@@ -107,7 +113,7 @@ const ExpandableTreeItem: React.FC<{
   )
 }
 
-const OuterContainer = styled.div<{ depth: number }>``
+const OuterContainer = styled.div``
 
 const IconContainer = styled.div<{ isRoot: boolean }>`
   margin-right: 8px;

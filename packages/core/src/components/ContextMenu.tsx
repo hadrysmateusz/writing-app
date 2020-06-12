@@ -28,6 +28,15 @@ export const useContextMenu = () => {
     closePortal()
   }, [closePortal])
 
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    /* Stops click events inside the context menu from propagating down the DOM tree 
+    TODO: see if this can be done without using event.stopPropagation */
+    event.stopPropagation()
+    /* Close the menu after a click inside
+    TODO: a way to not trigger this will probably be required for more complex menus*/
+    closeMenu()
+  }
+
   /**
    * A component returned from the hook that will render the context menu inside a portal at the correct position
    *
@@ -39,7 +48,12 @@ export const useContextMenu = () => {
     })
     return (
       <Portal>
-        <MenuContainer xPos={x} yPos={y} ref={containerRef}>
+        <MenuContainer
+          xPos={x}
+          yPos={y}
+          ref={containerRef}
+          onClick={handleClick}
+        >
           {children}
         </MenuContainer>
       </Portal>
