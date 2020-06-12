@@ -1,9 +1,10 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import styled from "styled-components/macro"
 
 import SidebarDocumentItem from "./SidebarDocumentItem"
 import { useMainState } from "../MainStateProvider"
-import { VIEWS, ChangeViewFn } from "./types"
+import { useDatabase, GroupDoc, DocumentDoc } from "../Database"
+import { Subscription } from "rxjs"
 
 /**
  * Base presentational component
@@ -13,14 +14,11 @@ import { VIEWS, ChangeViewFn } from "./types"
  */
 export const DocumentsList: React.FC<{
   title: string
-  onBack: () => void
-}> = ({ title, onBack }) => {
-  const { documents } = useMainState()
-
+  documents: DocumentDoc[]
+}> = ({ title, documents }) => {
   return (
     <div>
       <SectionHeader>
-        {/* <button onClick={onBack}>Back</button> */}
         <span>{" " + title}</span>
       </SectionHeader>
       {documents.map((document) => (
@@ -33,34 +31,88 @@ export const DocumentsList: React.FC<{
 /**
  * Container displaying all documents
  */
-export const AllDocumentsList: React.FC<{
-  changeView: ChangeViewFn
-}> = ({ changeView }) => {
-  return (
-    <DocumentsList title="All Documents" onBack={() => changeView(VIEWS.ALL)} />
-  )
+export const AllDocumentsList: React.FC<{}> = () => {
+  // TODO: probably should replace with a paged query to the database
+  const { documents } = useMainState()
+
+  return <DocumentsList title="All Documents" documents={documents} />
 }
 
-// /**
-//  * Container displaying documents belonging to a specific group
-//  */
-// export const DocumentsGroupList: React.FC<{
-//   changeView: ChangeViewFn
-//   documents: DocumentDoc[]
-//   groups: GroupTree
-// }> = ({ changeView, documents, groups }) => {
-//   //   useEffect(() => {
-//   //     // const groupName = groups.find(group=>group.)
-//   //   }, [])
+/**
+ * Container displaying documents belonging to a specific group
+ */
+export const DocumentsGroupList: React.FC<{
+  groupId: string
+}> = ({ groupId }) => {
+  const db = useDatabase()
+  const [documents, setDocuments] = useState<DocumentDoc[] | null>(null)
+  const [group, setGroup] = useState<GroupDoc | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-//   return (
-//     <DocumentsList
-//       documents={documents}
-//       title="All Documents"
-//       onBack={() => changeView(VIEWS.MAIN)}
-//     />
-//   )
-// }
+  // TODO: extract most of this logic into a reusable hook
+  useEffect(() => {
+    let groupSub: Subscription | undefined
+    let documentsSub: Subscription | undefined
+
+    const setup = async () => {
+      // TODO: caching
+      // TODO: better decide when I should query the database directly and when to use (and where to store) the local documents list
+
+      setIsLoading(true)
+
+      try {
+        const groupQuery = db.groups.findOne().where("id").eq(groupId)
+        const documentsQuery = db.documents
+          .find()
+          .where("parentGroup")
+          .eq(groupId)
+
+        const newGroup = await groupQuery.exec()
+        setGroup(newGroup)
+
+        if (!newGroup) {
+          throw new Error(`Couldn't find group with id: ${groupId}`)
+        }
+
+        const newDocuments = await documentsQuery.exec()
+        setDocuments(newDocuments)
+
+        // set up subscriptions
+
+        groupSub = groupQuery.$.subscribe((newGroup) => {
+          setGroup(newGroup)
+        })
+
+        documentsSub = documentsQuery.$.subscribe((newDocuments) => {
+          setDocuments(newDocuments)
+        })
+      } catch (error) {
+        // TODO: handle better in prod
+        throw error
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    setup()
+
+    return () => {
+      if (groupSub) {
+        groupSub.unsubscribe()
+      }
+      if (documentsSub) {
+        documentsSub.unsubscribe()
+      }
+    }
+  }, [db.documents, db.groups, groupId])
+
+  // TODO: better state handling
+  return !documents || !group || isLoading ? (
+    <div>"Loading"</div>
+  ) : (
+    <DocumentsList title={group.name} documents={documents} />
+  )
+}
 
 const SectionHeader = styled.div`
   font-family: Poppins;

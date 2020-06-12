@@ -20,7 +20,7 @@ export const PrimarySidebar: React.FC<{}> = () => {
       case VIEWS.ALL: {
         return (
           <div>
-            <AllDocumentsList changeView={primarySidebar.switchView} />
+            <AllDocumentsList />
             <div>
               <NewButton onClick={handleCreateDocument}>+ Create New</NewButton>
             </div>
@@ -43,7 +43,6 @@ const OuterContainer = styled.div`
   background-color: #1e1e1e;
   position: relative;
 `
-
 const NewButton = styled.div`
   font-family: poppins;
   font-weight: 500;
