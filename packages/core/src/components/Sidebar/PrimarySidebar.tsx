@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 
 import { useMainState } from "../MainStateProvider"
 import { useViewState } from "../ViewStateProvider"
-import { AllDocumentsList } from "./DocumentsList"
+import { AllDocumentsList, DocumentsGroupList } from "./DocumentsList"
 import { VIEWS } from "./types"
 
 export const PrimarySidebar: React.FC<{}> = () => {
@@ -29,7 +29,14 @@ export const PrimarySidebar: React.FC<{}> = () => {
       }
       default: {
         // TODO: treat the view as a group id and render a document list for that group
-        return "TODO: group view"
+        return (
+          <div>
+            <DocumentsGroupList groupId={primarySidebar.currentView} />
+            <div>
+              <NewButton onClick={handleCreateDocument}>+ Create New</NewButton>
+            </div>
+          </div>
+        )
       }
     }
   }

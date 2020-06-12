@@ -108,9 +108,12 @@ export const DocumentsGroupList: React.FC<{
 
   // TODO: better state handling
   return !documents || !group || isLoading ? (
-    <div>"Loading"</div>
+    <div>Loading...</div>
   ) : (
-    <DocumentsList title={group.name} documents={documents} />
+    <DocumentsList
+      title={group.name.trim() === "" ? "Unnamed Collection" : group.name}
+      documents={documents}
+    />
   )
 }
 
