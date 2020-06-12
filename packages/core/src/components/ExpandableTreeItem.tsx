@@ -15,6 +15,7 @@ const ExpandableTreeItem: React.FC<{
   icon?: string
   startExpanded?: boolean
   depth?: number
+  hideToggleWhenEmpty?: boolean
   childNodes: React.ReactNode[]
   onBeforeExpand?: () => void
   // TODO: allow any react event handlers and other common props to pass through
@@ -23,6 +24,7 @@ const ExpandableTreeItem: React.FC<{
 }> = ({
   icon,
   startExpanded = false,
+  hideToggleWhenEmpty = true,
   depth = 0,
   childNodes,
   children,
@@ -56,8 +58,14 @@ const ExpandableTreeItem: React.FC<{
     if (onClick) {
       onClick(event)
     }
-    toggle()
     /* Stops parent tree items from being toggled as well
+    TODO: find a way to accomplish that without using stopPropagation */
+    event.stopPropagation()
+  }
+
+  const handleToggleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    toggle()
+    /* Stops other handlers from being triggered
     TODO: find a way to accomplish that without using stopPropagation */
     event.stopPropagation()
   }
@@ -80,21 +88,18 @@ const ExpandableTreeItem: React.FC<{
 
   const isCaretShown = useMemo(() => {
     // TODO: add some conditional rendering and props for manual control
-    return true
-  }, [])
+    return !(isEmpty && hideToggleWhenEmpty)
+  }, [hideToggleWhenEmpty, isEmpty])
 
-  // TODO: make the hover styles render consistently
+  // TODO: save the toggled state between restarts (this will probably require making this component controlled)
 
   return (
     <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
       <TreeItem depth={depth}>
         <InnerContainer>
           {isCaretShown && (
-            <CaretContainer>
-              <Icon
-                icon={isExpanded ? "caretDown" : "caretRight"}
-                color="#414141"
-              />
+            <CaretContainer onClick={handleToggleClick} isExpanded={isExpanded}>
+              <Icon icon={"caretRight"} />
             </CaretContainer>
           )}
           {icon && (
@@ -122,12 +127,18 @@ const IconContainer = styled.div<{ isRoot: boolean }>`
   font-size: 1.4em;
 `
 
-const CaretContainer = styled.div`
-  margin-right: 5px;
+const CaretContainer = styled.div<{ isExpanded: boolean }>`
+  /* margin-right: 2px; */
+  margin-left: -3px;
+  padding: 5px;
+  padding-bottom: 0;
   position: absolute;
-  top: 3px;
   left: -15px;
   font-size: 0.85em;
+  border-radius: 2px;
+  color: #454545;
+  /* TODO: animate and improve this */
+  ${(p) => p.isExpanded && "transform: rotate(90deg)"}
 `
 
 const InnerContainer = styled.div`

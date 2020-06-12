@@ -32,7 +32,7 @@ const OuterContainer = styled.div<{ depth: number }>`
   width: 100%;
   :hover {
     color: white;
-    background: #181818;
+    background: #222;
   }
   display: flex;
   justify-content: flex-start;
