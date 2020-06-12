@@ -47,7 +47,7 @@ const Main = () => {
 
 const InnerContainer = styled.div`
   display: grid;
-  grid-template-columns: 180px 280px 1fr;
+  grid-template-columns: 200px 280px 1fr;
   width: 100vw;
   height: 100vh; /* TODO: this needs to be improved */
   background-color: #1e1e1e;
