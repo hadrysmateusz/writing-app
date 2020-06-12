@@ -37,7 +37,6 @@ const GroupTreeItem: React.FC<{
         depth={depth}
         onContextMenu={openMenu}
         onClick={handleClick}
-        startExpanded
         childNodes={group.children.map((subgroup) => (
           <GroupTreeItem group={subgroup} />
         ))}
