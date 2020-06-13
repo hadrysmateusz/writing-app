@@ -17,19 +17,19 @@ const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
 }> = ({ document }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const {
+    groups,
+    currentDocument,
+    switchDocument,
+    renameDocument,
+    moveDocumentToGroup,
+  } = useMainState()
   const { startRenaming, getProps } = useEditableText(
     document.title,
     (value: string) => {
       renameDocument(document.id, value)
     }
   )
-
-  const {
-    // groups,
-    currentDocument,
-    switchDocument,
-    renameDocument,
-  } = useMainState()
 
   const isCurrent = useMemo(() => {
     // TODO: something doesn't work here
@@ -109,6 +109,14 @@ const SidebarDocumentItem: React.FC<{
     startRenaming()
   }, [closeMenu, startRenaming])
 
+  const moveToGroup = useCallback(
+    (groupId: string) => {
+      // TODO: consider adding a way to move it to root
+      moveDocumentToGroup(document.id, groupId)
+    },
+    [document.id, moveDocumentToGroup]
+  )
+
   return (
     <Container onContextMenu={openMenu}>
       <MainContainer onClick={handleClick} isCurrent={isCurrent}>
@@ -127,7 +135,14 @@ const SidebarDocumentItem: React.FC<{
           </ContextMenuItem>
           <ContextMenuItem onClick={removeDocument}>Delete</ContextMenuItem>
           <ContextSubmenu text="Move to">
-            <ContextMenuItem onClick={removeDocument}>Trash</ContextMenuItem>
+            {groups.map((group) => (
+              <ContextMenuItem
+                key={group.id}
+                onClick={() => moveToGroup(group.id)}
+              >
+                {group.name.trim() === "" ? "Unnamed Collection" : group.name}
+              </ContextMenuItem>
+            ))}
           </ContextSubmenu>
         </ContextMenu>
       )}
