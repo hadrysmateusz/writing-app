@@ -34,6 +34,10 @@ export type DocumentDocType = {
    * Timestamp of when the document was last modified
    */
   modifiedAt: number
+  /**
+   * Whether the document should appear in the favorites view (whatever it ends up being called)
+   */
+  isFavorite: boolean
 }
 
 export type DocumentDocMethods = {}

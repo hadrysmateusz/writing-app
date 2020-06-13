@@ -3,7 +3,7 @@ import { addRxPlugin, createRxDatabase } from "rxdb"
 import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import { documentSchema, groupSchema } from "./Schema"
-import { MyDatabaseCollections, MyDatabase } from "./types"
+import { MyDatabaseCollections, MyDatabase, DocumentDoc } from "./types"
 
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) //enable syncing over http
@@ -13,6 +13,13 @@ const collections = [
     name: "documents",
     schema: documentSchema,
     sync: true,
+    migrationStrategies: {
+      // version 0 => 1
+      1: (oldDoc: DocumentDoc) => {
+        oldDoc.isFavorite = false
+        return oldDoc
+      },
+    },
   },
   {
     name: "groups",

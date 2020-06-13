@@ -5,7 +5,7 @@ import { DocumentDocType, GroupDocType } from "./types"
 export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
   description: "describes a document",
-  version: 0,
+  version: 1,
   type: "object",
   properties: {
     id: {
@@ -28,7 +28,11 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
     modifiedAt: {
       type: "number",
     },
+    isFavorite: {
+      type: "boolean",
+    },
   },
+  // TODO: make sure all fields that should be are marked as required
   required: ["title", "content"],
 }
 
