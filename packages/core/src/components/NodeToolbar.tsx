@@ -3,15 +3,16 @@ import React, { useRef } from "react"
 import { useEditor, ReactEditor, useFocused, useSelected } from "slate-react"
 import styled from "styled-components/macro"
 
+import { BLOCKQUOTE } from "../slate-plugins/elements/blockquote/types"
+import { CODE_BLOCK } from "../slate-plugins/elements/code-block"
+import { PARAGRAPH } from "../slate-plugins/elements/paragraph"
+import { HeadingType } from "../slate-plugins"
+
 import {
   useContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
 } from "./ContextMenu"
-import { BLOCKQUOTE } from "../slate-plugins/elements/blockquote/types"
-import { CODE_BLOCK } from "../slate-plugins/elements/code-block"
-import { PARAGRAPH } from "../slate-plugins/elements/paragraph"
-import { HeadingType } from "../slate-plugins"
 
 // The toolbar requires the parent element to have position: relative
 // The toolbar needs to not be put after the contentEditable contents of a slate node because it will result in the caret moving into it if the users clicks downarrow in the last block in the document (there might be other related issues with this) TODO: there are more issues - if you press "delete" at the end of an empty node while there is another node beneath the cursor will be moved inside the toolbar
@@ -25,7 +26,7 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
   const isFocused = useFocused()
   const isSelected = useSelected()
 
-  const handleMouseDown = (event) => {
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
     event.stopPropagation()
 

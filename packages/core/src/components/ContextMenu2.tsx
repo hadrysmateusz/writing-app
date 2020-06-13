@@ -1,13 +1,11 @@
-// This is a version without icons as it causes issues in some components
-// TODO: fix the above limitation
+// This is a version WITH icons - it should be used wherever it doesn't cause issues
 
 import React, { useState, useRef, useCallback } from "react"
 import styled from "styled-components/macro"
 import usePortal from "react-useportal"
 
 import { useOnClickOutside } from "../hooks/useOnClickOutside"
-
-// TODO: create components for submenus and separators
+import Icon from "./Icon"
 
 export const useContextMenu = () => {
   // TODO: capture focus inside the context menu and restore it when it closes
@@ -76,12 +74,21 @@ export const ContextSubmenu: React.FC<{ text: string }> = ({
     <ContextMenuItem {...rest}>
       <SubmenuLabel>
         <div>{text}</div>
-        <div>&gt;</div>
+        <CaretContainer>
+          <Icon icon="caretRight" />
+        </CaretContainer>
       </SubmenuLabel>
       <SubmenuContainer>{children}</SubmenuContainer>
     </ContextMenuItem>
   )
 }
+
+const CaretContainer = styled.div`
+  font-size: 0.77em;
+  color: #c3c3c3;
+  margin-right: -5px;
+  padding-top: 2px;
+`
 
 const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
   /* Base function styles */
@@ -115,11 +122,13 @@ export const ContextMenuItem = styled.div`
 
 export const SubmenuLabel = styled.div`
   display: flex;
+  align-items: center;
   & *:first-child {
     margin-right: auto;
   }
 `
 
+// TODO: prevent the box shadow from overlaying the parent container
 export const SubmenuContainer = styled.div`
   display: none;
   position: absolute;
@@ -127,7 +136,6 @@ export const SubmenuContainer = styled.div`
   top: -7px; /* based on the padding of the the container and border width*/
   background-color: red;
   width: 100%;
-  z-index: 1;
   ${ContextMenuItem}:hover & {
     display: block;
   }

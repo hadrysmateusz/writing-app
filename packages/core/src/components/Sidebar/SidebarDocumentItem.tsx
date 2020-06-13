@@ -3,7 +3,11 @@ import styled from "styled-components/macro"
 import { Node } from "slate"
 
 import { DocumentDoc } from "../Database"
-import { useContextMenu, ContextMenuItem } from "../ContextMenu"
+import {
+  useContextMenu,
+  ContextMenuItem,
+  ContextSubmenu,
+} from "../ContextMenu2"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useMainState } from "../MainStateProvider"
 
@@ -122,6 +126,9 @@ const SidebarDocumentItem: React.FC<{
             Rename
           </ContextMenuItem>
           <ContextMenuItem onClick={removeDocument}>Delete</ContextMenuItem>
+          <ContextSubmenu text="Move to">
+            <ContextMenuItem onClick={removeDocument}>Trash</ContextMenuItem>
+          </ContextSubmenu>
         </ContextMenu>
       )}
     </Container>

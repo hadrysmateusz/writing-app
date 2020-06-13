@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from "react"
 
 import ExpandableTreeItem from "../ExpandableTreeItem"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
-import { useContextMenu, ContextMenuItem } from "../ContextMenu"
+import { useContextMenu, ContextMenuItem } from "../ContextMenu2"
 import { useMainState } from "../MainStateProvider"
 import { useViewState } from "../ViewStateProvider"
 import { useEditableText, EditableText } from "../RenamingInput"
