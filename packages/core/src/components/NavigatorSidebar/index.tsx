@@ -1,24 +1,34 @@
 import React, { useMemo } from "react"
 import styled from "styled-components/macro"
 
-import StaticTreeItem from "../TreeItem"
-import { useMainState } from "../MainStateProvider"
-
 // TODO: move common components out of the sidebar direcotory
 import GroupTreeItem from "../Sidebar/GroupTreeItem"
-import { useViewState } from "../ViewStateProvider"
 import { VIEWS } from "../Sidebar/types"
+import StaticTreeItem from "../TreeItem"
+import { useMainState } from "../MainStateProvider"
+import { useContextMenu, ContextMenuItem } from "../ContextMenu2"
+import { useViewState } from "../ViewStateProvider"
+
 import createGroupTree from "../../helpers/createGroupTree"
 
 export const NavigatorSidebar: React.FC<{}> = () => {
-  const { groups } = useMainState()
+  const { groups, newDocument, newGroup } = useMainState()
   const { primarySidebar } = useViewState()
+  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
 
   // map the flat groups list to a tree structure
   const groupsTree = useMemo(() => createGroupTree(groups), [groups])
 
+  const handleNewDocument = () => {
+    newDocument(true, null)
+  }
+
+  const handleNewGroup = () => {
+    newGroup(null)
+  }
+
   return (
-    <OuterContainer>
+    <OuterContainer onContextMenu={openMenu}>
       <SectionHeader>Library</SectionHeader>
 
       <StaticTreeItem
@@ -33,6 +43,17 @@ export const NavigatorSidebar: React.FC<{}> = () => {
       {groupsTree.map((group) => (
         <GroupTreeItem key={group.id} group={group} />
       ))}
+
+      {isMenuOpen && (
+        <ContextMenu>
+          <ContextMenuItem onClick={handleNewDocument}>
+            New Document
+          </ContextMenuItem>
+          <ContextMenuItem onClick={handleNewGroup}>
+            New Collection
+          </ContextMenuItem>
+        </ContextMenu>
+      )}
     </OuterContainer>
   )
 }
