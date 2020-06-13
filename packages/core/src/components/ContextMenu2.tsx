@@ -99,6 +99,26 @@ export const ContextSubmenu: React.FC<{ text: string }> = ({
   )
 }
 
+export const ContextMenuItem: React.FC<{
+  disabled?: boolean
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void
+}> = ({ disabled = false, onClick, children, ...rest }) => {
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled || !onClick) return undefined
+    return onClick(event)
+  }
+
+  return (
+    <ContextMenuItemContainer
+      disabled={disabled}
+      onClick={handleClick}
+      {...rest}
+    >
+      {children}
+    </ContextMenuItemContainer>
+  )
+}
+
 const CaretContainer = styled.div`
   font-size: 0.77em;
   color: #c3c3c3;
@@ -125,15 +145,15 @@ export const ContextMenuSeparator = styled.div`
   margin: 6px 0;
 `
 
-export const ContextMenuItem = styled.div`
+export const ContextMenuItemContainer = styled.div<{ disabled?: boolean }>`
+  color: ${(p) => (p.disabled ? "#aaa" : "white")};
+  cursor: ${(p) => (p.disabled ? "default" : "pointer")};
+
+  ${(p) => !p.disabled && `:hover { background: #424242; }`}
+
   position: relative;
   padding: 6px 20px;
-  color: white;
   font-size: 12px;
-  cursor: pointer;
-  :hover {
-    background: #424242;
-  }
 `
 
 export const SubmenuLabel = styled.div`
@@ -152,7 +172,7 @@ export const SubmenuContainer = styled.div`
   top: -7px; /* based on the padding of the the container and border width*/
   background-color: red;
   width: 100%;
-  ${ContextMenuItem}:hover & {
+  ${ContextMenuItemContainer}:hover & {
     display: block;
   }
   /* reused styles from menu container - TODO: make this DRY */
