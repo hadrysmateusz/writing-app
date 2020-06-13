@@ -41,7 +41,7 @@ export const NavigatorSidebar: React.FC<{}> = () => {
       <SectionHeader>Collections</SectionHeader>
 
       {groupsTree.map((group) => (
-        <GroupTreeItem key={group.id} group={group} />
+        <GroupTreeItem key={group.id} group={group} depth={1} />
       ))}
 
       {isMenuOpen && (
@@ -76,7 +76,3 @@ const SectionHeader = styled.div`
 
   user-select: none;
 `
-
-// const InnerContainer = styled.div`
-//   padding-left: 20px;
-// `
