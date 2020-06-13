@@ -34,6 +34,8 @@ export const NavigatorSidebar: React.FC<{}> = () => {
       <StaticTreeItem
         icon="cloud"
         onClick={() => primarySidebar.switchView(VIEWS.ALL)}
+        depth={1}
+        isSpecial
       >
         All Documents
       </StaticTreeItem>
