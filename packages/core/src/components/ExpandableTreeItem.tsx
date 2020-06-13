@@ -94,6 +94,7 @@ const ExpandableTreeItem: React.FC<{
   // TODO: save the toggled state between restarts (this will probably require making this component controlled)
 
   return (
+    // TODO: check if the context menu listener shouldn't be placed on the tree item instead
     <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
       <TreeItem depth={depth}>
         <InnerContainer>

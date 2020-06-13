@@ -10,6 +10,7 @@ import { useContextMenu, ContextMenuItem } from "../ContextMenu2"
 import { useViewState } from "../ViewStateProvider"
 
 import createGroupTree from "../../helpers/createGroupTree"
+import DocumentTreeItem from "../DocumentTreeItem"
 
 export const NavigatorSidebar: React.FC<{}> = () => {
   const { groups, favorites, newDocument, newGroup } = useMainState()
@@ -43,9 +44,7 @@ export const NavigatorSidebar: React.FC<{}> = () => {
       <SectionHeader>Favorites</SectionHeader>
 
       {favorites.map((document) => (
-        <StaticTreeItem depth={1}>
-          {document.title.trim() === "" ? "Untitled" : document.title}
-        </StaticTreeItem>
+        <DocumentTreeItem depth={1} document={document} />
       ))}
 
       <SectionHeader>Collections</SectionHeader>
