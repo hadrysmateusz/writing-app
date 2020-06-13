@@ -14,7 +14,6 @@ import { useDatabase, DocumentDoc, DocumentDocType, GroupDoc } from "./Database"
 import { useEditorState, defaultEditorValue } from "./EditorStateProvider"
 
 import { listenForIpcEvent } from "../utils"
-import createGroupTree, { GroupTree } from "../helpers/createGroupTree"
 import { useRequiredContext } from "../hooks/useRequiredContext"
 
 import {
@@ -36,7 +35,7 @@ declare global {
 
 export type MainState = {
   documents: DocumentDoc[]
-  groups: GroupTree
+  groups: GroupDoc[]
   currentDocument: DocumentDoc | null
   isLoading: boolean
   saveDocument: SaveDocumentFn
@@ -68,7 +67,8 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   } = useEditorState()
 
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
-  const [groups, setGroups] = useState<GroupTree>([])
+  // TODO: rename to groupTree to avoid confusion (And also probably move it elsewhere)
+  const [groups, setGroups] = useState<GroupDoc[]>([])
   const [currentEditor, setCurrentEditor] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isInitialLoad, setIsInitialLoad] = useState(true) // Flag to manage whether this is the first time documents are loaded
@@ -285,11 +285,6 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         }
       }
 
-      const updateGroupsList = (groups: GroupDoc[]) => {
-        const groupTree = createGroupTree(groups)
-        setGroups(groupTree)
-      }
-
       const documentsQuery = db.documents.find()
       const groupsQuery = db.groups.find()
 
@@ -305,7 +300,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         ])
 
         setIsInitialLoad(false)
-        updateGroupsList(newGroups)
+        setGroups(newGroups)
         updateDocumentsList(newDocuments)
         setIsLoading(false)
       }
@@ -317,7 +312,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       })
 
       groupsSub = groupsQuery.$.subscribe((newGroups) => {
-        updateGroupsList(newGroups)
+        setGroups(newGroups)
       })
     }
 

@@ -3,8 +3,13 @@ import styled from "styled-components/macro"
 
 import SidebarDocumentItem from "./SidebarDocumentItem"
 import { useMainState } from "../MainStateProvider"
-import { useDatabase, GroupDoc, DocumentDoc } from "../Database"
+import { useDatabase, DocumentDoc } from "../Database"
 import { Subscription } from "rxjs"
+import createGroupTree, {
+  findInTree,
+  findChildGroups,
+  GroupTreeBranch,
+} from "../../helpers/createGroupTree"
 
 /**
  * Base presentational component
@@ -45,43 +50,53 @@ export const DocumentsGroupList: React.FC<{
   groupId: string
 }> = ({ groupId }) => {
   const db = useDatabase()
+  const { groups } = useMainState()
   const [documents, setDocuments] = useState<DocumentDoc[] | null>(null)
-  const [group, setGroup] = useState<GroupDoc | null>(null)
+  const [group, setGroup] = useState<GroupTreeBranch | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   // TODO: extract most of this logic into a reusable hook
   useEffect(() => {
-    let groupSub: Subscription | undefined
+    // let groupSub: Subscription | undefined
     let documentsSub: Subscription | undefined
 
     const setup = async () => {
-      // TODO: caching
+      // TODO: in-memory caching for better performnce when frequently switching between groups in one session
       // TODO: better decide when I should query the database directly and when to use (and where to store) the local documents list
 
       setIsLoading(true)
 
       try {
-        const groupQuery = db.groups.findOne().where("id").eq(groupId)
+        const groupTree = createGroupTree(groups)
+        const foundGroup = findInTree(groupTree, groupId)
+        if (foundGroup === null) {
+          throw new Error(
+            `Couldn't find group with id: ${groupId} in tree:\n${JSON.stringify(
+              groupTree,
+              null,
+              2
+            )}`
+          )
+        }
+        setGroup(foundGroup)
+
+        const childGroups = findChildGroups(foundGroup)
+        const childGroupIds = childGroups.map((group) => group.id)
+        const groupIds = [...childGroupIds, groupId]
+
+        //         console.log(`group with id: ${groupId} has following child groups:
+        // ${JSON.stringify(childGroups, null, 2)}`)
+
+        //         console.log(`childGroup IDs:
+        // ${JSON.stringify(childGroupIds, null, 2)}`)
+
         const documentsQuery = db.documents
           .find()
           .where("parentGroup")
-          .eq(groupId)
-
-        const newGroup = await groupQuery.exec()
-        setGroup(newGroup)
-
-        if (!newGroup) {
-          throw new Error(`Couldn't find group with id: ${groupId}`)
-        }
+          .in(groupIds)
 
         const newDocuments = await documentsQuery.exec()
         setDocuments(newDocuments)
-
-        // set up subscriptions
-
-        groupSub = groupQuery.$.subscribe((newGroup) => {
-          setGroup(newGroup)
-        })
 
         documentsSub = documentsQuery.$.subscribe((newDocuments) => {
           setDocuments(newDocuments)
@@ -97,14 +112,11 @@ export const DocumentsGroupList: React.FC<{
     setup()
 
     return () => {
-      if (groupSub) {
-        groupSub.unsubscribe()
-      }
       if (documentsSub) {
         documentsSub.unsubscribe()
       }
     }
-  }, [db.documents, db.groups, groupId])
+  }, [db.documents, db.groups, groupId, groups])
 
   // TODO: better state handling
   return !documents || !group || isLoading ? (

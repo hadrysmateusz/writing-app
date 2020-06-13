@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import styled from "styled-components/macro"
 
 import StaticTreeItem from "../TreeItem"
@@ -8,10 +8,14 @@ import { useMainState } from "../MainStateProvider"
 import GroupTreeItem from "../Sidebar/GroupTreeItem"
 import { useViewState } from "../ViewStateProvider"
 import { VIEWS } from "../Sidebar/types"
+import createGroupTree from "../../helpers/createGroupTree"
 
 export const NavigatorSidebar: React.FC<{}> = () => {
   const { groups } = useMainState()
   const { primarySidebar } = useViewState()
+
+  // map the flat groups list to a tree structure
+  const groupsTree = useMemo(() => createGroupTree(groups), [groups])
 
   return (
     <OuterContainer>
@@ -26,7 +30,7 @@ export const NavigatorSidebar: React.FC<{}> = () => {
 
       <SectionHeader>Collections</SectionHeader>
 
-      {groups.map((group) => (
+      {groupsTree.map((group) => (
         <GroupTreeItem key={group.id} group={group} />
       ))}
     </OuterContainer>
