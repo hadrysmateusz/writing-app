@@ -74,20 +74,20 @@ const SidebarDocumentItem: React.FC<{
     return new Date(Number(document.createdAt) * 1000).toLocaleString()
   }, [document.createdAt])
 
-  // const groupName = useMemo(() => {
-  //   if (document.parentGroup === null) {
-  //     // TODO: better handle documents at the root of the tree
-  //     return null
-  //   }
+  const groupName = useMemo(() => {
+    if (document.parentGroup === null) {
+      // TODO: better handle documents at the root of the tree
+      return null
+    }
 
-  //   const group = groups.find((group) => group.id === document.parentGroup)
+    const group = groups.find((group) => group.id === document.parentGroup)
 
-  //   if (group === undefined) {
-  //     throw new Error(`couldn't find group with id: ${document.parentGroup}`)
-  //   }
+    if (group === undefined) {
+      throw new Error(`couldn't find group with id: ${document.parentGroup}`)
+    }
 
-  //   return group.name
-  // }, [document.parentGroup, groups])
+    return group.name
+  }, [document.parentGroup, groups])
 
   const removeDocument = useCallback(() => {
     document.remove()
@@ -120,7 +120,7 @@ const SidebarDocumentItem: React.FC<{
   return (
     <Container onContextMenu={openMenu}>
       <MainContainer onClick={handleClick} isCurrent={isCurrent}>
-        {/* <Meta>{groupName}</Meta> */}
+        <Meta>{groupName}</Meta>
         <Title>
           <EditableText {...getProps()}>{title}</EditableText>
         </Title>
