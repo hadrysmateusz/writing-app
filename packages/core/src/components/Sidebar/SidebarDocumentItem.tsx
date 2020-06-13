@@ -1,10 +1,10 @@
-import React, { useCallback, useState, useRef, useEffect, useMemo } from "react"
+import React, { useCallback, useMemo } from "react"
 import styled from "styled-components/macro"
 import { Node } from "slate"
 
 import { DocumentDoc } from "../Database"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
-import { EditableText } from "../RenamingInput"
+import { useEditableText, EditableText } from "../RenamingInput"
 import { useMainState } from "../MainStateProvider"
 
 const SNIPPET_LENGTH = 80
@@ -14,13 +14,15 @@ const SidebarDocumentItem: React.FC<{
 }> = ({ document }) => {
   console.log(document)
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const [isRenaming, setIsRenaming] = useState(false)
-  const [titleValue, setTitleValue] = useState("")
-  const containerRef = useRef<any>()
-  const titleInputRef = useRef<any>()
+  const { startRenaming, getProps } = useEditableText(
+    document.title,
+    (value: string) => {
+      renameDocument(document.id, value)
+    }
+  )
 
   const {
-    groups,
+    // groups,
     currentDocument,
     switchDocument,
     renameDocument,
@@ -83,72 +85,32 @@ const SidebarDocumentItem: React.FC<{
   //   return group.name
   // }, [document.parentGroup, groups])
 
-  const onRename = () => {
-    if (!isRenaming) return
-    setIsRenaming(false)
-    renameDocument(document.id, titleValue)
-  }
-
-  const handleRenameDocument = () => {
-    closeMenu()
-    setIsRenaming(true)
-  }
-
-  const removeDocument = () => {
+  const removeDocument = useCallback(() => {
     document.remove()
     if (isCurrent) {
       switchDocument(null)
     }
-  }
+  }, [document, isCurrent, switchDocument])
 
   const openDocument = useCallback(() => {
     switchDocument(document.id)
   }, [document.id, switchDocument])
 
-  const handleChange = (newValue: string) => {
-    setTitleValue(newValue)
-  }
-
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     openDocument()
-  }
+  }, [openDocument])
 
-  useEffect(() => {
-    // Focus and select the input
-    if (isRenaming && titleInputRef?.current) {
-      console.log("focus and select")
-      titleInputRef.current.focus()
-      titleInputRef.current.setSelectionRange(
-        0,
-        titleInputRef.current.value.length
-      )
-    }
-  }, [document.id, isRenaming, renameDocument])
-
-  useEffect(() => {
-    if (!isRenaming) {
-      setTitleValue(document.title)
-    }
-  }, [document.title, isRenaming])
+  const handleRenameDocument = useCallback(() => {
+    closeMenu()
+    startRenaming()
+  }, [closeMenu, startRenaming])
 
   return (
-    <Container
-      isCurrent={isCurrent}
-      onContextMenu={openMenu}
-      // TODO: investigate if this ref is required
-      ref={containerRef}
-    >
+    <Container isCurrent={isCurrent} onContextMenu={openMenu}>
       <MainContainer onClick={handleClick}>
         {/* <Meta>{groupName}</Meta> */}
         <Title>
-          <EditableText
-            ref={titleInputRef}
-            isRenaming={isRenaming}
-            value={titleValue}
-            onChange={handleChange}
-            onRename={onRename}
-            staticValue={title}
-          />
+          <EditableText {...getProps()}>{title}</EditableText>
         </Title>
         <Snippet>{snippet}</Snippet>
         <Meta>{modifiedAt}</Meta>

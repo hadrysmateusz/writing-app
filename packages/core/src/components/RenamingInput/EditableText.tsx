@@ -1,68 +1,123 @@
-import React, { forwardRef } from "react"
+import React, { forwardRef, useRef, useState, useEffect } from "react"
 import styled from "styled-components/macro"
 
-import { NamingInput, NamingInputProps } from "./NamingInput"
+import { NamingInput } from "./NamingInput"
 
-export type EditableTextProps = NamingInputProps & {
-  isRenaming: boolean
-  staticValue: string
+export type EditableTextProps = {
+  placeholder?: string
+  className?: string
+  value: string
+  isEditing: boolean
+  inputRef: React.MutableRefObject<HTMLTextAreaElement | undefined>
+  onApply: (value: string) => void
+  onChange: (value: string) => void
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void
+  /**
+   * onKeyDown should return a "shouldContinue" boolean
+   * If it's false the handler will stop running and won't rename
+   *
+   * This could be replaced by a simple "renameOnEnter" flag but this allows
+   * more flexibility that might be useful
+   */
+  onKeyDown?: (event: React.KeyboardEvent<HTMLTextAreaElement>) => boolean
 }
 
-/**
- * To style individual states use these classes:
- *
- * - EditableText_static - for the static display state
- * - EditableText_editable - for the editable state
- *
- * TODO: make it easier to style the editable and static states separately
- * maybe use a hook that will return the static and editable components along with the isRenaming state
- */
-export const EditableText = forwardRef<HTMLTextAreaElement, EditableTextProps>(
-  (props, ref) => {
-    const {
-      placeholder = "Untitled",
-      value,
-      isRenaming,
-      staticValue,
-      className,
-      onChange,
-      onRename,
-      onKeyDown = () => true,
-      onClick,
-    } = props
+export const useEditableText = (
+  outsideValue: string,
+  onRename: (value: string) => void
+) => {
+  const [isRenaming, setIsRenaming] = useState(false)
+  const inputRef = useRef<HTMLTextAreaElement>()
+  const [value, setValue] = useState(outsideValue)
 
-    const innerOnKeyDown = (
-      event: React.KeyboardEvent<HTMLTextAreaElement>
-    ) => {
-      if (!isRenaming) {
-        return false
-      } else {
-        return onKeyDown(event)
-      }
-    }
-
-    return (
-      <Container className={className}>
-        {isRenaming ? (
-          <Editable
-            ref={ref || undefined}
-            placeholder={placeholder}
-            value={value}
-            onChange={onChange}
-            onKeyDown={innerOnKeyDown}
-            onRename={onRename}
-            className="EditableText_editable"
-          />
-        ) : (
-          <Static onClick={onClick} className="EditableText_static">
-            {staticValue}
-          </Static>
-        )}
-      </Container>
-    )
+  const startRenaming = () => {
+    setValue(outsideValue)
+    setIsRenaming(true)
   }
-)
+
+  const stopRenaming = () => {
+    setIsRenaming(false)
+  }
+
+  const onApply = (value: string) => {
+    if (!isRenaming) return
+    stopRenaming()
+    onRename(value)
+  }
+
+  // useEffect(() => {
+  //   if (!isRenaming) {
+  //     setTitleValue(outsideValue)
+  //   }
+  // }, [document.title, isRenaming])
+
+  useEffect(() => {
+    // Focus and select the input
+    if (isRenaming && inputRef?.current) {
+      inputRef.current.focus()
+      inputRef.current.setSelectionRange(0, inputRef.current.value.length)
+    }
+  }, [isRenaming])
+
+  return {
+    isRenaming,
+    startRenaming,
+    stopRenaming,
+    getProps: () => ({
+      value,
+      inputRef,
+      isEditing: isRenaming,
+      onChange: setValue,
+      onApply,
+    }),
+  }
+}
+
+export const EditableText: React.FC<EditableTextProps> = ({
+  value,
+  inputRef,
+  isEditing,
+  placeholder = "Untitled",
+  children,
+  className,
+  onKeyDown = () => true,
+  onClick,
+  onChange,
+  onApply,
+}) => {
+  const innerOnKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!isEditing) {
+      return false
+    } else {
+      return onKeyDown(event)
+    }
+  }
+
+  const handleChange = (newValue: string) => {
+    onChange(newValue)
+  }
+
+  return (
+    <Container className={className}>
+      {isEditing ? (
+        <StyledNamingInput
+          // TODO: resolve this type issue
+          ref={inputRef}
+          placeholder={placeholder}
+          value={value}
+          onChange={handleChange}
+          onKeyDown={innerOnKeyDown}
+          onRename={onApply}
+          className="EditableText_editable"
+        />
+      ) : (
+        <Static onClick={onClick} className="EditableText_static">
+          {children}
+        </Static>
+      )}
+    </Container>
+  )
+}
 
 const Container = styled.div`
   overflow: hidden;
@@ -81,7 +136,7 @@ const Static = styled.div`
   font: inherit;
 `
 
-const Editable = styled(NamingInput)`
+const StyledNamingInput = styled(NamingInput)`
   color: #fbfbfb;
   font-family: "Segoe UI", "Open sans", "sans-serif";
   font-size: 12px;
