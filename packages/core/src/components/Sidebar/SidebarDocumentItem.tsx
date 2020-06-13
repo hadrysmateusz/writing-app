@@ -147,7 +147,7 @@ const SidebarDocumentItem: React.FC<{
             onClick={handleToggleDocumentFavorite}
             disabled={isLoadingFavorite}
           >
-            {document.isFavorite ? "Remove from favorites" : "Set as favorite"}
+            {document.isFavorite ? "Remove from favorites" : "Add to favorites"}
           </ContextMenuItem>
           <ContextMenuItem onClick={removeDocument}>Delete</ContextMenuItem>
           <ContextSubmenu text="Move to">
