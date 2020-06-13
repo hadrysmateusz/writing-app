@@ -10,6 +10,7 @@ import {
 import { DocumentDoc } from "../Database"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useMainState } from "../MainStateProvider"
+import { formatOptional } from "../../utils"
 
 const SNIPPET_LENGTH = 80
 
@@ -39,9 +40,9 @@ const SidebarDocumentItem: React.FC<{
     return document.id === currentDocument.id
   }, [currentDocument, document.id])
 
-  const title = useMemo(() => {
-    return document.title.trim() === "" ? "Untitled" : document.title
-  }, [document.title])
+  const title = useMemo(() => formatOptional(document.title, "Untitled"), [
+    document.title,
+  ])
 
   const snippet = useMemo(() => {
     // TODO: replace with a better solution that simply limits the text to some number of lines (probably with css)
@@ -156,7 +157,7 @@ const SidebarDocumentItem: React.FC<{
                 key={group.id}
                 onClick={() => moveToGroup(group.id)}
               >
-                {group.name.trim() === "" ? "Unnamed Collection" : group.name}
+                {formatOptional(group.name, "Unnamed Collection")}
               </ContextMenuItem>
             ))}
           </ContextSubmenu>

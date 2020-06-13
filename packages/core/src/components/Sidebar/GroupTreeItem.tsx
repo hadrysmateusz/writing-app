@@ -6,6 +6,7 @@ import { useContextMenu, ContextMenuItem } from "../ContextMenu2"
 import { useMainState } from "../MainStateProvider"
 import { useViewState } from "../ViewStateProvider"
 import { useEditableText, EditableText } from "../RenamingInput"
+import { formatOptional } from "../../utils"
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
@@ -27,9 +28,10 @@ const GroupTreeItem: React.FC<{
     primarySidebar.switchView(group.id)
   }
 
-  const groupName = useMemo(() => {
-    return group.name.trim() === "" ? "Unnamed Collection" : group.name
-  }, [group.name])
+  const groupName = useMemo(
+    () => formatOptional(group.name, "Unnamed Collection"),
+    [group.name]
+  )
 
   const { startRenaming, getProps } = useEditableText(
     groupName,

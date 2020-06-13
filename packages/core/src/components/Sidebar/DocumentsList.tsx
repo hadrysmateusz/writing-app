@@ -10,6 +10,7 @@ import createGroupTree, {
   findChildGroups,
   GroupTreeBranch,
 } from "../../helpers/createGroupTree"
+import { formatOptional } from "../../utils"
 
 /**
  * Base presentational component
@@ -123,7 +124,7 @@ export const DocumentsGroupList: React.FC<{
     <div>Loading...</div>
   ) : (
     <DocumentsList
-      title={group.name.trim() === "" ? "Unnamed Collection" : group.name}
+      title={formatOptional(group.name, "Unnamed Collection")}
       documents={documents}
     />
   )

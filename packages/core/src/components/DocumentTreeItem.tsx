@@ -5,6 +5,7 @@ import { DocumentDoc } from "./Database"
 import { useEditableText, EditableText } from "./RenamingInput"
 import { useMainState } from "./MainStateProvider"
 import TreeItem from "./TreeItem"
+import { formatOptional } from "../utils"
 
 const DocumentTreeItem: React.FC<{
   document: DocumentDoc
@@ -41,9 +42,9 @@ const DocumentTreeItem: React.FC<{
     setIsLoadingFavorite(false)
   }, [closeMenu, document.id, toggleDocumentFavorite])
 
-  const title = useMemo(() => {
-    return document.title.trim() === "" ? "Untitled" : document.title
-  }, [document.title])
+  const title = useMemo(() => formatOptional(document.title, "Untitled"), [
+    document.title,
+  ])
 
   const isCurrent = useMemo(() => {
     // TODO: something doesn't work here
@@ -118,8 +119,7 @@ const DocumentTreeItem: React.FC<{
                 key={group.id}
                 onClick={() => moveToGroup(group.id)}
               >
-                {group.name.trim() === "" ? "Unnamed Collection" : group.name}
-                {/* {formatOptional(group.name, "Unnamed Collection")} */}
+                {formatOptional(group.name, "Unnamed Collection")}
               </ContextMenuItem>
             ))}
           </ContextSubmenu>
