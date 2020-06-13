@@ -7,7 +7,18 @@ import usePortal from "react-useportal"
 import { useOnClickOutside } from "../hooks/useOnClickOutside"
 import Icon from "./Icon"
 
-export const useContextMenu = () => {
+// TODO: use ellipsis to hide overflow without hiding submenus (possible solutions include: portals, wrapper component for the static text)
+export const useContextMenu = ({
+  onBeforeOpen,
+  onAfterOpen,
+  onBeforeClose,
+  onAfterClose,
+}: {
+  onBeforeOpen?: () => void
+  onAfterOpen?: () => void
+  onBeforeClose?: () => void
+  onAfterClose?: () => void
+} = {}) => {
   // TODO: capture focus inside the context menu and restore it when it closes
   // TODO: maybe - replace the usePortal hook for more control (try using a single designated root DOM node instead of creating millions of empty divs)
   const { openPortal, closePortal, isOpen, Portal } = usePortal()
@@ -19,16 +30,21 @@ export const useContextMenu = () => {
     (event: React.MouseEvent) => {
       event.preventDefault()
       // TODO: make sure the context menu doesn't go outside the window
+      onBeforeOpen && onBeforeOpen()
+
       setX(event.pageX)
       setY(event.pageY)
       openPortal(event)
+      onAfterOpen && onAfterOpen()
     },
-    [openPortal]
+    [onAfterOpen, onBeforeOpen, openPortal]
   )
 
-  const closeMenu = useCallback(() => {
+  const closeMenu = () => {
+    onBeforeClose && onBeforeClose()
     closePortal()
-  }, [closePortal])
+    onAfterClose && onAfterClose()
+  }
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     /* Stops click events inside the context menu from propagating down the DOM tree 
