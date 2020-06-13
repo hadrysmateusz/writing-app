@@ -24,6 +24,7 @@ import {
   UpdateCurrentDocumentFn,
   SwitchDocumentFn,
   NewGroupFn,
+  RenameGroupFn,
 } from "./types"
 
 declare global {
@@ -42,6 +43,7 @@ export type MainState = {
   switchDocument: SwitchDocumentFn
   newDocument: NewDocumentFn
   newGroup: NewGroupFn
+  renameGroup: RenameGroupFn
 }
 
 const MainStateContext = createContext<MainState | null>(null)
@@ -137,17 +139,15 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       throw new Error(`no document found matching this id (${documentId})`)
     }
 
-    const newTitle = title.trim()
-
-    const updatedDocument = await original.update({
+    const updated = await original.update({
       $set: {
-        title: newTitle,
+        title: title.trim(),
       },
     })
 
     // TODO: error handling
 
-    return updatedDocument
+    return updated as DocumentDoc
   }
 
   /**
@@ -194,6 +194,27 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
     },
     [db.groups]
   )
+
+  /**
+   * Rename group by id
+   */
+  const renameGroup = async (groupId: string, name: string) => {
+    const original = await db.groups.findOne().where("id").eq(groupId).exec()
+
+    if (original === null) {
+      throw new Error(`no group found matching this id (${groupId})`)
+    }
+
+    const updated = await original.update({
+      $set: {
+        name: name.trim(),
+      },
+    })
+
+    // TODO: error handling
+
+    return updated as GroupDoc
+  }
 
   /**
    * Handles deleting groups and its children
@@ -361,6 +382,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         saveDocument,
         renameDocument,
         newGroup,
+        renameGroup,
       }}
     >
       {children}

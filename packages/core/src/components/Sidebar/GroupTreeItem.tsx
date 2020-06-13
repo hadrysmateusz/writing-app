@@ -1,17 +1,18 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useCallback } from "react"
 
 import ExpandableTreeItem from "../ExpandableTreeItem"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
 import { useMainState } from "../MainStateProvider"
 import { useViewState } from "../ViewStateProvider"
+import { useEditableText, EditableText } from "../RenamingInput"
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
   depth?: number
 }> = ({ group, depth }) => {
-  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const { newGroup, newDocument } = useMainState()
+  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { newGroup, renameGroup, newDocument } = useMainState()
   const { primarySidebar } = useViewState()
 
   const handleNewDocument = () => {
@@ -30,6 +31,18 @@ const GroupTreeItem: React.FC<{
     return group.name.trim() === "" ? "Unnamed Collection" : group.name
   }, [group.name])
 
+  const { startRenaming, getProps } = useEditableText(
+    groupName,
+    (value: string) => {
+      renameGroup(group.id, value)
+    }
+  )
+
+  const handleRenameDocument = useCallback(() => {
+    closeMenu()
+    startRenaming()
+  }, [closeMenu, startRenaming])
+
   return (
     <>
       <ExpandableTreeItem
@@ -41,10 +54,13 @@ const GroupTreeItem: React.FC<{
           <GroupTreeItem group={subgroup} />
         ))}
       >
-        {groupName}
+        <EditableText {...getProps()}>{groupName}</EditableText>
       </ExpandableTreeItem>
       {isMenuOpen && (
         <ContextMenu>
+          <ContextMenuItem onClick={handleRenameDocument}>
+            Rename
+          </ContextMenuItem>
           <ContextMenuItem onClick={handleNewDocument}>
             New Document
           </ContextMenuItem>
