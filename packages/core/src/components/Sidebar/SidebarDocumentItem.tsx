@@ -12,7 +12,6 @@ const SNIPPET_LENGTH = 80
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
 }> = ({ document }) => {
-  console.log(document)
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const { startRenaming, getProps } = useEditableText(
     document.title,
@@ -29,6 +28,7 @@ const SidebarDocumentItem: React.FC<{
   } = useMainState()
 
   const isCurrent = useMemo(() => {
+    // TODO: something doesn't work here
     if (currentDocument === null) return false
     return document.id === currentDocument.id
   }, [currentDocument, document.id])
@@ -106,8 +106,8 @@ const SidebarDocumentItem: React.FC<{
   }, [closeMenu, startRenaming])
 
   return (
-    <Container isCurrent={isCurrent} onContextMenu={openMenu}>
-      <MainContainer onClick={handleClick}>
+    <Container onContextMenu={openMenu}>
+      <MainContainer onClick={handleClick} isCurrent={isCurrent}>
         {/* <Meta>{groupName}</Meta> */}
         <Title>
           <EditableText {...getProps()}>{title}</EditableText>
@@ -171,8 +171,7 @@ const Snippet = styled.div`
   line-clamp: 2;
 `
 
-const Container = styled.div<{ isCurrent: boolean }>`
-  ${(p) => p.isCurrent && `font-weight: bold;`}
+const Container = styled.div`
   width: 100%;
 
   :hover ${DeleteButton} {
@@ -180,7 +179,7 @@ const Container = styled.div<{ isCurrent: boolean }>`
   }
 `
 
-const MainContainer = styled.div`
+const MainContainer = styled.div<{ isCurrent: boolean }>`
   max-width: 100%;
   overflow: hidden;
   min-width: 0;
@@ -190,6 +189,8 @@ const MainContainer = styled.div`
   cursor: pointer;
 
   animation: background-color 200ms ease;
+
+  ${(p) => p.isCurrent && "background-color: #252525;"}
 
   :hover {
     background-color: #252525;
