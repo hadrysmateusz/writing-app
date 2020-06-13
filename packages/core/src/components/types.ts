@@ -17,6 +17,10 @@ export type MoveDocumentToGroupFn = (
   title: string
 ) => Promise<DocumentDoc>
 
+export type ToggleDocumentFavoriteFn = (
+  documentId: string
+) => Promise<DocumentDoc>
+
 export type UpdateCurrentDocumentFn = (
   newValues: Partial<DocumentDocType>
 ) => Promise<DocumentDocType>

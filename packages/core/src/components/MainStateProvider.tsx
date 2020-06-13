@@ -25,6 +25,7 @@ import {
   NewGroupFn,
   RenameGroupFn,
   MoveDocumentToGroupFn,
+  ToggleDocumentFavoriteFn,
 } from "./types"
 
 declare global {
@@ -34,10 +35,12 @@ declare global {
 }
 
 export type MainState = {
-  documents: DocumentDoc[]
-  groups: GroupDoc[]
-  currentDocument: DocumentDoc | null
   isLoading: boolean
+  groups: GroupDoc[]
+  documents: DocumentDoc[]
+  favorites: DocumentDoc[]
+  currentDocument: DocumentDoc | null
+  toggleDocumentFavorite: ToggleDocumentFavoriteFn
   saveDocument: SaveDocumentFn
   renameDocument: RenameDocumentFn
   moveDocumentToGroup: MoveDocumentToGroupFn
@@ -66,9 +69,9 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
     setIsModified,
   } = useEditorState()
 
-  const [documents, setDocuments] = useState<DocumentDoc[]>([])
-  // TODO: rename to groupTree to avoid confusion (And also probably move it elsewhere)
   const [groups, setGroups] = useState<GroupDoc[]>([])
+  const [documents, setDocuments] = useState<DocumentDoc[]>([])
+  const [favorites, setFavorites] = useState<DocumentDoc[]>([])
   const [currentEditor, setCurrentEditor] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isInitialLoad, setIsInitialLoad] = useState(true) // Flag to manage whether this is the first time documents are loaded
@@ -178,6 +181,30 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   }
 
   /**
+   * Rename document by id
+   */
+  const toggleDocumentFavorite: ToggleDocumentFavoriteFn = async (
+    documentId: string
+  ) => {
+    // TODO: replace with a db query (to avoid some potential issues and edge-cases)
+    const original = documents.find((doc) => doc.id === documentId)
+
+    if (original === undefined) {
+      throw new Error(`no document found matching this id (${documentId})`)
+    }
+
+    const updated = await original.update({
+      $set: {
+        isFavorite: !original.isFavorite,
+      },
+    })
+
+    // TODO: error handling
+
+    return updated as DocumentDoc
+  }
+
+  /**
    * Handles creating a new document
    */
   const newDocument: NewDocumentFn = useCallback(
@@ -193,6 +220,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         parentGroup: parentGroup,
         createdAt: timestamp,
         modifiedAt: timestamp,
+        isFavorite: false,
       })
 
       if (shouldSwitch) {
@@ -264,6 +292,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   useEffect(() => {
     let documentsSub: Subscription | undefined
     let groupsSub: Subscription | undefined
+    let favoritesSub: Subscription | undefined
 
     const setup = async () => {
       const updateDocumentsList = (documents: DocumentDoc[]) => {
@@ -286,6 +315,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       }
 
       const documentsQuery = db.documents.find()
+      const favoritesQuery = db.documents.find().where("isFavorite").eq(true)
       const groupsQuery = db.groups.find()
 
       // perform first-time setup
@@ -293,14 +323,17 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       if (isInitialLoad) {
         const documentsPromise = documentsQuery.exec()
         const groupsPromise = groupsQuery.exec()
+        const favoritesPromise = favoritesQuery.exec()
 
-        const [newGroups, newDocuments] = await Promise.all([
+        const [newGroups, newDocuments, newFavorites] = await Promise.all([
           groupsPromise,
           documentsPromise,
+          favoritesPromise,
         ])
 
         setIsInitialLoad(false)
         setGroups(newGroups)
+        setFavorites(newFavorites)
         updateDocumentsList(newDocuments)
         setIsLoading(false)
       }
@@ -314,6 +347,10 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       groupsSub = groupsQuery.$.subscribe((newGroups) => {
         setGroups(newGroups)
       })
+
+      favoritesSub = favoritesQuery.$.subscribe((newFavorites) => {
+        setFavorites(newFavorites)
+      })
     }
 
     setup()
@@ -324,6 +361,9 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       }
       if (groupsSub) {
         groupsSub.unsubscribe()
+      }
+      if (favoritesSub) {
+        favoritesSub.unsubscribe()
       }
     }
   }, [db.documents, db.groups, isInitialLoad])
@@ -397,8 +437,10 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       value={{
         currentDocument,
         groups,
+        favorites,
         documents,
         isLoading,
+        toggleDocumentFavorite,
         switchDocument,
         newDocument,
         saveDocument,

@@ -1,13 +1,13 @@
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback, useMemo, useState } from "react"
 import styled from "styled-components/macro"
 import { Node } from "slate"
 
-import { DocumentDoc } from "../Database"
 import {
   useContextMenu,
   ContextMenuItem,
   ContextSubmenu,
 } from "../ContextMenu2"
+import { DocumentDoc } from "../Database"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useMainState } from "../MainStateProvider"
 
@@ -16,6 +16,7 @@ const SNIPPET_LENGTH = 80
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
 }> = ({ document }) => {
+  const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const {
     groups,
@@ -23,6 +24,7 @@ const SidebarDocumentItem: React.FC<{
     switchDocument,
     renameDocument,
     moveDocumentToGroup,
+    toggleDocumentFavorite,
   } = useMainState()
   const { startRenaming, getProps } = useEditableText(
     document.title,
@@ -109,6 +111,14 @@ const SidebarDocumentItem: React.FC<{
     startRenaming()
   }, [closeMenu, startRenaming])
 
+  const handleToggleDocumentFavorite = useCallback(async () => {
+    closeMenu()
+    setIsLoadingFavorite(true)
+    console.log("favoriting")
+    await toggleDocumentFavorite(document.id)
+    setIsLoadingFavorite(false)
+  }, [closeMenu, document.id, toggleDocumentFavorite])
+
   const moveToGroup = useCallback(
     (groupId: string) => {
       // TODO: consider adding a way to move it to root
@@ -132,6 +142,12 @@ const SidebarDocumentItem: React.FC<{
         <ContextMenu>
           <ContextMenuItem onClick={handleRenameDocument}>
             Rename
+          </ContextMenuItem>
+          <ContextMenuItem
+            onClick={handleToggleDocumentFavorite}
+            disabled={isLoadingFavorite}
+          >
+            {document.isFavorite ? "Remove from favorites" : "Set as favorite"}
           </ContextMenuItem>
           <ContextMenuItem onClick={removeDocument}>Delete</ContextMenuItem>
           <ContextSubmenu text="Move to">
