@@ -11,10 +11,6 @@ export const PrimarySidebar: React.FC<{}> = () => {
   const { newDocument } = useMainState()
   const { primarySidebar } = useViewState()
 
-  const handleCreateDocument = async () => {
-    newDocument(true, null)
-  }
-
   const render = () => {
     switch (primarySidebar.currentView) {
       case VIEWS.ALL: {
@@ -22,7 +18,9 @@ export const PrimarySidebar: React.FC<{}> = () => {
           <div>
             <AllDocumentsList />
             <div>
-              <NewButton onClick={handleCreateDocument}>+ Create New</NewButton>
+              <NewButton onClick={() => newDocument(true, null)}>
+                + Create New
+              </NewButton>
             </div>
           </div>
         )
@@ -33,7 +31,11 @@ export const PrimarySidebar: React.FC<{}> = () => {
           <div>
             <DocumentsGroupList groupId={primarySidebar.currentView} />
             <div>
-              <NewButton onClick={handleCreateDocument}>+ Create New</NewButton>
+              <NewButton
+                onClick={() => newDocument(true, primarySidebar.currentView)}
+              >
+                + Create New
+              </NewButton>
             </div>
           </div>
         )
