@@ -50,11 +50,17 @@ const OuterContainer = styled.div<{ depth: number }>`
   align-items: center;
   cursor: pointer;
   user-select: none;
+
+  .EditableText_editable {
+    border: 1px solid #41474d;
+    border-radius: 3px;
+    padding: 3px 5px;
+  }
 `
 
 const InnerContainer = styled.div<{ isSpecial: boolean }>`
   font-family: "Segoe UI"; /* TODO: create global font-stacks */
-  width: 100%;
+  width: calc(100% - 20px); /* to respect right-side padding */
   font-size: 12px;
   color: ${(p) => (p.isSpecial ? "#f2f2f2" : "#f0f0f0")};
   font-weight: ${(p) => (p.isSpecial ? "bold" : "normal")};
