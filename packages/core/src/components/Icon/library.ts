@@ -10,6 +10,8 @@ import {
   FaListOl,
   FaListUl,
   FaPlus,
+  FaStar,
+  FaRegStar,
 } from "react-icons/fa"
 import { AiFillCloud } from "react-icons/ai"
 import { BsCaretRightFill, BsCaretDownFill } from "react-icons/bs"
@@ -50,6 +52,8 @@ const iconLibrary = {
   cloud: AiFillCloud,
   caretRight: BsCaretRightFill,
   caretDown: BsCaretDownFill,
+  starFilled: FaStar,
+  starOutline: FaRegStar,
 }
 
 export default iconLibrary
