@@ -53,7 +53,7 @@ const GroupTreeItem: React.FC<{
         onContextMenu={openMenu}
         onClick={handleClick}
         childNodes={group.children.map((subgroup) => (
-          <GroupTreeItem group={subgroup} />
+          <GroupTreeItem key={subgroup.id} group={subgroup} />
         ))}
       >
         <EditableText {...getProps()}>{groupName}</EditableText>
