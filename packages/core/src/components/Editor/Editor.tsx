@@ -7,7 +7,7 @@ import isHotkey from "is-hotkey"
 import { cloneDeep } from "lodash"
 
 import { plugins } from "../../pluginsList"
-import { Toolbar } from "../Toolbar"
+// import { Toolbar } from "../Toolbar"
 import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
 import { DocumentDoc } from "../Database"
@@ -125,7 +125,7 @@ const EditorComponent: React.FC<{
     <OuterContainer>
       <InnerContainer>
         <HoveringToolbar />
-        <Toolbar />
+        {/* <Toolbar /> */}
         <StyledNamingInput
           ref={titleRef}
           value={title}
