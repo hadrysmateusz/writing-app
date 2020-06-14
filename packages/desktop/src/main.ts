@@ -11,10 +11,10 @@ const START_URL = IS_DEV
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1800,
-    height: 1100,
+    width: 1850,
+    height: 1150,
     minWidth: 980,
-    backgroundColor: "#24292E",
+    backgroundColor: "#1e1e1e",
     webPreferences: {
       nodeIntegration: false,
       preload: __dirname + "/preload.js",
