@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 export const OuterContainer = styled.div`
   overflow-y: auto;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   font-size: 20px;
   box-sizing: content-box;
 `

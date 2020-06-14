@@ -47,7 +47,8 @@ export const PrimarySidebar: React.FC<{}> = () => {
 }
 
 const OuterContainer = styled.div`
-  height: 100vh;
+  min-height: 0;
+  height: 100%;
   border-right: 1px solid;
   border-color: #363636;
   background-color: #1e1e1e;
@@ -55,7 +56,8 @@ const OuterContainer = styled.div`
 `
 
 const Container = styled.div`
-  height: 100vh;
+  min-height: 0;
+  height: 100%;
   display: grid;
   grid-template-rows: 1fr min-content;
 `
