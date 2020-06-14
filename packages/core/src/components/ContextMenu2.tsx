@@ -134,9 +134,10 @@ const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
   /* Visual styles */
   background: #383838;
   border: 1px solid #1b1f23;
+  border-radius: 3px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
   padding: 6px 0;
-  min-width: 160px;
+  width: 200px;
 `
 
 export const ContextMenuSeparator = styled.div`
