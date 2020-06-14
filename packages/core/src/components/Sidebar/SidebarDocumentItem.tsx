@@ -1,38 +1,25 @@
-import React, { useCallback, useMemo, useState } from "react"
+import React, { useCallback, useMemo } from "react"
 import styled from "styled-components/macro"
 import { Node } from "slate"
 
-import {
-  useContextMenu,
-  ContextMenuItem,
-  ContextSubmenu,
-} from "../ContextMenu2"
 import { DocumentDoc } from "../Database"
-import { useEditableText, EditableText } from "../RenamingInput"
+import { EditableText } from "../RenamingInput"
 import { useMainState } from "../MainStateProvider"
 import { formatOptional } from "../../utils"
+import { useDocumentContextMenu } from "../DocumentContextMenu"
 
 const SNIPPET_LENGTH = 80
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
 }> = ({ document }) => {
-  const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const {
-    groups,
-    currentDocument,
-    switchDocument,
-    renameDocument,
-    moveDocumentToGroup,
-    toggleDocumentFavorite,
-  } = useMainState()
-  const { startRenaming, getProps } = useEditableText(
-    document.title,
-    (value: string) => {
-      renameDocument(document.id, value)
-    }
-  )
+    openMenu,
+    isMenuOpen,
+    DocumentContextMenu,
+    getEditableProps,
+  } = useDocumentContextMenu(document)
+  const { groups, currentDocument, switchDocument } = useMainState()
 
   const isCurrent = useMemo(() => {
     // TODO: something doesn't work here
@@ -72,11 +59,6 @@ const SidebarDocumentItem: React.FC<{
     return textContent.slice(0, SNIPPET_LENGTH)
   }, [document.content])
 
-  const modifiedAt = useMemo(() => {
-    // TODO: replace with proper representation (using moment.js)
-    return new Date(Number(document.createdAt) * 1000).toLocaleString()
-  }, [document.createdAt])
-
   const groupName = useMemo(() => {
     if (document.parentGroup === null) {
       // TODO: better handle documents at the root of the tree
@@ -92,13 +74,6 @@ const SidebarDocumentItem: React.FC<{
     return group.name
   }, [document.parentGroup, groups])
 
-  const removeDocument = useCallback(() => {
-    document.remove()
-    if (isCurrent) {
-      switchDocument(null)
-    }
-  }, [document, isCurrent, switchDocument])
-
   const openDocument = useCallback(() => {
     switchDocument(document.id)
   }, [document.id, switchDocument])
@@ -107,62 +82,17 @@ const SidebarDocumentItem: React.FC<{
     openDocument()
   }, [openDocument])
 
-  const handleRenameDocument = useCallback(() => {
-    closeMenu()
-    startRenaming()
-  }, [closeMenu, startRenaming])
-
-  const handleToggleDocumentFavorite = useCallback(async () => {
-    closeMenu()
-    setIsLoadingFavorite(true)
-    console.log("favoriting")
-    await toggleDocumentFavorite(document.id)
-    setIsLoadingFavorite(false)
-  }, [closeMenu, document.id, toggleDocumentFavorite])
-
-  const moveToGroup = useCallback(
-    (groupId: string) => {
-      // TODO: consider adding a way to move it to root
-      moveDocumentToGroup(document.id, groupId)
-    },
-    [document.id, moveDocumentToGroup]
-  )
-
   return (
     <Container onContextMenu={openMenu}>
       <MainContainer onClick={handleClick} isCurrent={isCurrent}>
         <Meta>{groupName}</Meta>
         <Title>
-          <EditableText {...getProps()}>{title}</EditableText>
+          <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>
         <Snippet>{snippet}</Snippet>
-        <Meta>{modifiedAt}</Meta>
       </MainContainer>
 
-      {isMenuOpen && (
-        <ContextMenu>
-          <ContextMenuItem onClick={handleRenameDocument}>
-            Rename
-          </ContextMenuItem>
-          <ContextMenuItem
-            onClick={handleToggleDocumentFavorite}
-            disabled={isLoadingFavorite}
-          >
-            {document.isFavorite ? "Remove from favorites" : "Add to favorites"}
-          </ContextMenuItem>
-          <ContextMenuItem onClick={removeDocument}>Delete</ContextMenuItem>
-          <ContextSubmenu text="Move to">
-            {groups.map((group) => (
-              <ContextMenuItem
-                key={group.id}
-                onClick={() => moveToGroup(group.id)}
-              >
-                {formatOptional(group.name, "Unnamed Collection")}
-              </ContextMenuItem>
-            ))}
-          </ContextSubmenu>
-        </ContextMenu>
-      )}
+      {isMenuOpen && <DocumentContextMenu />}
     </Container>
   )
 }
