@@ -85,11 +85,11 @@ const SidebarDocumentItem: React.FC<{
   return (
     <Container onContextMenu={openMenu}>
       <MainContainer onClick={handleClick} isCurrent={isCurrent}>
-        <Meta>{groupName}</Meta>
+        <Group>{groupName}</Group>
         <Title>
           <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>
-        <Snippet>{snippet}</Snippet>
+        {snippet.trim().length > 0 && <Snippet>{snippet}</Snippet>}
       </MainContainer>
 
       {isMenuOpen && <DocumentContextMenu />}
@@ -110,8 +110,10 @@ const DeleteButton = styled.div`
   }
 `
 
-const Meta = styled.div`
-  font-size: 11px;
+const Group = styled.div`
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 500;
   color: #717171;
   white-space: nowrap;
   overflow: hidden;
