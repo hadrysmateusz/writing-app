@@ -15,8 +15,9 @@ import { useMainState } from "../MainStateProvider"
 
 import {
   EditableContainer,
-  Container,
+  OuterContainer,
   InsertBlockField,
+  InnerContainer,
 } from "./styledComponents"
 
 /**
@@ -121,26 +122,28 @@ const EditorComponent: React.FC<{
   }
 
   return (
-    <Container>
-      <HoveringToolbar />
-      <Toolbar />
-      <StyledNamingInput
-        ref={titleRef}
-        value={title}
-        onChange={handleTitleChange}
-        onKeyDown={handleTitleKeydown}
-        onRename={handleRename}
-      />
-      <EditableContainer onBlur={handleContentBlur}>
-        <Editable
-          plugins={plugins}
-          onKeyDown={[handleSaveDocument]}
-          spellCheck={false}
+    <OuterContainer>
+      <InnerContainer>
+        <HoveringToolbar />
+        <Toolbar />
+        <StyledNamingInput
+          ref={titleRef}
+          value={title}
+          onChange={handleTitleChange}
+          onKeyDown={handleTitleKeydown}
+          onRename={handleRename}
         />
-        {/* TODO: double-clicking this area moves the selection to the start of the document */}
-        <InsertBlockField onClick={() => insertEmptyBlock()} />
-      </EditableContainer>
-    </Container>
+        <EditableContainer onBlur={handleContentBlur}>
+          <Editable
+            plugins={plugins}
+            onKeyDown={[handleSaveDocument]}
+            spellCheck={false}
+          />
+          {/* TODO: double-clicking this area moves the selection to the start of the document */}
+          <InsertBlockField onClick={() => insertEmptyBlock()} />
+        </EditableContainer>
+      </InnerContainer>
+    </OuterContainer>
   )
 }
 

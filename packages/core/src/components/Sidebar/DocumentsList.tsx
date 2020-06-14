@@ -23,14 +23,14 @@ export const DocumentsList: React.FC<{
   documents: DocumentDoc[]
 }> = ({ title, documents }) => {
   return (
-    <div>
+    <>
       <SectionHeader>
         <span>{" " + title}</span>
       </SectionHeader>
       {documents.map((document) => (
         <SidebarDocumentItem key={document.id} document={document} />
       ))}
-    </div>
+    </>
   )
 }
 

@@ -72,6 +72,7 @@ const OuterContainer = styled.div`
   border-right: 1px solid;
   border-color: #383838;
   background-color: #171717;
+  height: 100vh;
 `
 
 const SectionHeader = styled.div`

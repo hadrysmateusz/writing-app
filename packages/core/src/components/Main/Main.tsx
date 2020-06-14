@@ -26,33 +26,41 @@ const Main = () => {
   const error = null // TODO: actual error handling
 
   return (
-    <InnerContainer>
+    <OuterContainer>
       {isLoading
         ? "Loading..."
         : error ?? (
             <>
               {navigatorSidebar && <NavigatorSidebar />}
-              {primarySidebar && <PrimarySidebar />}
-              {currentDocument && (
-                <EditorComponent
-                  key={currentDocument.id} // Necessary to reload the component on id change
-                  currentDocument={currentDocument}
-                />
-              )}
+              <InnerContainer>
+                {primarySidebar && <PrimarySidebar />}
+                {currentDocument && (
+                  <EditorComponent
+                    key={currentDocument.id} // Necessary to reload the component on id change
+                    currentDocument={currentDocument}
+                  />
+                )}
+              </InnerContainer>
             </>
           )}
-    </InnerContainer>
+    </OuterContainer>
   )
 }
 
-const InnerContainer = styled.div`
+const OuterContainer = styled.div`
   display: grid;
-  grid-template-columns: 200px 280px 1fr;
+  grid-template-columns: 200px 1fr;
   width: 100vw;
   height: 100vh; /* TODO: this needs to be improved */
   background-color: #1e1e1e;
   color: white;
   font-family: "Segoe UI", "Open sans", "sans-serif";
+`
+
+const InnerContainer = styled.div`
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
 `
 
 export default Main

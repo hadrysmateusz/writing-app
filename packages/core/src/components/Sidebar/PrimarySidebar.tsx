@@ -15,29 +15,29 @@ export const PrimarySidebar: React.FC<{}> = () => {
     switch (primarySidebar.currentView) {
       case VIEWS.ALL: {
         return (
-          <div>
-            <AllDocumentsList />
-            <div>
-              <NewButton onClick={() => newDocument(true, null)}>
-                + Create New
-              </NewButton>
-            </div>
-          </div>
+          <Container>
+            <InnerContainer>
+              <AllDocumentsList />
+            </InnerContainer>
+            <NewButton onClick={() => newDocument(true, null)}>
+              + Create New
+            </NewButton>
+          </Container>
         )
       }
       default: {
         // TODO: treat the view as a group id and render a document list for that group
         return (
-          <div>
-            <DocumentsGroupList groupId={primarySidebar.currentView} />
-            <div>
-              <NewButton
-                onClick={() => newDocument(true, primarySidebar.currentView)}
-              >
-                + Create New
-              </NewButton>
-            </div>
-          </div>
+          <Container>
+            <InnerContainer>
+              <DocumentsGroupList groupId={primarySidebar.currentView} />
+            </InnerContainer>
+            <NewButton
+              onClick={() => newDocument(true, primarySidebar.currentView)}
+            >
+              + Create New
+            </NewButton>
+          </Container>
         )
       }
     }
@@ -47,22 +47,30 @@ export const PrimarySidebar: React.FC<{}> = () => {
 }
 
 const OuterContainer = styled.div`
+  height: 100vh;
   border-right: 1px solid;
   border-color: #363636;
   background-color: #1e1e1e;
   position: relative;
 `
+
+const Container = styled.div`
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr min-content;
+`
+
+const InnerContainer = styled.div`
+  overflow-y: auto;
+`
+
 const NewButton = styled.div`
   font-family: poppins;
   font-weight: 500;
   font-size: 13px;
   color: #e4e4e4;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-
+  background: #1e1e1e;
   user-select: none;
-  background: none;
   border-top: 1px solid #363636;
   width: 100%;
   padding: 12px 20px;
