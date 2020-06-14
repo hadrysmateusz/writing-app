@@ -1,7 +1,7 @@
 // This is a version WITH icons - it should be used wherever it doesn't cause issues
 
 import React, { useState, useRef, useCallback } from "react"
-import styled from "styled-components/macro"
+import styled, { css } from "styled-components/macro"
 import usePortal from "react-useportal"
 
 import { useOnClickOutside } from "../hooks/useOnClickOutside"
@@ -126,18 +126,22 @@ const CaretContainer = styled.div`
   padding-top: 2px;
 `
 
-const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
-  /* Base function styles */
-  position: absolute;
-  top: ${(p) => p.yPos}px;
-  left: ${(p) => p.xPos}px;
-  /* Visual styles */
+const menuContainerCommon = css`
   background: #383838;
   border: 1px solid #1b1f23;
   border-radius: 3px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
   padding: 6px 0;
   width: 200px;
+`
+
+const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
+  /* Base function styles */
+  position: absolute;
+  top: ${(p) => p.yPos}px;
+  left: ${(p) => p.xPos}px;
+  /* Visual styles */
+  ${menuContainerCommon}
 `
 
 export const ContextMenuSeparator = styled.div`
@@ -165,21 +169,18 @@ export const SubmenuLabel = styled.div`
   }
 `
 
-// TODO: prevent the box shadow from overlaying the parent container
 export const SubmenuContainer = styled.div`
-  display: none;
+  /* Base styles */
   position: absolute;
   right: calc(-100% - 2px); /* -2px to account for borders */
   top: -7px; /* based on the padding of the the container and border width*/
-  background-color: red;
-  width: 100%;
+  max-height: 322px;
+  overflow-y: auto;
+  /* Toggling logic */
+  display: none;
   ${ContextMenuItemContainer}:hover & {
     display: block;
   }
-  /* reused styles from menu container - TODO: make this DRY */
-  background: #383838;
-  border: 1px solid #1b1f23;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-  padding: 6px 0;
-  min-width: 160px;
+  /* Visual styles */
+  ${menuContainerCommon}
 `

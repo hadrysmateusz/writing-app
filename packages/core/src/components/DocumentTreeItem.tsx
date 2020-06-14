@@ -1,8 +1,7 @@
-import React, { useCallback, useMemo, useState } from "react"
+import React, { useCallback, useMemo } from "react"
 
-import { useContextMenu, ContextMenuItem, ContextSubmenu } from "./ContextMenu2"
 import { DocumentDoc } from "./Database"
-import { useEditableText, EditableText } from "./RenamingInput"
+import { EditableText } from "./RenamingInput"
 import { useMainState } from "./MainStateProvider"
 import TreeItem from "./TreeItem"
 import { formatOptional } from "../utils"
