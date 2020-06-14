@@ -33,11 +33,11 @@ const Main = () => {
         ? "Loading..."
         : error ?? (
             <>
-              {navigatorSidebar && <NavigatorSidebar />}
+              {navigatorSidebar.isOpen && <NavigatorSidebar />}
               <InnerContainerWrapper>
                 <Topbar />
                 <InnerContainer>
-                  {primarySidebar && <PrimarySidebar />}
+                  {primarySidebar.isOpen && <PrimarySidebar />}
                   {currentDocument && (
                     <EditorComponent
                       key={currentDocument.id} // Necessary to reload the component on id change
@@ -75,8 +75,7 @@ const InnerContainerWrapper = styled.div`
 const InnerContainer = styled.div`
   min-height: 0;
   height: 100%;
-  display: grid;
-  grid-template-columns: 280px 1fr;
+  display: flex;
 `
 
 export default Main

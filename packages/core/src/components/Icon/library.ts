@@ -14,7 +14,11 @@ import {
   FaRegStar,
 } from "react-icons/fa"
 import { AiFillCloud } from "react-icons/ai"
-import { BsCaretRightFill, BsCaretDownFill } from "react-icons/bs"
+import {
+  BsCaretRightFill,
+  BsCaretDownFill,
+  BsLayoutSidebar,
+} from "react-icons/bs"
 
 // First-Party icons
 import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
@@ -54,6 +58,7 @@ const iconLibrary = {
   caretDown: BsCaretDownFill,
   starFilled: FaStar,
   starOutline: FaRegStar,
+  sidebarLeft: BsLayoutSidebar,
 }
 
 export default iconLibrary
