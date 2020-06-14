@@ -11,6 +11,7 @@ import { useEditorState } from "../EditorStateProvider"
 import { useMainState } from "../MainStateProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { formatOptional } from "../../utils"
+import { Topbar } from "../Topbar"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
@@ -26,12 +27,6 @@ const Main = () => {
 
   const error = null // TODO: actual error handling
 
-  const title = useMemo(() => {
-    return currentDocument !== null
-      ? formatOptional(currentDocument.title, "Untitled")
-      : "Untitled"
-  }, [currentDocument])
-
   return (
     <OuterContainer>
       {isLoading
@@ -40,7 +35,7 @@ const Main = () => {
             <>
               {navigatorSidebar && <NavigatorSidebar />}
               <InnerContainerWrapper>
-                <Topbar>{title}</Topbar>
+                <Topbar />
                 <InnerContainer>
                   {primarySidebar && <PrimarySidebar />}
                   {currentDocument && (
@@ -82,23 +77,6 @@ const InnerContainer = styled.div`
   height: 100%;
   display: grid;
   grid-template-columns: 280px 1fr;
-`
-
-const Topbar = styled.div`
-  height: var(--topbar-height);
-  width: 100%;
-  padding: 10px 20px;
-  border-bottom: 1px solid #363636;
-
-  font-family: Poppins;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 18px;
-
-  display: flex;
-  align-items: center;
-
-  color: #e4e4e4;
 `
 
 export default Main
