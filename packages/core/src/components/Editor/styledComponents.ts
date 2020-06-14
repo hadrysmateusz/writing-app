@@ -10,8 +10,8 @@ export const OuterContainer = styled.div`
 
 export const InnerContainer = styled.div`
   padding: 0 60px;
-  margin: 80px auto 0;
-  max-width: 680px;
+  margin: 120px auto 0;
+  max-width: 800px;
   width: 100%;
 `
 
