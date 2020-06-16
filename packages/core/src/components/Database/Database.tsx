@@ -3,7 +3,12 @@ import { addRxPlugin, createRxDatabase } from "rxdb"
 import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import { documentSchema, groupSchema } from "./Schema"
-import { MyDatabaseCollections, MyDatabase, DocumentDoc } from "./types"
+import {
+  MyDatabaseCollections,
+  MyDatabase,
+  DocumentDoc,
+  DocumentCollection,
+} from "./types"
 
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) //enable syncing over http
@@ -13,6 +18,20 @@ const collections = [
     name: "documents",
     schema: documentSchema,
     sync: true,
+    statics: {
+      findNotRemoved: function (this: DocumentCollection) {
+        return this.find().where("isDeleted").eq(false)
+      },
+    },
+    methods: {
+      softRemove: function (this: DocumentDoc) {
+        this.update({
+          $set: {
+            isDeleted: true,
+          },
+        })
+      },
+    },
     migrationStrategies: {
       // version 0 => 1
       1: (oldDoc: DocumentDoc) => {
@@ -69,6 +88,57 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       console.log("DatabaseService: creating collections...")
       await Promise.all(collections.map((colData) => db.collection(colData)))
       console.log("DatabaseService: created collections")
+
+      // TODO: this might be a better way to handle soft deletes but is currently impossible to use because the error doesn't get caught and crashes the application
+      // // Hook that intercepts document remove calls and soft-deletes them instead
+      // db.documents.preRemove((_, documentDoc) => {
+      //   /*
+      //   TODO: A way to permanently delete a document might be needed
+      //   A possible solution is to use a flag that if present will prevent this hook for stopping the remove operation - it could be further improved with a custom method on the DocumentDoc that would automatically set the flag and remove it in one go
+      //   */
+      //   documentDoc.update({
+      //     $set: {
+      //       isDeleted: true,
+      //     },
+      //   })
+      //   throw new Error(
+      //     "Stopped document remove operation. Setting soft-delete flag instead."
+      //   )
+      // }, false)
+
+      // Hook to remove nested groups and documents when a group is removed
+      db.groups.preRemove(async (groupData) => {
+        // Because the listeners are filed only after all hooks run, we await on all async actions to avoid de-sync issues
+        // TODO: try moving all promises into a single Promise.all to parallelize for possible performance gains
+
+        // Find all documents that are a direct child of this group
+        const documents = await db.documents
+          .find()
+          .where("parentGroup")
+          .eq(groupData.id)
+          .exec()
+
+        // Remove all children that are the child of this group.
+        await Promise.all(
+          documents.map(async (doc) => {
+            try {
+              doc.softRemove()
+            } catch (error) {
+              console.log(error)
+            }
+          })
+        )
+
+        // Find all groups that are a direct child of this group
+        const groups = await db.groups
+          .find()
+          .where("parentGroup")
+          .eq(groupData.id)
+          .exec()
+
+        // Remove all child groups (which should also trigger the hook to remove all nested docs)
+        await Promise.all(groups.map((doc) => doc.remove()))
+      }, false)
 
       // sync
       console.log("DatabaseService: setting up sync...")

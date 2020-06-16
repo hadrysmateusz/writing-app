@@ -41,6 +41,14 @@ export const NavigatorSidebar: React.FC<{}> = () => {
         All Documents
       </StaticTreeItem>
 
+      <StaticTreeItem
+        onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
+        depth={1}
+        isSpecial
+      >
+        Trash
+      </StaticTreeItem>
+
       <SectionHeader>Favorites</SectionHeader>
 
       {favorites.map((document) => (

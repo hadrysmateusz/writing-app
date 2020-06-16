@@ -33,4 +33,6 @@ export type SwitchDocumentFn = (documentId: string | null) => void
 
 export type NewGroupFn = (parentGroup: string | null) => Promise<GroupDoc>
 
+export type RemoveGroupFn = (groupId: string) => Promise<boolean>
+
 export type RenameGroupFn = (groupId: string, name: string) => Promise<GroupDoc>

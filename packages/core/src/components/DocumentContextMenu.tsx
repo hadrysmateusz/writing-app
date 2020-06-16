@@ -42,7 +42,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   }, [document.modifiedAt])
 
   const removeDocument = useCallback(() => {
-    document.remove()
+    document.softRemove()
     if (isCurrent) {
       switchDocument(null)
     }
@@ -56,7 +56,6 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   const handleToggleDocumentFavorite = useCallback(async () => {
     closeMenu()
     setIsLoadingFavorite(true)
-    console.log("favoriting")
     await toggleDocumentFavorite(document.id)
     setIsLoadingFavorite(false)
   }, [closeMenu, document.id, toggleDocumentFavorite])

@@ -3,7 +3,11 @@ import styled from "styled-components/macro"
 
 import { useMainState } from "../MainStateProvider"
 import { useViewState } from "../ViewStateProvider"
-import { AllDocumentsList, DocumentsGroupList } from "./DocumentsList"
+import {
+  AllDocumentsList,
+  DocumentsGroupList,
+  TrashDocumentsList,
+} from "./DocumentsList"
 import { VIEWS } from "./types"
 
 export const PrimarySidebar: React.FC<{}> = () => {
@@ -22,6 +26,15 @@ export const PrimarySidebar: React.FC<{}> = () => {
             <NewButton onClick={() => newDocument(true, null)}>
               + Create New
             </NewButton>
+          </Container>
+        )
+      }
+      case VIEWS.TRASH: {
+        return (
+          <Container>
+            <InnerContainer>
+              <TrashDocumentsList />
+            </InnerContainer>
           </Container>
         )
       }

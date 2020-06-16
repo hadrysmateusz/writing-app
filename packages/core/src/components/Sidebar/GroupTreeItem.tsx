@@ -17,7 +17,7 @@ const GroupTreeItem: React.FC<{
   depth?: number
 }> = ({ group, depth }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const { newGroup, renameGroup, newDocument } = useMainState()
+  const { newGroup, renameGroup, newDocument, removeGroup } = useMainState()
   const { primarySidebar } = useViewState()
 
   const handleNewDocument = () => {
@@ -26,6 +26,10 @@ const GroupTreeItem: React.FC<{
 
   const handleNewGroup = () => {
     newGroup(group.id)
+  }
+
+  const handleDeleteGroup = () => {
+    removeGroup(group.id)
   }
 
   const handleClick = () => {
@@ -74,6 +78,9 @@ const GroupTreeItem: React.FC<{
           <ContextMenuItem onClick={handleNewGroup}>
             New Collection
           </ContextMenuItem>
+          <ContextMenuSeparator />
+          {/* TODO: add danger style option to ContextMenuItem */}
+          <ContextMenuItem onClick={handleDeleteGroup}>Delete</ContextMenuItem>
         </ContextMenu>
       )}
     </>

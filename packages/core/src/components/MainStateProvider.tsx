@@ -26,6 +26,7 @@ import {
   RenameGroupFn,
   MoveDocumentToGroupFn,
   ToggleDocumentFavoriteFn,
+  RemoveGroupFn,
 } from "./types"
 
 declare global {
@@ -48,6 +49,7 @@ export type MainState = {
   newDocument: NewDocumentFn
   newGroup: NewGroupFn
   renameGroup: RenameGroupFn
+  removeGroup: RemoveGroupFn
 }
 
 const MainStateContext = createContext<MainState | null>(null)
@@ -221,6 +223,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         createdAt: timestamp,
         modifiedAt: timestamp,
         isFavorite: false,
+        isDeleted: false,
       })
 
       if (shouldSwitch) {
@@ -253,33 +256,46 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   /**
    * Rename group by id
    */
-  const renameGroup = async (groupId: string, name: string) => {
-    const original = await db.groups.findOne().where("id").eq(groupId).exec()
+  const renameGroup: RenameGroupFn = useCallback(
+    async (groupId: string, name: string) => {
+      const original = await db.groups.findOne().where("id").eq(groupId).exec()
 
-    if (original === null) {
-      throw new Error(`no group found matching this id (${groupId})`)
-    }
+      if (original === null) {
+        throw new Error(`no group found matching this id (${groupId})`)
+      }
 
-    const updated = await original.update({
-      $set: {
-        name: name.trim(),
-      },
-    })
+      const updated = await original.update({
+        $set: {
+          name: name.trim(),
+        },
+      })
 
-    // TODO: error handling
+      // TODO: error handling
 
-    return updated as GroupDoc
-  }
+      return updated as GroupDoc
+    },
+    [db.groups]
+  )
 
   /**
    * Handles deleting groups and its children
-   * TODO: add a function type
    */
-  const deleteGroup = useCallback(async () => {
-    // TODO: add the logic for deleting a group and its subgroups and the child documents
-  }, [])
+  const removeGroup: RemoveGroupFn = useCallback(
+    async (groupId: string) => {
+      // TODO: consider creating findById static methods on all collections that will abstract this query
+      const original = await db.groups.findOne().where("id").eq(groupId).exec()
 
-  const switchDocument = (id: string | null) => {
+      if (original === null) {
+        throw new Error(`no group found matching this id (${groupId})`)
+      }
+
+      // TODO: figure out what the returned boolean means
+      return original.remove()
+    },
+    [db.groups]
+  )
+
+  const switchDocument: SwitchDocumentFn = (id: string | null) => {
     setCurrentEditor(id)
   }
 
@@ -314,8 +330,11 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         }
       }
 
-      const documentsQuery = db.documents.find()
-      const favoritesQuery = db.documents.find().where("isFavorite").eq(true)
+      const documentsQuery = db.documents.findNotRemoved()
+      const favoritesQuery = db.documents
+        .findNotRemoved()
+        .where("isFavorite")
+        .eq(true)
       const groupsQuery = db.groups.find()
 
       // perform first-time setup
@@ -446,6 +465,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         saveDocument,
         renameDocument,
         newGroup,
+        removeGroup,
         renameGroup,
         moveDocumentToGroup,
       }}

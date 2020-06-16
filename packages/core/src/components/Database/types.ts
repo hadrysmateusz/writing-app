@@ -1,4 +1,4 @@
-import { RxDatabase, RxDocument, RxCollection } from "rxdb"
+import { RxDatabase, RxDocument, RxCollection, RxQuery } from "rxdb"
 
 // ------ Document ------
 
@@ -44,11 +44,18 @@ export type DocumentDocType = {
   isDeleted: boolean
 }
 
-export type DocumentDocMethods = {}
+export type DocumentDocMethods = {
+  softRemove: () => void
+}
 
 export type DocumentDoc = RxDocument<DocumentDocType, DocumentDocMethods>
 
-export type DocumentCollectionMethods = {}
+export type DocumentCollectionMethods = {
+  findNotRemoved: () => RxQuery<
+    DocumentDocType,
+    RxDocument<DocumentDocType, DocumentDocMethods>[]
+  >
+}
 
 export type DocumentCollection = RxCollection<
   DocumentDocType,
