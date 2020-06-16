@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React from "react"
 import styled from "styled-components/macro"
 import { useEditor } from "slate-react"
 
@@ -10,7 +10,6 @@ import { useViewState } from "../ViewStateProvider"
 import { useEditorState } from "../EditorStateProvider"
 import { useMainState } from "../MainStateProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
-import { formatOptional } from "../../utils"
 import { Topbar } from "../Topbar"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
