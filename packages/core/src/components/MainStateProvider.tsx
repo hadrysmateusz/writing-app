@@ -76,7 +76,10 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
   const [currentEditor, setCurrentEditor] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isInitialLoad, setIsInitialLoad] = useState(true) // Flag to manage whether this is the first time documents are loaded
+  const [isInitialLoad, setIsInitialLoad] = useState(() => {
+    return true
+  }) // Flag to manage whether this is the first time documents are loaded
+
   // const [error, setError] = useState<string | null>(null)
 
   /**
@@ -299,6 +302,24 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
     setCurrentEditor(id)
   }
 
+  const updateDocumentsList = useCallback((documents: DocumentDoc[]) => {
+    try {
+      if (!documents) {
+        throw new Error("Couldn't fetch documents")
+      }
+      // If there are no documents, throw an error - it will be caught and the currentEditor will be set to null
+      if (documents.length === 0) {
+        throw new Error("Empty")
+      }
+      setDocuments(documents)
+    } catch (error) {
+      console.error(error)
+      /* TODO: This is to handle any errors gracefully in production, but a
+      better system should be in place to handle any unexpected errors */
+      setCurrentEditor(null)
+    }
+  }, [])
+
   /**
    * Initialization effect
    *
@@ -311,25 +332,6 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
     let favoritesSub: Subscription | undefined
 
     const setup = async () => {
-      const updateDocumentsList = (documents: DocumentDoc[]) => {
-        try {
-          if (!documents) {
-            throw new Error("Couldn't fetch documents")
-          }
-          // If there are no documents, throw an error - it will be caught and the currentEditor will be set to null
-          if (documents.length === 0) {
-            throw new Error("Empty")
-          }
-          setDocuments(documents)
-          setCurrentEditor(documents[0].id)
-        } catch (error) {
-          console.error(error)
-          /* TODO: This is to handle any errors gracefully in production, but a
-          better system should be in place to handle any unexpected errors */
-          setCurrentEditor(null)
-        }
-      }
-
       const documentsQuery = db.documents.findNotRemoved()
       const favoritesQuery = db.documents
         .findNotRemoved()
@@ -340,6 +342,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       // perform first-time setup
 
       if (isInitialLoad) {
+        console.log("running initial load stuff")
         const documentsPromise = documentsQuery.exec()
         const groupsPromise = groupsQuery.exec()
         const favoritesPromise = favoritesQuery.exec()
@@ -385,7 +388,14 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         favoritesSub.unsubscribe()
       }
     }
-  }, [db.documents, db.groups, isInitialLoad])
+  }, [db.documents, db.groups, isInitialLoad, updateDocumentsList])
+
+  useEffect(() => {
+    if (documents && documents[0]) {
+      setCurrentEditor(documents[0].id)
+    }
+    // TODO: purpusefully ignoring the deps as this is only supposed to run once but this might be problematic if it fails the first time
+  }, [])
 
   /**
    * Handles changing all of the state and side-effects of switching editors
