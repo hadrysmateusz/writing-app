@@ -8,7 +8,7 @@ import { useMainState } from "../MainStateProvider"
 import { formatOptional } from "../../utils"
 import { useDocumentContextMenu } from "../DocumentContextMenu"
 
-const SNIPPET_LENGTH = 80
+const SNIPPET_LENGTH = 130
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
@@ -132,14 +132,19 @@ const Title = styled.div`
 `
 
 const Snippet = styled.div`
-  color: #bebebe;
-  font-size: 11px;
-  padding-bottom: 4px;
+  --line-height: 14px;
+  line-height: var(--line-height);
+  max-height: calc(2 * var(--line-height));
+  overflow: hidden;
 
   /* TODO: improve these styles */
   overflow-wrap: break-word;
   line-break: anywhere;
   line-clamp: 2;
+
+  color: #bebebe;
+  font-size: 11px;
+  padding-bottom: 4px;
 `
 
 const Container = styled.div`
