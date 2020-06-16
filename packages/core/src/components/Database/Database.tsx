@@ -19,6 +19,11 @@ const collections = [
         oldDoc.isFavorite = false
         return oldDoc
       },
+      // version 1 => 2
+      2: (oldDoc: DocumentDoc) => {
+        oldDoc.isDeleted = false
+        return oldDoc
+      },
     },
   },
   {

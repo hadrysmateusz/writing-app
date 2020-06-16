@@ -5,7 +5,7 @@ import { DocumentDocType, GroupDocType } from "./types"
 export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
   description: "describes a document",
-  version: 1,
+  version: 2,
   type: "object",
   properties: {
     id: {
@@ -29,6 +29,9 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
       type: "number",
     },
     isFavorite: {
+      type: "boolean",
+    },
+    isDeleted: {
       type: "boolean",
     },
   },

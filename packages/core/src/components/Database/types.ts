@@ -38,6 +38,10 @@ export type DocumentDocType = {
    * Whether the document should appear in the favorites view (whatever it ends up being called)
    */
   isFavorite: boolean
+  /**
+   * Whether the document was deleted and should only appear in trash
+   */
+  isDeleted: boolean
 }
 
 export type DocumentDocMethods = {}
