@@ -42,6 +42,7 @@ export const NavigatorSidebar: React.FC<{}> = () => {
       </StaticTreeItem>
 
       <StaticTreeItem
+        icon="trash"
         onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
         depth={1}
         isSpecial

@@ -14,6 +14,7 @@ import {
   FaRegStar,
 } from "react-icons/fa"
 import { AiFillCloud } from "react-icons/ai"
+import { IoMdTrash } from "react-icons/io"
 import {
   BsCaretRightFill,
   BsCaretDownFill,
@@ -59,6 +60,7 @@ const iconLibrary = {
   starFilled: FaStar,
   starOutline: FaRegStar,
   sidebarLeft: BsLayoutSidebar,
+  trash: IoMdTrash,
 }
 
 export default iconLibrary
