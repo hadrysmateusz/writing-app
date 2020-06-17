@@ -61,14 +61,13 @@ const SidebarDocumentItem: React.FC<{
 
   const groupName = useMemo(() => {
     if (document.parentGroup === null) {
-      // TODO: better handle documents at the root of the tree
       return null
     }
 
     const group = groups.find((group) => group.id === document.parentGroup)
 
     if (group === undefined) {
-      throw new Error(`couldn't find group with id: ${document.parentGroup}`)
+      return null
     }
 
     return group.name
