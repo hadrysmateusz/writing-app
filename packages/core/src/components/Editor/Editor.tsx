@@ -173,6 +173,7 @@ const EditorComponent: React.FC<{
         <EditableContainer onBlur={handleContentBlur}>
           <Editable
             plugins={plugins}
+            placeholder="Start writing"
             onKeyDown={[handleSaveDocument, handleFixSelection]}
             spellCheck={false}
           />
