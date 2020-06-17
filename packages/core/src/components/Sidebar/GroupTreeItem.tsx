@@ -71,6 +71,8 @@ const GroupTreeItem: React.FC<{
           <ContextMenuItem onClick={handleRenameDocument}>
             Rename
           </ContextMenuItem>
+          {/* TODO: add danger style option to ContextMenuItem */}
+          <ContextMenuItem onClick={handleDeleteGroup}>Delete</ContextMenuItem>
           <ContextMenuSeparator />
           <ContextMenuItem onClick={handleNewDocument}>
             New Document
@@ -78,9 +80,6 @@ const GroupTreeItem: React.FC<{
           <ContextMenuItem onClick={handleNewGroup}>
             New Collection
           </ContextMenuItem>
-          <ContextMenuSeparator />
-          {/* TODO: add danger style option to ContextMenuItem */}
-          <ContextMenuItem onClick={handleDeleteGroup}>Delete</ContextMenuItem>
         </ContextMenu>
       )}
     </>
