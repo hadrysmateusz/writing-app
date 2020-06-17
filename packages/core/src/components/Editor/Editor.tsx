@@ -187,6 +187,7 @@ const EditorComponent: React.FC<{
 
 const StyledNamingInput = styled(NamingInput)`
   margin-top: 16px;
+  margin-bottom: 8px;
   font-weight: bold;
   font-family: "Poppins";
   letter-spacing: 0.01em;
