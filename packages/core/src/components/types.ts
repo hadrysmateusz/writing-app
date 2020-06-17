@@ -12,6 +12,10 @@ export type RenameDocumentFn = (
   title: string
 ) => Promise<DocumentDoc>
 
+export type RemoveDocumentFn = (documentId: string) => Promise<void>
+
+export type RestoreDocumentFn = (documentId: string) => Promise<DocumentDoc>
+
 export type MoveDocumentToGroupFn = (
   documentId: string,
   title: string

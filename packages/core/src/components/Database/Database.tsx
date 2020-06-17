@@ -25,7 +25,7 @@ const collections = [
     },
     methods: {
       softRemove: function (this: DocumentDoc) {
-        this.update({
+        return this.update({
           $set: {
             isDeleted: true,
           },

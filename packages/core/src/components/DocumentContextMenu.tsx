@@ -17,11 +17,11 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const {
     groups,
-    currentDocument,
-    switchDocument,
+    removeDocument,
     renameDocument,
     moveDocumentToGroup,
     toggleDocumentFavorite,
+    restoreDocument,
   } = useMainState()
   const { startRenaming, getProps: getEditableProps } = useEditableText(
     document.title,
@@ -30,23 +30,24 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     }
   )
 
-  const isCurrent = useMemo(() => {
-    // TODO: something doesn't work here
-    if (currentDocument === null) return false
-    return document.id === currentDocument.id
-  }, [currentDocument, document.id])
+  // const isCurrent = useMemo(() => {
+  //   // TODO: something doesn't work here
+  //   if (currentDocument === null) return false
+  //   return document.id === currentDocument.id
+  // }, [currentDocument, document.id])
 
   const modifiedAt = useMemo(() => {
     // TODO: replace with proper representation (using moment.js)
     return new Date(Number(document.modifiedAt)).toLocaleDateString()
   }, [document.modifiedAt])
 
-  const removeDocument = useCallback(() => {
-    document.softRemove()
-    if (isCurrent) {
-      switchDocument(null)
-    }
-  }, [document, isCurrent, switchDocument])
+  const handleRemoveDocument = useCallback(() => {
+    removeDocument(document.id)
+  }, [document.id, removeDocument])
+
+  const handleRestoreDocument = useCallback(() => {
+    restoreDocument(document.id)
+  }, [document.id, restoreDocument])
 
   const handleRenameDocument = useCallback(() => {
     closeMenu()
@@ -78,7 +79,15 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
         >
           {document.isFavorite ? "Remove from favorites" : "Add to favorites"}
         </ContextMenuItem>
-        <ContextMenuItem onClick={removeDocument}>Delete</ContextMenuItem>
+        {document.isDeleted ? (
+          <ContextMenuItem onClick={handleRestoreDocument}>
+            Restore
+          </ContextMenuItem>
+        ) : (
+          <ContextMenuItem onClick={handleRemoveDocument}>
+            Delete
+          </ContextMenuItem>
+        )}
         <ContextMenuSeparator />
         <ContextSubmenu text="Move to">
           {groups.map((group) => (
@@ -100,10 +109,10 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
 
   return {
     DocumentContextMenu,
+    isMenuOpen,
     openMenu,
     closeMenu,
     getEditableProps,
-    isMenuOpen,
   }
 }
 

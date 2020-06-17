@@ -27,6 +27,8 @@ import {
   MoveDocumentToGroupFn,
   ToggleDocumentFavoriteFn,
   RemoveGroupFn,
+  RemoveDocumentFn,
+  RestoreDocumentFn,
 } from "./types"
 
 declare global {
@@ -41,12 +43,16 @@ export type MainState = {
   documents: DocumentDoc[]
   favorites: DocumentDoc[]
   currentDocument: DocumentDoc | null
+  // Document Functions
   toggleDocumentFavorite: ToggleDocumentFavoriteFn
   saveDocument: SaveDocumentFn
   renameDocument: RenameDocumentFn
   moveDocumentToGroup: MoveDocumentToGroupFn
   switchDocument: SwitchDocumentFn
+  removeDocument: RemoveDocumentFn
+  restoreDocument: RestoreDocumentFn
   newDocument: NewDocumentFn
+  // Group Functions
   newGroup: NewGroupFn
   renameGroup: RenameGroupFn
   removeGroup: RemoveGroupFn
@@ -240,6 +246,65 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   )
 
   /**
+   * Soft-Removes a document
+   */
+  const removeDocument: RemoveDocumentFn = useCallback(
+    async (documentId: string) => {
+      // TODO: findOne needs a NotRemoved variant
+      const original = await db.documents
+        .findOne()
+        .where("id")
+        .eq(documentId)
+        .exec()
+
+      if (original === null) {
+        throw new Error(`no document found matching this id (${documentId})`)
+      }
+
+      // TODO: figure out what the returned boolean means
+      return original.softRemove()
+    },
+    [db.documents]
+  )
+
+  /**
+   * Restore document by id
+   */
+  const restoreDocument: RestoreDocumentFn = useCallback(
+    async (documentId: string) => {
+      // TODO: replace with a db query (to avoid some potential issues and edge-cases)
+      const original = await db.documents
+        .findOne()
+        .where("id")
+        .eq(documentId)
+        .exec()
+
+      if (original === null) {
+        throw new Error(`no document found matching this id (${documentId})`)
+      }
+
+      const parentGroup = await db.groups
+        .findOne()
+        .where("id")
+        .eq(original.parentGroup)
+        .exec()
+
+      const updated = await original.update({
+        $set: {
+          isDeleted: false,
+          // if the parent group doesn't exist set it to null to restore at tree root
+          parentGroup: parentGroup ? parentGroup.id : null,
+        },
+      })
+
+      // TODO: error handling
+
+      return updated as DocumentDoc
+    },
+    [db.documents, db.groups]
+  )
+
+  /**
    * Handles creating a new document by asking for a name, creating a document
    * in DataStore and switching the editor to the new document
    */
@@ -395,6 +460,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       setCurrentEditor(documents[0].id)
     }
     // TODO: purpusefully ignoring the deps as this is only supposed to run once but this might be problematic if it fails the first time
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   /**
@@ -473,6 +539,8 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         switchDocument,
         newDocument,
         saveDocument,
+        removeDocument,
+        restoreDocument,
         renameDocument,
         newGroup,
         removeGroup,

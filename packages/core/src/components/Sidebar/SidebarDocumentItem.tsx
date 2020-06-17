@@ -78,6 +78,7 @@ const SidebarDocumentItem: React.FC<{
   }, [document.id, switchDocument])
 
   const handleClick = useCallback(() => {
+    // TODO: the fact that this function uses the prefetched documents list makes it impossible to preview documents in trash
     openDocument()
   }, [openDocument])
 
@@ -90,7 +91,6 @@ const SidebarDocumentItem: React.FC<{
         </Title>
         {snippet.trim().length > 0 && <Snippet>{snippet}</Snippet>}
       </MainContainer>
-
       {isMenuOpen && <DocumentContextMenu />}
     </Container>
   )
