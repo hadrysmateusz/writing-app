@@ -6,7 +6,7 @@ import { VIEWS } from "./Sidebar/types"
 export type ViewState = {
   primarySidebar: Toggleable & {
     currentView: string
-    switchView: React.Dispatch<React.SetStateAction<string>>
+    switchView: (view: string) => void
   }
   navigatorSidebar: Toggleable
   secondarySidebar: Toggleable
@@ -27,7 +27,15 @@ export const ViewStateProvider: React.FC<{}> = ({ children }) => {
   const secondarySidebar = useToggleable(false)
 
   // TODO: move this into a separate hook for the primarySidebar once more state needs to be handled here
+  // TODO: consider making the all view be null
   const [currentView, setCurrentView] = useState<string>(VIEWS.ALL)
+
+  const switchView = (view: string) => {
+    setCurrentView(view)
+    if (!primarySidebar.isOpen) {
+      primarySidebar.open()
+    }
+  }
 
   return (
     <ViewStateContext.Provider
@@ -35,7 +43,7 @@ export const ViewStateProvider: React.FC<{}> = ({ children }) => {
         primarySidebar: {
           ...primarySidebar,
           currentView,
-          switchView: setCurrentView,
+          switchView,
         },
         navigatorSidebar,
         secondarySidebar,
