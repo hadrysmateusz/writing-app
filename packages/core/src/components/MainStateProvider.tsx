@@ -440,6 +440,10 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
           favoritesPromise,
         ])
 
+        if (newDocuments && newDocuments[0]) {
+          switchDocument(newDocuments[0].id)
+        }
+
         setIsInitialLoad(false)
         setGroups(newGroups)
         setFavorites(newFavorites)
@@ -475,18 +479,19 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         favoritesSub.unsubscribe()
       }
     }
-  }, [db.documents, db.groups, isInitialLoad, updateDocumentsList])
-
-  useEffect(() => {
-    if (documents && documents[0]) {
-      setCurrentEditor(documents[0].id)
-    }
-    // TODO: purpusefully ignoring the deps as this is only supposed to run once but this might be problematic if it fails the first time
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [
+    db.documents,
+    db.groups,
+    documents,
+    isInitialLoad,
+    switchDocument,
+    updateDocumentsList,
+  ])
 
   /**
    * Handles changing all of the state and side-effects of switching editors
+   *
+   * TODO: this needs a significant rework for readability and reliablility
    */
   useEffect(() => {
     setIsModified(false) // TODO: this will have to change when/if multi-tab is implemented
@@ -503,21 +508,25 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
 
     const setEditorContent = async () => {
       // TODO: better handle empty states
+      console.log("current editor is:", currentEditor)
       if (currentEditor === null) {
         setEditorValue(defaultEditorValue)
         return
       }
 
-      // TODO: if I move to redux I will have to query the document first by id
-      const document = documents.find((doc) => doc.id === currentEditor)
+      const documentDoc = await findDocumentById(currentEditor)
 
-      if (!document) {
+      // TODO: empty states need better handling because this will lead to issues
+      if (documentDoc === null) {
+        console.warn(
+          `Document with id: ${currentEditor} was not found - empty state was used. THIS IS A TEMPORARY SOLUTION - IT NEEDS TO CHANGE.`
+        )
         setEditorValue(defaultEditorValue)
         return
       }
 
-      const content = document.content
-        ? deserialize(document.content)
+      const content = documentDoc.content
+        ? deserialize(documentDoc.content)
         : defaultEditorValue
 
       setEditorValue(content)
@@ -528,7 +537,8 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       await setEditorContent()
     })()
 
-    // eslint-disable-next-line
+    // OTHER DEPENDENCIES ARE PURPOSEFULLY IGNORED - THIS MIGHT NEED A BETTER SOLUTION
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentEditor])
 
   // Handle "new-document" messages from the main process
