@@ -41,34 +41,39 @@ const EditorComponent: React.FC<{
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const editor = useEditor()
 
-  const fixSelection = (event: React.KeyboardEvent) => {
+  const fixSelection = () => {
+    // This workaround aims to fix the issue with the cursor being visually stuck inside the node toolbar or other custom elements inside the editable area.
+    // Fun fact: the caret seems to actually be inside the editable parent component and not the toolbar as it would seem
+    // TODO: It is a quick and dirty solution and might not work sometimes and be triggered when it shouldn't - this should be addressed
+    // TODO: find the root cause of this issue, it might be related to some internal slate bug that could be fixed upstream
+    // TODO: there is still an issue where the selection is messed up after clicking at the InsertNodeBlock
+    setTimeout(() => {
+      if (!ReactEditor.isFocused) return
+      const selection = document.getSelection()
+      // if there is no slate selection there is nothing to restore it from
+      if (!editor.selection) {
+        selection?.empty()
+        return
+      }
+      // this checks if both anchor and focus nodes of the DOM selection are in a node that is not a TEXT_NODE (which suggests that the selection is invalid)
+      if (
+        selection &&
+        selection.focusNode &&
+        selection.anchorNode &&
+        (selection.anchorNode.nodeType !== 3 ||
+          selection.focusNode.nodeType !== 3)
+      ) {
+        // restore the DOM selection from slate selection
+        const slateNode = Node.get(editor, editor.selection.anchor.path)
+        const domNode = ReactEditor.toDOMNode(editor, slateNode)
+        selection.setPosition(domNode)
+      }
+    }, 0)
+  }
+
+  const handleFixSelection = (event: React.KeyboardEvent) => {
     if (isHotkey(["Del"], event)) {
-      // This workaround aims to fix the issue with the cursor being visually stuck inside the node toolbar or other custom elements inside the editable area.
-      // Fun fact: the caret seems to actually be inside the editable parent component and not the toolbar as it would seem
-      // TODO: It is a quick and dirty solution and might not work sometimes and be triggered when it shouldn't - this should be addressed
-      // TODO: find the root cause of this issue, it might be related to some internal slate bug that could be fixed upstream
-      setTimeout(() => {
-        if (!ReactEditor.isFocused) return
-        const selection = document.getSelection()
-        // if there is no slate selection there is nothing to restore it from
-        if (!editor.selection) {
-          selection?.empty()
-          return
-        }
-        // this checks if both anchor and focus nodes of the DOM selection are in a node that is not a TEXT_NODE (which suggests that the selection is invalid)
-        if (
-          selection &&
-          selection.focusNode &&
-          selection.anchorNode &&
-          (selection.anchorNode.nodeType !== 3 ||
-            selection.focusNode.nodeType !== 3)
-        ) {
-          // restore the DOM selection from slate selection
-          const slateNode = Node.get(editor, editor.selection.anchor.path)
-          const domNode = ReactEditor.toDOMNode(editor, slateNode)
-          selection.setPosition(domNode)
-        }
-      }, 0)
+      fixSelection()
     }
   }
 
@@ -168,7 +173,7 @@ const EditorComponent: React.FC<{
         <EditableContainer onBlur={handleContentBlur}>
           <Editable
             plugins={plugins}
-            onKeyDown={[handleSaveDocument, fixSelection]}
+            onKeyDown={[handleSaveDocument, handleFixSelection]}
             spellCheck={false}
           />
           {/* TODO: double-clicking this area moves the selection to the start of the document */}
