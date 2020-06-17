@@ -17,7 +17,7 @@ const Div = styled.div`
   margin-top: -6px;
   opacity: 0;
   color: #9da3a8;
-  background-color: #41474d;
+  background-color: #383838;
   border: 1px solid #1b1f23;
   border-radius: 4px;
   transition: opacity 0.75s;
