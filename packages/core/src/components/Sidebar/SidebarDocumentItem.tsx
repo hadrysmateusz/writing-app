@@ -155,6 +155,7 @@ const Container = styled.div`
 `
 
 const MainContainer = styled.div<{ isCurrent: boolean }>`
+  user-select: none;
   max-width: 100%;
   overflow: hidden;
   min-width: 0;
