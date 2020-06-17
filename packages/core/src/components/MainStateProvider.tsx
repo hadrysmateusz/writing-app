@@ -97,9 +97,16 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   // const [error, setError] = useState<string | null>(null)
 
   /**
+   * Switches the currently open document
+   */
+  const switchDocument: SwitchDocumentFn = useCallback((id: string | null) => {
+    setCurrentEditor(id)
+  }, [])
+
+  /**
    * Finds a single document by id
    */
-  const findDocumentById = useCallback(
+  const findDocumentById: FindDocumentByIdFn = useCallback(
     async (
       /**
        * Id of the document
@@ -122,7 +129,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   /**
    * Constructs a basic query for finding documents
    */
-  const findDocuments = useCallback(
+  const findDocuments: FindDocumentsFn = useCallback(
     async (
       /**
        * Whether the query should consider removed documents
@@ -163,31 +170,36 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   /**
    * Update current document
    */
-  const updateCurrentDocument: UpdateCurrentDocumentFn = async (
-    updater: DocumentUpdater
-  ) => {
-    try {
-      if (currentEditor === null) {
-        throw new Error("no document is currently selected")
+  const updateCurrentDocument: UpdateCurrentDocumentFn = useCallback(
+    async (updater: DocumentUpdater) => {
+      try {
+        if (currentEditor === null) {
+          throw new Error("no document is currently selected")
+        }
+        const updatedDocument = await updateDocument(
+          currentEditor,
+          updater,
+          true
+        )
+        return updatedDocument
+      } catch (error) {
+        // TODO: better error handling
+        throw error
+        // const msgBase = "Can't update the current document"
+        // console.error(`${msgBase}: ${error.message}`)
+        // setError(msgBase)
+        // return null
       }
-      const updatedDocument = await updateDocument(currentEditor, updater, true)
-      return updatedDocument
-    } catch (error) {
-      // TODO: better error handling
-      throw error
-      // const msgBase = "Can't update the current document"
-      // console.error(`${msgBase}: ${error.message}`)
-      // setError(msgBase)
-      // return null
-    }
-  }
+    },
+    [currentEditor, updateDocument]
+  )
 
   /**
    * Save document
    *
    * Works on the current document
    */
-  const saveDocument: SaveDocumentFn = async () => {
+  const saveDocument: SaveDocumentFn = useCallback(async () => {
     if (isModified) {
       const serializedContent = serialize(editorValue)
       const updatedDocument = await updateCurrentDocument({
@@ -197,43 +209,46 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       return updatedDocument
     }
     return null
-  }
+  }, [editorValue, isModified, setIsModified, updateCurrentDocument])
 
   /**
    * Rename document by id
    */
-  const renameDocument: RenameDocumentFn = async (
-    documentId: string,
-    title: string
-  ) => {
-    return updateDocument(documentId, { title: title.trim() }, true)
-  }
+  const renameDocument: RenameDocumentFn = useCallback(
+    async (documentId: string, title: string) => {
+      return updateDocument(documentId, { title: title.trim() }, true)
+    },
+    [updateDocument]
+  )
 
   /**
    * Move document to a different group
    */
-  const moveDocumentToGroup: MoveDocumentToGroupFn = async (
-    documentId: string,
-    groupId: string
-  ) => {
-    // TODO: not sure if this function should include removed documents
-    return updateDocument(documentId, { parentGroup: groupId }, true)
-  }
+  const moveDocumentToGroup: MoveDocumentToGroupFn = useCallback(
+    async (documentId: string, groupId: string) => {
+      // TODO: not sure if this function should include removed documents
+      return updateDocument(documentId, { parentGroup: groupId }, true)
+    },
+    [updateDocument]
+  )
 
   /**
    * Toggle the favorited status of a document
    */
-  const toggleDocumentFavorite: ToggleDocumentFavoriteFn = async (
-    documentId: string,
-    /**
-     * A value that it should be set to no matter what it is now
-     */
-    overrideValue?: boolean
-  ) => {
-    return updateDocument(documentId, (original) => ({
-      isFavorite: overrideValue ?? !original.isFavorite,
-    }))
-  }
+  const toggleDocumentFavorite: ToggleDocumentFavoriteFn = useCallback(
+    async (
+      documentId: string,
+      /**
+       * A value that it should be set to no matter what it is now
+       */
+      overrideValue?: boolean
+    ) => {
+      return updateDocument(documentId, (original) => ({
+        isFavorite: overrideValue ?? !original.isFavorite,
+      }))
+    },
+    [updateDocument]
+  )
 
   /**
    * Soft-Removes a document
@@ -312,7 +327,7 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
 
       return newDocument
     },
-    [db.documents]
+    [db.documents, switchDocument]
   )
 
   /**
@@ -373,10 +388,6 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
     },
     [db.groups]
   )
-
-  const switchDocument: SwitchDocumentFn = (id: string | null) => {
-    setCurrentEditor(id)
-  }
 
   const updateDocumentsList = useCallback((documents: DocumentDoc[]) => {
     try {
