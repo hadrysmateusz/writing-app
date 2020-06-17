@@ -10,7 +10,7 @@ import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 
 import { deserialize, serialize } from "./Editor/serialization"
-import { useDatabase, DocumentDoc, DocumentDocType, GroupDoc } from "./Database"
+import { useDatabase, DocumentDoc, GroupDoc } from "./Database"
 import { useEditorState, defaultEditorValue } from "./EditorStateProvider"
 
 import { listenForIpcEvent } from "../utils"
@@ -29,6 +29,10 @@ import {
   RemoveGroupFn,
   RemoveDocumentFn,
   RestoreDocumentFn,
+  DocumentUpdater,
+  FindDocumentByIdFn,
+  UpdateDocumentFn,
+  FindDocumentsFn,
 } from "./types"
 
 declare global {
@@ -44,6 +48,10 @@ export type MainState = {
   favorites: DocumentDoc[]
   currentDocument: DocumentDoc | null
   // Document Functions
+  updateDocument: UpdateDocumentFn
+  findDocuments: FindDocumentsFn
+  updateCurrentDocument: UpdateCurrentDocumentFn
+  findDocumentById: FindDocumentByIdFn
   toggleDocumentFavorite: ToggleDocumentFavoriteFn
   saveDocument: SaveDocumentFn
   renameDocument: RenameDocumentFn
@@ -89,30 +97,80 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   // const [error, setError] = useState<string | null>(null)
 
   /**
+   * Finds a single document by id
+   */
+  const findDocumentById = useCallback(
+    async (
+      /**
+       * Id of the document
+       */
+      id: string,
+      /**
+       * Whether the query should consider removed documents
+       */
+      includeRemoved: boolean = false
+    ) => {
+      if (includeRemoved) {
+        return await db.documents.findOne().where("id").eq(id).exec()
+      } else {
+        return await db.documents.findOneNotRemoved().where("id").eq(id).exec()
+      }
+    },
+    [db.documents]
+  )
+
+  /**
+   * Constructs a basic query for finding documents
+   */
+  const findDocuments = useCallback(
+    async (
+      /**
+       * Whether the query should consider removed documents
+       */
+      includeRemoved: boolean = false
+    ) => {
+      if (includeRemoved) {
+        return await db.documents.find()
+      } else {
+        return await db.documents.findNotRemoved()
+      }
+    },
+    [db.documents]
+  )
+
+  /**
+   * Updates the document using an object or function
+   */
+  const updateDocument: UpdateDocumentFn = useCallback(
+    async (
+      id: string,
+      updater: DocumentUpdater,
+      includeRemoved: boolean = false
+    ) => {
+      const original = await findDocumentById(id, includeRemoved)
+      if (original === null) {
+        throw new Error(`no document found matching this id (${id})`)
+      }
+      // TODO: this can be extracted for use with other collections
+      const updatedDocument: DocumentDoc = await original.update(
+        typeof updater === "function" ? updater(original) : { $set: updater }
+      )
+      return updatedDocument
+    },
+    [findDocumentById]
+  )
+
+  /**
    * Update current document
-   *
-   * TODO: use a more generic update document function inside that will query a document based on id
    */
   const updateCurrentDocument: UpdateCurrentDocumentFn = async (
-    newValues: Partial<DocumentDocType>
+    updater: DocumentUpdater
   ) => {
     try {
       if (currentEditor === null) {
-        throw new Error("no editor is currently selected")
+        throw new Error("no document is currently selected")
       }
-
-      // TODO: replace with a db query (to avoid some potential issues and edge-cases)
-      const original = documents.find((doc) => doc.id === currentEditor)
-
-      if (original === undefined) {
-        throw new Error("no document found matching current editor id")
-      }
-
-      // TODO: if I move to redux I'll have to query the original based on id first
-      const updatedDocument: DocumentDocType = await original.update({
-        $set: newValues,
-      })
-
+      const updatedDocument = await updateDocument(currentEditor, updater, true)
       return updatedDocument
     } catch (error) {
       // TODO: better error handling
@@ -148,72 +206,84 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
     documentId: string,
     title: string
   ) => {
-    // TODO: replace with a db query (to avoid some potential issues and edge-cases)
-    const original = documents.find((doc) => doc.id === documentId)
-
-    if (original === undefined) {
-      throw new Error(`no document found matching this id (${documentId})`)
-    }
-
-    const updated = await original.update({
-      $set: {
-        title: title.trim(),
-      },
-    })
-
-    // TODO: error handling
-
-    return updated as DocumentDoc
+    return updateDocument(documentId, { title: title.trim() }, true)
   }
 
   /**
-   * Rename document by id
+   * Move document to a different group
    */
   const moveDocumentToGroup: MoveDocumentToGroupFn = async (
     documentId: string,
     groupId: string
   ) => {
-    // TODO: replace with a db query (to avoid some potential issues and edge-cases)
-    const original = documents.find((doc) => doc.id === documentId)
-
-    if (original === undefined) {
-      throw new Error(`no document found matching this id (${documentId})`)
-    }
-
-    const updated = await original.update({
-      $set: {
-        parentGroup: groupId,
-      },
-    })
-
-    // TODO: error handling
-
-    return updated as DocumentDoc
+    // TODO: not sure if this function should include removed documents
+    return updateDocument(documentId, { parentGroup: groupId }, true)
   }
 
   /**
-   * Rename document by id
+   * Toggle the favorited status of a document
    */
   const toggleDocumentFavorite: ToggleDocumentFavoriteFn = async (
-    documentId: string
+    documentId: string,
+    /**
+     * A value that it should be set to no matter what it is now
+     */
+    overrideValue?: boolean
   ) => {
-    // TODO: replace with a db query (to avoid some potential issues and edge-cases)
-    const original = documents.find((doc) => doc.id === documentId)
-
-    if (original === undefined) {
-      throw new Error(`no document found matching this id (${documentId})`)
-    }
-
-    const updated = await original.update({
-      $set: {
-        isFavorite: !original.isFavorite,
-      },
-    })
-
-    // TODO: error handling
-
-    return updated as DocumentDoc
+    return updateDocument(documentId, (original) => ({
+      isFavorite: overrideValue ?? !original.isFavorite,
+    }))
   }
+
+  /**
+   * Soft-Removes a document
+   */
+  const removeDocument: RemoveDocumentFn = useCallback(
+    async (documentId: string) => {
+      const original = await findDocumentById(documentId)
+      if (original === null) {
+        throw new Error(
+          `no document found matching this id (${documentId}) (it might already be removed)`
+        )
+      }
+
+      // TODO: figure out what the returned boolean means
+      return original.softRemove()
+    },
+    [findDocumentById]
+  )
+
+  /**
+   * Restore document by id
+   */
+  const restoreDocument: RestoreDocumentFn = useCallback(
+    async (documentId: string) => {
+      const original = await findDocumentById(documentId, true)
+      if (original === null) {
+        throw new Error(`no document found matching this id (${documentId})`)
+      }
+
+      // TODO: this query will be unnecessary if I decide to always restore at root
+      const parentGroup = await db.groups
+        .findOne()
+        .where("id")
+        .eq(original.parentGroup)
+        .exec()
+
+      const updated = await updateDocument(
+        documentId,
+        {
+          isDeleted: false,
+          // if the parent group doesn't exist set it to null to restore at tree root
+          parentGroup: parentGroup ? parentGroup.id : null,
+        },
+        true
+      )
+
+      return updated
+    },
+    [db.groups, findDocumentById, updateDocument]
+  )
 
   /**
    * Handles creating a new document
@@ -237,71 +307,12 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
 
       if (shouldSwitch) {
         console.log("switching to " + newDocument.id)
-        setCurrentEditor(newDocument.id)
+        switchDocument(newDocument.id)
       }
 
       return newDocument
     },
     [db.documents]
-  )
-
-  /**
-   * Soft-Removes a document
-   */
-  const removeDocument: RemoveDocumentFn = useCallback(
-    async (documentId: string) => {
-      // TODO: findOne needs a NotRemoved variant
-      const original = await db.documents
-        .findOne()
-        .where("id")
-        .eq(documentId)
-        .exec()
-
-      if (original === null) {
-        throw new Error(`no document found matching this id (${documentId})`)
-      }
-
-      // TODO: figure out what the returned boolean means
-      return original.softRemove()
-    },
-    [db.documents]
-  )
-
-  /**
-   * Restore document by id
-   */
-  const restoreDocument: RestoreDocumentFn = useCallback(
-    async (documentId: string) => {
-      // TODO: replace with a db query (to avoid some potential issues and edge-cases)
-      const original = await db.documents
-        .findOne()
-        .where("id")
-        .eq(documentId)
-        .exec()
-
-      if (original === null) {
-        throw new Error(`no document found matching this id (${documentId})`)
-      }
-
-      const parentGroup = await db.groups
-        .findOne()
-        .where("id")
-        .eq(original.parentGroup)
-        .exec()
-
-      const updated = await original.update({
-        $set: {
-          isDeleted: false,
-          // if the parent group doesn't exist set it to null to restore at tree root
-          parentGroup: parentGroup ? parentGroup.id : null,
-        },
-      })
-
-      // TODO: error handling
-
-      return updated as DocumentDoc
-    },
-    [db.documents, db.groups]
   )
 
   /**
@@ -546,6 +557,10 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
         removeGroup,
         renameGroup,
         moveDocumentToGroup,
+        findDocumentById,
+        updateDocument,
+        updateCurrentDocument,
+        findDocuments,
       }}
     >
       {children}

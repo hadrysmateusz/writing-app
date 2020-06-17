@@ -22,6 +22,9 @@ const collections = [
       findNotRemoved: function (this: DocumentCollection) {
         return this.find().where("isDeleted").eq(false)
       },
+      findOneNotRemoved: function (this: DocumentCollection) {
+        return this.findOne().where("isDeleted").eq(false)
+      },
     },
     methods: {
       softRemove: function (this: DocumentDoc) {

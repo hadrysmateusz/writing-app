@@ -55,6 +55,10 @@ export type DocumentCollectionMethods = {
     DocumentDocType,
     RxDocument<DocumentDocType, DocumentDocMethods>[]
   >
+  findOneNotRemoved: () => RxQuery<
+    DocumentDocType,
+    RxDocument<DocumentDocType, DocumentDocMethods>
+  >
 }
 
 export type DocumentCollection = RxCollection<
