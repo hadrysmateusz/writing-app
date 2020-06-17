@@ -482,7 +482,6 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
   }, [
     db.documents,
     db.groups,
-    documents,
     isInitialLoad,
     switchDocument,
     updateDocumentsList,
