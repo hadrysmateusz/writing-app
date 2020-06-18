@@ -5,7 +5,7 @@ import { DocumentDocType, GroupDocType } from "./types"
 export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
   description: "describes a document",
-  version: 2,
+  version: 0,
   type: "object",
   properties: {
     id: {

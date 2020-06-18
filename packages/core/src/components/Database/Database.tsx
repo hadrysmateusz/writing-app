@@ -35,18 +35,7 @@ const collections = [
         })
       },
     },
-    migrationStrategies: {
-      // version 0 => 1
-      1: (oldDoc: DocumentDoc) => {
-        oldDoc.isFavorite = false
-        return oldDoc
-      },
-      // version 1 => 2
-      2: (oldDoc: DocumentDoc) => {
-        oldDoc.isDeleted = false
-        return oldDoc
-      },
-    },
+    migrationStrategies: {},
   },
   {
     name: "groups",
