@@ -72,9 +72,8 @@ export type UpdateDocumentQueryConstructor = (
 
 /**
  * Can be either:
- *
- * - A set of values to be changed or...
- * - A function that should return an updateQuery using this syntax: https://docs.mongodb.com/manual/reference/operator/update-field/
+ * - A set of values to be changed
+ * - A function that takes the original document as a parameter and returnes an object with new values
  */
 export type DocumentUpdater =
   | UpdateDocumentQueryConstructor

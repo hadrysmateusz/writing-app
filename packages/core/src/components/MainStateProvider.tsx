@@ -147,6 +147,8 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
 
   /**
    * Updates the document using an object or function
+   *
+   * TODO: create an advanced version of the function that uses the full mongo update syntax: https://docs.mongodb.com/manual/reference/operator/update-field/
    */
   const updateDocument: UpdateDocumentFn = useCallback(
     async (
@@ -160,7 +162,9 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       }
       // TODO: this can be extracted for use with other collections
       const updatedDocument: DocumentDoc = await original.update(
-        typeof updater === "function" ? updater(original) : { $set: updater }
+        typeof updater === "function"
+          ? { $set: updater(original) }
+          : { $set: updater }
       )
       return updatedDocument
     },
