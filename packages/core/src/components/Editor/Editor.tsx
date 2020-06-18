@@ -160,6 +160,22 @@ const EditorComponent: React.FC<{
 
   return (
     <OuterContainer>
+      {currentDocument.isDeleted && (
+        <div
+          style={{
+            backgroundColor: "#DB4141",
+            height: "40px",
+            width: "100%",
+            color: "white",
+            fontSize: "13px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          This document is in Trash
+        </div>
+      )}
       <InnerContainer>
         <HoveringToolbar />
         {/* <Toolbar /> */}
