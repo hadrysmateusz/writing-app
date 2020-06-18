@@ -77,10 +77,10 @@ const EditorComponent: React.FC<{
     }
   }
 
-  // // When the document title changes elsewhere, update the state here
-  // useEffect(() => {
-  //   setTitle(currentDocument.title)
-  // }, [currentDocument.title, setTitle])
+  // When the document title changes elsewhere, update the state here
+  useEffect(() => {
+    setTitle(currentDocument.title)
+  }, [currentDocument.title, setTitle])
 
   /**
    * Focus the correct element on mount
