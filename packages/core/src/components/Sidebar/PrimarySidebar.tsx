@@ -1,18 +1,18 @@
 import React from "react"
 import styled from "styled-components/macro"
 
-import { useMainState } from "../MainStateProvider"
-import { useViewState } from "../ViewStateProvider"
+import { useViewState } from "../View/ViewStateProvider"
 import {
   AllDocumentsList,
   DocumentsGroupList,
   TrashDocumentsList,
 } from "./DocumentsList"
 import { VIEWS } from "./types"
+import { useDocumentsAPI } from "../DocumentsAPI"
 
 export const PrimarySidebar: React.FC<{}> = () => {
   // Can be one of the special views or an id of a document group
-  const { newDocument } = useMainState()
+  const { createDocument } = useDocumentsAPI()
   const { primarySidebar } = useViewState()
 
   const render = () => {
@@ -23,7 +23,7 @@ export const PrimarySidebar: React.FC<{}> = () => {
             <InnerContainer>
               <AllDocumentsList />
             </InnerContainer>
-            <NewButton onClick={() => newDocument(true, null)}>
+            <NewButton onClick={() => createDocument(null)}>
               + Create New
             </NewButton>
           </Container>
@@ -46,7 +46,7 @@ export const PrimarySidebar: React.FC<{}> = () => {
               <DocumentsGroupList groupId={primarySidebar.currentView} />
             </InnerContainer>
             <NewButton
-              onClick={() => newDocument(true, primarySidebar.currentView)}
+              onClick={() => createDocument(primarySidebar.currentView)}
             >
               + Create New
             </NewButton>

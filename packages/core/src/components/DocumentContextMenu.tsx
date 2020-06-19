@@ -9,32 +9,28 @@ import {
 } from "./ContextMenu2"
 import { DocumentDoc } from "./Database"
 import { useEditableText } from "./RenamingInput"
-import { useMainState } from "./MainStateProvider"
+import { useMainState } from "./MainState/MainStateProvider"
 import { formatOptional } from "./../utils"
+import { useDocumentsAPI } from "./DocumentsAPI"
 
 export const useDocumentContextMenu = (document: DocumentDoc) => {
   const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { groups } = useMainState()
   const {
-    groups,
     removeDocument,
     renameDocument,
     moveDocumentToGroup,
     toggleDocumentFavorite,
     restoreDocument,
-  } = useMainState()
+  } = useDocumentsAPI()
+
   const { startRenaming, getProps: getEditableProps } = useEditableText(
     document.title,
     (value: string) => {
       renameDocument(document.id, value)
     }
   )
-
-  // const isCurrent = useMemo(() => {
-  //   // TODO: something doesn't work here
-  //   if (currentDocument === null) return false
-  //   return document.id === currentDocument.id
-  // }, [currentDocument, document.id])
 
   const modifiedAt = useMemo(() => {
     // TODO: replace with proper representation (using moment.js)
@@ -68,6 +64,12 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     },
     [document.id, moveDocumentToGroup]
   )
+
+  // const isCurrent = useMemo(() => {
+  //   // TODO: something doesn't work here
+  //   if (currentDocument === null) return false
+  //   return document.id === currentDocument.id
+  // }, [currentDocument, document.id])
 
   const DocumentContextMenu: React.FC<{}> = () => {
     return (

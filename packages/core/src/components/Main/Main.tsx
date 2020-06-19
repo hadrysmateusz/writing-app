@@ -6,9 +6,9 @@ import { PrimarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
 
-import { useViewState } from "../ViewStateProvider"
+import { useViewState } from "../View/ViewStateProvider"
 import { useEditorState } from "../EditorStateProvider"
-import { useMainState } from "../MainStateProvider"
+import { useMainState } from "../MainState/MainStateProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { Topbar } from "../Topbar"
 

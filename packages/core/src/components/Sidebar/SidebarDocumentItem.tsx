@@ -4,7 +4,7 @@ import { Node } from "slate"
 
 import { DocumentDoc } from "../Database"
 import { EditableText } from "../RenamingInput"
-import { useMainState } from "../MainStateProvider"
+import { useMainState } from "../MainState/MainStateProvider"
 import { formatOptional } from "../../utils"
 import { useDocumentContextMenu } from "../DocumentContextMenu"
 

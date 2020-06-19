@@ -11,7 +11,7 @@ import { plugins } from "../../pluginsList"
 import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
 import { DocumentDoc } from "../Database"
-import { useMainState } from "../MainStateProvider"
+import { useMainState } from "../MainState/MainStateProvider"
 
 import {
   EditableContainer,
@@ -19,6 +19,7 @@ import {
   InsertBlockField,
   InnerContainer,
 } from "./styledComponents"
+import { useDocumentsAPI } from "../DocumentsAPI"
 
 /**
  * Helper for creating a basic empty node
@@ -36,7 +37,8 @@ const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
   currentDocument: DocumentDoc
 }> = ({ currentDocument }) => {
-  const { saveDocument, renameDocument } = useMainState()
+  const { saveDocument } = useMainState()
+  const { renameDocument } = useDocumentsAPI()
   const [title, setTitle] = useState<string>(currentDocument.title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const editor = useEditor()

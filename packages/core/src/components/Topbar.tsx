@@ -1,9 +1,9 @@
 import React, { useMemo } from "react"
 import styled from "styled-components/macro"
-import { useMainState } from "./MainStateProvider"
+import { useMainState } from "./MainState/MainStateProvider"
 import { formatOptional } from "../utils"
 import Icon from "./Icon"
-import { useViewState } from "./ViewStateProvider"
+import { useViewState } from "./View/ViewStateProvider"
 
 export const Topbar: React.FC<{}> = () => {
   const { currentDocument } = useMainState()

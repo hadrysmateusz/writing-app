@@ -5,15 +5,19 @@ import styled from "styled-components/macro"
 import GroupTreeItem from "../Sidebar/GroupTreeItem"
 import { VIEWS } from "../Sidebar/types"
 import StaticTreeItem from "../TreeItem"
-import { useMainState } from "../MainStateProvider"
+import { useMainState } from "../MainState/MainStateProvider"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu2"
-import { useViewState } from "../ViewStateProvider"
+import { useViewState } from "../View/ViewStateProvider"
 
 import createGroupTree from "../../helpers/createGroupTree"
 import DocumentTreeItem from "../DocumentTreeItem"
+import { useDocumentsAPI } from "../DocumentsAPI"
+import { useGroupsAPI } from "../Groups/GroupsContext"
 
 export const NavigatorSidebar: React.FC<{}> = () => {
-  const { groups, favorites, newDocument, newGroup } = useMainState()
+  const { groups, favorites } = useMainState()
+  const { createDocument } = useDocumentsAPI()
+  const { createGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
 
@@ -21,11 +25,11 @@ export const NavigatorSidebar: React.FC<{}> = () => {
   const groupsTree = useMemo(() => createGroupTree(groups), [groups])
 
   const handleNewDocument = () => {
-    newDocument(true, null)
+    createDocument(null)
   }
 
   const handleNewGroup = () => {
-    newGroup(null)
+    createGroup(null)
   }
 
   return (

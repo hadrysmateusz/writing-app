@@ -7,25 +7,27 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "../ContextMenu2"
-import { useMainState } from "../MainStateProvider"
-import { useViewState } from "../ViewStateProvider"
+import { useViewState } from "../View/ViewStateProvider"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { formatOptional } from "../../utils"
+import { useGroupsAPI } from "../Groups/GroupsContext"
+import { useDocumentsAPI } from "../DocumentsAPI"
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
   depth?: number
 }> = ({ group, depth }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const { newGroup, renameGroup, newDocument, removeGroup } = useMainState()
+  const { createDocument } = useDocumentsAPI()
+  const { createGroup, renameGroup, removeGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
 
   const handleNewDocument = () => {
-    newDocument(true, group.id)
+    createDocument(group.id)
   }
 
   const handleNewGroup = () => {
-    newGroup(group.id)
+    createGroup(group.id)
   }
 
   const handleDeleteGroup = () => {
