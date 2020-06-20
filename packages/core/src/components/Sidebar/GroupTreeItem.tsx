@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from "react"
+import React, { useMemo, useCallback, useState, useEffect } from "react"
 import styled from "styled-components/macro"
 
 import { StatelessExpandableTreeItem } from "../TreeItem"
@@ -14,17 +14,61 @@ import { useDocumentsAPI } from "../DocumentsAPI"
 
 import { formatOptional } from "../../utils"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
+import { Subscription } from "rxjs"
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
   depth?: number
 }> = ({ group, depth }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const { createDocument } = useDocumentsAPI()
+  const { createDocument, findDocuments } = useDocumentsAPI()
   const { createGroup, renameGroup, removeGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isEmpty, setIsEmpty] = useState(false)
+
+  const updateIsEmpty = useCallback((documents) => {
+    setIsEmpty(documents.length === 0)
+  }, [])
+
+  useEffect(() => {
+    if (group.children.length > 0) {
+      setIsEmpty(false)
+      return
+    }
+
+    let documentsSub: Subscription | undefined
+
+    const setup = async () => {
+      try {
+        const documentsQuery = await findDocuments()
+          .where("parentGroup")
+          .eq(group.id)
+
+        const newDocuments = await documentsQuery.exec()
+        updateIsEmpty(newDocuments)
+        documentsSub = documentsQuery.$.subscribe(updateIsEmpty)
+      } catch (error) {
+        // TODO: handle better in prod
+        throw error
+      }
+    }
+
+    setup()
+
+    return () => {
+      if (documentsSub) {
+        documentsSub.unsubscribe()
+      }
+    }
+  }, [
+    findDocuments,
+    group.children.length,
+    group.id,
+    primarySidebar,
+    updateIsEmpty,
+  ])
 
   const {
     startRenaming: startNamingNew,
@@ -101,6 +145,10 @@ const GroupTreeItem: React.FC<{
         childNodes={childNodes}
         isExpanded={isExpanded}
         setIsExpanded={setIsExpanded}
+        // TODO: prevent flicker
+        icon={
+          isExpanded ? "folderOpen" : isEmpty ? "folderEmpty" : "folderClosed"
+        }
       >
         <EditableText {...getProps()}>{groupName}</EditableText>
       </StatelessExpandableTreeItem>
@@ -128,7 +176,7 @@ export default GroupTreeItem
 
 const NewGroupContainer = styled.div<{ depth: number }>`
   padding-left: ${(p) => (p.depth + 1) * 16}px;
-  width: calc(100% - 20px);
+  width: 100%;
   :hover {
     color: white;
     background: #222;

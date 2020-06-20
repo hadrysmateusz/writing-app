@@ -19,15 +19,24 @@ export const TreeItem: React.FC<StaticTreeItemProps> = ({
       onContextMenu={onContextMenu}
       {...rest}
     >
-      {icon && (
-        <IconContainer isSpecial={isSpecial}>
-          <Icon icon={icon} />
-        </IconContainer>
-      )}
-      <InnerContainer isSpecial={isSpecial}>{children}</InnerContainer>
+      <MidContainer>
+        {icon && (
+          <IconContainer isSpecial={isSpecial}>
+            <Icon icon={icon} />
+          </IconContainer>
+        )}
+        <InnerContainer isSpecial={isSpecial}>{children}</InnerContainer>
+      </MidContainer>
     </OuterContainer>
   )
 }
+
+const MidContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: calc(100% - 20px); /* to respect right-side padding */
+`
 
 const OuterContainer = styled.div<{ depth: number }>`
   padding-left: ${(p) => (p.depth + 1) * 16}px;
@@ -36,9 +45,7 @@ const OuterContainer = styled.div<{ depth: number }>`
     color: white;
     background: #222;
   }
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+
   cursor: pointer;
   user-select: none;
 
@@ -51,18 +58,19 @@ const OuterContainer = styled.div<{ depth: number }>`
 
 const InnerContainer = styled.div<{ isSpecial: boolean }>`
   font-family: "Segoe UI"; /* TODO: create global font-stacks */
-  width: calc(100% - 20px); /* to respect right-side padding */
   font-size: 12px;
   color: ${(p) => (p.isSpecial ? "#f2f2f2" : "#f0f0f0")};
   font-weight: ${(p) => (p.isSpecial ? "bold" : "normal")};
   text-rendering: optimizeLegibility;
   letter-spacing: 0.02em;
   padding: 5px 0;
+  min-width: 0;
+  flex-shrink: 1;
 `
 
 const IconContainer = styled.div<{ isSpecial: boolean }>`
   margin-right: 8px;
-  margin-bottom: -4px; /* to help align the icon with the text */
+  margin-bottom: -2px; /* to help align the icon with the text */
   color: ${(p) => (p.isSpecial ? "#858585" : "#5D5D5D")};
   font-size: 1.4em;
 `
