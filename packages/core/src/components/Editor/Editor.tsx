@@ -16,8 +16,10 @@ import { useMainState } from "../MainState/MainStateProvider"
 import {
   EditableContainer,
   OuterContainer,
+  OutermostContainer,
   InsertBlockField,
   InnerContainer,
+  TrashBanner,
 } from "./styledComponents"
 import { useDocumentsAPI } from "../DocumentsAPI"
 
@@ -161,45 +163,34 @@ const EditorComponent: React.FC<{
   }
 
   return (
-    <OuterContainer>
+    <OutermostContainer>
       {currentDocument.isDeleted && (
-        <div
-          style={{
-            backgroundColor: "#DB4141",
-            height: "40px",
-            width: "100%",
-            color: "white",
-            fontSize: "13px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          This document is in Trash
-        </div>
+        <TrashBanner>This document is in Trash</TrashBanner>
       )}
-      <InnerContainer>
-        <HoveringToolbar />
-        {/* <Toolbar /> */}
-        <StyledNamingInput
-          ref={titleRef}
-          value={title}
-          onChange={handleTitleChange}
-          onKeyDown={handleTitleKeydown}
-          onRename={handleRename}
-        />
-        <EditableContainer onBlur={handleContentBlur}>
-          <Editable
-            plugins={plugins}
-            placeholder="Start writing"
-            onKeyDown={[handleSaveDocument, handleFixSelection]}
-            spellCheck={false}
+      <OuterContainer>
+        <InnerContainer>
+          <HoveringToolbar />
+          {/* <Toolbar /> */}
+          <StyledNamingInput
+            ref={titleRef}
+            value={title}
+            onChange={handleTitleChange}
+            onKeyDown={handleTitleKeydown}
+            onRename={handleRename}
           />
-          {/* TODO: double-clicking this area moves the selection to the start of the document */}
-          <InsertBlockField onClick={() => insertEmptyBlock()} />
-        </EditableContainer>
-      </InnerContainer>
-    </OuterContainer>
+          <EditableContainer onBlur={handleContentBlur}>
+            <Editable
+              plugins={plugins}
+              placeholder="Start writing"
+              onKeyDown={[handleSaveDocument, handleFixSelection]}
+              spellCheck={false}
+            />
+            {/* TODO: double-clicking this area moves the selection to the start of the document */}
+            <InsertBlockField onClick={() => insertEmptyBlock()} />
+          </EditableContainer>
+        </InnerContainer>
+      </OuterContainer>
+    </OutermostContainer>
   )
 }
 
