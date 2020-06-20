@@ -95,6 +95,7 @@ export const DocumentsAPIProvider: React.FC = ({ children }) => {
         throw new Error(`no document found matching this id (${id})`)
       }
       // TODO: this can be extracted for use with other collections
+      // TODO: handle errors (especially the ones thrown in pre-middleware because they mean the operation wasn't applied) (maybe handle them in more specialized functions like rename and save)
       const updatedDocument: DocumentDoc = await original.update(
         typeof updater === "function"
           ? { $set: updater(original) }
@@ -181,8 +182,12 @@ export const DocumentsAPIProvider: React.FC = ({ children }) => {
         )
       }
 
-      // TODO: figure out what the returned boolean means
-      return original.softRemove()
+      try {
+        await original.softRemove()
+      } catch (error) {
+        // TODO: return this and create a system to show when something like this fails
+        console.warn("The document was not removed")
+      }
     },
     [findDocumentById]
   )

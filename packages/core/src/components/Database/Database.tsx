@@ -81,13 +81,12 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       await Promise.all(collections.map((colData) => db.collection(colData)))
       console.log("DatabaseService: created collections")
 
-      // TODO: this might be a better way to handle soft deletes but is currently impossible to use because the error doesn't get caught and crashes the application
       // // Hook that intercepts document remove calls and soft-deletes them instead
-      // db.documents.preRemove((_, documentDoc) => {
-      //   /*
+      // /*
       //   TODO: A way to permanently delete a document might be needed
       //   A possible solution is to use a flag that if present will prevent this hook for stopping the remove operation - it could be further improved with a custom method on the DocumentDoc that would automatically set the flag and remove it in one go
-      //   */
+      // */
+      // db.documents.preRemove((_, documentDoc) => {
       //   documentDoc.update({
       //     $set: {
       //       isDeleted: true,
