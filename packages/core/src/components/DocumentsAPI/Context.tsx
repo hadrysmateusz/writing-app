@@ -35,6 +35,8 @@ export const DocumentsAPIProvider: React.FC = ({ children }) => {
 
   /**
    * Finds a single document by id
+   *
+   * TODO: figure out better naming to separate this from findDocuments
    */
   const findDocumentById: FindDocumentByIdFn = useCallback(
     async (
@@ -58,18 +60,20 @@ export const DocumentsAPIProvider: React.FC = ({ children }) => {
 
   /**
    * Constructs a basic query for finding documents
+   *
+   * TODO: figure out better naming to separate this from findDocumentById
    */
   const findDocuments: FindDocumentsFn = useCallback(
-    async (
+    (
       /**
        * Whether the query should consider removed documents
        */
       includeRemoved: boolean = false
     ) => {
       if (includeRemoved) {
-        return await db.documents.find()
+        return db.documents.find()
       } else {
-        return await db.documents.findNotRemoved()
+        return db.documents.findNotRemoved()
       }
     },
     [db.documents]

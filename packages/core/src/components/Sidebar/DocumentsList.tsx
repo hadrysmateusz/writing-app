@@ -114,8 +114,8 @@ export const DocumentsGroupList: React.FC<{
   const { primarySidebar } = useViewState()
 
   // TODO: extract most of this logic into a reusable hook
+  // TODO: use the new apis
   useEffect(() => {
-    // let groupSub: Subscription | undefined
     let documentsSub: Subscription | undefined
 
     const setup = async () => {

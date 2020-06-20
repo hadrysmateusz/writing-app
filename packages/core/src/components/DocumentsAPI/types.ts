@@ -1,9 +1,4 @@
-import {
-  DocumentDoc,
-  DocumentDocType,
-  GroupDoc,
-  DocumentDocMethods,
-} from "../Database"
+import { DocumentDoc, DocumentDocType, DocumentDocMethods } from "../Database"
 import { RxDocument, RxQuery } from "rxdb"
 
 export type DocumentsAPI = {
@@ -27,9 +22,7 @@ export type FindDocumentByIdFn = (
 
 export type FindDocumentsFn = (
   includeRemoved?: boolean
-) => Promise<
-  RxQuery<DocumentDocType, RxDocument<DocumentDocType, DocumentDocMethods>[]>
->
+) => RxQuery<DocumentDocType, RxDocument<DocumentDocType, DocumentDocMethods>[]>
 
 export type UpdateDocumentFn = (
   id: string,
