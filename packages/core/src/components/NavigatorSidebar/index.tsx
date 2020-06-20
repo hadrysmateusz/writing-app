@@ -57,7 +57,12 @@ export const NavigatorSidebar: React.FC<{}> = () => {
       <SectionHeader>Favorites</SectionHeader>
 
       {favorites.map((document) => (
-        <DocumentTreeItem key={document.id} depth={1} document={document} />
+        <DocumentTreeItem
+          key={document.id}
+          depth={1}
+          document={document}
+          icon="starFilled"
+        />
       ))}
 
       <SectionHeader>Collections</SectionHeader>
