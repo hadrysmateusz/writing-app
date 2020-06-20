@@ -1,24 +1,15 @@
 import React from "react"
 import styled from "styled-components/macro"
-import Icon from "./Icon"
+import Icon from "../Icon"
+import { StaticTreeItemProps } from "./types"
 
-const TreeItem: React.FC<{
-  icon?: string
-  depth?: number
-  /**
-   * Means that the item should get special rendering to make it stand out
-   * Replaces "isSpecial"
-   */
-  isSpecial?: boolean
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void
-  onContextMenu?: (event: React.MouseEvent<HTMLDivElement>) => void
-}> = ({
+export const TreeItem: React.FC<StaticTreeItemProps> = ({
   icon,
   depth = 0,
   children,
+  isSpecial = false,
   onClick,
   onContextMenu,
-  isSpecial = false,
   ...rest
 }) => {
   return (
@@ -75,5 +66,3 @@ const IconContainer = styled.div<{ isSpecial: boolean }>`
   color: ${(p) => (p.isSpecial ? "#858585" : "#5D5D5D")};
   font-size: 1.4em;
 `
-
-export default TreeItem

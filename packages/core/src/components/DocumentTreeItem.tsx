@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from "react"
 import { DocumentDoc } from "./Database"
 import { EditableText } from "./RenamingInput"
 import { useMainState } from "./MainState/MainStateProvider"
-import TreeItem from "./TreeItem"
+import { TreeItem } from "./TreeItem"
 import { formatOptional } from "../utils"
 import { useDocumentContextMenu } from "./DocumentContextMenu"
 

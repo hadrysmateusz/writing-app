@@ -4,7 +4,7 @@ import styled from "styled-components/macro"
 // TODO: move common components out of the sidebar direcotory
 import GroupTreeItem from "../Sidebar/GroupTreeItem"
 import { VIEWS } from "../Sidebar/types"
-import StaticTreeItem from "../TreeItem"
+import { TreeItem } from "../TreeItem"
 import { useMainState } from "../MainState/MainStateProvider"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu2"
 import { useViewState } from "../View/ViewStateProvider"
@@ -36,23 +36,23 @@ export const NavigatorSidebar: React.FC<{}> = () => {
     <OuterContainer onContextMenu={openMenu}>
       <SectionHeader>Library</SectionHeader>
 
-      <StaticTreeItem
+      <TreeItem
         icon="cloud"
         onClick={() => primarySidebar.switchView(VIEWS.ALL)}
         depth={1}
         isSpecial
       >
         All Documents
-      </StaticTreeItem>
+      </TreeItem>
 
-      <StaticTreeItem
+      <TreeItem
         icon="trash"
         onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
         depth={1}
         isSpecial
       >
         Trash
-      </StaticTreeItem>
+      </TreeItem>
 
       <SectionHeader>Favorites</SectionHeader>
 

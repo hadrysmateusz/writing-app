@@ -1,40 +1,45 @@
 import React, { useState, isValidElement, cloneElement, useMemo } from "react"
 import styled from "styled-components/macro"
-import TreeItem from "./TreeItem"
-import Icon from "./Icon"
+import { TreeItem } from "./TreeItem"
+import Icon from "../Icon"
 
-type RenderProps = {
-  isExpanded: boolean
-  expand: () => void
-  collapse: () => void
-  toggle: () => void
+import {
+  StatelessExpandableTreeItemProps,
+  StatefulExpandableTreeItemProps,
+  ExpandableChildrenRenderProps,
+} from "./types"
+
+// TODO: unify the static and expandable tree items and infer the type based on the presence and length of the childNodes prop
+
+export const ExpandableTreeItem: React.FC<StatefulExpandableTreeItemProps> = ({
+  startExpanded = false,
+  ...props
+}) => {
+  const [isExpanded, setIsExpanded] = useState(startExpanded)
+
+  return (
+    <StatelessExpandableTreeItem
+      isExpanded={isExpanded}
+      setIsExpanded={setIsExpanded}
+      {...props}
+    />
+  )
 }
 
-// TODO: create a stateless version
-// TODO: unify the static and expandable tree items and infer the type based on the presence and length of the childNodes prop
-const ExpandableTreeItem: React.FC<{
-  icon?: string
-  startExpanded?: boolean
-  depth?: number
-  hideToggleWhenEmpty?: boolean
-  childNodes: React.ReactNode[]
-  onBeforeExpand?: () => void
-  // TODO: allow any react event handlers and other common props to pass through
-  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void
-  onContextMenu?: (event: React.MouseEvent<HTMLDivElement>) => void
-}> = ({
+export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemProps> = ({
   icon,
-  startExpanded = false,
   hideToggleWhenEmpty = true,
   depth = 0,
   childNodes,
   children,
+  isExpanded,
+  isSpecial,
+  setIsExpanded,
   onBeforeExpand,
   onClick,
   onContextMenu,
 }) => {
   const isEmpty = childNodes.length === 0
-  const [isExpanded, setIsExpanded] = useState(startExpanded)
 
   const expand = () => {
     onBeforeExpand && onBeforeExpand()
@@ -52,7 +57,12 @@ const ExpandableTreeItem: React.FC<{
     }
   }
 
-  const renderProps: RenderProps = { isExpanded, expand, collapse, toggle }
+  const renderProps: ExpandableChildrenRenderProps = {
+    isExpanded,
+    expand,
+    collapse,
+    toggle,
+  }
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     // TODO: better handle the onClick event handler passed in from outside
@@ -97,7 +107,7 @@ const ExpandableTreeItem: React.FC<{
   return (
     // TODO: check if the context menu listener shouldn't be placed on the tree item instead
     <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
-      <TreeItem depth={depth}>
+      <TreeItem depth={depth} isSpecial={isSpecial}>
         <InnerContainer>
           {isCaretShown && (
             <CaretContainer onClick={handleToggleClick} isExpanded={isExpanded}>

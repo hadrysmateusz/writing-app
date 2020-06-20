@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback, useState } from "react"
 
-import ExpandableTreeItem from "../ExpandableTreeItem"
+import { ExpandableTreeItem } from "../TreeItem"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
 import {
   useContextMenu,
