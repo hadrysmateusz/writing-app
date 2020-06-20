@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef, useState, useEffect } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import styled from "styled-components/macro"
 
 import { NamingInput } from "./NamingInput"
@@ -27,8 +27,8 @@ export const useEditableText = (
   onRename: (value: string) => void
 ) => {
   const [isRenaming, setIsRenaming] = useState(false)
-  const inputRef = useRef<HTMLTextAreaElement>()
   const [value, setValue] = useState(outsideValue)
+  const inputRef = useRef<HTMLTextAreaElement>()
 
   const startRenaming = () => {
     setValue(outsideValue)

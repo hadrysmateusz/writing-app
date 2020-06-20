@@ -14,11 +14,12 @@ export const GroupsAPIProvider: React.FC = ({ children }) => {
    * in DataStore and switching the editor to the new document
    */
   const createGroup: CreateGroupFn = useCallback(
-    async (parentGroup: string | null) => {
+    async (parentGroup, values) => {
       const newGroup = await db.groups.insert({
         id: uuidv4(),
         name: "",
         parentGroup: parentGroup,
+        ...values,
       })
 
       return newGroup
@@ -30,7 +31,7 @@ export const GroupsAPIProvider: React.FC = ({ children }) => {
    * Rename group by id
    */
   const renameGroup: RenameGroupFn = useCallback(
-    async (groupId: string, name: string) => {
+    async (groupId, name) => {
       const original = await db.groups.findOne().where("id").eq(groupId).exec()
 
       if (original === null) {
@@ -54,7 +55,7 @@ export const GroupsAPIProvider: React.FC = ({ children }) => {
    * Handles deleting groups and its children
    */
   const removeGroup: RemoveGroupFn = useCallback(
-    async (groupId: string) => {
+    async (groupId) => {
       // TODO: consider creating findById static methods on all collections that will abstract this query
       const original = await db.groups.findOne().where("id").eq(groupId).exec()
 

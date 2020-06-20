@@ -10,6 +10,7 @@ type RenderProps = {
   toggle: () => void
 }
 
+// TODO: create a stateless version
 // TODO: unify the static and expandable tree items and infer the type based on the presence and length of the childNodes prop
 const ExpandableTreeItem: React.FC<{
   icon?: string

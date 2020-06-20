@@ -6,7 +6,10 @@ export type GroupsAPI = {
   removeGroup: RemoveGroupFn
 }
 
-export type CreateGroupFn = (parentGroup: string | null) => Promise<GroupDoc>
+export type CreateGroupFn = (
+  parentGroup: string | null,
+  values?: Partial<GroupDoc>
+) => Promise<GroupDoc>
 
 export type RemoveGroupFn = (groupId: string) => Promise<boolean>
 

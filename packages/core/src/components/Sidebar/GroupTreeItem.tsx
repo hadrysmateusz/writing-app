@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react"
+import React, { useMemo, useCallback, useState } from "react"
 
 import ExpandableTreeItem from "../ExpandableTreeItem"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
@@ -21,13 +21,32 @@ const GroupTreeItem: React.FC<{
   const { createDocument } = useDocumentsAPI()
   const { createGroup, renameGroup, removeGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false)
+
+  const {
+    startRenaming: startNamingNew,
+    getProps: getNamingNewProps,
+    stopRenaming,
+  } = useEditableText("", (value: string) => {
+    stopRenaming()
+    setIsCreatingGroup(false)
+    createGroup(group.id, { name: value })
+  })
+
+  const { startRenaming, getProps } = useEditableText(
+    formatOptional(group.name, ""),
+    (value: string) => {
+      renameGroup(group.id, value)
+    }
+  )
+
+  const handleNewGroup = (e) => {
+    setIsCreatingGroup(true)
+    startNamingNew()
+  }
 
   const handleNewDocument = () => {
     createDocument(group.id)
-  }
-
-  const handleNewGroup = () => {
-    createGroup(group.id)
   }
 
   const handleDeleteGroup = () => {
@@ -43,17 +62,27 @@ const GroupTreeItem: React.FC<{
     [group.name]
   )
 
-  const { startRenaming, getProps } = useEditableText(
-    groupName,
-    (value: string) => {
-      renameGroup(group.id, value)
-    }
-  )
-
   const handleRenameDocument = useCallback(() => {
     closeMenu()
     startRenaming()
   }, [closeMenu, startRenaming])
+
+  const childNodes = useMemo(() => {
+    const nodes = group.children.map((subgroup) => (
+      <GroupTreeItem key={subgroup.id} group={subgroup} />
+    ))
+
+    if (isCreatingGroup) {
+      nodes.unshift(
+        <EditableText
+          key="NEW_GROUP"
+          /* TODO: check if a unique key would be better here */ {...getNamingNewProps()}
+        />
+      )
+    }
+
+    return nodes
+  }, [getNamingNewProps, group.children, isCreatingGroup])
 
   return (
     <>
@@ -62,9 +91,7 @@ const GroupTreeItem: React.FC<{
         depth={depth}
         onContextMenu={openMenu}
         onClick={handleClick}
-        childNodes={group.children.map((subgroup) => (
-          <GroupTreeItem key={subgroup.id} group={subgroup} />
-        ))}
+        childNodes={childNodes}
       >
         <EditableText {...getProps()}>{groupName}</EditableText>
       </ExpandableTreeItem>
