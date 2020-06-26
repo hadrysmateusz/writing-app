@@ -6,7 +6,7 @@ import {
   useContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
-} from "../ContextMenu2"
+} from "../ContextMenu"
 import { useViewState } from "../View/ViewStateProvider"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useGroupsAPI } from "../Groups/GroupsContext"

@@ -6,7 +6,7 @@ import {
   ContextMenuItem,
   ContextSubmenu,
   ContextMenuSeparator,
-} from "./ContextMenu2"
+} from "./ContextMenu"
 import { DocumentDoc } from "./Database"
 import { useEditableText } from "./RenamingInput"
 import { useMainState } from "./MainState/MainStateProvider"

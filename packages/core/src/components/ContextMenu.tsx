@@ -1,15 +1,22 @@
-// This is a version without icons as it causes issues in some components
-// TODO: fix the above limitation
-
 import React, { useState, useRef, useCallback } from "react"
-import styled from "styled-components/macro"
+import styled, { css } from "styled-components/macro"
 import usePortal from "react-useportal"
 
 import { useOnClickOutside } from "../hooks/useOnClickOutside"
+import { BsCaretRightFill } from "react-icons/bs"
 
-// TODO: create components for submenus and separators
-
-export const useContextMenu = () => {
+// TODO: use ellipsis to hide overflow without hiding submenus (possible solutions include: portals, wrapper component for the static text)
+export const useContextMenu = ({
+  onBeforeOpen,
+  onAfterOpen,
+  onBeforeClose,
+  onAfterClose,
+}: {
+  onBeforeOpen?: () => void
+  onAfterOpen?: () => void
+  onBeforeClose?: () => void
+  onAfterClose?: () => void
+} = {}) => {
   // TODO: capture focus inside the context menu and restore it when it closes
   // TODO: maybe - replace the usePortal hook for more control (try using a single designated root DOM node instead of creating millions of empty divs)
   const { openPortal, closePortal, isOpen, Portal } = usePortal()
@@ -21,16 +28,21 @@ export const useContextMenu = () => {
     (event: React.MouseEvent) => {
       event.preventDefault()
       // TODO: make sure the context menu doesn't go outside the window
+      onBeforeOpen && onBeforeOpen()
+
       setX(event.pageX)
       setY(event.pageY)
       openPortal(event)
+      onAfterOpen && onAfterOpen()
     },
-    [openPortal]
+    [onAfterOpen, onBeforeOpen, openPortal]
   )
 
-  const closeMenu = useCallback(() => {
+  const closeMenu = () => {
+    onBeforeClose && onBeforeClose()
     closePortal()
-  }, [closePortal])
+    onAfterClose && onAfterClose()
+  }
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     /* Stops click events inside the context menu from propagating down the DOM tree 
@@ -76,12 +88,57 @@ export const ContextSubmenu: React.FC<{ text: string }> = ({
     <ContextMenuItem {...rest}>
       <SubmenuLabel>
         <div>{text}</div>
-        <div>&gt;</div>
+        <CaretContainer>
+          <BsCaretRightFill />
+        </CaretContainer>
       </SubmenuLabel>
       <SubmenuContainer>{children}</SubmenuContainer>
     </ContextMenuItem>
   )
 }
+
+export const ContextMenuItem: React.FC<{
+  disabled?: boolean
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void
+  onMouseDown?: (event: React.MouseEvent<HTMLDivElement>) => void
+}> = ({ disabled = false, onClick, onMouseDown, children, ...rest }) => {
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled || !onClick) return undefined
+    return onClick(event)
+  }
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (disabled || !onMouseDown) return undefined
+    return onMouseDown(event)
+  }
+
+  return (
+    <ContextMenuItemContainer
+      disabled={disabled}
+      onClick={handleClick}
+      onMouseDown={handleMouseDown}
+      {...rest}
+    >
+      {children}
+    </ContextMenuItemContainer>
+  )
+}
+
+const CaretContainer = styled.div`
+  font-size: 0.77em;
+  color: #c3c3c3;
+  margin-right: -5px;
+  padding-top: 2px;
+`
+
+const menuContainerCommon = css`
+  background: #383838;
+  border: 1px solid #1b1f23;
+  border-radius: 3px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  padding: 6px 0;
+  width: 200px;
+`
 
 const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
   /* Base function styles */
@@ -89,11 +146,7 @@ const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
   top: ${(p) => p.yPos}px;
   left: ${(p) => p.xPos}px;
   /* Visual styles */
-  background: #383838;
-  border: 1px solid #1b1f23;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-  padding: 6px 0;
-  min-width: 160px;
+  ${menuContainerCommon}
 `
 
 export const ContextMenuSeparator = styled.div`
@@ -102,39 +155,37 @@ export const ContextMenuSeparator = styled.div`
   margin: 6px 0;
 `
 
-export const ContextMenuItem = styled.div`
+export const ContextMenuItemContainer = styled.div<{ disabled?: boolean }>`
+  color: ${(p) => (p.disabled ? "#aaa" : "white")};
+  cursor: ${(p) => (p.disabled ? "default" : "pointer")};
+
+  ${(p) => !p.disabled && `:hover { background: #424242; }`}
+
   position: relative;
   padding: 6px 20px;
-  color: white;
   font-size: 12px;
-  cursor: pointer;
-  :hover {
-    background: #424242;
-  }
 `
 
 export const SubmenuLabel = styled.div`
   display: flex;
+  align-items: center;
   & *:first-child {
     margin-right: auto;
   }
 `
 
 export const SubmenuContainer = styled.div`
-  display: none;
+  /* Base styles */
   position: absolute;
   right: calc(-100% - 2px); /* -2px to account for borders */
   top: -7px; /* based on the padding of the the container and border width*/
-  background-color: red;
-  width: 100%;
-  z-index: 1;
-  ${ContextMenuItem}:hover & {
+  max-height: 322px;
+  overflow-y: auto;
+  /* Toggling logic */
+  display: none;
+  ${ContextMenuItemContainer}:hover & {
     display: block;
   }
-  /* reused styles from menu container - TODO: make this DRY */
-  background: #383838;
-  border: 1px solid #1b1f23;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-  padding: 6px 0;
-  min-width: 160px;
+  /* Visual styles */
+  ${menuContainerCommon}
 `

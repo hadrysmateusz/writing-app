@@ -6,7 +6,7 @@ import GroupTreeItem from "../Sidebar/GroupTreeItem"
 import { VIEWS } from "../Sidebar/types"
 import { TreeItem } from "../TreeItem"
 import { useMainState } from "../MainState/MainStateProvider"
-import { useContextMenu, ContextMenuItem } from "../ContextMenu2"
+import { useContextMenu, ContextMenuItem } from "../ContextMenu"
 import { useViewState } from "../View/ViewStateProvider"
 
 import createGroupTree from "../../helpers/createGroupTree"
