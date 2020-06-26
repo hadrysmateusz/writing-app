@@ -1,19 +1,25 @@
 import React from "react"
 import { RenderElementProps } from "slate-react"
 
-import { getElement } from "@slate-plugin-system/core"
-
 import { HeadingType, RenderElementHeadingOptions } from "./types"
-import { HeadingBig, HeadingSmall } from "./components"
+import {
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Heading5,
+  Heading6,
+} from "./components"
+import { Toolbar } from "../../../components/NodeToolbar"
 
 export const renderElementHeading = ({
   levels = 6,
-  H1 = HeadingBig, // level 1 is treated as a "Heading" on medium
-  H2 = HeadingSmall, // level 2 is treated as a "Sub-Heading" on medium
-  H3 = HeadingSmall, // level 3 is treated like level 2 on medium
-  H4 = HeadingSmall, // level 4 is treated like level 2 on medium
-  H5 = getElement("p"), // level 5 isn't supported on medium, it's rendered like regular text
-  H6 = getElement("p"), // level 6 isn't supported on medium, it's rendered like regular text
+  H1 = Heading1, // level 1 is treated as a "Heading" on medium
+  H2 = Heading2, // level 2 is treated as a "Sub-Heading" on medium
+  H3 = Heading3, // level 3 is treated like level 2 on medium
+  H4 = Heading4, // level 4 is treated like level 2 on medium
+  H5 = Heading5, // level 5 isn't supported on medium, it's rendered like regular text
+  H6 = Heading6, // level 6 isn't supported on medium, it's rendered like regular text
 }: RenderElementHeadingOptions = {}) => (props: RenderElementProps) => {
   const {
     element: { type },
