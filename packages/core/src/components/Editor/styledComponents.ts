@@ -27,6 +27,10 @@ export const EditableContainer = styled.div`
   font-size: 16px;
   line-height: 26px;
   color: #f3f3f3;
+  *::selection {
+    color: inherit;
+    background: #9cb8c5;
+  }
 `
 
 export const InsertBlockField = styled.div`
