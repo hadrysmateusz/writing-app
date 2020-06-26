@@ -104,11 +104,28 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
             </ContextMenuItem>
           </ContextSubmenu>
 
+          <ContextSubmenu text="List">
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO")
+              }}
+            >
+              Bulleted List
+            </ContextMenuItem>
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO")
+              }}
+            >
+              Numbered List
+            </ContextMenuItem>
+          </ContextSubmenu>
+
+          <ContextMenuSeparator />
+
           <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
             Paragraph
           </ContextMenuItem>
-
-          <ContextMenuSeparator />
 
           <ContextMenuItem onMouseDown={handleSetFormat(BLOCKQUOTE)}>
             Blockquote
