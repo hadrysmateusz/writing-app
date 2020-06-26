@@ -54,16 +54,20 @@ export const NavigatorSidebar: React.FC<{}> = () => {
         Trash
       </TreeItem>
 
-      <SectionHeader>Favorites</SectionHeader>
+      {favorites.length > 0 && (
+        <>
+          <SectionHeader>Favorites</SectionHeader>
 
-      {favorites.map((document) => (
-        <DocumentTreeItem
-          key={document.id}
-          depth={1}
-          document={document}
-          icon="starFilled"
-        />
-      ))}
+          {favorites.map((document) => (
+            <DocumentTreeItem
+              key={document.id}
+              depth={1}
+              document={document}
+              icon="starFilled"
+            />
+          ))}
+        </>
+      )}
 
       <SectionHeader>Collections</SectionHeader>
 
