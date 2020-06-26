@@ -1,31 +1,44 @@
-import React, { useMemo } from "react"
+import React from "react"
 import styled from "styled-components/macro"
 import { useMainState } from "./MainState/MainStateProvider"
 import { formatOptional } from "../utils"
 import Icon from "./Icon"
 import { useViewState } from "./View/ViewStateProvider"
+import { useEditableText, EditableText } from "./RenamingInput"
+import { useDocumentsAPI } from "./DocumentsAPI"
 
 export const Topbar: React.FC<{}> = () => {
   const { currentDocument } = useMainState()
   const { primarySidebar } = useViewState()
+  const { renameDocument } = useDocumentsAPI()
 
-  const title = useMemo(() => {
-    return currentDocument !== null
-      ? formatOptional(currentDocument.title, "Untitled")
-      : "Untitled"
-  }, [currentDocument])
+  const { getProps: getEditableProps } = useEditableText(
+    formatOptional(currentDocument?.title, ""),
+    (value: string) => {
+      if (currentDocument === null) return
+      renameDocument(currentDocument.id, value)
+    }
+  )
+
+  const title = formatOptional(currentDocument?.title, "Untitled")
 
   return (
     <TopbarContainer>
       <IconContainer
         onClick={() => {
-          console.log("toggling")
           primarySidebar.toggle()
         }}
       >
         <Icon icon="sidebarLeft" />
       </IconContainer>
-      <TitleContainer>{title}</TitleContainer>
+      <TitleContainer>
+        <EditableText
+          {...getEditableProps()}
+          disabled={currentDocument === null}
+        >
+          {title}
+        </EditableText>
+      </TitleContainer>
     </TopbarContainer>
   )
 }
@@ -55,7 +68,16 @@ const IconContainer = styled.div`
 `
 
 const TitleContainer = styled.div`
+  --width: 226px;
+
   margin-left: 16px;
+  letter-spacing: 0.01em;
+  max-width: var(--width);
+
+  .EditableText_editable {
+    padding: 2px 2px 1px;
+    width: var(--width);
+  }
 `
 
 const TopbarContainer = styled.div`
