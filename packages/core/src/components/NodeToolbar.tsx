@@ -2,6 +2,8 @@ import { Transforms, Node } from "slate"
 import React, { useRef } from "react"
 import { useEditor, ReactEditor, useFocused, useSelected } from "slate-react"
 import styled from "styled-components/macro"
+// Importing the icon component causes an error here
+import { FaEllipsisV } from "react-icons/fa"
 
 import { BLOCKQUOTE } from "../slate-plugins/elements/blockquote/types"
 import { CODE_BLOCK } from "../slate-plugins/elements/code-block"
@@ -69,11 +71,14 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
   */
   return isSelected && isFocused ? (
     <>
+      {/* MAKE SURE THE SIDETOOLBARCONTAINER HAS CHILDREN TO PREVENT SELECTION ERRORS */}
       <SideToolbarContainer
         onMouseDown={handleMouseDown}
-        onSelect={(e) => console.log(e)}
         contentEditable={false}
-      />
+      >
+        {/* <Icon icon="ellipsisVertical" /> */}
+        <FaEllipsisV />
+      </SideToolbarContainer>
       {isMenuOpen && (
         <ContextMenu>
           {/* TODO: replace with heading submenu  */}
@@ -115,12 +120,14 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
 
 const SideToolbarContainer = styled.div`
   position: absolute;
-  top: 5px;
-  left: -35px;
+  top: 3px;
+  font-size: 17px;
+  color: #41474d;
+  left: -25px;
   width: 20px;
   height: 20px;
   cursor: pointer;
   border-radius: 50%;
-  background: #41474d;
+  /* background: #41474d; */
   user-select: none;
 `
