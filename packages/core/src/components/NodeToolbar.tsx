@@ -17,7 +17,6 @@ import {
 } from "./ContextMenu"
 
 // The toolbar requires the parent element to have position: relative
-// The toolbar needs to not be put after the contentEditable contents of a slate node because it will result in the caret moving into it if the users clicks downarrow in the last block in the document (there might be other related issues with this) TODO: there are more issues - if you press "delete" at the end of an empty node while there is another node beneath the cursor will be moved inside the toolbar
 
 // TODO: this is incompatible with list items having other nodes inside (which is extremely problematic in many situations and should probably go)
 
@@ -58,17 +57,6 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
     closeMenu()
   }
 
-  /*
-    TODO: a possible solution to the selection error could be using a portal - but it would
-    require positioning the toolbar with js in a way that would react to every change in position 
-    of the node in real-time
-  */
-
-  /*
-    TODO: a solution to the dom selection / toolbar issue might be to create a "selectionchange" listener that will check if the anchor or focus of the dom selection is inside a node that's not a text node and attempt to move it into the closest text child (that's also inside a node with the correct data- attributes created by slate (to make sure it doesn't end up somewhere inside the toolbar))
-
-    Or a more comprehansive solution could be proposed upstream to how contenteditable is set on nodes inside editable - it seems to default to inherit which makes every dom node editable while only the text content inside the most low-level dom node of a slate node should be editable (or for super custom node types, contentEditable=true could be set manually in the node component)
-  */
   return isSelected && isFocused ? (
     <>
       {/* MAKE SURE THE SIDETOOLBARCONTAINER HAS CHILDREN TO PREVENT SELECTION ERRORS */}
@@ -76,13 +64,10 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
         onMouseDown={handleMouseDown}
         contentEditable={false}
       >
-        {/* <Icon icon="ellipsisVertical" /> */}
         <FaEllipsisV />
       </SideToolbarContainer>
       {isMenuOpen && (
         <ContextMenu>
-          {/* TODO: replace with heading submenu  */}
-
           <ContextSubmenu text="Heading">
             <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
               Heading 1
@@ -160,6 +145,5 @@ const SideToolbarContainer = styled.div`
   height: 20px;
   cursor: pointer;
   border-radius: 50%;
-  /* background: #41474d; */
   user-select: none;
 `
