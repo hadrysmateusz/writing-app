@@ -9,8 +9,10 @@ export type EditableTextProps = {
   value: string
   isEditing: boolean
   inputRef: React.MutableRefObject<HTMLTextAreaElement | undefined>
+  disabled?: boolean
   onApply: (value: string) => void
   onChange: (value: string) => void
+  startRenaming: () => void
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void
   /**
    * onKeyDown should return a "shouldContinue" boolean
@@ -45,12 +47,6 @@ export const useEditableText = (
     onRename(value)
   }
 
-  // useEffect(() => {
-  //   if (!isRenaming) {
-  //     setTitleValue(outsideValue)
-  //   }
-  // }, [document.title, isRenaming])
-
   useEffect(() => {
     // Focus and select the input
     if (isRenaming && inputRef?.current) {
@@ -69,6 +65,7 @@ export const useEditableText = (
       isEditing: isRenaming,
       onChange: setValue,
       onApply,
+      startRenaming,
     }),
   }
 }
@@ -80,10 +77,12 @@ export const EditableText: React.FC<EditableTextProps> = ({
   placeholder = "Untitled",
   children,
   className,
+  disabled = false,
   onKeyDown = () => true,
   onClick,
   onChange,
   onApply,
+  startRenaming,
 }) => {
   const innerOnKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (!isEditing) {
@@ -97,9 +96,13 @@ export const EditableText: React.FC<EditableTextProps> = ({
     onChange(newValue)
   }
 
+  const handleDoubleClick = () => {
+    startRenaming()
+  }
+
   return (
     <Container className={className}>
-      {isEditing ? (
+      {!disabled && isEditing ? (
         <StyledNamingInput
           // TODO: resolve this type issue
           ref={inputRef}
@@ -111,7 +114,11 @@ export const EditableText: React.FC<EditableTextProps> = ({
           className="EditableText_editable"
         />
       ) : (
-        <Static onClick={onClick} className="EditableText_static">
+        <Static
+          onClick={onClick}
+          className="EditableText_static"
+          onDoubleClick={handleDoubleClick}
+        >
           {children}
         </Static>
       )}
