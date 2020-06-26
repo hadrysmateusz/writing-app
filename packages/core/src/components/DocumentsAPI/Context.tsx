@@ -17,6 +17,7 @@ import {
   UpdateDocumentFn,
   FindDocumentsFn,
   DocumentsAPI,
+  PermanentlyRemoveDocumentFn,
 } from "./types"
 
 import { useRequiredContext } from "../../hooks/useRequiredContext"
@@ -184,9 +185,35 @@ export const DocumentsAPIProvider: React.FC = ({ children }) => {
 
       try {
         await original.softRemove()
+        return true
       } catch (error) {
         // TODO: return this and create a system to show when something like this fails
         console.warn("The document was not removed")
+        return false
+      }
+    },
+    [findDocumentById]
+  )
+
+  /**
+   * Permanently removes a document
+   *
+   * TODO: switch to another document or empty state after deleting
+   */
+  const permanentlyRemoveDocument: PermanentlyRemoveDocumentFn = useCallback(
+    async (documentId: string) => {
+      const original = await findDocumentById(documentId, true)
+      if (original === null) {
+        throw new Error(`no document found matching this id (${documentId})`)
+      }
+
+      try {
+        await original.remove()
+        return true
+      } catch (error) {
+        // TODO: return this and create a system to show when something like this fails
+        console.warn("The document was not removed")
+        return false
       }
     },
     [findDocumentById]
@@ -230,6 +257,7 @@ export const DocumentsAPIProvider: React.FC = ({ children }) => {
         toggleDocumentFavorite,
         createDocument,
         removeDocument,
+        permanentlyRemoveDocument,
         restoreDocument,
         renameDocument,
         moveDocumentToGroup,

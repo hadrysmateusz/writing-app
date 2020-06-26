@@ -9,6 +9,7 @@ export type DocumentsAPI = {
   renameDocument: RenameDocumentFn
   moveDocumentToGroup: MoveDocumentToGroupFn
   removeDocument: RemoveDocumentFn
+  permanentlyRemoveDocument: PermanentlyRemoveDocumentFn
   restoreDocument: RestoreDocumentFn
   createDocument: CreateDocumentFn
 }
@@ -39,7 +40,11 @@ export type RenameDocumentFn = (
   title: string
 ) => Promise<DocumentDoc>
 
-export type RemoveDocumentFn = (documentId: string) => Promise<void>
+export type RemoveDocumentFn = (documentId: string) => Promise<boolean>
+
+export type PermanentlyRemoveDocumentFn = (
+  documentId: string
+) => Promise<boolean>
 
 export type RestoreDocumentFn = (documentId: string) => Promise<DocumentDoc>
 
