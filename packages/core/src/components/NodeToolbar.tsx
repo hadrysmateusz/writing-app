@@ -2,7 +2,6 @@ import { Transforms, Node } from "slate"
 import React, { useRef } from "react"
 import { useEditor, ReactEditor, useFocused, useSelected } from "slate-react"
 import styled from "styled-components/macro"
-// Importing the icon component causes an error here
 import { FaEllipsisV } from "react-icons/fa"
 
 import { BLOCKQUOTE } from "../slate-plugins/elements/blockquote/types"
@@ -14,6 +13,7 @@ import {
   useContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
+  ContextSubmenu,
 } from "./ContextMenu"
 
 // The toolbar requires the parent element to have position: relative
@@ -82,12 +82,27 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
       {isMenuOpen && (
         <ContextMenu>
           {/* TODO: replace with heading submenu  */}
-          <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
-            Heading 1
-          </ContextMenuItem>
-          <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H2)}>
-            Heading 2
-          </ContextMenuItem>
+
+          <ContextSubmenu text="Heading">
+            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
+              Heading 1
+            </ContextMenuItem>
+            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H2)}>
+              Heading 2
+            </ContextMenuItem>
+            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H3)}>
+              Heading 3
+            </ContextMenuItem>
+            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H4)}>
+              Heading 4
+            </ContextMenuItem>
+            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H5)}>
+              Heading 5
+            </ContextMenuItem>
+            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H6)}>
+              Heading 6
+            </ContextMenuItem>
+          </ContextSubmenu>
 
           <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
             Paragraph
