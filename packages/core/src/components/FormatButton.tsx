@@ -18,7 +18,7 @@ const FormatButton = ({
   const isActive = isFormatActive(editor, format)
 
   const defaultOnMouseDown = useCallback(
-    (event) => {
+    (event: React.MouseEvent) => {
       event.preventDefault()
       toggleFormat(editor, format)
     },
