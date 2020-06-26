@@ -30,36 +30,42 @@ export const renderElementHeading = ({
   if (levels >= 1 && type === HeadingType.H1)
     return (
       <H1 {...attributes} data-slate-type={HeadingType.H1}>
+        <Toolbar nodeRef={attributes.ref} />
         {children}
       </H1>
     )
   if (levels >= 2 && type === HeadingType.H2)
     return (
       <H2 {...attributes} data-slate-type={HeadingType.H2}>
+        <Toolbar nodeRef={attributes.ref} />
         {children}
       </H2>
     )
   if (levels >= 3 && type === HeadingType.H3)
     return (
       <H3 {...attributes} data-slate-type={HeadingType.H3}>
+        <Toolbar nodeRef={attributes.ref} />
         {children}
       </H3>
     )
   if (levels >= 4 && type === HeadingType.H4)
     return (
       <H4 {...attributes} data-slate-type={HeadingType.H4}>
+        <Toolbar nodeRef={attributes.ref} />
         {children}
       </H4>
     )
   if (levels >= 5 && type === HeadingType.H5)
     return (
       <H5 {...attributes} data-slate-type={HeadingType.H5}>
+        <Toolbar nodeRef={attributes.ref} />
         {children}
       </H5>
     )
   if (levels >= 6 && type === HeadingType.H6)
     return (
       <H6 {...attributes} data-slate-type={HeadingType.H6}>
+        <Toolbar nodeRef={attributes.ref} />
         {children}
       </H6>
     )
