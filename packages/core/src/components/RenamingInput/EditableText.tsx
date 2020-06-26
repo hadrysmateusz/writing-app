@@ -137,7 +137,17 @@ const Static = styled.div`
 `
 
 const StyledNamingInput = styled(NamingInput)`
-  color: #fbfbfb;
-  font-family: "Segoe UI", "Open sans", "sans-serif";
-  font-size: 12px;
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+
+  /* These styles are defaults that are used almost everywhere but can still be overriden using the className of the component*/
+  border: 1px solid #41474d;
+  border-radius: 3px;
+  padding: 1px 2px;
+
+  ::selection {
+    color: inherit;
+    background: #9cb8c5;
+  }
 `

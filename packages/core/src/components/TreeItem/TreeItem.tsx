@@ -48,12 +48,6 @@ const OuterContainer = styled.div<{ depth: number }>`
 
   cursor: pointer;
   user-select: none;
-
-  .EditableText_editable {
-    border: 1px solid #41474d;
-    border-radius: 3px;
-    padding: 3px 5px;
-  }
 `
 
 const InnerContainer = styled.div<{ isSpecial: boolean }>`

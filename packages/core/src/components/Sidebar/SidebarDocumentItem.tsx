@@ -128,6 +128,10 @@ const Title = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  .EditableText_editable {
+    padding: 1px 2px 0;
+  }
 `
 
 const Snippet = styled.div`
@@ -170,12 +174,6 @@ const MainContainer = styled.div<{ isCurrent: boolean }>`
 
   :hover {
     background-color: #252525;
-  }
-
-  .EditableText_editable {
-    border: 1px solid #41474d;
-    border-radius: 3px;
-    padding: 3px 5px;
   }
 `
 
