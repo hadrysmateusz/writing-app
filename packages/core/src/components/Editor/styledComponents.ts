@@ -33,14 +33,3 @@ export const InsertBlockField = styled.div`
   height: 150px;
   cursor: text;
 `
-
-export const TrashBanner = styled.div`
-  background-color: #db4141;
-  height: 40px;
-  width: 100%;
-  color: white;
-  font-size: 13px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`

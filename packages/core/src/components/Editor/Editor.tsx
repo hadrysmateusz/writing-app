@@ -1,8 +1,13 @@
-import React, { KeyboardEvent, useState, useRef, useEffect } from "react"
+import React, {
+  KeyboardEvent,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react"
 import styled from "styled-components/macro"
 import { useEditor, ReactEditor } from "slate-react"
 import { Transforms, Path, Editor, Node } from "slate"
-import { Editable, OnKeyDown } from "@slate-plugin-system/core"
 import isHotkey from "is-hotkey"
 import { cloneDeep } from "lodash"
 
@@ -12,6 +17,7 @@ import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
 import { DocumentDoc } from "../Database"
 import { useMainState } from "../MainState/MainStateProvider"
+import { Editable, OnKeyDown } from "../../slate-plugin-system"
 
 import {
   EditableContainer,
@@ -19,7 +25,6 @@ import {
   OutermostContainer,
   InsertBlockField,
   InnerContainer,
-  TrashBanner,
 } from "./styledComponents"
 import { useDocumentsAPI } from "../DocumentsAPI"
 
@@ -60,17 +65,17 @@ const EditorComponent: React.FC<{
         return
       }
       // this checks if both anchor and focus nodes of the DOM selection are in a node that is not a TEXT_NODE (which suggests that the selection is invalid)
-      if (
-        selection &&
-        selection.focusNode &&
-        selection.anchorNode &&
-        (selection.anchorNode.nodeType !== 3 ||
-          selection.focusNode.nodeType !== 3)
-      ) {
+      if (selection && selection.focusNode && selection.anchorNode) {
         // restore the DOM selection from slate selection
         const slateNode = Node.get(editor, editor.selection.anchor.path)
         const domNode = ReactEditor.toDOMNode(editor, slateNode)
-        selection.setPosition(domNode)
+        const editorEl = ReactEditor.toDOMNode(editor, editor)
+        if (
+          domNode.closest(`[data-slate-editor]`) === editorEl &&
+          domNode.closest(`[data-slate-node]`) === editorEl
+        ) {
+          selection.setPosition(domNode)
+        }
       }
     }, 0)
   }
@@ -165,7 +170,9 @@ const EditorComponent: React.FC<{
   return (
     <OutermostContainer>
       {currentDocument.isDeleted && (
-        <TrashBanner>This document is in Trash</TrashBanner>
+        <TrashBanner documentId={currentDocument.id}>
+          This document is in Trash
+        </TrashBanner>
       )}
       <OuterContainer>
         <InnerContainer>
@@ -193,6 +200,67 @@ const EditorComponent: React.FC<{
     </OutermostContainer>
   )
 }
+
+const TrashBanner: React.FC<{ documentId: string }> = ({ documentId }) => {
+  const { restoreDocument, permanentlyRemoveDocument } = useDocumentsAPI()
+
+  const handleRestoreDocument = useCallback(() => {
+    restoreDocument(documentId)
+  }, [documentId, restoreDocument])
+
+  const handlePermanentlyRemoveDocument = useCallback(() => {
+    permanentlyRemoveDocument(documentId)
+  }, [documentId, permanentlyRemoveDocument])
+
+  return (
+    <TrashBannerContainer>
+      <div>This document is in Trash</div>
+      <button onClick={handleRestoreDocument}>Restore</button>
+      <button onClick={handlePermanentlyRemoveDocument}>
+        Delete permanently
+      </button>
+    </TrashBannerContainer>
+  )
+}
+
+export const TrashBannerContainer = styled.div`
+  background-color: #db4141;
+  height: 44px;
+  width: 100%;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+  button {
+    cursor: pointer;
+    display: block;
+    border: 1px solid white;
+    background: transparent;
+    border-radius: 2px;
+    padding: 4px 14px;
+    font-family: "Poppins";
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+
+    transition: background-color 200ms ease;
+
+    :hover {
+      background-color: #e34d4d;
+    }
+
+    :active {
+      background-color: #d13b3b;
+    }
+
+    /* TODO: figure out focus / outline styles */
+  }
+  > * + * {
+    margin-left: 12px;
+  }
+`
 
 const StyledNamingInput = styled(NamingInput)`
   margin-top: 16px;
