@@ -13,6 +13,7 @@ import {
   FaStar,
   FaRegStar,
   FaEllipsisV,
+  FaInbox,
 } from "react-icons/fa"
 import {
   AiFillCloud,
@@ -71,6 +72,7 @@ const iconLibrary = {
   folderClosed: AiFillFolder,
   folderEmpty: AiOutlineFolder,
   ellipsisVertical: FaEllipsisV,
+  inbox: FaInbox,
 }
 
 export default iconLibrary
