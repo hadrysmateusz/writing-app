@@ -84,9 +84,9 @@ export const Topbar: React.FC<{}> = () => {
               >
                 Inbox
               </ContextMenuItem>
-              <ContextMenuSeparator />
             </>
           )}
+
           {groups.map((group) => (
             <ContextMenuItem
               key={group.id}
@@ -101,6 +101,18 @@ export const Topbar: React.FC<{}> = () => {
               {formatOptional(group.name, "Unnamed Collection")}
             </ContextMenuItem>
           ))}
+
+          <ContextMenuSeparator />
+
+          <ContextMenuItem
+            onClick={() => {
+              console.warn("TODO")
+            }}
+          >
+            Create new
+          </ContextMenuItem>
+
+          {/* TODO: add an option to create new group and move it there (DO THE SAME IN THE GROUP TREE ITEM) */}
         </ContextMenu>
       )}
     </TopbarContainer>
@@ -143,6 +155,7 @@ const SeparatorContainer = styled.div`
 
 const GroupContainer = styled.div`
   margin-left: 16px;
+  cursor: pointer;
 `
 
 const TitleContainer = styled.div`
