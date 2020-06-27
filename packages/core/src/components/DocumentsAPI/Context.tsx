@@ -146,7 +146,7 @@ export const DocumentsAPIProvider: React.FC = ({ children }) => {
    * Move document to a different group
    */
   const moveDocumentToGroup: MoveDocumentToGroupFn = useCallback(
-    async (documentId: string, groupId: string) => {
+    async (documentId: string, groupId: string | null) => {
       // TODO: not sure if this function should include removed documents
       return updateDocument(documentId, { parentGroup: groupId }, true)
     },

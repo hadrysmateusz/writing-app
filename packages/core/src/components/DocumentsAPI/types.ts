@@ -50,7 +50,7 @@ export type RestoreDocumentFn = (documentId: string) => Promise<DocumentDoc>
 
 export type MoveDocumentToGroupFn = (
   documentId: string,
-  title: string
+  groupId: string | null
 ) => Promise<DocumentDoc>
 
 export type ToggleDocumentFavoriteFn = (
