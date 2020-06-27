@@ -7,6 +7,7 @@ import Main from "./Main"
 import { MainStateProvider } from "./MainState/MainStateProvider"
 import { DocumentsAPIProvider } from "./DocumentsAPI"
 import { GroupsAPIProvider } from "./Groups/GroupsProvider"
+import GlobalStyles from "./GlobalStyles"
 
 const Root = () => (
   <DatabaseProvider>
@@ -15,6 +16,7 @@ const Root = () => (
         <GroupsAPIProvider>
           <MainStateProvider>
             <ViewStateProvider>
+              <GlobalStyles />
               <Main />
             </ViewStateProvider>
           </MainStateProvider>
