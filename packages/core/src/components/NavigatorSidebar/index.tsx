@@ -46,6 +46,15 @@ export const NavigatorSidebar: React.FC<{}> = () => {
       </TreeItem>
 
       <TreeItem
+        icon="inbox"
+        onClick={() => primarySidebar.switchView(VIEWS.INBOX)}
+        depth={1}
+        isSpecial
+      >
+        Inbox
+      </TreeItem>
+
+      <TreeItem
         icon="trash"
         onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
         depth={1}
@@ -88,6 +97,38 @@ export const NavigatorSidebar: React.FC<{}> = () => {
     </OuterContainer>
   )
 }
+
+// TODO: work in progress useSubscription hook
+// function useSubscription<RxDocumentType, RxQueryResult>(collection: string, queryFactory: any): RxQueryResult {
+//   const [value, setValue] = useState<RxQueryResult>()
+//   const [isLoading, setIsLoading] = useState(true)
+
+//   const db = useDatabase()
+
+//   useEffect(() => {
+//     let sub: Subscription | undefined
+
+//     const setup = async () => {
+//       const documentsQuery = queryFactory(db[collection])
+
+//       const newDocuments = await documentsQuery.exec()
+//       setValue(newDocuments)
+//       setIsLoading(false)
+
+//       sub = documentsQuery.$.subscribe((newDocuments) => {
+//         setDocuments(newDocuments)
+//       })
+//     }
+
+//     setup()
+
+//     return () => {
+//       if (sub) {
+//         sub.unsubscribe()
+//       }
+//     }
+//   }, [findDocuments])
+// }
 
 const OuterContainer = styled.div`
   font-size: 12px;

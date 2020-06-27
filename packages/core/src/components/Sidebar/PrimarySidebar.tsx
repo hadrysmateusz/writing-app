@@ -6,6 +6,7 @@ import {
   AllDocumentsList,
   DocumentsGroupList,
   TrashDocumentsList,
+  InboxDocumentsList,
 } from "./DocumentsList"
 import { VIEWS } from "./types"
 import { useDocumentsAPI } from "../DocumentsAPI"
@@ -22,6 +23,18 @@ export const PrimarySidebar: React.FC<{}> = () => {
           <Container>
             <InnerContainer>
               <AllDocumentsList />
+            </InnerContainer>
+            <NewButton onClick={() => createDocument(null)}>
+              + Create New
+            </NewButton>
+          </Container>
+        )
+      }
+      case VIEWS.INBOX: {
+        return (
+          <Container>
+            <InnerContainer>
+              <InboxDocumentsList />
             </InnerContainer>
             <NewButton onClick={() => createDocument(null)}>
               + Create New
