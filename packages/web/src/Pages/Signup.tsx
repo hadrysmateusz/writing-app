@@ -2,7 +2,7 @@ import React, { useState, FormEvent } from "react"
 import { Link, Redirect } from "react-router-dom"
 import { Auth } from "aws-amplify"
 
-import { useAppContext } from "@writing-tool/core"
+import { useAuthContext } from "@writing-tool/core"
 
 const Signup = () => {
   const [email, setEmail] = useState("")
@@ -10,7 +10,7 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [confirmationCode, setConfirmationCode] = useState("")
   const [newUser, setNewUser] = useState<any>(null)
-  const { setIsAuthenticated, isAuthenticated } = useAppContext()
+  const { setIsAuthenticated, isAuthenticated } = useAuthContext()
   const [isLoading, setIsLoading] = useState(false)
 
   const validateForm = () => {

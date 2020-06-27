@@ -8,7 +8,7 @@ import {
 } from "react-router-dom"
 
 import { useAsyncEffect } from "@writing-tool/core/src/hooks"
-import { AppContextProvider } from "@writing-tool/core"
+import { AuthContextProvider } from "@writing-tool/core"
 
 import {
   MediumAuthRedirectPage,
@@ -34,7 +34,7 @@ export const App = () => {
   }, [])
 
   return isAuthenticating ? null : (
-    <AppContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
+    <AuthContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
       <Router>
         <Switch>
           <Route exact path="/login">
@@ -54,6 +54,6 @@ export const App = () => {
           </Route>
         </Switch>
       </Router>
-    </AppContextProvider>
+    </AuthContextProvider>
   )
 }

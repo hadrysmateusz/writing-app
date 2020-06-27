@@ -2,11 +2,11 @@ import React from "react"
 import { Auth } from "aws-amplify"
 import { useHistory } from "react-router-dom"
 
-import { useAppContext } from "../utils/appContext"
+import { useAuthContext } from "./Auth"
 
 export const LogoutButton = () => {
   const history = useHistory()
-  const { setIsAuthenticated } = useAppContext()
+  const { setIsAuthenticated } = useAuthContext()
 
   const handleLogout = async () => {
     await Auth.signOut()
