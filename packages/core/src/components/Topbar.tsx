@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import styled from "styled-components/macro"
 import { useMainState } from "./MainState/MainStateProvider"
 import { formatOptional } from "../utils"
@@ -6,11 +6,17 @@ import Icon from "./Icon"
 import { useViewState } from "./View/ViewStateProvider"
 import { useEditableText, EditableText } from "./RenamingInput"
 import { useDocumentsAPI } from "./DocumentsAPI"
+import {
+  useContextMenu,
+  ContextMenuItem,
+  ContextMenuSeparator,
+} from "./ContextMenu"
 
 export const Topbar: React.FC<{}> = () => {
-  const { currentDocument } = useMainState()
+  const { currentDocument, groups } = useMainState()
   const { primarySidebar } = useViewState()
-  const { renameDocument } = useDocumentsAPI()
+  const { renameDocument, moveDocumentToGroup } = useDocumentsAPI()
+  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
 
   const { getProps: getEditableProps } = useEditableText(
     formatOptional(currentDocument?.title, ""),
@@ -21,6 +27,23 @@ export const Topbar: React.FC<{}> = () => {
   )
 
   const title = formatOptional(currentDocument?.title, "Untitled")
+  const parentGroupId =
+    currentDocument === null ? null : currentDocument.parentGroup
+
+  // TODO: extract this to helper function or hook
+  const groupName = useMemo(() => {
+    if (parentGroupId === null) {
+      return null
+    }
+
+    const group = groups.find((group) => group.id === parentGroupId)
+
+    if (group === undefined) {
+      return null
+    }
+
+    return group.name
+  }, [parentGroupId, groups])
 
   return (
     <TopbarContainer>
@@ -31,6 +54,12 @@ export const Topbar: React.FC<{}> = () => {
       >
         <Icon icon="sidebarLeft" />
       </IconContainer>
+      <GroupContainer onClick={openMenu}>
+        {groupName ?? <InboxContainer>Inbox</InboxContainer>}
+      </GroupContainer>
+      <SeparatorContainer>
+        <Icon icon={"caretRight"} />
+      </SeparatorContainer>
       <TitleContainer>
         <EditableText
           {...getEditableProps()}
@@ -39,6 +68,41 @@ export const Topbar: React.FC<{}> = () => {
           {title}
         </EditableText>
       </TitleContainer>
+
+      {isMenuOpen && (
+        <ContextMenu>
+          {groupName !== null && (
+            <>
+              <ContextMenuItem
+                onClick={() => {
+                  if (currentDocument === null) {
+                    // TODO: handle new documents
+                  } else {
+                    moveDocumentToGroup(currentDocument.id, null)
+                  }
+                }}
+              >
+                Inbox
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+            </>
+          )}
+          {groups.map((group) => (
+            <ContextMenuItem
+              key={group.id}
+              onClick={() => {
+                if (currentDocument === null) {
+                  // TODO: handle new documents
+                } else {
+                  moveDocumentToGroup(currentDocument.id, group.id)
+                }
+              }}
+            >
+              {formatOptional(group.name, "Unnamed Collection")}
+            </ContextMenuItem>
+          ))}
+        </ContextMenu>
+      )}
     </TopbarContainer>
   )
 }
@@ -67,10 +131,23 @@ const IconContainer = styled.div`
   }
 `
 
+const InboxContainer = styled.div`
+  color: #a3a3a3;
+`
+
+const SeparatorContainer = styled.div`
+  color: #545454;
+  font-size: 10px;
+  margin: 0 10px;
+`
+
+const GroupContainer = styled.div`
+  margin-left: 16px;
+`
+
 const TitleContainer = styled.div`
   --width: 226px;
 
-  margin-left: 16px;
   letter-spacing: 0.01em;
   max-width: var(--width);
 
