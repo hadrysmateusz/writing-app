@@ -41,10 +41,10 @@
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
-    "electron": "8.2.1",
-    "electron-builder": "^22.4.1",
-    "nodemon": "^2.0.3",
-    "typescript": "^3.8.3",
+    "electron": "9.0.5",
+    "electron-builder": "^22.7.0",
+    "nodemon": "^2.0.4",
+    "typescript": "^3.9.5",
     "wait-on": "^4.0.2"
   }
 }
