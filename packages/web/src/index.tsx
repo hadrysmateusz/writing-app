@@ -1,6 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { Amplify } from "aws-amplify"
+import { Amplify, Auth } from "aws-amplify"
 
 import "typeface-ibm-plex-mono"
 import "typeface-open-sans"
@@ -15,6 +15,8 @@ import aws_exports from "./aws-exports"
 import { loadDevTools, loadConfig } from "@writing-tool/core"
 
 Amplify.configure(aws_exports)
+
+console.log(Auth.currentSession()) // TODO: this is for debugging only
 
 // load and install the dev tools (if they need to be)
 // and when that's done, let's render the app

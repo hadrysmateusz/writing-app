@@ -2,6 +2,8 @@ import React, { useState, useContext, createContext, useEffect } from "react"
 import { addRxPlugin, createRxDatabase } from "rxdb"
 import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
+import PouchDB from "pouchdb-core"
+import { fetch } from "pouchdb-fetch"
 import { documentSchema, groupSchema } from "./Schema"
 import {
   MyDatabaseCollections,
@@ -44,8 +46,10 @@ const collections = [
   },
 ]
 
+console.log(window.location)
+
 const dbName = "writingtooldocumentsdb" // TODO: rename to something more general
-const syncURL = "http://" + window.location.hostname + ":10102/"
+const syncURL = "http://localhost:5984/"
 
 const DatabaseContext = createContext<MyDatabase | null>(null)
 
@@ -134,16 +138,48 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       // sync
       console.log("DatabaseService: setting up sync...")
       // TODO: check if sync returns a promise to be resolved
-      console.warn("Sync disabled: Check the Database.tsx file")
-      // collections
-      //   .filter((col) => col.sync)
-      //   .map((col) => col.name)
-      //   .forEach((colName) =>
-      //     db[colName].sync({
-      //       remote: syncURL + colName + "/",
-      //     })
-      //   )
+      // console.warn("Sync disabled: Check the Database.tsx file")
+
+      collections
+        .filter((col) => col.sync)
+        .map((col) => col.name)
+        .forEach((colName) =>
+          db[colName].sync({
+            remote: new PouchDB(
+              `http://admin:kurczok99@localhost:5984/${colName}/`,
+              {
+                fetch: (url, opts) => {
+                  opts = {
+                    ...opts,
+                    credentials: "include", // TODO: investigate the necessity of this option for jwt auth
+                  }
+
+                  // TODO: set the Authorization header to "Bearer {CognitoJWT}" for jwt auth or use the headers below for proxy auth
+
+                  // opts.headers = [["X-Auth-CouchDB-UserName", "test"]]
+
+                  // opts.headers["X-Auth-CouchDB-UserName"] = "test"
+                  // opts.headers["X-Auth-CouchDB-Token"] = "token"
+                  // opts.headers["X-Auth-CouchDB-Roles"] = "couchroles"
+
+                  // opts?.headers?.set("X-test", "test123")
+
+                  return fetch(url, opts)
+                },
+              }
+            ),
+            waitForLeadership: true,
+            options: {
+              live: true,
+              retry: true,
+            },
+          })
+        )
       console.log("DatabaseService: sync set up")
+
+      db.waitForLeadership().then(() => {
+        console.log("Long lives the king!") // <- runs when db becomes leader
+      })
 
       setDatabase(db) // TODO: check if a ref (or a simple global singleton) wouldn't be more appropriate
       setIsLoading(false)
