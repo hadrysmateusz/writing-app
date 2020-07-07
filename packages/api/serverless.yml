@@ -6,89 +6,54 @@ frameworkVersion: ">=1.1.0 <2.0.0"
 
 custom:
   stage: ${opt:stage, self:provider.stage}
-  usersTableName: ${self:service}-${self:custom.stage}-users
+  # usersTableName: ${self:service}-${self:custom.stage}-users
 
 provider:
   name: aws
   stage: dev
   runtime: nodejs12.x
   region: us-east-1
-  environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:DescribeTable
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:provider.environment.DYNAMODB_TABLE}"
+  # environment:
+  #   DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  # iamRoleStatements:
+  #   - Effect: Allow
+  #     Action:
+  #       - dynamodb:DescribeTable
+  #       - dynamodb:Query
+  #       - dynamodb:Scan
+  #       - dynamodb:GetItem
+  #       - dynamodb:PutItem
+  #       - dynamodb:UpdateItem
+  #       - dynamodb:DeleteItem
+  #     Resource: "arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
-  create:
-    handler: documents/create.main
+  postConfirmation:
+    handler: auth-triggers/postConfirmation.main
     events:
-      - http:
-          path: documents
-          method: post
-          cors: true
-          authorizer: aws_iam
-  get:
-    handler: documents/get.main
-    events:
-      - http:
-          path: documents/{id}
-          method: get
-          cors: true
-          authorizer: aws_iam
-  update:
-    handler: documents/update.main
-    events:
-      - http:
-          path: documents/{id}
-          method: put
-          cors: true
-          authorizer: aws_iam
-  list:
-    handler: documents/list.main
-    events:
-      - http:
-          path: documents
-          method: get
-          cors: true
-          authorizer: aws_iam
-  delete:
-    handler: documents/delete.main
-    events:
-      - http:
-          path: notes/{id}
-          method: delete
-          cors: true
-          authorizer: aws_iam
+      - cognitoUserPool:
+          trigger: PostConfirmation
+          # TODO: set up the user pool here
 
-resources:
-  Resources:
-    DocumentsTable:
-      Type: "AWS::DynamoDB::Table"
-      DeletionPolicy: Retain
-      Properties:
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
-        AttributeDefinitions:
-          - AttributeName: userId
-            AttributeType: S
-          - AttributeName: documentId
-            AttributeType: S
-        KeySchema:
-          - AttributeName: userId
-            KeyType: HASH
-          - AttributeName: documentId
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+# resources:
+#   Resources:
+#     DocumentsTable:
+#       Type: "AWS::DynamoDB::Table"
+#       Properties:
+#         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+#         AttributeDefinitions:
+#           - AttributeName: userId
+#             AttributeType: S
+#           - AttributeName: documentId
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: userId
+#             KeyType: HASH
+#           - AttributeName: documentId
+#             KeyType: RANGE
+#         ProvisionedThroughput:
+#           ReadCapacityUnits: 1
+#           WriteCapacityUnits: 1
 
 plugins:
   - serverless-pseudo-parameters

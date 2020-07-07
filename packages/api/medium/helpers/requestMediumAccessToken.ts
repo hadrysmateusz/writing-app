@@ -11,7 +11,7 @@ export async function requestMediumAccessToken(code, redirect_uri) {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "application/json",
+        "Accept": "application/json",
         "Accept-Charset": "utf-8",
       },
       body:

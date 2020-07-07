@@ -1,6 +1,6 @@
 "use strict"
 
-import { requestMediumAccessToken, getMediumUserDetails } from "../helpers"
+import { requestMediumAccessToken, getMediumUserDetails } from "./helpers"
 
 module.exports.authorize = async (event, _context, callback) => {
   try {
