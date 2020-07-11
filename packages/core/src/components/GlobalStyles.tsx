@@ -22,6 +22,8 @@ const GlobalStyles = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     margin: 0;
+    background: #1e1e1e;
+    color: white;
   }
 
   /* h1,h2,h3,h4,h5,h6 {
