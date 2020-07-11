@@ -1,59 +1,112 @@
 org: hadrysmateusz86
-app: writing-tool
+app: writing-app
 service: api
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
 custom:
   stage: ${opt:stage, self:provider.stage}
-  # usersTableName: ${self:service}-${self:custom.stage}-users
 
 provider:
   name: aws
   stage: dev
   runtime: nodejs12.x
   region: us-east-1
-  # environment:
-  #   DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
-  # iamRoleStatements:
-  #   - Effect: Allow
-  #     Action:
-  #       - dynamodb:DescribeTable
-  #       - dynamodb:Query
-  #       - dynamodb:Scan
-  #       - dynamodb:GetItem
-  #       - dynamodb:PutItem
-  #       - dynamodb:UpdateItem
-  #       - dynamodb:DeleteItem
-  #     Resource: "arn:aws:dynamodb:#{AWS::Region}:#{AWS::AccountId}:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
   postConfirmation:
     handler: auth-triggers/postConfirmation.main
     events:
       - cognitoUserPool:
+          pool: CognitoUserPool
           trigger: PostConfirmation
-          # TODO: set up the user pool here
 
-# resources:
-#   Resources:
-#     DocumentsTable:
-#       Type: "AWS::DynamoDB::Table"
-#       Properties:
-#         TableName: ${self:provider.environment.DYNAMODB_TABLE}
-#         AttributeDefinitions:
-#           - AttributeName: userId
-#             AttributeType: S
-#           - AttributeName: documentId
-#             AttributeType: S
-#         KeySchema:
-#           - AttributeName: userId
-#             KeyType: HASH
-#           - AttributeName: documentId
-#             KeyType: RANGE
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 1
-#           WriteCapacityUnits: 1
+resources:
+  Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:app}-user-pool-${self:custom.stage}
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      # TODO: make sure all properties are set properly (especially ExplicitAuthFlows)
+      # Docs: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html
+      Properties:
+        ClientName: ${self:app}-user-pool-client-${self:custom.stage}
+        UserPoolId:
+          Ref: CognitoUserPool
+        ExplicitAuthFlows:
+          - ALLOW_ADMIN_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        GenerateSecret: false
+
+    CognitoIdentityPool:
+      Type: AWS::Cognito::IdentityPool
+      Properties:
+        IdentityPoolName: ${self:app}-identity-pool-${self:custom.stage}
+        AllowUnauthenticatedIdentities: false
+        CognitoIdentityProviders:
+          - ClientId:
+              Ref: CognitoUserPoolClient
+            ProviderName:
+              Fn::GetAtt: ["CognitoUserPool", "ProviderName"]
+
+    CognitoIdentityPoolRoles:
+      Type: AWS::Cognito::IdentityPoolRoleAttachment
+      Properties:
+        IdentityPoolId:
+          Ref: CognitoIdentityPool
+        Roles:
+          authenticated:
+            Fn::GetAtt: [CognitoAuthRole, Arn]
+
+    CognitoAuthRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Federated: "cognito-identity.amazonaws.com"
+              Action:
+                - "sts:AssumeRoleWithWebIdentity"
+              Condition:
+                StringEquals:
+                  "cognito-identity.amazonaws.com:aud":
+                    Ref: CognitoIdentityPool
+                "ForAnyValue:StringLike":
+                  "cognito-identity.amazonaws.com:amr": authenticated
+        Policies:
+          - PolicyName: "CognitoAuthorizedPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "mobileanalytics:PutEvents"
+                    - "cognito-sync:*"
+                    - "cognito-identity:*"
+                  Resource: "*"
+
+  Outputs:
+    UserPoolId:
+      Value:
+        Ref: CognitoUserPool
+
+    UserPoolClientId:
+      Value:
+        Ref: CognitoUserPoolClient
+
+    IdentityPoolId:
+      Value:
+        Ref: CognitoIdentityPool
 
 plugins:
   - serverless-pseudo-parameters
