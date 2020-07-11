@@ -41,8 +41,9 @@ resources:
         UserPoolId:
           Ref: CognitoUserPool
         ExplicitAuthFlows:
-          - ALLOW_ADMIN_USER_PASSWORD_AUTH
+          - ALLOW_ADMIN_USER_PASSWORD_AUTH # not sure if this should be enabled on this user pool
           - ALLOW_REFRESH_TOKEN_AUTH
+          - ALLOW_USER_SRP_AUTH
         GenerateSecret: false
 
     CognitoIdentityPool:
