@@ -103,7 +103,7 @@ const Signup = () => {
         </label>
       </div>
       <button type="submit" disabled={!validateForm()}>
-        Login
+        Signup
       </button>
     </form>
   )
