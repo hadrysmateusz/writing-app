@@ -10,11 +10,18 @@ import { App } from "./Components/App"
 import "./index.css"
 import * as serviceWorker from "./serviceWorker"
 import config from "./config"
-import aws_exports from "./aws-exports"
 
 import { loadDevTools, loadConfig } from "@writing-tool/core"
 
-Amplify.configure(aws_exports)
+Amplify.configure({
+  Auth: {
+    identityPoolId: "us-east-1:b43ad165-df33-434c-a243-d204feb25d31",
+    region: "us-east-1",
+    userPoolId: "us-east-1_U9vIjaJBz",
+    userPoolWebClientId: "n2cs9p5s667sck722q74nieq9",
+    mandatorySignIn: true,
+  },
+})
 
 console.log(Auth.currentSession()) // TODO: this is for debugging only
 

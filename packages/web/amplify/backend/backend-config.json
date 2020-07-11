@@ -1,26 +1,4 @@
 {
-	"auth": {
-		"writingtoolauth": {
-			"service": "Cognito",
-			"providerPlugin": "awscloudformation",
-			"dependsOn": []
-		}
-	},
-	"api": {
-		"documents": {
-			"service": "AppSync",
-			"providerPlugin": "awscloudformation",
-			"output": {
-				"authConfig": {
-					"additionalAuthenticationProviders": [],
-					"defaultAuthentication": {
-						"authenticationType": "AMAZON_COGNITO_USER_POOLS",
-						"userPoolConfig": {
-							"userPoolId": "authwritingtoolauth"
-						}
-					}
-				}
-			}
-		}
-	}
+  "auth": {},
+  "api": {}
 }
