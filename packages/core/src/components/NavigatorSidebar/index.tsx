@@ -13,6 +13,7 @@ import createGroupTree from "../../helpers/createGroupTree"
 import DocumentTreeItem from "../DocumentTreeItem"
 import { useDocumentsAPI } from "../DocumentsAPI"
 import { useGroupsAPI } from "../Groups/GroupsContext"
+import { LogoutButton } from "../LogoutButton"
 
 export const NavigatorSidebar: React.FC<{}> = () => {
   const { groups, favorites } = useMainState()
@@ -62,6 +63,8 @@ export const NavigatorSidebar: React.FC<{}> = () => {
       >
         Trash
       </TreeItem>
+
+      <LogoutButton />
 
       {favorites.length > 0 && (
         <>
