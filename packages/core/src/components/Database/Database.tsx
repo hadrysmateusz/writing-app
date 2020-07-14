@@ -16,43 +16,14 @@ import {
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) //enable syncing over http
 
-const collections = [
-  {
-    name: "documents",
-    schema: documentSchema,
-    sync: true,
-    statics: {
-      findNotRemoved: function (this: DocumentCollection) {
-        return this.find().where("isDeleted").eq(false)
-      },
-      findOneNotRemoved: function (this: DocumentCollection) {
-        return this.findOne().where("isDeleted").eq(false)
-      },
-    },
-    methods: {
-      softRemove: function (this: DocumentDoc) {
-        return this.update({
-          $set: {
-            isDeleted: true,
-          },
-        })
-      },
-    },
-    migrationStrategies: {},
-  },
-  {
-    name: "groups",
-    schema: groupSchema,
-    sync: true,
-  },
-]
-
-console.log(window.location)
-
 const dbNameBase = "writing_tool" // TODO: change to the name of the app
 const remoteDbDomain = "localhost"
 const remoteDbPort = "5984"
 const usernameStartWord: string = "__uid__"
+
+const getUserRemoteDbName = (userName: string, tableName: string) => {
+  return `uid-${userName}-${tableName}`
+}
 
 const validateDbName = (name: string): void => {
   if (!name.includes(usernameStartWord)) {
@@ -102,6 +73,8 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
   const [database, setDatabase] = useState<MyDatabase | null>(null)
 
   useEffect(() => {
+    // TODO: (presumably because auth is in the web package - or just because the auth provider is above it) when logging-in to the same account after logging-out in one session this component gets remounted and the hook is run again causing the database to be created twice and an error is thrown
+    console.log("RUNNING HOOK")
     const createDatabase = async () => {
       // TODO: probably extract this logic and expose these values in some higher context state to reduce redundancy
       const currentUser = await Auth.currentAuthenticatedUser()
@@ -117,11 +90,43 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       const db = await createRxDatabase<MyDatabaseCollections>({
         name: encodeDbName(`${dbNameBase}${usernameStartWord}${username}`),
         adapter: "idb",
+        ignoreDuplicate: true, // TODO: this flag is set to address the issue with the auth provider remounting the component after logging in to the same account twice but it probably will have some unintended consequences so try to find a better solution
       })
       console.log("DatabaseService: created database")
 
       // write to window for debugging
       window["db"] = db
+
+      const collections = [
+        {
+          name: "documents",
+          schema: documentSchema,
+          sync: true,
+          statics: {
+            findNotRemoved: function (this: DocumentCollection) {
+              return this.find().where("isDeleted").eq(false)
+            },
+            findOneNotRemoved: function (this: DocumentCollection) {
+              return this.findOne().where("isDeleted").eq(false)
+            },
+          },
+          methods: {
+            softRemove: function (this: DocumentDoc) {
+              return this.update({
+                $set: {
+                  isDeleted: true,
+                },
+              })
+            },
+          },
+          migrationStrategies: {},
+        },
+        {
+          name: "groups",
+          schema: groupSchema,
+          sync: true,
+        },
+      ]
 
       // create collections
       console.log("DatabaseService: creating collections...")
@@ -186,10 +191,13 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       collections
         .filter((col) => col.sync)
         .map((col) => col.name)
-        .forEach((colName) =>
+        .forEach((colName) => {
+          // get the remote database(/table) name with the proper username prefix
+          const dbName = getUserRemoteDbName(username, colName)
+
           db[colName].sync({
             remote: new PouchDB(
-              `http://admin:kurczok99@${remoteDbDomain}:${remoteDbPort}/${colName}/`,
+              `http://admin:kurczok99@${remoteDbDomain}:${remoteDbPort}/${dbName}/`,
               {
                 fetch: (url, opts) => {
                   opts = {
@@ -217,7 +225,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
               retry: true,
             },
           })
-        )
+        })
       console.log("DatabaseService: sync set up")
 
       db.waitForLeadership().then(() => {
