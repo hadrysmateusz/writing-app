@@ -4,6 +4,7 @@ import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import PouchDB from "pouchdb-core"
 import { fetch } from "pouchdb-fetch"
+import { Auth } from "aws-amplify"
 import { documentSchema, groupSchema } from "./Schema"
 import {
   MyDatabaseCollections,
@@ -48,8 +49,39 @@ const collections = [
 
 console.log(window.location)
 
-const dbName = "writingtooldocumentsdb" // TODO: rename to something more general
-const syncURL = "http://localhost:5984/"
+const dbNameBase = "writing_tool" // TODO: change to the name of the app
+const remoteDbDomain = "localhost"
+const remoteDbPort = "5984"
+const usernameStartWord: string = "__uid__"
+
+const validateDbName = (name: string): void => {
+  if (!name.includes(usernameStartWord)) {
+    throw new Error(
+      `Not a proper name. Name must contain the string: ${usernameStartWord}`
+    )
+  }
+}
+
+const findDbUsername = (name: string): [string, number] => {
+  const usernameIndex: number = name.indexOf("_uid_") + usernameStartWord.length
+  const username: string = name.substring(usernameIndex)
+  return [username, usernameIndex]
+}
+
+// The encode function only replaces the dashes in the username part of the string to prevent unexpected results when decoding if an iproper dbNameBase is used
+// TODO: consider reimplementing with a regex (for possible startup performance improvement)
+const encodeDbName = (name: string): string => {
+  validateDbName(name)
+  const [username, usernameIndex] = findDbUsername(name)
+  console.log(username)
+  return name.substring(0, usernameIndex) + username.replace(/-/g, "_")
+}
+
+const decodeDbName = (name: string): string => {
+  validateDbName(name)
+  const [username, usernameIndex] = findDbUsername(name)
+  return name.substring(0, usernameIndex) + username.replace(/_/g, "-")
+}
 
 const DatabaseContext = createContext<MyDatabase | null>(null)
 
@@ -63,16 +95,27 @@ export const useDatabase = () => {
   return database
 }
 
+// TODO: figure out encryption or local db removal
+// TODO: finish cognito jwt auth once the new couchdb version is released
 export const DatabaseProvider: React.FC<{}> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [database, setDatabase] = useState<MyDatabase | null>(null)
 
   useEffect(() => {
     const createDatabase = async () => {
+      // TODO: probably extract this logic and expose these values in some higher context state to reduce redundancy
+      const currentUser = await Auth.currentAuthenticatedUser()
+      const username = currentUser?.username
+
+      // TODO: better handling (although it might not be necessary because I think that almost nothing is loaded in the app until there is an authenticated user)
+      if (!username) {
+        throw new Error("No user found for database setup")
+      }
+
       // create database
       console.log("DatabaseService: creating database..")
       const db = await createRxDatabase<MyDatabaseCollections>({
-        name: dbName,
+        name: encodeDbName(`${dbNameBase}${usernameStartWord}${username}`),
         adapter: "idb",
       })
       console.log("DatabaseService: created database")
@@ -146,7 +189,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
         .forEach((colName) =>
           db[colName].sync({
             remote: new PouchDB(
-              `http://admin:kurczok99@localhost:5984/${colName}/`,
+              `http://admin:kurczok99@${remoteDbDomain}:${remoteDbPort}/${colName}/`,
               {
                 fetch: (url, opts) => {
                   opts = {
