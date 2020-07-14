@@ -125,6 +125,7 @@ const Title = styled.div`
   font-family: Poppins;
   font-weight: 500;
   font-size: 12px;
+  line-height: 18px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -135,7 +136,7 @@ const Title = styled.div`
 `
 
 const Snippet = styled.div`
-  --line-height: 14px;
+  --line-height: 15px;
   line-height: var(--line-height);
   max-height: calc(2 * var(--line-height));
   overflow: hidden;
@@ -148,6 +149,7 @@ const Snippet = styled.div`
   color: #bebebe;
   font-size: 11px;
   padding-bottom: 4px;
+  padding-top: 1px;
 `
 
 const Container = styled.div`
