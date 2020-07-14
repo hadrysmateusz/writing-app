@@ -92,20 +92,25 @@ export const Topbar: React.FC<{}> = () => {
             </>
           )}
 
-          {groups.map((group) => (
-            <ContextMenuItem
-              key={group.id}
-              onClick={() => {
-                if (currentDocument === null) {
-                  // TODO: handle new documents
-                } else {
-                  moveDocumentToGroup(currentDocument.id, group.id)
-                }
-              }}
-            >
-              {formatOptional(group.name, "Unnamed Collection")}
-            </ContextMenuItem>
-          ))}
+          {/* TODO: add active styles */}
+          {groups.length > 0 ? (
+            groups.map((group) => (
+              <ContextMenuItem
+                key={group.id}
+                onClick={() => {
+                  if (currentDocument === null) {
+                    // TODO: handle new documents
+                  } else {
+                    moveDocumentToGroup(currentDocument.id, group.id)
+                  }
+                }}
+              >
+                {formatOptional(group.name, "Unnamed Collection")}
+              </ContextMenuItem>
+            ))
+          ) : (
+            <ContextMenuItem disabled>No collections</ContextMenuItem>
+          )}
 
           <ContextMenuSeparator />
 

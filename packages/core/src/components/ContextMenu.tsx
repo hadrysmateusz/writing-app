@@ -103,12 +103,24 @@ export const ContextMenuItem: React.FC<{
   onMouseDown?: (event: React.MouseEvent<HTMLDivElement>) => void
 }> = ({ disabled = false, onClick, onMouseDown, children, ...rest }) => {
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (disabled || !onClick) return undefined
+    if (disabled) {
+      event.preventDefault()
+      // prevent clicks on disabled items from closing the context menu
+      event.stopPropagation()
+      return
+    }
+    if (!onClick) return
     return onClick(event)
   }
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (disabled || !onMouseDown) return undefined
+    if (disabled) {
+      event.preventDefault()
+      // prevent clicks on disabled items from closing the context menu
+      event.stopPropagation()
+      return
+    }
+    if (!onMouseDown) return
     return onMouseDown(event)
   }
 
