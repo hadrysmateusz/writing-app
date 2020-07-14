@@ -9,6 +9,7 @@ import {
 
 import { useAsyncEffect } from "../hooks"
 import { AuthContextProvider } from "./Auth"
+import GlobalStyles from "./GlobalStyles"
 
 import {
   MediumAuthRedirectPage,
@@ -33,27 +34,34 @@ export const App = () => {
     setIsAuthenticating(false)
   }, [])
 
-  return isAuthenticating ? null : (
-    <AuthContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
-      <Router>
-        <Switch>
-          <Route exact path="/login">
-            <LoginPage />
-          </Route>
-          <Route exact path="/signup">
-            <SignupPage />
-          </Route>
-          <Route path="/medium-auth-callback">
-            <MediumAuthRedirectPage />
-          </Route>
-          <Route path="/" exact>
-            {isAuthenticated ? <EditorPage /> : <Redirect to="/login" />}
-          </Route>
-          <Route>
-            <h2>Page not found!</h2>
-          </Route>
-        </Switch>
-      </Router>
-    </AuthContextProvider>
+  // TODO: create AuthenticatedRoute and UnauthenticatedRoute components to simplify routing
+  return (
+    <>
+      <GlobalStyles />
+
+      {isAuthenticating ? null : (
+        <AuthContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
+          <Router>
+            <Switch>
+              <Route exact path="/login">
+                <LoginPage />
+              </Route>
+              <Route exact path="/signup">
+                <SignupPage />
+              </Route>
+              <Route path="/medium-auth-callback">
+                <MediumAuthRedirectPage />
+              </Route>
+              <Route path="/" exact>
+                {isAuthenticated ? <EditorPage /> : <Redirect to="/login" />}
+              </Route>
+              <Route>
+                <h2>Page not found!</h2>
+              </Route>
+            </Switch>
+          </Router>
+        </AuthContextProvider>
+      )}
+    </>
   )
 }

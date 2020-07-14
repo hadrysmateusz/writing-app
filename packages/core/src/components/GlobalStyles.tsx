@@ -1,6 +1,7 @@
 import { createGlobalStyle } from "styled-components/macro"
 import { normalize } from "polished"
 
+// TODO: These styles don't get applied before authentication because the authentication is in the web package (I think)
 const GlobalStyles = createGlobalStyle`
   ${normalize()}
 
