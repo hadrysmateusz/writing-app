@@ -52,19 +52,21 @@ const Main = () => {
 }
 
 const OuterContainer = styled.div`
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  width: 100vw;
-  height: 100vh;
   background-color: #1e1e1e;
   color: white;
   font-family: "Segoe UI", "Open sans", "sans-serif";
+
+  display: flex;
+  min-height: 0;
+  height: 100%;
+  width: 100vw;
 
   --topbar-height: 56px;
 `
 
 const InnerContainerWrapper = styled.div`
   height: 100%;
+  width: 100%;
   display: grid;
   grid-template-rows: var(--topbar-height) calc(100vh - var(--topbar-height));
   min-height: 0;

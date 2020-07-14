@@ -14,7 +14,7 @@ import {
 
 export const Topbar: React.FC<{}> = () => {
   const { currentDocument, groups } = useMainState()
-  const { primarySidebar } = useViewState()
+  const { primarySidebar, navigatorSidebar } = useViewState()
   const { renameDocument, moveDocumentToGroup } = useDocumentsAPI()
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
 
@@ -50,6 +50,11 @@ export const Topbar: React.FC<{}> = () => {
       <IconContainer
         onClick={() => {
           primarySidebar.toggle()
+        }}
+        onContextMenu={(e) => {
+          // TODO: remove this if I ever implement the auto-hiding behavior and/or replace it with a context menu for controlling other view-related stuff
+          e.preventDefault()
+          navigatorSidebar.toggle()
         }}
       >
         <Icon icon="sidebarLeft" />
