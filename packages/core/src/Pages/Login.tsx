@@ -27,8 +27,8 @@ const Login = () => {
   return isAuthenticated ? (
     <Redirect to="/" />
   ) : (
-    <div>
-      <div>Log in to use the editor</div>
+    <div style={{ padding: "0 20px" }}>
+      <h2>Log in to use the editor</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>
@@ -50,7 +50,11 @@ const Login = () => {
             />
           </label>
         </div>
-        <button type="submit" disabled={!validate()}>
+        <button
+          type="submit"
+          disabled={!validate()}
+          style={{ margin: "20px 0" }}
+        >
           Login
         </button>
       </form>

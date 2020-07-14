@@ -102,7 +102,11 @@ const Signup = () => {
           />
         </label>
       </div>
-      <button type="submit" disabled={!validateForm()}>
+      <button
+        type="submit"
+        disabled={!validateForm()}
+        style={{ margin: "20px 0" }}
+      >
         Signup
       </button>
     </form>
@@ -123,7 +127,11 @@ const Signup = () => {
         </label>
       </div>
 
-      <button type="submit" disabled={!validateConfirmationForm()}>
+      <button
+        type="submit"
+        disabled={!validateConfirmationForm()}
+        style={{ margin: "20px 0" }}
+      >
         Verify
       </button>
     </form>
@@ -132,8 +140,8 @@ const Signup = () => {
   return isAuthenticated ? (
     <Redirect to="/" />
   ) : (
-    <div>
-      <div>Create an account to get started</div>
+    <div style={{ padding: "0 20px" }}>
+      <h2>Create an account to get started</h2>
       <div>
         {isLoading
           ? "Please wait"
