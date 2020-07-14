@@ -1,17 +1,16 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { Amplify, Auth } from "aws-amplify"
+import { Amplify } from "aws-amplify"
 
 import "typeface-ibm-plex-mono"
 import "typeface-open-sans"
 import "typeface-poppins"
 
-import { App } from "./Components/App"
+import { loadDevTools, loadConfig, App } from "@writing-tool/core"
+
 import "./index.css"
 import * as serviceWorker from "./serviceWorker"
 import config from "./config"
-
-import { loadDevTools, loadConfig } from "@writing-tool/core"
 
 Amplify.configure({
   Auth: {
@@ -22,8 +21,6 @@ Amplify.configure({
     mandatorySignIn: true,
   },
 })
-
-console.log(Auth.currentSession()) // TODO: this is for debugging only
 
 // load and install the dev tools (if they need to be)
 // and when that's done, let's render the app

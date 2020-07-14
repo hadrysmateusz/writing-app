@@ -7,8 +7,8 @@ import {
   Redirect,
 } from "react-router-dom"
 
-import { useAsyncEffect } from "@writing-tool/core/src/hooks"
-import { AuthContextProvider } from "@writing-tool/core"
+import { useAsyncEffect } from "../hooks"
+import { AuthContextProvider } from "./Auth"
 
 import {
   MediumAuthRedirectPage,
