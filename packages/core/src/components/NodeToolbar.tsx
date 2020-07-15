@@ -4,10 +4,14 @@ import { useEditor, ReactEditor, useFocused, useSelected } from "slate-react"
 import styled from "styled-components/macro"
 import { FaEllipsisV } from "react-icons/fa"
 
-import { BLOCKQUOTE } from "../slate-plugins/elements/blockquote/types"
-import { CODE_BLOCK } from "../slate-plugins/elements/code-block"
-import { PARAGRAPH } from "../slate-plugins/elements/paragraph"
-import { HeadingType } from "../slate-plugins"
+import {
+  PARAGRAPH,
+  BLOCKQUOTE,
+  CODE_BLOCK,
+  HeadingType,
+  insertHorizontalRule,
+  insertImage,
+} from "../slate-plugins"
 
 import {
   useContextMenu,
@@ -57,6 +61,24 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
     closeMenu()
   }
 
+  // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
+
+  const handleInsertHorizontalRule = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    event.preventDefault()
+    insertHorizontalRule(editor)
+  }
+
+  const handleInsertImage = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault()
+
+    // TODO: replace the prompt in electron
+    const url = window.prompt("Enter the URL of the image:")
+    if (!url) return
+    insertImage(editor, url)
+  }
+
   return isSelected && isFocused ? (
     <>
       {/* MAKE SURE THE SIDETOOLBARCONTAINER HAS CHILDREN TO PREVENT SELECTION ERRORS */}
@@ -68,6 +90,9 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
       </SideToolbarContainer>
       {isMenuOpen && (
         <ContextMenu>
+          <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
+            Paragraph
+          </ContextMenuItem>
           <ContextSubmenu text="Heading">
             <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
               Heading 1
@@ -89,6 +114,15 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
             </ContextMenuItem>
           </ContextSubmenu>
 
+          <ContextMenuSeparator />
+
+          <ContextMenuItem onMouseDown={handleSetFormat(BLOCKQUOTE)}>
+            Blockquote
+          </ContextMenuItem>
+          <ContextMenuItem onMouseDown={handleSetFormat(CODE_BLOCK)}>
+            Code Block
+          </ContextMenuItem>
+
           <ContextSubmenu text="List">
             <ContextMenuItem
               onMouseDown={() => {
@@ -108,16 +142,16 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
 
           <ContextMenuSeparator />
 
-          <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
-            Paragraph
-          </ContextMenuItem>
-
-          <ContextMenuItem onMouseDown={handleSetFormat(BLOCKQUOTE)}>
-            Blockquote
-          </ContextMenuItem>
-          <ContextMenuItem onMouseDown={handleSetFormat(CODE_BLOCK)}>
-            Code Block
-          </ContextMenuItem>
+          <ContextSubmenu text="Insert">
+            <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
+              Horizontal Rule
+              {/* TODO: research and change the name if needed */}
+            </ContextMenuItem>
+            <ContextMenuItem onMouseDown={handleInsertImage}>
+              Image
+              {/* TODO: research and change the name if needed */}
+            </ContextMenuItem>
+          </ContextSubmenu>
         </ContextMenu>
       )}
     </>
