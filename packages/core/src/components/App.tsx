@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Auth } from "aws-amplify"
 import {
   BrowserRouter as Router,
@@ -33,6 +33,24 @@ export const App = () => {
     }
     setIsAuthenticating(false)
   }, [])
+
+  // This effect catches all uncaught contextmenu events and prevents the display of the default context menu
+  // TODO: make sure all basic context menu actions have a custom alternative (especially text-related in the editor like cutting and pasting )
+  useEffect(() => {
+    const listener = (event: MouseEvent) => {
+      event.preventDefault()
+      console.warn(
+        `Prevented a contextmenu event. Consider creating a custom one for this element. This warning was triggered on the following element:`
+      )
+      console.dir(event.target)
+    }
+
+    document.addEventListener("contextmenu", listener)
+
+    return () => {
+      document.removeEventListener("contextmenu", listener)
+    }
+  })
 
   // TODO: create AuthenticatedRoute and UnauthenticatedRoute components to simplify routing
   return (
