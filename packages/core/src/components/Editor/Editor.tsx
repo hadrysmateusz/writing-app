@@ -4,6 +4,7 @@ import React, {
   useRef,
   useEffect,
   useCallback,
+  MouseEvent,
 } from "react"
 import styled from "styled-components/macro"
 import { useEditor, ReactEditor } from "slate-react"
@@ -128,7 +129,9 @@ const EditorComponent: React.FC<{
     correct one (this would be a good place to use a more efficient search algorithm as it's not 
     insignificantly expensive to compare the positions of many nodes)
   */
-  const insertEmptyBlock = () => {
+  const handleInsertEmptyBlock = (event: MouseEvent<HTMLDivElement>) => {
+    event.preventDefault()
+
     const newPath = [editor.children.length]
     const lastPath = Path.previous(newPath)
     const [lastNode] = Editor.node(editor, lastPath, { edge: "end" })
@@ -229,8 +232,7 @@ const EditorComponent: React.FC<{
               onKeyDown={[handleSaveDocument, handleFixSelection]}
               spellCheck={false}
             />
-            {/* TODO: double-clicking this area moves the selection to the start of the document */}
-            <InsertBlockField onClick={() => insertEmptyBlock()} />
+            <InsertBlockField onMouseDown={handleInsertEmptyBlock} />
 
             {isMenuOpen && (
               <ContextMenu>
