@@ -32,6 +32,9 @@ import {
   useContextMenu,
   ContextMenuSeparator,
 } from "../ContextMenu"
+import { MARKS } from "../../constants/Slate"
+import { CODE_INLINE, LINK, insertLink } from "../../slate-plugins"
+import FormatButton from "../FormatButton"
 
 /**
  * Helper for creating a basic empty node
@@ -180,6 +183,14 @@ const EditorComponent: React.FC<{
     setTitle(newValue)
   }
 
+  const onToggleLink = (event: React.MouseEvent) => {
+    event.preventDefault()
+
+    const url = window.prompt("Enter the URL of the link:")
+    if (!url) return
+    insertLink(editor, url)
+  }
+
   const renderContextMenu = () => {
     if (contextMenuType === null) {
       throw new Error(
@@ -193,6 +204,13 @@ const EditorComponent: React.FC<{
       if (base === "expanded") {
         return (
           <>
+            <div style={{ display: "flex" }}>
+              <FormatButton format={MARKS.BOLD} />
+              <FormatButton format={MARKS.ITALIC} />
+              <FormatButton format={MARKS.STRIKE} />
+              <FormatButton format={CODE_INLINE} />
+              <FormatButton format={LINK} onMouseDown={onToggleLink} />
+            </div>
             <ContextMenuItem
               onMouseDown={() => {
                 console.warn("TODO: implement common actions")
