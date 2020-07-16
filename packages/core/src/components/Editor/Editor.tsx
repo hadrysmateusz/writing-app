@@ -13,7 +13,6 @@ import isHotkey from "is-hotkey"
 import { cloneDeep } from "lodash"
 
 import { plugins } from "../../pluginsList"
-// import { Toolbar } from "../Toolbar"
 import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
 import { DocumentDoc } from "../Database"
@@ -28,7 +27,11 @@ import {
   InnerContainer,
 } from "./styledComponents"
 import { useDocumentsAPI } from "../DocumentsAPI"
-import { ContextMenuItem, useContextMenu } from "../ContextMenu"
+import {
+  ContextMenuItem,
+  useContextMenu,
+  ContextMenuSeparator,
+} from "../ContextMenu"
 
 /**
  * Helper for creating a basic empty node
@@ -48,6 +51,10 @@ const EditorComponent: React.FC<{
 }> = ({ currentDocument }) => {
   const { saveDocument } = useMainState()
   const { renameDocument } = useDocumentsAPI()
+  const [contextMenuType, setContextMenuType] = useState<{
+    base: string
+    node?: Node
+  } | null>(null)
   const [title, setTitle] = useState<string>(currentDocument.title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const editor = useEditor()
@@ -173,6 +180,100 @@ const EditorComponent: React.FC<{
     setTitle(newValue)
   }
 
+  const renderContextMenu = () => {
+    if (contextMenuType === null) {
+      throw new Error(
+        "This context menu can't be opened without a proper type."
+      )
+    }
+
+    const renderItems = () => {
+      const { base, node } = contextMenuType
+
+      if (base === "expanded") {
+        return (
+          <>
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO: implement common actions")
+              }}
+            >
+              Cut
+            </ContextMenuItem>
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO: implement common actions")
+              }}
+            >
+              Copy
+            </ContextMenuItem>
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO: implement common actions")
+              }}
+            >
+              Paste
+            </ContextMenuItem>
+          </>
+        )
+      }
+
+      if (base === "collapsed") {
+        return (
+          <ContextMenuItem
+            onMouseDown={() => {
+              console.warn("TODO: implement common actions")
+            }}
+          >
+            Paste
+          </ContextMenuItem>
+        )
+      }
+
+      if (base === "node") {
+        return (
+          <>
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO: implement")
+              }}
+            >
+              Delete
+            </ContextMenuItem>
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO: implement")
+              }}
+            >
+              Duplicate
+            </ContextMenuItem>
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO: implement")
+              }}
+            >
+              Turn into
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO: implement")
+              }}
+            >
+              Comment
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem disabled>{node?.type}</ContextMenuItem>
+          </>
+        )
+      }
+
+      throw new Error(`invalid context menu type: ${base}`)
+    }
+
+    return <ContextMenu>{renderItems()}</ContextMenu>
+  }
+
   return (
     <OutermostContainer>
       {currentDocument.isDeleted && (
@@ -193,35 +294,99 @@ const EditorComponent: React.FC<{
           />
           <EditableContainer
             onBlur={handleContentBlur}
-            onMouseDown={(e) => {
-              // If the right-mouse-button is clicked, prevent the selection from being changed
-              if (e.button === 2) {
-                // TODO: this bounding rect logic etc. probably needs some more work to handle different edge cases like scrolling, scrollbars etc.
-                // TODO: check if the selection is already in the clicked node, if so, trigger a different context menu containing (at the moment) only the paste option, if not then trigger a third context menu for the entire node, containing actions like delete duplicate, turn into (change type), comment and maybe some static info and maybe node specific actions like change url for image etc.
-
+            onMouseDown={(
+              event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>
+            ) => {
+              // If the right-mouse-button is clicked, prevent the selection from being changed and trigger the correct context menu
+              if (event.button === 2) {
                 const domSelection = document.getSelection()
 
-                let domRange
+                // these refer to the dom nodes that directly map to slate element nodes
+                let selectionTargetParentSlateNode: Element | null = null
+                let eventTargetParentSlateNode: Element | null = null
 
-                try {
-                  domRange = domSelection?.getRangeAt(0)
-                } catch (error) {
-                  // TODO: investigate this error further
+                if (domSelection !== null) {
+                  // if the selection is expanded and the event is within the selection, trigger the appropriate menu
+                  if (!domSelection.isCollapsed) {
+                    let domRange: Range
+
+                    try {
+                      domRange = domSelection.getRangeAt(0)
+                    } catch (error) {
+                      console.log("no range")
+                      // TODO: investigate this error further
+                      return
+                    }
+
+                    const rect = domRange.getBoundingClientRect()
+
+                    // If the click was inside the bounding rect of the selection then trigger the selection-specific context menu
+                    // TODO: this bounding rect logic etc. probably needs some more work to handle different edge cases like scrolling, scrollbars etc.
+                    if (
+                      event.pageX >= rect.x &&
+                      event.pageX <= rect.x + rect.width &&
+                      event.pageY >= rect.y &&
+                      event.pageY <= rect.y + rect.height
+                    ) {
+                      event.preventDefault()
+                      setContextMenuType({ base: "expanded" })
+                      openMenu(event)
+                    }
+                    return
+                  }
+
+                  const selectionTargetParent =
+                    domSelection.anchorNode?.parentElement
+
+                  if (!selectionTargetParent) {
+                    selectionTargetParentSlateNode = null
+                  } else {
+                    selectionTargetParentSlateNode = selectionTargetParent.closest(
+                      `[data-slate-node="element"]`
+                    )
+                  }
+                }
+
+                let targetElement: HTMLElement
+
+                const targetNode = event.target as globalThis.Node
+
+                // if the node is already an element then use it if not find it's parent element
+                if (targetNode.nodeType === 1) {
+                  targetElement = targetNode as HTMLElement
+                } else {
+                  targetElement = targetNode.parentElement!
+                }
+
+                eventTargetParentSlateNode = targetElement.closest(
+                  `[data-slate-node="element"]`
+                )
+
+                if (eventTargetParentSlateNode === null) return // TODO: better handle this
+
+                if (
+                  selectionTargetParentSlateNode?.isSameNode(
+                    eventTargetParentSlateNode
+                  )
+                ) {
+                  setContextMenuType({ base: "collapsed" })
+                  openMenu(event)
                   return
                 }
 
-                if (domRange === undefined) return
+                const slateNode = ReactEditor.toSlateNode(
+                  editor,
+                  eventTargetParentSlateNode
+                )
 
-                const rect = domRange.getBoundingClientRect()
-
-                if (
-                  e.pageX >= rect.x &&
-                  e.pageX <= rect.x + rect.width &&
-                  e.pageY >= rect.y &&
-                  e.pageY <= rect.y + rect.height
-                ) {
-                  e.preventDefault()
-                  openMenu(e)
+                // open context menu for a slate node TODO: it would probably be better to somehow notify the react component that it should handle this, it could also set some custom highlighting styles etc.
+                if (typeof slateNode.type === "string") {
+                  event.preventDefault()
+                  setContextMenuType({ base: "node", node: slateNode })
+                  openMenu(event)
+                  return
+                } else {
+                  return // TODO: better handle this
                 }
               }
             }}
@@ -234,31 +399,7 @@ const EditorComponent: React.FC<{
             />
             <InsertBlockField onMouseDown={handleInsertEmptyBlock} />
 
-            {isMenuOpen && (
-              <ContextMenu>
-                <ContextMenuItem
-                  onMouseDown={() => {
-                    console.warn("TODO: implement common actions")
-                  }}
-                >
-                  Cut
-                </ContextMenuItem>
-                <ContextMenuItem
-                  onMouseDown={() => {
-                    console.warn("TODO: implement common actions")
-                  }}
-                >
-                  Copy
-                </ContextMenuItem>
-                <ContextMenuItem
-                  onMouseDown={() => {
-                    console.warn("TODO: implement common actions")
-                  }}
-                >
-                  Paste
-                </ContextMenuItem>
-              </ContextMenu>
-            )}
+            {isMenuOpen && renderContextMenu()}
           </EditableContainer>
         </InnerContainer>
       </OuterContainer>

@@ -26,7 +26,6 @@ export const useContextMenu = ({
 
   const openMenu = useCallback(
     (event: React.MouseEvent) => {
-      event.preventDefault()
       // TODO: make sure the context menu doesn't go outside the window
       onBeforeOpen && onBeforeOpen()
 
