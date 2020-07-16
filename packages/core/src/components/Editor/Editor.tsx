@@ -9,15 +9,11 @@ import styled from "styled-components/macro"
 import { useEditor, ReactEditor } from "slate-react"
 import { Transforms, Path, Editor, Node } from "slate"
 import isHotkey from "is-hotkey"
-import { cloneDeep } from "lodash"
 
-import { plugins } from "../../pluginsList"
 import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
 import { DocumentDoc } from "../Database"
 import { useMainState } from "../MainState/MainStateProvider"
-import { Editable, OnKeyDown } from "../../slate-plugin-system"
-
 import {
   EditableContainer,
   OuterContainer,
@@ -32,21 +28,13 @@ import {
   useContextMenu,
   ContextMenuSeparator,
 } from "../ContextMenu"
-import { MARKS } from "../../constants/Slate"
-import { CODE_INLINE, LINK, insertLink } from "../../slate-plugins"
 import FormatButton from "../FormatButton"
 
-/**
- * Helper for creating a basic empty node
- *
- * The deep cloning prevents issues with react keys
- */
-const createEmptyNode = () => {
-  return cloneDeep({
-    type: "paragraph",
-    children: [{ text: "" }],
-  })
-}
+import { plugins } from "../../pluginsList"
+import { Editable, OnKeyDown } from "../../slate-plugin-system"
+import { createEmptyNode } from "../../helpers/createEmptyNode"
+import { MARKS } from "../../constants/Slate"
+import { CODE_INLINE, LINK, insertLink } from "../../slate-plugins"
 
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
