@@ -27,6 +27,7 @@ import {
   InnerContainer,
 } from "./styledComponents"
 import { useDocumentsAPI } from "../DocumentsAPI"
+import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 
 /**
  * Helper for creating a basic empty node
@@ -49,7 +50,9 @@ const EditorComponent: React.FC<{
   const [title, setTitle] = useState<string>(currentDocument.title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const editor = useEditor()
+  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
 
+  // TODO: check if this is still needed
   const fixSelection = () => {
     // This workaround aims to fix the issue with the cursor being visually stuck inside the node toolbar or other custom elements inside the editable area.
     // Fun fact: the caret seems to actually be inside the editable parent component and not the toolbar as it would seem
@@ -185,7 +188,41 @@ const EditorComponent: React.FC<{
             onKeyDown={handleTitleKeydown}
             onRename={handleRename}
           />
-          <EditableContainer onBlur={handleContentBlur}>
+          <EditableContainer
+            onBlur={handleContentBlur}
+            onMouseDown={(e) => {
+              // If the right-mouse-button is clicked, prevent the selection from being changed
+              if (e.button === 2) {
+                // TODO: this bounding rect logic etc. probably needs some more work to handle different edge cases like scrolling, scrollbars etc.
+                // TODO: check if the selection is already in the clicked node, if so, trigger a different context menu containing (at the moment) only the paste option, if not then trigger a third context menu for the entire node, containing actions like delete duplicate, turn into (change type), comment and maybe some static info and maybe node specific actions like change url for image etc.
+
+                const domSelection = document.getSelection()
+
+                let domRange
+
+                try {
+                  domRange = domSelection?.getRangeAt(0)
+                } catch (error) {
+                  // TODO: investigate this error further
+                  return
+                }
+
+                if (domRange === undefined) return
+
+                const rect = domRange.getBoundingClientRect()
+
+                if (
+                  e.pageX >= rect.x &&
+                  e.pageX <= rect.x + rect.width &&
+                  e.pageY >= rect.y &&
+                  e.pageY <= rect.y + rect.height
+                ) {
+                  e.preventDefault()
+                  openMenu(e)
+                }
+              }
+            }}
+          >
             <Editable
               plugins={plugins}
               placeholder="Start writing"
@@ -194,6 +231,32 @@ const EditorComponent: React.FC<{
             />
             {/* TODO: double-clicking this area moves the selection to the start of the document */}
             <InsertBlockField onClick={() => insertEmptyBlock()} />
+
+            {isMenuOpen && (
+              <ContextMenu>
+                <ContextMenuItem
+                  onMouseDown={() => {
+                    console.warn("TODO: implement common actions")
+                  }}
+                >
+                  Cut
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onMouseDown={() => {
+                    console.warn("TODO: implement common actions")
+                  }}
+                >
+                  Copy
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onMouseDown={() => {
+                    console.warn("TODO: implement common actions")
+                  }}
+                >
+                  Paste
+                </ContextMenuItem>
+              </ContextMenu>
+            )}
           </EditableContainer>
         </InnerContainer>
       </OuterContainer>
