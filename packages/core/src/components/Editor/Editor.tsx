@@ -23,18 +23,11 @@ import {
 } from "./styledComponents"
 import { useDocumentsAPI } from "../DocumentsAPI"
 import TrashBanner from "../TrashBanner"
-import {
-  ContextMenuItem,
-  useContextMenu,
-  ContextMenuSeparator,
-} from "../ContextMenu"
-import FormatButton from "../FormatButton"
 
 import { plugins } from "../../pluginsList"
 import { Editable, OnKeyDown } from "../../slate-plugin-system"
 import { createEmptyNode } from "../../helpers/createEmptyNode"
-import { MARKS } from "../../constants/Slate"
-import { CODE_INLINE, LINK, insertLink } from "../../slate-plugins"
+import useEditorContextMenu from "./useEditorContextMenu"
 
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
@@ -42,14 +35,11 @@ const EditorComponent: React.FC<{
 }> = ({ currentDocument }) => {
   const { saveDocument } = useMainState()
   const { renameDocument } = useDocumentsAPI()
-  const [contextMenuType, setContextMenuType] = useState<{
-    base: string
-    node?: Node
-  } | null>(null)
+
   const [title, setTitle] = useState<string>(currentDocument.title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const editor = useEditor()
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
 
   // TODO: check if this is still needed
   const fixSelection = () => {
@@ -171,115 +161,6 @@ const EditorComponent: React.FC<{
     setTitle(newValue)
   }
 
-  const onToggleLink = (event: React.MouseEvent) => {
-    event.preventDefault()
-
-    const url = window.prompt("Enter the URL of the link:")
-    if (!url) return
-    insertLink(editor, url)
-  }
-
-  const renderContextMenu = () => {
-    if (contextMenuType === null) {
-      throw new Error(
-        "This context menu can't be opened without a proper type."
-      )
-    }
-
-    const renderItems = () => {
-      const { base, node } = contextMenuType
-
-      if (base === "expanded") {
-        return (
-          <>
-            <div style={{ display: "flex" }}>
-              <FormatButton format={MARKS.BOLD} />
-              <FormatButton format={MARKS.ITALIC} />
-              <FormatButton format={MARKS.STRIKE} />
-              <FormatButton format={CODE_INLINE} />
-              <FormatButton format={LINK} onMouseDown={onToggleLink} />
-            </div>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement common actions")
-              }}
-            >
-              Cut
-            </ContextMenuItem>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement common actions")
-              }}
-            >
-              Copy
-            </ContextMenuItem>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement common actions")
-              }}
-            >
-              Paste
-            </ContextMenuItem>
-          </>
-        )
-      }
-
-      if (base === "collapsed") {
-        return (
-          <ContextMenuItem
-            onMouseDown={() => {
-              console.warn("TODO: implement common actions")
-            }}
-          >
-            Paste
-          </ContextMenuItem>
-        )
-      }
-
-      if (base === "node") {
-        return (
-          <>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement")
-              }}
-            >
-              Delete
-            </ContextMenuItem>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement")
-              }}
-            >
-              Duplicate
-            </ContextMenuItem>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement")
-              }}
-            >
-              Turn into
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement")
-              }}
-            >
-              Comment
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem disabled>{node?.type}</ContextMenuItem>
-          </>
-        )
-      }
-
-      throw new Error(`invalid context menu type: ${base}`)
-    }
-
-    return <ContextMenu>{renderItems()}</ContextMenu>
-  }
-
   return (
     <OutermostContainer>
       {currentDocument.isDeleted && (
@@ -290,7 +171,6 @@ const EditorComponent: React.FC<{
       <OuterContainer>
         <InnerContainer>
           <HoveringToolbar />
-          {/* <Toolbar /> */}
           <StyledNamingInput
             ref={titleRef}
             value={title}
@@ -335,8 +215,7 @@ const EditorComponent: React.FC<{
                       event.pageY <= rect.y + rect.height
                     ) {
                       event.preventDefault()
-                      setContextMenuType({ base: "expanded" })
-                      openMenu(event)
+                      openMenu(event, { base: "expanded" })
                     }
                     return
                   }
@@ -375,8 +254,7 @@ const EditorComponent: React.FC<{
                     eventTargetParentSlateNode
                   )
                 ) {
-                  setContextMenuType({ base: "collapsed" })
-                  openMenu(event)
+                  openMenu(event, { base: "collapsed" })
                   return
                 }
 
@@ -388,8 +266,10 @@ const EditorComponent: React.FC<{
                 // open context menu for a slate node TODO: it would probably be better to somehow notify the react component that it should handle this, it could also set some custom highlighting styles etc.
                 if (typeof slateNode.type === "string") {
                   event.preventDefault()
-                  setContextMenuType({ base: "node", node: slateNode })
-                  openMenu(event)
+                  openMenu(event, {
+                    base: "node",
+                    node: eventTargetParentSlateNode,
+                  })
                   return
                 } else {
                   return // TODO: better handle this

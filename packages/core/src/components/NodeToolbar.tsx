@@ -1,5 +1,5 @@
 import { Transforms, Node } from "slate"
-import React, { useRef } from "react"
+import React from "react"
 import { useEditor, ReactEditor, useFocused, useSelected } from "slate-react"
 import styled from "styled-components/macro"
 import { FaEllipsisV } from "react-icons/fa"
@@ -26,7 +26,6 @@ import {
 
 export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const node = useRef<Node | null>(null)
   const editor = useEditor()
   const isFocused = useFocused()
   const isSelected = useSelected()
@@ -35,30 +34,7 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
     event.preventDefault()
     event.stopPropagation()
 
-    if (!nodeRef?.current) {
-      console.log("invalid ref")
-      return
-    }
-
-    try {
-      const slateNode = ReactEditor.toSlateNode(editor, nodeRef.current)
-      node.current = slateNode
-    } catch (error) {
-      // TODO: when the error boundary for this error is created this might not be necessary (or maybe some custom logic for recovering could be used)
-      console.log("couldn't resolve slate node")
-    }
-
     openMenu(event)
-  }
-
-  const handleSetFormat = (format: string) => () => {
-    if (!node.current) {
-      console.log("no node selected")
-      return
-    }
-    const path = ReactEditor.findPath(editor, node.current)
-    Transforms.setNodes(editor, { type: format }, { at: path })
-    closeMenu()
   }
 
   // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
@@ -90,55 +66,35 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
       </SideToolbarContainer>
       {isMenuOpen && (
         <ContextMenu>
-          <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
-            Paragraph
+          <ContextMenuItem
+            onMouseDown={() => {
+              console.warn("TODO: implement")
+            }}
+          >
+            Delete
           </ContextMenuItem>
-          <ContextSubmenu text="Heading">
-            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
-              Heading 1
-            </ContextMenuItem>
-            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H2)}>
-              Heading 2
-            </ContextMenuItem>
-            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H3)}>
-              Heading 3
-            </ContextMenuItem>
-            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H4)}>
-              Heading 4
-            </ContextMenuItem>
-            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H5)}>
-              Heading 5
-            </ContextMenuItem>
-            <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H6)}>
-              Heading 6
-            </ContextMenuItem>
+
+          <ContextMenuItem
+            onMouseDown={() => {
+              console.warn("TODO: implement")
+            }}
+          >
+            Duplicate
+          </ContextMenuItem>
+
+          <ContextSubmenu text="Turn into">
+            <TurnIntoContextMenuContent editor={editor} nodeRef={nodeRef} />
           </ContextSubmenu>
 
           <ContextMenuSeparator />
 
-          <ContextMenuItem onMouseDown={handleSetFormat(BLOCKQUOTE)}>
-            Blockquote
+          <ContextMenuItem
+            onMouseDown={() => {
+              console.warn("TODO: implement")
+            }}
+          >
+            Comment
           </ContextMenuItem>
-          <ContextMenuItem onMouseDown={handleSetFormat(CODE_BLOCK)}>
-            Code Block
-          </ContextMenuItem>
-
-          <ContextSubmenu text="List">
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO")
-              }}
-            >
-              Bulleted List
-            </ContextMenuItem>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO")
-              }}
-            >
-              Numbered List
-            </ContextMenuItem>
-          </ContextSubmenu>
 
           <ContextMenuSeparator />
 
@@ -156,6 +112,142 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
       )}
     </>
   ) : null
+}
+
+export const TurnIntoContextMenuContent: React.FC<{
+  /**
+   * Ref to the DOM node of the slate node
+   */
+  nodeRef?: React.MutableRefObject<Element>
+  /**
+   * DOM node of the slate node
+   */
+  node?: Element
+  editor: ReactEditor
+}> = ({ nodeRef, node, editor }) => {
+  const handleSetFormat = (format: string) => () => {
+    if (nodeRef === undefined && node === undefined) {
+      throw new Error("A node or nodeRef is required")
+    }
+
+    if (!node && nodeRef) {
+      node = nodeRef.current
+    }
+
+    if (!node) {
+      throw new Error("Couldn't find a correct DOM node")
+    }
+
+    let slateNode: Node
+
+    try {
+      slateNode = ReactEditor.toSlateNode(editor, node)
+    } catch (error) {
+      // TODO: when the error boundary for this error is created this might not be necessary (or maybe some custom logic for recovering could be used)
+      console.log("couldn't resolve slate node")
+      return
+    }
+
+    const path = ReactEditor.findPath(editor, slateNode)
+    Transforms.setNodes(editor, { type: format }, { at: path })
+    // closeMenu()
+  }
+
+  return (
+    <>
+      <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
+        Paragraph
+      </ContextMenuItem>
+
+      <ContextMenuSeparator />
+
+      <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
+        Heading 1
+      </ContextMenuItem>
+      <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H2)}>
+        Heading 2
+      </ContextMenuItem>
+      <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H3)}>
+        Heading 3
+      </ContextMenuItem>
+
+      <ContextMenuSeparator />
+
+      <ContextMenuItem onMouseDown={handleSetFormat(BLOCKQUOTE)}>
+        Blockquote
+      </ContextMenuItem>
+      <ContextMenuItem onMouseDown={handleSetFormat(CODE_BLOCK)}>
+        Code Block
+      </ContextMenuItem>
+
+      <ContextMenuSeparator />
+
+      <ContextMenuItem
+        onMouseDown={() => {
+          console.warn("TODO")
+        }}
+      >
+        Bulleted List
+      </ContextMenuItem>
+      <ContextMenuItem
+        onMouseDown={() => {
+          console.warn("TODO")
+        }}
+      >
+        Numbered List
+      </ContextMenuItem>
+
+      {/* <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
+        Paragraph
+      </ContextMenuItem>
+      <ContextSubmenu text="Heading">
+        <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
+          Heading 1
+        </ContextMenuItem>
+        <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H2)}>
+          Heading 2
+        </ContextMenuItem>
+        <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H3)}>
+          Heading 3
+        </ContextMenuItem>
+        <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H4)}>
+          Heading 4
+        </ContextMenuItem>
+        <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H5)}>
+          Heading 5
+        </ContextMenuItem>
+        <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H6)}>
+          Heading 6
+        </ContextMenuItem>
+      </ContextSubmenu>
+
+      <ContextMenuSeparator />
+
+      <ContextMenuItem onMouseDown={handleSetFormat(BLOCKQUOTE)}>
+        Blockquote
+      </ContextMenuItem>
+      <ContextMenuItem onMouseDown={handleSetFormat(CODE_BLOCK)}>
+        Code Block
+      </ContextMenuItem>
+
+      <ContextSubmenu text="List">
+        <ContextMenuItem
+          onMouseDown={() => {
+            console.warn("TODO")
+          }}
+        >
+          Bulleted List
+        </ContextMenuItem>
+        <ContextMenuItem
+          onMouseDown={() => {
+            console.warn("TODO")
+          }}
+        >
+          Numbered List
+        </ContextMenuItem>
+      </ContextSubmenu> */}
+    </>
+  )
 }
 
 // TODO: return to this component once react context is implemented for the contextmenu component
