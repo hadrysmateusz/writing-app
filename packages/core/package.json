@@ -22,7 +22,7 @@
     "@types/react-router-dom": "^5.1.4",
     "@types/styled-components": "^5.0.1",
     "@types/uuid": "^7.0.3",
-    "@udecode/slate-plugins": "^0.61.1",
+    "@udecode/slate-plugins": "0.61.1",
     "aws-amplify": "^3.0.8",
     "electron": "^8.2.5",
     "image-extensions": "^1.1.0",
