@@ -259,9 +259,7 @@ const EditorComponent: React.FC<{
   return (
     <OutermostContainer>
       {currentDocument.isDeleted && (
-        <TrashBanner documentId={currentDocument.id}>
-          This document is in Trash
-        </TrashBanner>
+        <TrashBanner documentId={currentDocument.id} />
       )}
       <OuterContainer>
         <InnerContainer>
