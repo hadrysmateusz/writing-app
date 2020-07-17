@@ -109,6 +109,100 @@ const EditorComponent: React.FC<{
     await saveDocument()
   }
 
+  const handleEditorMouseDown = (
+    event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>
+  ) => {
+    // If the right-mouse-button is clicked, prevent the selection from being changed and trigger the correct context menu
+    if (event.button === 2) {
+      const domSelection = document.getSelection()
+
+      // these refer to the dom nodes that directly map to slate element nodes
+      let selectionTargetParentSlateNode: Element | null = null
+      let eventTargetParentSlateNode: Element | null = null
+
+      if (domSelection !== null) {
+        // if the selection is expanded and the event is within the selection, trigger the appropriate menu
+        if (!domSelection.isCollapsed) {
+          let domRange: Range
+
+          try {
+            domRange = domSelection.getRangeAt(0)
+          } catch (error) {
+            console.log("no range")
+            // TODO: investigate this error further
+            return
+          }
+
+          const rect = domRange.getBoundingClientRect()
+
+          // If the click was inside the bounding rect of the selection then trigger the selection-specific context menu
+          // TODO: this bounding rect logic etc. probably needs some more work to handle different edge cases like scrolling, scrollbars etc.
+          if (
+            event.pageX >= rect.x &&
+            event.pageX <= rect.x + rect.width &&
+            event.pageY >= rect.y &&
+            event.pageY <= rect.y + rect.height
+          ) {
+            event.preventDefault()
+            openMenu(event, { base: "expanded" })
+          }
+          return
+        }
+
+        const selectionTargetParent = domSelection.anchorNode?.parentElement
+
+        if (!selectionTargetParent) {
+          selectionTargetParentSlateNode = null
+        } else {
+          selectionTargetParentSlateNode = selectionTargetParent.closest(
+            `[data-slate-node="element"]`
+          )
+        }
+      }
+
+      let targetElement: HTMLElement
+
+      const targetNode = event.target as globalThis.Node
+
+      // if the node is already an element then use it if not find it's parent element
+      if (targetNode.nodeType === 1) {
+        targetElement = targetNode as HTMLElement
+      } else {
+        targetElement = targetNode.parentElement!
+      }
+
+      eventTargetParentSlateNode = targetElement.closest(
+        `[data-slate-node="element"]`
+      )
+
+      if (eventTargetParentSlateNode === null) return // TODO: better handle this
+
+      if (
+        selectionTargetParentSlateNode?.isSameNode(eventTargetParentSlateNode)
+      ) {
+        openMenu(event, { base: "collapsed" })
+        return
+      }
+
+      const slateNode = ReactEditor.toSlateNode(
+        editor,
+        eventTargetParentSlateNode
+      )
+
+      // open context menu for a slate node TODO: it would probably be better to somehow notify the react component that it should handle this, it could also set some custom highlighting styles etc.
+      if (typeof slateNode.type === "string") {
+        event.preventDefault()
+        openMenu(event, {
+          base: "node",
+          node: eventTargetParentSlateNode,
+        })
+        return
+      } else {
+        return // TODO: better handle this
+      }
+    }
+  }
+
   /*
     TODO: this solution might be a bit too basic and might need to be replaced with normalization
     It should also take into account the depth of the path and the type of the node (e.g. list items)
@@ -182,102 +276,7 @@ const EditorComponent: React.FC<{
           />
           <EditableContainer
             onBlur={handleContentBlur}
-            onMouseDown={(
-              event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>
-            ) => {
-              // If the right-mouse-button is clicked, prevent the selection from being changed and trigger the correct context menu
-              if (event.button === 2) {
-                const domSelection = document.getSelection()
-
-                // these refer to the dom nodes that directly map to slate element nodes
-                let selectionTargetParentSlateNode: Element | null = null
-                let eventTargetParentSlateNode: Element | null = null
-
-                if (domSelection !== null) {
-                  // if the selection is expanded and the event is within the selection, trigger the appropriate menu
-                  if (!domSelection.isCollapsed) {
-                    let domRange: Range
-
-                    try {
-                      domRange = domSelection.getRangeAt(0)
-                    } catch (error) {
-                      console.log("no range")
-                      // TODO: investigate this error further
-                      return
-                    }
-
-                    const rect = domRange.getBoundingClientRect()
-
-                    // If the click was inside the bounding rect of the selection then trigger the selection-specific context menu
-                    // TODO: this bounding rect logic etc. probably needs some more work to handle different edge cases like scrolling, scrollbars etc.
-                    if (
-                      event.pageX >= rect.x &&
-                      event.pageX <= rect.x + rect.width &&
-                      event.pageY >= rect.y &&
-                      event.pageY <= rect.y + rect.height
-                    ) {
-                      event.preventDefault()
-                      openMenu(event, { base: "expanded" })
-                    }
-                    return
-                  }
-
-                  const selectionTargetParent =
-                    domSelection.anchorNode?.parentElement
-
-                  if (!selectionTargetParent) {
-                    selectionTargetParentSlateNode = null
-                  } else {
-                    selectionTargetParentSlateNode = selectionTargetParent.closest(
-                      `[data-slate-node="element"]`
-                    )
-                  }
-                }
-
-                let targetElement: HTMLElement
-
-                const targetNode = event.target as globalThis.Node
-
-                // if the node is already an element then use it if not find it's parent element
-                if (targetNode.nodeType === 1) {
-                  targetElement = targetNode as HTMLElement
-                } else {
-                  targetElement = targetNode.parentElement!
-                }
-
-                eventTargetParentSlateNode = targetElement.closest(
-                  `[data-slate-node="element"]`
-                )
-
-                if (eventTargetParentSlateNode === null) return // TODO: better handle this
-
-                if (
-                  selectionTargetParentSlateNode?.isSameNode(
-                    eventTargetParentSlateNode
-                  )
-                ) {
-                  openMenu(event, { base: "collapsed" })
-                  return
-                }
-
-                const slateNode = ReactEditor.toSlateNode(
-                  editor,
-                  eventTargetParentSlateNode
-                )
-
-                // open context menu for a slate node TODO: it would probably be better to somehow notify the react component that it should handle this, it could also set some custom highlighting styles etc.
-                if (typeof slateNode.type === "string") {
-                  event.preventDefault()
-                  openMenu(event, {
-                    base: "node",
-                    node: eventTargetParentSlateNode,
-                  })
-                  return
-                } else {
-                  return // TODO: better handle this
-                }
-              }
-            }}
+            onMouseDown={handleEditorMouseDown}
           >
             <Editable
               plugins={plugins}
