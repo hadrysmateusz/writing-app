@@ -1,12 +1,12 @@
 import { Editor } from "slate"
 import { isMarkActive } from ".."
 
-export const toggleMark = (editor: Editor, format: string) => {
-  const isActive = isMarkActive(editor, format)
+export const toggleMark = (editor: Editor, key: string) => {
+  const isActive = isMarkActive(editor, key)
 
   if (isActive) {
-    Editor.removeMark(editor, format)
+    editor.removeMark(key)
   } else {
-    Editor.addMark(editor, format, true)
+    editor.addMark(key, true)
   }
 }

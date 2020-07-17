@@ -19,9 +19,9 @@ export function toggleFormat(editor, format) {
 
       if (isMark) {
         if (isActive) {
-          Editor.removeMark(editor, format)
+          editor.removeMark(format)
         } else {
-          Editor.addMark(editor, format, true)
+          editor.addMark(format, true)
         }
       } else {
         const isList = LIST_TYPES.includes(format)
