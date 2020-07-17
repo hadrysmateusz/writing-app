@@ -9,13 +9,17 @@ const listCommon = css`
   }
 
   li > * {
-    display: inline-block;
+    /* display: inline-block; */
   }
+
+  padding-inline-start: 24px;
+  margin-block-start: 0;
+  margin-block-end: 0;
 `
 
 export const StyledUL = styled.ul`
-  list-style-type: none;
-  li::before {
+  /* list-style-type: none; */
+  /* li::before {
     content: "";
     color: #41474d;
     display: inline-block;
@@ -26,7 +30,7 @@ export const StyledUL = styled.ul`
     margin-bottom: 3px;
     margin-right: 12px;
     margin-left: -1px;
-  }
+  } */
   ${listCommon}
 `
 

@@ -2,9 +2,10 @@ import { Ancestor, Editor, Path, Transforms } from "slate"
 
 import { DEFAULT, isBlockTextEmpty, isFirstChild } from "../../../slate-helpers"
 
-import { isList, isSelectionInList } from "./helpers"
+import { isList } from "./helpers"
 import { ListOptions } from "./types"
 import { ListType } from "../../../slateTypes"
+import { isNodeTypeIn } from "@udecode/slate-plugins"
 
 /**
  * Move a list item next to its parent.
@@ -107,32 +108,37 @@ export const onKeyDownList = ({}: ListOptions) => (
   e: KeyboardEvent,
   editor: Editor
 ) => {
-  // if (["Tab", "Enter", "Backspace"].includes(e.key)) {
-  //   if (editor.selection && isSelectionInList(editor)) {
-  //     if (e.key === "Tab") {
-  //       e.preventDefault()
-  //     }
-  //     /* TODO: when deleting selections around the end of a list an error is sometimes
-  //     thrown along the lines of: "cannot find parent path of []" */
-  //     const [paragraphNode, paragraphPath] = Editor.parent(
-  //       editor,
-  //       editor.selection
-  //     )
-  //     if (paragraphNode.type !== DEFAULT) return
-  //     const [listItemNode, listItemPath] = Editor.parent(editor, paragraphPath)
-  //     if (listItemNode.type !== ListType.LIST_ITEM) return
-  //     const [listNode, listPath] = Editor.parent(editor, listItemPath)
-  //     if (
-  //       (e.shiftKey && e.key === "Tab") ||
-  //       (["Enter", "Backspace"].includes(e.key) &&
-  //         isBlockTextEmpty(paragraphNode))
-  //     ) {
-  //       const moved = moveUp(editor, listNode, listPath, listItemPath)
-  //       if (moved) e.preventDefault()
-  //     }
-  //     if (!e.shiftKey && e.key === "Tab" && !isFirstChild(listItemPath)) {
-  //       moveDown(editor, listNode, listItemPath)
-  //     }
-  //   }
-  // }
+  /* TODO: when deleting selections around the end of a list an error is sometimes
+     thrown along the lines of: "cannot find parent path of []" */
+  if (["Tab", "Enter", "Backspace"].includes(e.key)) {
+    if (editor.selection && isNodeTypeIn(editor, ListType.LIST_ITEM)) {
+      if (e.key === "Tab") {
+        e.preventDefault()
+      }
+
+      const [paragraphNode, paragraphPath] = Editor.parent(
+        editor,
+        editor.selection
+      )
+      if (paragraphNode.type !== DEFAULT) return
+      const [listItemNode, listItemPath] = Editor.parent(editor, paragraphPath)
+      if (listItemNode.type !== ListType.LIST_ITEM) return
+      const [listNode, listPath] = Editor.parent(editor, listItemPath)
+
+      // move up (outdent)
+      if (
+        (e.shiftKey && e.key === "Tab") ||
+        (["Enter", "Backspace"].includes(e.key) &&
+          isBlockTextEmpty(paragraphNode))
+      ) {
+        const moved = moveUp(editor, listNode, listPath, listItemPath)
+        if (moved) e.preventDefault()
+      }
+
+      // move down (indent)
+      if (!e.shiftKey && e.key === "Tab" && !isFirstChild(listItemPath)) {
+        moveDown(editor, listNode, listItemPath)
+      }
+    }
+  }
 }
