@@ -7,7 +7,9 @@ import {
   withDeleteStartReset,
 } from "../../../slate-helpers"
 
-import { ListType, ListOptions } from "./types"
+import { ListOptions } from "./types"
+
+import { ListType } from "../../../slateTypes"
 
 // TODO: add options for overriding types
 const withListCore = (options: ListOptions): EditorOverrides => (editor) => {

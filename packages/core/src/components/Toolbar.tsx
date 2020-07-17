@@ -2,7 +2,6 @@ import React from "react"
 import { useSlate } from "slate-react"
 
 import {
-  ListType,
   BLOCKQUOTE,
   CODE_BLOCK,
   HeadingType,
@@ -12,6 +11,7 @@ import {
   IMAGE,
   insertImage,
 } from "../slate-plugins"
+import { ListType } from "../slateTypes"
 import FormatButton from "./FormatButton"
 
 export const Toolbar = () => {

@@ -1,13 +1,11 @@
-import { Editor, Transforms } from "slate"
-import { isList, isListItem } from "."
+import { Editor } from "slate"
+import { unwrapNodesByType } from "@udecode/slate-plugins"
+
+import { ListType } from "../../../../slateTypes"
 
 export const unwrapList = (editor: Editor) => {
-  Transforms.unwrapNodes(editor, {
-    match: isListItem,
-  })
-
-  Transforms.unwrapNodes(editor, {
-    match: isList,
+  unwrapNodesByType(editor, ListType.LIST_ITEM)
+  unwrapNodesByType(editor, [ListType.OL_LIST, ListType.UL_LIST], {
     split: true,
   })
 }

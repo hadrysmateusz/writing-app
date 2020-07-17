@@ -1,6 +1,5 @@
 import {
   BLOCKQUOTE,
-  ListType,
   LINK,
   HeadingType,
   PARAGRAPH,
@@ -12,6 +11,8 @@ import {
   HORIZONTAL_RULE,
   IMAGE,
 } from "./../../slate-plugins"
+import { ListType } from "../../slateTypes"
+
 import { Node } from "slate"
 
 export function parseToMarkdown(chunk: Node & { parentType?: string }) {

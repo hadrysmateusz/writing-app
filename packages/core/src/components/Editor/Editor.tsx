@@ -10,7 +10,7 @@ import { useEditor, ReactEditor } from "slate-react"
 import { Transforms, Path, Editor, Node } from "slate"
 import isHotkey from "is-hotkey"
 
-import HoveringToolbar from "../HoveringToolbar"
+// import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
 import { DocumentDoc } from "../Database"
 import { useMainState } from "../MainState/MainStateProvider"
@@ -28,6 +28,7 @@ import { plugins } from "../../pluginsList"
 import { Editable, OnKeyDown } from "../../slate-plugin-system"
 import { createEmptyNode } from "../../helpers/createEmptyNode"
 import useEditorContextMenu from "./useEditorContextMenu"
+import { Toolbar } from "../Toolbar"
 
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
@@ -170,7 +171,8 @@ const EditorComponent: React.FC<{
       )}
       <OuterContainer>
         <InnerContainer>
-          <HoveringToolbar />
+          {/* <HoveringToolbar /> */}
+          <Toolbar />
           <StyledNamingInput
             ref={titleRef}
             value={title}

@@ -12,7 +12,6 @@ import {
   ListPlugin,
   MarkdownShortcutsPlugin,
   toggleList,
-  ListType,
   SoftBreakPlugin,
   InsertBlockPlugin,
   HeadingType,
@@ -22,6 +21,7 @@ import {
   ImagePlugin,
   OnBreakSetDefaultPlugin,
 } from "./slate-plugins"
+import { ListType } from "./slateTypes"
 
 const HistoryPlugin = () => ({ editorOverrides: withHistory })
 

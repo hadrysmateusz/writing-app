@@ -3,8 +3,10 @@ import { RenderElementProps } from "slate-react"
 
 import { getElement } from "@slate-plugin-system/core"
 
-import { ListType, RenderElementListOptions } from "./types"
+import { RenderElementListOptions } from "./types"
 import { StyledUL, StyledOL } from "./components"
+
+import { ListType } from "../../../slateTypes"
 
 export const renderElementList = ({
   UL = StyledUL,

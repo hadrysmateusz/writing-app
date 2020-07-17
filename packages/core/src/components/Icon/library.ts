@@ -33,7 +33,6 @@ import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
 import { ReactComponent as Heading2 } from "../../assets/Heading2.svg"
 
 import {
-  ListType,
   BLOCKQUOTE,
   CODE_BLOCK,
   HeadingType,
@@ -44,6 +43,7 @@ import {
   CODE_INLINE,
   IMAGE,
 } from "../../slate-plugins"
+import { ListType } from "../../slateTypes"
 
 const iconLibrary = {
   /* For icons representing blocks, marks and other slate node types the icon 

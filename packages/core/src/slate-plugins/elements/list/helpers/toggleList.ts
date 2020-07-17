@@ -1,12 +1,15 @@
 import { Editor, Transforms } from "slate"
+import { isNodeTypeIn, wrapNodes, getNodesByType } from "@udecode/slate-plugins"
 
-import { DEFAULT, isBlockActive } from "../../../../slate-helpers"
-
-import { ListType } from "../types"
 import { unwrapList } from "./unwrapList"
 
+import { DEFAULT } from "../../../../slate-helpers"
+import { ListType } from "../../../../slateTypes"
+
 export const toggleList = (editor: Editor, listType: string) => {
-  const isActive = isBlockActive(editor, listType)
+  if (!editor.selection) return
+
+  const isActive = isNodeTypeIn(editor, listType)
 
   unwrapList(editor)
 
@@ -16,14 +19,13 @@ export const toggleList = (editor: Editor, listType: string) => {
 
   if (!isActive) {
     const list = { type: listType, children: [] }
-    Transforms.wrapNodes(editor, list)
+    wrapNodes(editor, list)
 
-    const nodes = Editor.nodes(editor, {
-      match: (node) => node.type === DEFAULT,
-    })
+    // get default (paragraph) nodes inside the selection that will become list items
+    const nodes = [...getNodesByType(editor, DEFAULT)]
 
-    const listItem = { type: ListType.LIST_ITEM, children: [] }
     for (const [, path] of nodes) {
+      const listItem = { type: ListType.LIST_ITEM, children: [] }
       Transforms.wrapNodes(editor, listItem, { at: path })
     }
   }
