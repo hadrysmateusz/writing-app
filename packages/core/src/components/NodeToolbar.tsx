@@ -19,16 +19,21 @@ import {
   ContextMenuSeparator,
   ContextSubmenu,
 } from "./ContextMenu"
+import { useListItemContext } from "../slate-plugins/elements/list/ListItemContext"
 
 // The toolbar requires the parent element to have position: relative
 
 // TODO: this is incompatible with list items having other nodes inside (which is extremely problematic in many situations and should probably go)
 
-export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
+  nodeRef,
+  slateNode,
+}) => {
+  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const editor = useEditor()
   const isFocused = useFocused()
   const isSelected = useSelected()
+  const { listItemDirectNode } = useListItemContext()
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -61,6 +66,7 @@ export const Toolbar: React.FC<{ nodeRef: any }> = ({ nodeRef }) => {
       <SideToolbarContainer
         onMouseDown={handleMouseDown}
         contentEditable={false}
+        listItemIndent={listItemDirectNode === slateNode}
       >
         <FaEllipsisV />
       </SideToolbarContainer>
@@ -261,12 +267,12 @@ export const TurnIntoContextMenuContent: React.FC<{
 //   )
 // }
 
-const SideToolbarContainer = styled.div`
+const SideToolbarContainer = styled.div<{ listItemIndent: boolean }>`
   position: absolute;
   top: 3px;
   font-size: 17px;
   color: #41474d;
-  left: -25px;
+  left: ${(p) => (p.listItemIndent ? -49 : -25)}px;
   width: 20px;
   height: 20px;
   cursor: pointer;

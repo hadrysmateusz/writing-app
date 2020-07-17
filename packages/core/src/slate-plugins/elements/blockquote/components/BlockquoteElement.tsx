@@ -17,10 +17,11 @@ const StyledBlockquote = styled.blockquote<{ isSelected?: boolean }>`
 export const BlockquoteElement = ({
   attributes,
   children,
+  element,
 }: RenderElementProps) => {
   return (
     <StyledBlockquote {...attributes} data-slate-type={BLOCKQUOTE}>
-      <Toolbar nodeRef={attributes.ref} />
+      <Toolbar nodeRef={attributes.ref} slateNode={element} />
       {children}
     </StyledBlockquote>
   )

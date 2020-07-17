@@ -19,10 +19,11 @@ const StyledParagraph = styled.div`
 export const ParagraphElement = ({
   attributes,
   children,
+  element,
 }: RenderElementProps) => {
   return (
     <StyledParagraph {...attributes} data-slate-type={PARAGRAPH}>
-      <Toolbar nodeRef={attributes.ref} />
+      <Toolbar nodeRef={attributes.ref} slateNode={element} />
       {children}
     </StyledParagraph>
   )

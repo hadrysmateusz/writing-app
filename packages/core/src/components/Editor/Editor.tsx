@@ -29,6 +29,8 @@ import { Editable, OnKeyDown } from "../../slate-plugin-system"
 import { createEmptyNode } from "../../helpers/createEmptyNode"
 import useEditorContextMenu from "./useEditorContextMenu"
 import { Toolbar } from "../Toolbar"
+import { ListContextProvider } from "../../slate-plugins"
+import { ListItemContextProvider } from "../../slate-plugins/elements/list/ListItemContext"
 
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
@@ -272,20 +274,24 @@ const EditorComponent: React.FC<{
             onKeyDown={handleTitleKeydown}
             onRename={handleRename}
           />
-          <EditableContainer
-            onBlur={handleContentBlur}
-            onMouseDown={handleEditorMouseDown}
-          >
-            <Editable
-              plugins={plugins}
-              placeholder="Start writing"
-              onKeyDown={[handleSaveDocument, handleFixSelection]}
-              spellCheck={false}
-            />
-            <InsertBlockField onMouseDown={handleInsertEmptyBlock} />
+          <ListContextProvider value={{ listLevel: 0 }}>
+            <ListItemContextProvider value={{ listItemDirectNode: null }}>
+              <EditableContainer
+                onBlur={handleContentBlur}
+                onMouseDown={handleEditorMouseDown}
+              >
+                <Editable
+                  plugins={plugins}
+                  placeholder="Start writing"
+                  onKeyDown={[handleSaveDocument, handleFixSelection]}
+                  spellCheck={false}
+                />
+                <InsertBlockField onMouseDown={handleInsertEmptyBlock} />
 
-            {isMenuOpen && renderContextMenu()}
-          </EditableContainer>
+                {isMenuOpen && renderContextMenu()}
+              </EditableContainer>
+            </ListItemContextProvider>
+          </ListContextProvider>
         </InnerContainer>
       </OuterContainer>
     </OutermostContainer>

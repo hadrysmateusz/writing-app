@@ -21,12 +21,13 @@ const StyledPre = styled.pre`
 export const CodeBlockElement = ({
   attributes,
   children,
+  element,
 }: RenderElementProps) => {
   // TODO: when inside a code block handle line breaks like soft-breaks because otherwise it creates a separate block for every line
 
   return (
     <StyledPre>
-      <Toolbar nodeRef={attributes.ref} />
+      <Toolbar nodeRef={attributes.ref} slateNode={element} />
       <code {...attributes} data-slate-type={CODE_BLOCK}>
         {children}
       </code>

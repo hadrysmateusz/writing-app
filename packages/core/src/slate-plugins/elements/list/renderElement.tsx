@@ -1,17 +1,21 @@
 import React from "react"
 import { RenderElementProps } from "slate-react"
 
-import { getElement } from "@slate-plugin-system/core"
+// import { getElement } from "@slate-plugin-system/core"
 
 import { RenderElementListOptions } from "./types"
-import { StyledUL, StyledOL } from "./components"
+import {
+  UL as ULComponent,
+  OL as OLComponent,
+  LI as LiComponent,
+} from "./components"
 
 import { ListType } from "../../../slateTypes"
 
 export const renderElementList = ({
-  UL = StyledUL,
-  OL = StyledOL,
-  LI = getElement("li"),
+  UL = ULComponent,
+  OL = OLComponent,
+  LI = LiComponent,
 }: RenderElementListOptions = {}) => (props: RenderElementProps) => {
   switch (props.element.type) {
     case ListType.UL_LIST:
