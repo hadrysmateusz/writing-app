@@ -151,7 +151,6 @@ export const MainStateProvider: React.FC<{}> = ({ children }) => {
       // perform first-time setup
 
       if (isInitialLoad) {
-        console.log("running initial load stuff")
         const documentsPromise = documentsQuery.exec()
         const groupsPromise = groupsQuery.exec()
         const favoritesPromise = favoritesQuery.exec()

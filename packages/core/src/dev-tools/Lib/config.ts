@@ -1,4 +1,4 @@
-let config
+let config: any
 const key = "config"
 
 /**
@@ -48,7 +48,7 @@ const persist = () => window.localStorage.setItem(key, JSON.stringify(config))
  */
 function enable(name) {
   config[name] = true
-  console.log(`CONFIG: Enabled ${name}`, config)
+  // console.log(`CONFIG: Enabled ${name}`, config)
   persist()
 }
 
@@ -57,7 +57,7 @@ function enable(name) {
  */
 function disable(name) {
   config[name] = false
-  console.log(`CONFIG: Disabled ${name}`, config)
+  // console.log(`CONFIG: Disabled ${name}`, config)
   persist()
 }
 

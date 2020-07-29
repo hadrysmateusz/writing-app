@@ -12,6 +12,7 @@ import {
   DocumentDoc,
   DocumentCollection,
 } from "./types"
+import { config } from "../../dev-tools"
 
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) //enable syncing over http
@@ -44,7 +45,6 @@ const findDbUsername = (name: string): [string, number] => {
 const encodeDbName = (name: string): string => {
   validateDbName(name)
   const [username, usernameIndex] = findDbUsername(name)
-  console.log(username)
   return name.substring(0, usernameIndex) + username.replace(/-/g, "_")
 }
 
@@ -74,7 +74,6 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
 
   useEffect(() => {
     // TODO: (presumably because auth is in the web package - or just because the auth provider is above it) when logging-in to the same account after logging-out in one session this component gets remounted and the hook is run again causing the database to be created twice and an error is thrown
-    console.log("RUNNING HOOK")
     const createDatabase = async () => {
       // TODO: probably extract this logic and expose these values in some higher context state to reduce redundancy
       const currentUser = await Auth.currentAuthenticatedUser()
@@ -86,13 +85,11 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       }
 
       // create database
-      console.log("DatabaseService: creating database..")
       const db = await createRxDatabase<MyDatabaseCollections>({
         name: encodeDbName(`${dbNameBase}${usernameStartWord}${username}`),
         adapter: "idb",
         ignoreDuplicate: true, // TODO: this flag is set to address the issue with the auth provider remounting the component after logging in to the same account twice but it probably will have some unintended consequences so try to find a better solution
       })
-      console.log("DatabaseService: created database")
 
       // write to window for debugging
       window["db"] = db
@@ -129,9 +126,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       ]
 
       // create collections
-      console.log("DatabaseService: creating collections...")
       await Promise.all(collections.map((colData) => db.collection(colData)))
-      console.log("DatabaseService: created collections")
 
       // // Hook that intercepts document remove calls and soft-deletes them instead
       // /*
@@ -184,49 +179,50 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       }, false)
 
       // sync
-      console.log("DatabaseService: setting up sync...")
-      // TODO: check if sync returns a promise to be resolved
-      // console.warn("Sync disabled: Check the Database.tsx file")
+      if (config.dbSync) {
+        // TODO: check if sync returns a promise to be resolved
 
-      collections
-        .filter((col) => col.sync)
-        .map((col) => col.name)
-        .forEach((colName) => {
-          // get the remote database(/table) name with the proper username prefix
-          const dbName = getUserRemoteDbName(username, colName)
+        collections
+          .filter((col) => col.sync)
+          .map((col) => col.name)
+          .forEach((colName) => {
+            // get the remote database(/table) name with the proper username prefix
+            const dbName = getUserRemoteDbName(username, colName)
 
-          db[colName].sync({
-            remote: new PouchDB(
-              `http://admin:kurczok99@${remoteDbDomain}:${remoteDbPort}/${dbName}/`,
-              {
-                fetch: (url, opts) => {
-                  opts = {
-                    ...opts,
-                    credentials: "include", // TODO: investigate the necessity of this option for jwt auth
-                  }
+            db[colName].sync({
+              remote: new PouchDB(
+                `http://admin:kurczok99@${remoteDbDomain}:${remoteDbPort}/${dbName}/`,
+                {
+                  fetch: (url, opts) => {
+                    opts = {
+                      ...opts,
+                      credentials: "include", // TODO: investigate the necessity of this option for jwt auth
+                    }
 
-                  // TODO: set the Authorization header to "Bearer {CognitoJWT}" for jwt auth or use the headers below for proxy auth
+                    // TODO: set the Authorization header to "Bearer {CognitoJWT}" for jwt auth or use the headers below for proxy auth
 
-                  // opts.headers = [["X-Auth-CouchDB-UserName", "test"]]
+                    // opts.headers = [["X-Auth-CouchDB-UserName", "test"]]
 
-                  // opts.headers["X-Auth-CouchDB-UserName"] = "test"
-                  // opts.headers["X-Auth-CouchDB-Token"] = "token"
-                  // opts.headers["X-Auth-CouchDB-Roles"] = "couchroles"
+                    // opts.headers["X-Auth-CouchDB-UserName"] = "test"
+                    // opts.headers["X-Auth-CouchDB-Token"] = "token"
+                    // opts.headers["X-Auth-CouchDB-Roles"] = "couchroles"
 
-                  // opts?.headers?.set("X-test", "test123")
+                    // opts?.headers?.set("X-test", "test123")
 
-                  return fetch(url, opts)
-                },
-              }
-            ),
-            waitForLeadership: true,
-            options: {
-              live: true,
-              retry: true,
-            },
+                    return fetch(url, opts)
+                  },
+                }
+              ),
+              waitForLeadership: true,
+              options: {
+                live: true,
+                retry: true,
+              },
+            })
           })
-        })
-      console.log("DatabaseService: sync set up")
+      } else {
+        console.warn("Sync disabled: Check the Database.tsx file")
+      }
 
       db.waitForLeadership().then(() => {
         console.log("Long lives the king!") // <- runs when db becomes leader
@@ -238,8 +234,6 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
 
     createDatabase()
   }, [])
-
-  console.log(isLoading, database)
 
   // TODO: better loading and error states
   return (
