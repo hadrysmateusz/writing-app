@@ -4,6 +4,7 @@ import styled from "styled-components/macro"
 
 import { PARAGRAPH } from "../types"
 import { Toolbar } from "../../../../components/NodeToolbar"
+import { config } from "../../../../dev-tools"
 
 const StyledParagraph = styled.div`
   position: relative;
@@ -14,6 +15,12 @@ const StyledParagraph = styled.div`
   :not(:last-child) {
     margin-bottom: var(--margin);
   }
+
+  ${() =>
+    config.debugStyles &&
+    `border: 1px dashed blue; 
+    background: rgba(0, 0, 255, 0.15); 
+    margin: 4px;`}
 `
 
 export const ParagraphElement = ({

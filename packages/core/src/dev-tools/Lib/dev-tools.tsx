@@ -39,6 +39,11 @@ const DevTools = ({ local = null }) => {
       <Toggle>🛠</Toggle>
       <div className="tools">
         {local}
+        <div>
+          {/* TODO: bind config values to state to
+            trigger reload */}
+          <strong>debugStyles requires reload</strong>
+        </div>
         <FeatureToggles />
         <TriggerEvent name="logEditor" />
       </div>

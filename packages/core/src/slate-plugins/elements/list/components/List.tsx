@@ -4,6 +4,7 @@ import { RenderElementProps } from "slate-react"
 import { ListType } from "../../../../slateTypes"
 import { useListContext, ListContextProvider } from "../ListContext"
 import { ListItemContextProvider } from "../ListItemContext"
+import { config } from "../../../../dev-tools"
 
 const listCommon = css`
   margin: 14px 0;
@@ -20,6 +21,12 @@ const listCommon = css`
   padding-inline-start: 24px;
   margin-block-start: 0;
   margin-block-end: 0;
+
+  ${(p) =>
+    p.debugStyles &&
+    `border: 1px dashed red;
+    background: rgba(255, 0, 0, 0.15);
+    margin: 4px;`}
 `
 
 const StyledUL = styled.ul`
@@ -44,13 +51,23 @@ const StyledOL = styled.ol`
   ${listCommon}
 `
 
-const StyledLI = styled.li``
+const StyledLI = styled.li`
+  ${(p) =>
+    p.debugStyles &&
+    `border: 1px dashed green;
+    background: rgba(0, 255, 0, 0.15);
+    margin: 4px;`}
+`
 
 export const OL = ({ attributes, children }: RenderElementProps) => {
   const { listLevel } = useListContext()
 
   return (
-    <StyledOL {...attributes} data-slate-type={ListType.OL_LIST}>
+    <StyledOL
+      {...attributes}
+      data-slate-type={ListType.OL_LIST}
+      debugStyles={config.debugStyles}
+    >
       <ListContextProvider value={{ listLevel: listLevel + 1 }}>
         {children}
       </ListContextProvider>
@@ -61,7 +78,11 @@ export const OL = ({ attributes, children }: RenderElementProps) => {
 export const UL = ({ attributes, children }: RenderElementProps) => {
   const { listLevel } = useListContext()
   return (
-    <StyledUL {...attributes} data-slate-type={ListType.UL_LIST}>
+    <StyledUL
+      {...attributes}
+      data-slate-type={ListType.UL_LIST}
+      debugStyles={config.debugStyles}
+    >
       <ListContextProvider value={{ listLevel: listLevel + 1 }}>
         {children}
       </ListContextProvider>
@@ -71,7 +92,11 @@ export const UL = ({ attributes, children }: RenderElementProps) => {
 
 export const LI = ({ attributes, children, element }: RenderElementProps) => {
   return (
-    <StyledLI {...attributes} data-slate-type={ListType.LIST_ITEM}>
+    <StyledLI
+      {...attributes}
+      data-slate-type={ListType.LIST_ITEM}
+      debugStyles={config.debugStyles}
+    >
       <ListItemContextProvider
         value={{ listItemDirectNode: element.children[0] }}
       >

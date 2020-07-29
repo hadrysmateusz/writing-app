@@ -3,6 +3,7 @@ const config = {
   logSelection: true,
   logValue: true,
   dbSync: true,
+  debugStyles: true,
 }
 
 export default config
