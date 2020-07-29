@@ -1,6 +1,8 @@
 import { Editor, Element, Path, Node, NodeEntry } from "slate"
 import { sortPaths } from "./sortPaths"
 
+// TODO: rework this like getSelectedNodes -> getCommonNodes
+
 // Simplified version of getSelectedNodes
 
 // TODO: make sure there are no duplicates in the result

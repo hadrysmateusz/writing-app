@@ -6,6 +6,7 @@ import { isList } from "./helpers"
 import { ListOptions } from "./types"
 import { ListType } from "../../../slateTypes"
 import { isNodeTypeIn } from "@udecode/slate-plugins"
+import getCommonNodes from "../../../slate-helpers/getCommonNodes"
 
 /**
  * Move a list item next to its parent.
@@ -110,11 +111,14 @@ export const onKeyDownList = ({}: ListOptions) => (
 ) => {
   /* TODO: when deleting selections around the end of a list an error is sometimes
      thrown along the lines of: "cannot find parent path of []" */
-  if (["Tab", "Enter", "Backspace"].includes(e.key)) {
+  if (["Tab"].includes(e.key)) {
     if (editor.selection && isNodeTypeIn(editor, ListType.LIST_ITEM)) {
       if (e.key === "Tab") {
         e.preventDefault()
       }
+
+      const nodeEntries = getCommonNodes(editor)
+      console.log(...nodeEntries)
 
       const [paragraphNode, paragraphPath] = Editor.parent(
         editor,
