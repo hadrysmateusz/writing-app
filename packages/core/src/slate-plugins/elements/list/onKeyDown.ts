@@ -1,12 +1,31 @@
-import { Ancestor, Editor, Path, Transforms } from "slate"
+import isHotkey from "is-hotkey"
+import {
+  Ancestor,
+  Editor,
+  Element,
+  NodeEntry,
+  Path,
+  Range,
+  Transforms,
+} from "slate"
+import {
+  getAboveByType,
+  isBlockAboveEmpty,
+  isFirstChild,
+  isNodeTypeIn,
+  isRangeAtRoot,
+  isSelectionAtBlockStart,
+  isBlockTextEmptyAfterSelection,
+  onKeyDownResetBlockType,
+} from "@udecode/slate-plugins"
+import { unwrapList, isList } from "./helpers"
+import { ELEMENT_LIST_ITEM, ELEMENT_PARAGRAPH } from "../../../slateTypes"
 
-import { DEFAULT, isBlockTextEmpty, isFirstChild } from "../../../slate-helpers"
-
-import { isList } from "./helpers"
-import { ListOptions } from "./types"
-import { ListType } from "../../../slateTypes"
-import { isNodeTypeIn } from "@udecode/slate-plugins"
-import getCommonNodes from "../../../slate-helpers/getCommonNodes"
+const ListHotkey = {
+  TAB: "Tab",
+  ENTER: "Enter",
+  DELETE_BACKWARD: "Backspace",
+}
 
 /**
  * Move a list item next to its parent.
@@ -19,7 +38,7 @@ const moveUp = (
   listItemPath: number[]
 ) => {
   const [listParentNode, listParentPath] = Editor.parent(editor, listPath)
-  if (listParentNode.type !== ListType.LIST_ITEM) return
+  if (listParentNode.type !== ELEMENT_LIST_ITEM) return
 
   const newListItemPath = Path.next(listParentPath)
 
@@ -78,12 +97,15 @@ const moveDown = (
   listItemPath: number[]
 ) => {
   // Previous sibling is the new parent
-  const previousSiblingItem = Editor.node(editor, Path.previous(listItemPath))
+  const previousSiblingItem = Editor.node(
+    editor,
+    Path.previous(listItemPath)
+  ) as NodeEntry<Ancestor>
 
   if (previousSiblingItem) {
     const [previousNode, previousPath] = previousSiblingItem
 
-    const sublist = previousNode.children.find(isList)
+    const sublist = previousNode.children.find(isList) as Element | undefined
     const newPath = previousPath.concat(
       sublist ? [1, sublist.children.length] : [1]
     )
@@ -105,44 +127,164 @@ const moveDown = (
   }
 }
 
-export const onKeyDownList = ({}: ListOptions) => (
-  e: KeyboardEvent,
-  editor: Editor
-) => {
-  /* TODO: when deleting selections around the end of a list an error is sometimes
-     thrown along the lines of: "cannot find parent path of []" */
-  if (["Tab"].includes(e.key)) {
-    if (editor.selection && isNodeTypeIn(editor, ListType.LIST_ITEM)) {
-      if (e.key === "Tab") {
+const handleMoveList = (e: KeyboardEvent, editor: Editor) => {
+  let moved: boolean | undefined = false
+
+  if (Object.values(ListHotkey).includes(e.key)) {
+    if (
+      editor.selection &&
+      isNodeTypeIn(editor, ELEMENT_LIST_ITEM) &&
+      !isRangeAtRoot(editor.selection)
+    ) {
+      if (e.key === ListHotkey.TAB) {
         e.preventDefault()
       }
 
-      const nodeEntries = getCommonNodes(editor)
-      console.log(...nodeEntries)
-
+      // If selection is in li > p
       const [paragraphNode, paragraphPath] = Editor.parent(
         editor,
         editor.selection
       )
-      if (paragraphNode.type !== DEFAULT) return
+      if (paragraphNode.type !== ELEMENT_PARAGRAPH) return
       const [listItemNode, listItemPath] = Editor.parent(editor, paragraphPath)
-      if (listItemNode.type !== ListType.LIST_ITEM) return
+      if (listItemNode.type !== ELEMENT_LIST_ITEM) return
       const [listNode, listPath] = Editor.parent(editor, listItemPath)
 
-      // move up (outdent)
-      if (
-        (e.shiftKey && e.key === "Tab") ||
-        (["Enter", "Backspace"].includes(e.key) &&
-          isBlockTextEmpty(paragraphNode))
-      ) {
-        const moved = moveUp(editor, listNode, listPath, listItemPath)
+      // move up
+      const shiftTab = e.shiftKey && e.key === ListHotkey.TAB
+
+      const enterOnEmptyBlock =
+        e.key === ListHotkey.ENTER && isBlockAboveEmpty(editor)
+      const deleteAtBlockStart =
+        e.key === ListHotkey.DELETE_BACKWARD && isSelectionAtBlockStart(editor)
+
+      if (shiftTab || enterOnEmptyBlock || deleteAtBlockStart) {
+        moved = moveUp(editor, listNode, listPath, listItemPath)
         if (moved) e.preventDefault()
       }
 
-      // move down (indent)
-      if (!e.shiftKey && e.key === "Tab" && !isFirstChild(listItemPath)) {
+      // move down
+      const tab = !e.shiftKey && e.key === ListHotkey.TAB
+      if (tab && !isFirstChild(listItemPath)) {
         moveDown(editor, listNode, listItemPath)
       }
+    }
+  }
+
+  return moved
+}
+
+export const onKeyDownList = (options: any) => (
+  e: KeyboardEvent,
+  editor: Editor
+) => {
+  const moved = handleMoveList(e, editor)
+
+  const resetBlockTypesListRule = {
+    types: [ELEMENT_LIST_ITEM],
+    defaultType: ELEMENT_PARAGRAPH,
+    onReset: (_editor: Editor) => unwrapList(_editor),
+  }
+
+  onKeyDownResetBlockType({
+    rules: [
+      {
+        ...resetBlockTypesListRule,
+        hotkey: "Enter",
+        predicate: () => !moved && isBlockAboveEmpty(editor),
+      },
+      {
+        ...resetBlockTypesListRule,
+        hotkey: "Backspace",
+        predicate: () => !moved && isSelectionAtBlockStart(editor),
+      },
+    ],
+  })(e, editor)
+
+  /**
+   * Add a new list item if selection is in a LIST_ITEM > ELEMENT_PARAGRAPH.
+   */
+  if (!moved && isHotkey("Enter", e)) {
+    if (editor.selection && !isRangeAtRoot(editor.selection)) {
+      const paragraphEntry = getAboveByType(editor, ELEMENT_PARAGRAPH)
+      if (!paragraphEntry) return
+      const [, paragraphPath] = paragraphEntry
+
+      const [listItemNode, listItemPath] = Editor.parent(editor, paragraphPath)
+      if (listItemNode.type !== ELEMENT_LIST_ITEM) return
+
+      if (!Range.isCollapsed(editor.selection)) {
+        Transforms.delete(editor)
+      }
+
+      const isStart = Editor.isStart(
+        editor,
+        editor.selection.focus,
+        paragraphPath
+      )
+      const isEnd = isBlockTextEmptyAfterSelection(editor)
+
+      const nextParagraphPath = Path.next(paragraphPath)
+      const nextListItemPath = Path.next(listItemPath)
+
+      /**
+       * If start, insert a list item before
+       */
+      if (isStart) {
+        Transforms.insertNodes(
+          editor,
+          {
+            type: ELEMENT_LIST_ITEM,
+            children: [{ type: ELEMENT_PARAGRAPH, children: [{ text: "" }] }],
+          },
+          { at: listItemPath }
+        )
+        return e.preventDefault()
+      }
+
+      /**
+       * If not end, split nodes, wrap a list item on the new paragraph and move it to the next list item
+       */
+      if (!isEnd) {
+        Transforms.splitNodes(editor, { at: editor.selection })
+        Transforms.wrapNodes(
+          editor,
+          {
+            type: ELEMENT_LIST_ITEM,
+            children: [],
+          },
+          { at: nextParagraphPath }
+        )
+        Transforms.moveNodes(editor, {
+          at: nextParagraphPath,
+          to: nextListItemPath,
+        })
+      } else {
+        /**
+         * If end, insert a list item after and select it
+         */
+        Transforms.insertNodes(
+          editor,
+          {
+            type: ELEMENT_LIST_ITEM,
+            children: [{ type: ELEMENT_PARAGRAPH, children: [{ text: "" }] }],
+          },
+          { at: nextListItemPath }
+        )
+        Transforms.select(editor, nextListItemPath)
+      }
+
+      /**
+       * If there is a list in the list item, move it to the next list item
+       */
+      if (listItemNode.children.length > 1) {
+        Transforms.moveNodes(editor, {
+          at: nextParagraphPath,
+          to: nextListItemPath.concat(1),
+        })
+      }
+
+      return e.preventDefault()
     }
   }
 }
