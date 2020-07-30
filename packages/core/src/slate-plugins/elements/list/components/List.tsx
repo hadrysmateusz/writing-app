@@ -26,7 +26,8 @@ const listCommon = css`
     p.debugStyles &&
     `border: 1px dashed red;
     background: rgba(255, 0, 0, 0.15);
-    margin: 4px;`}
+    padding: 4px;
+    padding-inline-start: 28px;`}
 `
 
 const StyledUL = styled.ul`
@@ -56,7 +57,7 @@ const StyledLI = styled.li`
     p.debugStyles &&
     `border: 1px dashed green;
     background: rgba(0, 255, 0, 0.15);
-    margin: 4px;`}
+    padding: 4px;`}
 `
 
 export const OL = ({ attributes, children }: RenderElementProps) => {

@@ -20,7 +20,7 @@ const StyledParagraph = styled.div`
     config.debugStyles &&
     `border: 1px dashed blue; 
     background: rgba(0, 0, 255, 0.15); 
-    margin: 4px;`}
+    padding: 4px;`}
 `
 
 export const ParagraphElement = ({
