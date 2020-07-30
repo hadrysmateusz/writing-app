@@ -5,7 +5,7 @@ import {
   DocumentDocMethods,
 } from "../Database"
 import { RxDocument } from "rxdb"
-import { DocumentUpdater } from "../DocumentsAPI/types"
+import { DocumentUpdater } from "../APIProvider/types"
 
 export type MainState = {
   isLoading: boolean

@@ -3,10 +3,12 @@ import { useToggleable, Toggleable } from "../../hooks"
 import { useRequiredContext } from "../../hooks/useRequiredContext"
 import { VIEWS } from "../Sidebar/types"
 
+export type SwitchViewFn = (view: string | null) => void
+
 export type ViewState = {
   primarySidebar: Toggleable & {
     currentView: string
-    switchView: (view: string) => void
+    switchView: SwitchViewFn
   }
   navigatorSidebar: Toggleable
   secondarySidebar: Toggleable
@@ -24,11 +26,11 @@ export const useViewState = () => {
 const usePrimarySidebar = () => {
   const primarySidebar = useToggleable(true)
 
+  // TODO: consider moving this state up and generalizing it
   const [currentView, setCurrentView] = useState<string>(VIEWS.ALL)
 
-  // TODO: consider making the all view be null
-  const switchView = (view: string) => {
-    setCurrentView(view)
+  const switchView: SwitchViewFn = (view) => {
+    setCurrentView(view || VIEWS.ALL)
     if (!primarySidebar.isOpen) {
       primarySidebar.open()
     }

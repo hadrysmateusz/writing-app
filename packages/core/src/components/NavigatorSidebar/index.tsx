@@ -11,8 +11,7 @@ import { useViewState } from "../View/ViewStateProvider"
 
 import createGroupTree from "../../helpers/createGroupTree"
 import DocumentTreeItem from "../DocumentTreeItem"
-import { useDocumentsAPI } from "../DocumentsAPI"
-import { useGroupsAPI } from "../Groups/GroupsContext"
+import { useDocumentsAPI, useGroupsAPI } from "../APIProvider"
 import { LogoutButton } from "../LogoutButton"
 
 export const NavigatorSidebar: React.FC<{}> = () => {

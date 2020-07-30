@@ -83,7 +83,14 @@ const SidebarDocumentItem: React.FC<{
   }, [openDocument])
 
   return (
-    <Container onContextMenu={openMenu}>
+    <Container
+      onContextMenu={(e) => {
+        // this is to prevent opening the sidebar context menu underneath
+        // TODO: it might be better to implement a global provider for the context menu and only allow opening one and just change it's position and content
+        e.stopPropagation()
+        openMenu(e)
+      }}
+    >
       <MainContainer onClick={handleClick} isCurrent={isCurrent}>
         <Group>{groupName}</Group>
         <Title>

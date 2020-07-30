@@ -9,43 +9,69 @@ import {
   InboxDocumentsList,
 } from "./DocumentsList"
 import { VIEWS } from "./types"
-import { useDocumentsAPI } from "../DocumentsAPI"
+import { useDocumentsAPI } from "../APIProvider"
+import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 
 export const PrimarySidebar: React.FC<{}> = () => {
   // Can be one of the special views or an id of a document group
   const { createDocument } = useDocumentsAPI()
   const { primarySidebar } = useViewState()
+  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+
+  const handleNewDocument = () => {
+    let currentGroup: string | null = primarySidebar.currentView
+
+    if ([VIEWS.ALL, VIEWS.INBOX].includes(currentGroup)) {
+      currentGroup = null
+    }
+
+    createDocument(currentGroup)
+  }
 
   const render = () => {
     switch (primarySidebar.currentView) {
       case VIEWS.ALL: {
         return (
           <Container>
-            <InnerContainer>
+            <InnerContainer onContextMenu={openMenu}>
               <AllDocumentsList />
             </InnerContainer>
             <NewButton onClick={() => createDocument(null)}>
               + Create New
             </NewButton>
+            {isMenuOpen && (
+              <ContextMenu>
+                <ContextMenuItem onClick={handleNewDocument}>
+                  New Document
+                </ContextMenuItem>
+              </ContextMenu>
+            )}
           </Container>
         )
       }
       case VIEWS.INBOX: {
         return (
           <Container>
-            <InnerContainer>
+            <InnerContainer onContextMenu={openMenu}>
               <InboxDocumentsList />
             </InnerContainer>
             <NewButton onClick={() => createDocument(null)}>
               + Create New
             </NewButton>
+            {isMenuOpen && (
+              <ContextMenu>
+                <ContextMenuItem onClick={handleNewDocument}>
+                  New Document
+                </ContextMenuItem>
+              </ContextMenu>
+            )}
           </Container>
         )
       }
       case VIEWS.TRASH: {
         return (
           <Container>
-            <InnerContainer>
+            <InnerContainer onContextMenu={openMenu}>
               <TrashDocumentsList />
             </InnerContainer>
           </Container>
@@ -55,7 +81,7 @@ export const PrimarySidebar: React.FC<{}> = () => {
         // TODO: treat the view as a group id and render a document list for that group
         return (
           <Container>
-            <InnerContainer>
+            <InnerContainer onContextMenu={openMenu}>
               <DocumentsGroupList groupId={primarySidebar.currentView} />
             </InnerContainer>
             <NewButton
@@ -63,6 +89,13 @@ export const PrimarySidebar: React.FC<{}> = () => {
             >
               + Create New
             </NewButton>
+            {isMenuOpen && (
+              <ContextMenu>
+                <ContextMenuItem onClick={handleNewDocument}>
+                  New Document
+                </ContextMenuItem>
+              </ContextMenu>
+            )}
           </Container>
         )
       }

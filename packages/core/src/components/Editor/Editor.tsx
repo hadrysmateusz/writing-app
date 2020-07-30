@@ -21,7 +21,7 @@ import {
   InsertBlockField,
   InnerContainer,
 } from "./styledComponents"
-import { useDocumentsAPI } from "../DocumentsAPI"
+import { useDocumentsAPI } from "../APIProvider"
 import TrashBanner from "../TrashBanner"
 
 import { plugins } from "../../pluginsList"

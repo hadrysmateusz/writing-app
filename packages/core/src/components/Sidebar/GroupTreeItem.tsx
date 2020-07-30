@@ -9,8 +9,7 @@ import {
 } from "../ContextMenu"
 import { useViewState } from "../View/ViewStateProvider"
 import { useEditableText, EditableText } from "../RenamingInput"
-import { useGroupsAPI } from "../Groups/GroupsContext"
-import { useDocumentsAPI } from "../DocumentsAPI"
+import { useDocumentsAPI, useGroupsAPI } from "../APIProvider"
 
 import { formatOptional } from "../../utils"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"

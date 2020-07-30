@@ -5,7 +5,7 @@ import { Subscription } from "rxjs"
 import { deserialize, serialize } from "../Editor/serialization"
 import { useDatabase, DocumentDoc, GroupDoc } from "../Database"
 import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
-import { DocumentUpdater, useDocumentsAPI } from "../DocumentsAPI"
+import { DocumentUpdater, useDocumentsAPI } from "../APIProvider"
 
 import { listenForIpcEvent } from "../../utils"
 import { useRequiredContext } from "../../hooks/useRequiredContext"

@@ -1,11 +1,11 @@
-import React, { useCallback, createContext } from "react"
-
+import React, { useCallback } from "react"
 import { v4 as uuidv4 } from "uuid"
 
-import { useDatabase, DocumentDoc } from "../Database"
-import { defaultEditorValue } from "../EditorStateProvider"
-
+import { useDatabase, GroupDoc, DocumentDoc } from "../Database"
+import createContext from "../../utils/createContext"
 import {
+  DocumentsAPI,
+  GroupsAPI,
   CreateDocumentFn,
   RenameDocumentFn,
   MoveDocumentToGroupFn,
@@ -16,23 +16,101 @@ import {
   FindDocumentByIdFn,
   UpdateDocumentFn,
   FindDocumentsFn,
-  DocumentsAPI,
+  CreateGroupFn,
+  RenameGroupFn,
+  RemoveGroupFn,
   PermanentlyRemoveDocumentFn,
 } from "./types"
+import { defaultEditorValue } from "../EditorStateProvider"
+import { useViewState } from "../View"
 
-import { useRequiredContext } from "../../hooks/useRequiredContext"
+export const [
+  useDocumentsAPI,
+  DocumentsAPIProvider,
+  DocumentsAPIContext,
+] = createContext<DocumentsAPI>()
 
-export const DocumentsAPIContext = createContext<DocumentsAPI | null>(null)
+export const [
+  useGroupsAPI,
+  GroupsAPIProvider,
+  GroupsAPIContext,
+] = createContext<GroupsAPI>()
 
-export const useDocumentsAPI = () => {
-  return useRequiredContext<DocumentsAPI>(
-    DocumentsAPIContext,
-    "DocummentsAPI context is null"
-  )
-}
-
-export const DocumentsAPIProvider: React.FC = ({ children }) => {
+export const APIProvider: React.FC = ({ children }) => {
   const db = useDatabase()
+  const { primarySidebar } = useViewState()
+
+  /**
+   * Creates a new group under the provided parent group
+   */
+  const createGroup: CreateGroupFn = useCallback(
+    async (parentGroup, values, options = {}) => {
+      const { switchTo = true } = options
+
+      const groupId = uuidv4()
+
+      const newGroup = await db.groups.insert({
+        id: groupId,
+        name: "",
+        parentGroup: parentGroup,
+        ...values,
+      })
+
+      if (switchTo) {
+        // this timeout is needed because of the way the sidebar looks for groups - it fetches them once and does a search on the array
+        // TODO: that behavior should probably be replaced by a normal query for the group id (maybe with an additional cache layer) and this should eliminate the need for this timeout
+        // TODO: to make it even smoother I could make it so that the switch is instant (even before the collection is created) and the sidebar waits for it to be created, this would require the sidebar to not default to all documents view on an unfound group id and for groups to be soft deleted so that if it's deleted it can go to the all documents view and maybe show a notification saying that the group you were looking for was deleted (or simply an empty state saying the same requiring the user to take another action) and if it wasn't deleted but isn't found to simply wait for it to be created (there should be a timeout of course if something went wrong and maybe even internal state that could show an error/empty state if there was an issue with creating the group)
+        setTimeout(() => {
+          primarySidebar.switchView(groupId)
+        }, 100)
+      }
+
+      return newGroup
+    },
+    [db.groups, primarySidebar]
+  )
+
+  /**
+   * Rename group by id
+   */
+  const renameGroup: RenameGroupFn = useCallback(
+    async (groupId, name) => {
+      const original = await db.groups.findOne().where("id").eq(groupId).exec()
+
+      if (original === null) {
+        throw new Error(`no group found matching this id (${groupId})`)
+      }
+
+      const updated = await original.update({
+        $set: {
+          name: name.trim(),
+        },
+      })
+
+      // TODO: error handling
+
+      return updated as GroupDoc
+    },
+    [db.groups]
+  )
+
+  /**
+   * Handles deleting groups and its children
+   */
+  const removeGroup: RemoveGroupFn = useCallback(
+    async (groupId) => {
+      // TODO: consider creating findById static methods on all collections that will abstract this query
+      const original = await db.groups.findOne().where("id").eq(groupId).exec()
+
+      if (original === null) {
+        throw new Error(`no group found matching this id (${groupId})`)
+      }
+
+      // TODO: figure out what the returned boolean means
+      return original.remove()
+    },
+    [db.groups]
+  )
 
   /**
    * Finds a single document by id
@@ -252,7 +330,7 @@ export const DocumentsAPIProvider: React.FC = ({ children }) => {
   )
 
   return (
-    <DocumentsAPIContext.Provider
+    <DocumentsAPIProvider
       value={{
         toggleDocumentFavorite,
         createDocument,
@@ -266,7 +344,17 @@ export const DocumentsAPIProvider: React.FC = ({ children }) => {
         findDocuments,
       }}
     >
-      {children}
-    </DocumentsAPIContext.Provider>
+      <GroupsAPIProvider
+        value={{
+          removeGroup,
+          renameGroup,
+          createGroup,
+        }}
+      >
+        {children}
+      </GroupsAPIProvider>
+    </DocumentsAPIProvider>
   )
 }
+
+export * from "./types"

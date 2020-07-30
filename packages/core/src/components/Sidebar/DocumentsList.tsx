@@ -13,7 +13,7 @@ import createGroupTree, {
 import { formatOptional } from "../../utils"
 import { useViewState } from "../View/ViewStateProvider"
 import { VIEWS } from "./types"
-import { useDocumentsAPI } from "../DocumentsAPI"
+import { useDocumentsAPI } from "../APIProvider"
 
 /**
  * Base presentational component

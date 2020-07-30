@@ -5,7 +5,7 @@ import { formatOptional } from "../utils"
 import Icon from "./Icon"
 import { useViewState } from "./View/ViewStateProvider"
 import { useEditableText, EditableText } from "./RenamingInput"
-import { useDocumentsAPI } from "./DocumentsAPI"
+import { useDocumentsAPI } from "./APIProvider"
 import {
   useContextMenu,
   ContextMenuItem,

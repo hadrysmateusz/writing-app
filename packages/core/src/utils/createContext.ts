@@ -6,7 +6,17 @@ import React from "react"
  * that the value is not undefined to help with typescript's type-checking
  */
 
-function createContext<ContextType>() {
+type ContextHook<ContextType> = () => ContextType
+
+type ContextProvider<ContextType> = React.Provider<ContextType | undefined>
+
+function createContext<ContextType>(): Readonly<
+  [
+    ContextHook<ContextType>,
+    ContextProvider<ContextType>,
+    React.Context<ContextType | undefined>
+  ]
+> {
   const ctx = React.createContext<ContextType | undefined>(undefined)
   function useContext() {
     const c = React.useContext(ctx)
@@ -16,7 +26,7 @@ function createContext<ContextType>() {
       )
     return c
   }
-  return [useContext, ctx.Provider] as const
+  return [useContext, ctx.Provider, ctx] as const
 }
 
 export default createContext

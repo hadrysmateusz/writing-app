@@ -1,5 +1,12 @@
-import { DocumentDoc, DocumentDocType, DocumentDocMethods } from "../Database"
+import {
+  DocumentDoc,
+  DocumentDocType,
+  DocumentDocMethods,
+  GroupDoc,
+} from "../Database"
 import { RxDocument, RxQuery } from "rxdb"
+
+// Documents
 
 export type DocumentsAPI = {
   updateDocument: UpdateDocumentFn
@@ -13,8 +20,6 @@ export type DocumentsAPI = {
   restoreDocument: RestoreDocumentFn
   createDocument: CreateDocumentFn
 }
-
-// Documents
 
 export type FindDocumentByIdFn = (
   id: string,
@@ -57,8 +62,6 @@ export type ToggleDocumentFavoriteFn = (
   documentId: string
 ) => Promise<DocumentDoc>
 
-// Misc
-
 export type UpdateDocumentQueryConstructor = (
   original: RxDocument<DocumentDocType, DocumentDocMethods>
 ) => any
@@ -71,3 +74,23 @@ export type UpdateDocumentQueryConstructor = (
 export type DocumentUpdater =
   | UpdateDocumentQueryConstructor
   | Partial<DocumentDocType>
+
+// Groups
+
+export type GroupsAPI = {
+  createGroup: CreateGroupFn
+  renameGroup: RenameGroupFn
+  removeGroup: RemoveGroupFn
+}
+
+export type CreateGroupFn = (
+  parentGroup: string | null,
+  values?: Partial<GroupDoc>,
+  options?: {
+    switchTo?: boolean
+  }
+) => Promise<GroupDoc>
+
+export type RemoveGroupFn = (groupId: string) => Promise<boolean>
+
+export type RenameGroupFn = (groupId: string, name: string) => Promise<GroupDoc>
