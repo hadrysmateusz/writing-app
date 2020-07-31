@@ -37,7 +37,11 @@ export type UpdateDocumentFn = (
 ) => Promise<RxDocument<DocumentDocType, DocumentDocMethods>>
 
 export type CreateDocumentFn = (
-  parentGroup: string | null
+  parentGroup: string | null,
+  values?: Partial<GroupDoc>,
+  options?: {
+    switchTo?: boolean
+  }
 ) => Promise<DocumentDoc>
 
 export type RenameDocumentFn = (
@@ -94,3 +98,24 @@ export type CreateGroupFn = (
 export type RemoveGroupFn = (groupId: string) => Promise<boolean>
 
 export type RenameGroupFn = (groupId: string, name: string) => Promise<GroupDoc>
+
+// Main State
+
+export type MainState = {
+  isLoading: boolean
+  groups: GroupDoc[]
+  documents: DocumentDoc[]
+  favorites: DocumentDoc[]
+  currentDocument: DocumentDoc | null
+  saveDocument: SaveDocumentFn
+  switchDocument: SwitchDocumentFn
+  updateCurrentDocument: UpdateCurrentDocumentFn
+}
+
+export type UpdateCurrentDocumentFn = (
+  updater: DocumentUpdater
+) => Promise<RxDocument<DocumentDocType, DocumentDocMethods>>
+
+export type SaveDocumentFn = () => Promise<DocumentDocType | null>
+
+export type SwitchDocumentFn = (documentId: string | null) => void

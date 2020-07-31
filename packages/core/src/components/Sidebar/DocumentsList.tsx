@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import styled from "styled-components/macro"
 
 import SidebarDocumentItem from "./SidebarDocumentItem"
-import { useMainState } from "../MainState/MainStateProvider"
+import { useMainState } from "../MainProvider"
 import { useDatabase, DocumentDoc } from "../Database"
 import { Subscription } from "rxjs"
 import createGroupTree, {
@@ -13,7 +13,7 @@ import createGroupTree, {
 import { formatOptional } from "../../utils"
 import { useViewState } from "../View/ViewStateProvider"
 import { VIEWS } from "./types"
-import { useDocumentsAPI } from "../APIProvider"
+import { useDocumentsAPI } from "../MainProvider"
 
 /**
  * Base presentational component

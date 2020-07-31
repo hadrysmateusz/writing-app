@@ -13,7 +13,7 @@ import isHotkey from "is-hotkey"
 // import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
 import { DocumentDoc } from "../Database"
-import { useMainState } from "../MainState/MainStateProvider"
+import { useMainState } from "../MainProvider"
 import {
   EditableContainer,
   OuterContainer,
@@ -21,7 +21,7 @@ import {
   InsertBlockField,
   InnerContainer,
 } from "./styledComponents"
-import { useDocumentsAPI } from "../APIProvider"
+import { useDocumentsAPI } from "../MainProvider"
 import TrashBanner from "../TrashBanner"
 
 import { plugins } from "../../pluginsList"

@@ -8,7 +8,7 @@ import { useLogEditor, useLogValue } from "../devToolsUtils"
 
 import { useViewState } from "../View/ViewStateProvider"
 import { useEditorState } from "../EditorStateProvider"
-import { useMainState } from "../MainState/MainStateProvider"
+import { useMainState } from "../MainProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { Topbar } from "../Topbar"
 

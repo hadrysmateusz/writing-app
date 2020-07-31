@@ -1,11 +1,11 @@
 import React, { useMemo } from "react"
 import styled from "styled-components/macro"
-import { useMainState } from "./MainState/MainStateProvider"
+import { useMainState } from "./MainProvider"
 import { formatOptional } from "../utils"
 import Icon from "./Icon"
 import { useViewState } from "./View/ViewStateProvider"
 import { useEditableText, EditableText } from "./RenamingInput"
-import { useDocumentsAPI } from "./APIProvider"
+import { useDocumentsAPI } from "./MainProvider"
 import {
   useContextMenu,
   ContextMenuItem,

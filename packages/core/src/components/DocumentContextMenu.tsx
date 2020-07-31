@@ -9,9 +9,9 @@ import {
 } from "./ContextMenu"
 import { DocumentDoc } from "./Database"
 import { useEditableText } from "./RenamingInput"
-import { useMainState } from "./MainState/MainStateProvider"
+import { useMainState } from "./MainProvider"
 import { formatOptional } from "./../utils"
-import { useDocumentsAPI } from "./APIProvider"
+import { useDocumentsAPI } from "./MainProvider"
 
 export const useDocumentContextMenu = (document: DocumentDoc) => {
   const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)

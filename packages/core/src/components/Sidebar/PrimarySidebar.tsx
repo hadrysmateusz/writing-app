@@ -9,7 +9,7 @@ import {
   InboxDocumentsList,
 } from "./DocumentsList"
 import { VIEWS } from "./types"
-import { useDocumentsAPI } from "../APIProvider"
+import { useDocumentsAPI } from "../MainProvider"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 
 export const PrimarySidebar: React.FC<{}> = () => {

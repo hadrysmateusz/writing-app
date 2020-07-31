@@ -5,13 +5,13 @@ import styled from "styled-components/macro"
 import GroupTreeItem from "../Sidebar/GroupTreeItem"
 import { VIEWS } from "../Sidebar/types"
 import { TreeItem } from "../TreeItem"
-import { useMainState } from "../MainState/MainStateProvider"
+import { useMainState } from "../MainProvider"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
 import { useViewState } from "../View/ViewStateProvider"
 
 import createGroupTree from "../../helpers/createGroupTree"
 import DocumentTreeItem from "../DocumentTreeItem"
-import { useDocumentsAPI, useGroupsAPI } from "../APIProvider"
+import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { LogoutButton } from "../LogoutButton"
 
 export const NavigatorSidebar: React.FC<{}> = () => {
