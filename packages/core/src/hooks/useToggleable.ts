@@ -7,6 +7,13 @@ export interface Toggleable {
   toggle: () => void
 }
 
+export interface ToggleableHooks {
+  onBeforeOpen?: () => void
+  onAfterOpen?: () => void
+  onBeforeClose?: () => void
+  onAfterClose?: () => void
+}
+
 export const useToggleable = (
   initialState: boolean,
   {
@@ -14,12 +21,7 @@ export const useToggleable = (
     onAfterOpen,
     onBeforeClose,
     onAfterClose,
-  }: {
-    onBeforeOpen?: () => void
-    onAfterOpen?: () => void
-    onBeforeClose?: () => void
-    onAfterClose?: () => void
-  } = {}
+  }: ToggleableHooks = {}
 ) => {
   const [isOpen, setIsOpen] = useState(initialState)
 

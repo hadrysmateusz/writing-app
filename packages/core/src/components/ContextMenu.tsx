@@ -4,19 +4,16 @@ import usePortal from "react-useportal"
 
 import { useOnClickOutside } from "../hooks/useOnClickOutside"
 import { BsCaretRightFill } from "react-icons/bs"
+import { ToggleableHooks } from "../hooks"
 
+// TODO: look into replacing some of the code and types with the useToggleable logic - probably will require removing the react-useportal dependency first to have full control over the portal state
 // TODO: use ellipsis to hide overflow without hiding submenus (possible solutions include: portals, wrapper component for the static text)
 export const useContextMenu = ({
   onBeforeOpen,
   onAfterOpen,
   onBeforeClose,
   onAfterClose,
-}: {
-  onBeforeOpen?: () => void
-  onAfterOpen?: () => void
-  onBeforeClose?: () => void
-  onAfterClose?: () => void
-} = {}) => {
+}: ToggleableHooks = {}) => {
   // TODO: capture focus inside the context menu and restore it when it closes
   // TODO: maybe - replace the usePortal hook for more control (try using a single designated root DOM node instead of creating millions of empty divs)
   const { openPortal, closePortal, isOpen, Portal } = usePortal()
