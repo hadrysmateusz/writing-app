@@ -12,7 +12,8 @@ import { useViewState } from "../View/ViewStateProvider"
 import createGroupTree from "../../helpers/createGroupTree"
 import DocumentTreeItem from "../DocumentTreeItem"
 import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
-import { LogoutButton } from "../LogoutButton"
+import { useModal } from "../Modal"
+import { AccountModalContent } from "../AccountModal"
 
 export const NavigatorSidebar: React.FC<{}> = () => {
   const { groups, favorites } = useMainState()
@@ -20,6 +21,11 @@ export const NavigatorSidebar: React.FC<{}> = () => {
   const { createGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const {
+    open: openAccountModal,
+    close: closeAccountModal,
+    Modal: AccountModal,
+  } = useModal(false)
 
   // map the flat groups list to a tree structure
   const groupsTree = useMemo(() => createGroupTree(groups), [groups])
@@ -63,7 +69,14 @@ export const NavigatorSidebar: React.FC<{}> = () => {
         Trash
       </TreeItem>
 
-      <LogoutButton />
+      <TreeItem
+        icon="user"
+        onClick={() => openAccountModal()}
+        depth={1}
+        isSpecial
+      >
+        Your Account
+      </TreeItem>
 
       {favorites.length > 0 && (
         <>
@@ -96,6 +109,10 @@ export const NavigatorSidebar: React.FC<{}> = () => {
           </ContextMenuItem>
         </ContextMenu>
       )}
+
+      <AccountModal>
+        <AccountModalContent close={closeAccountModal} />
+      </AccountModal>
     </OuterContainer>
   )
 }
