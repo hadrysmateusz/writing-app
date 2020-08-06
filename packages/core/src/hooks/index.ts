@@ -1,3 +1,5 @@
 export * from "./useAsyncEffect"
 export * from "./useSlateState"
 export * from "./useToggleable"
+export * from "./useBodyScrollLock"
+export * from "./useOnClickOutside"
