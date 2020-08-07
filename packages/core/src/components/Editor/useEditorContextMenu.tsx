@@ -44,7 +44,7 @@ const useEditorContextMenu = () => {
     const onToggleLink = (event: React.MouseEvent) => {
       event.preventDefault()
 
-      const url = window.prompt("Enter the URL of the link:")
+      const url = window.prompt("Enter the URL of the link:") // TODO: replace the prompt
       if (!url) return
       insertLink(editor, url)
     }

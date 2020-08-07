@@ -3,6 +3,9 @@ import React, { useMemo } from "react"
 import Modal from "./Modal"
 import { useToggleable, ToggleableHooks } from "../../hooks"
 
+// TODO: Consider adding a context provider to the returned modal, which passes all of the toggleable props to the modal contents, and things passed into the open function
+// TODO: Consider making modals and context menus centralized with the root component not having to be added to the tree manually from the hook and only using some kind of hook to manage its state
+
 export const useModal = (
   initialState: boolean,
   options: ToggleableHooks = {}
