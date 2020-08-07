@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react"
-import { Range } from "slate"
-import { useSlate, ReactEditor } from "slate-react"
+import { useSlate } from "slate-react"
 import styled from "styled-components/macro"
 
 import {
@@ -12,10 +11,9 @@ import {
   HORIZONTAL_RULE,
   IMAGE,
 } from "../slate-plugins"
-import { ImageModalContent } from "./ImageModal"
 import { ListType } from "../slateTypes"
 import FormatButton from "./FormatButton"
-import { useModal } from "./Modal"
+import { useImageModal } from "./ImageModal"
 
 const ToolbarContainer = styled.div`
   color: "#afb3b6";
@@ -30,12 +28,7 @@ const Section = styled.div`
 
 export const Toolbar = () => {
   const editor = useSlate()
-  const [selection, setSelection] = useState<Range | null>(null)
-  const {
-    open: openImageModal,
-    close: closeImageModal,
-    Modal: ImageModal,
-  } = useModal(false)
+  const { open: openImageModal } = useImageModal()
 
   const onInsertHorizontalRule = useCallback(
     (event: React.MouseEvent) => {
@@ -48,12 +41,9 @@ export const Toolbar = () => {
   const onInsertImage = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault()
-      // TODO: save selection state (perhaps override apply and everyone a "set_selection" operation with {newProperties: null} is applied, save the selection (but it's so low-level that I don't know where to store and how to restore it, so maybe a wrapper function will be required (I could store it in local storage, but that might have issues between restarts)))
-      setSelection(editor.selection)
-      ReactEditor.deselect(editor)
       openImageModal()
     },
-    [editor, openImageModal]
+    [openImageModal]
   )
 
   // TODO: ListType should eventually be replaced by a type without the list item
@@ -110,9 +100,6 @@ export const Toolbar = () => {
           <FormatButton format={ELEMENTS.EMBED} text="Embed" />
         </Section> */}
       </ToolbarContainer>
-      <ImageModal>
-        <ImageModalContent close={closeImageModal} selection={selection} />
-      </ImageModal>
     </>
   )
 }

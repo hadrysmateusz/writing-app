@@ -5,13 +5,16 @@ import { ViewStateProvider } from "../components/View/ViewStateProvider"
 import { EditorStateProvider } from "../components/EditorStateProvider"
 import { MainProvider } from "../components/MainProvider"
 import Main from "../components/Main"
+import { ImageModalProvider } from "../components/ImageModal"
 
 const EditorPage = () => (
   <DatabaseProvider>
     <EditorStateProvider>
       <ViewStateProvider>
         <MainProvider>
-          <Main />
+          <ImageModalProvider>
+            <Main />
+          </ImageModalProvider>
         </MainProvider>
       </ViewStateProvider>
     </EditorStateProvider>
