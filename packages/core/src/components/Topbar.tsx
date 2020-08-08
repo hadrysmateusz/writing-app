@@ -143,7 +143,7 @@ export const Topbar: React.FC<{}> = () => {
       <DocumentTitle />
 
       <RightSideContainer>
-        <Button variant="default">Export</Button>
+        <Button>Export</Button>
       </RightSideContainer>
     </TopbarContainer>
   )

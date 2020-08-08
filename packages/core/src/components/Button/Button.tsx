@@ -67,7 +67,7 @@ const fullWidth = css`
   width: 100%;
 `
 
-const getVariant = (name: string) => {
+const getVariant = (name: string = "default") => {
   const variant = variants[name]
   if (!variant) {
     throw Error(`Invalid variant: ${name}`)
@@ -111,7 +111,7 @@ export const Button = styled.button<ButtonProps>`
   cursor: ${(p) => (p.disabled ? "default" : "pointer")};
 
 	/* Variant styles */
-	${(p) => p.variant && getVariant(p.variant)}
+	${(p) => getVariant(p.variant)}
 
 	/* Disabled styles */
 	${(p) => p.disabled && disabled}
