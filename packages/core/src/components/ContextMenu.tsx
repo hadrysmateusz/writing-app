@@ -140,12 +140,12 @@ const CaretContainer = styled.div`
 `
 
 const menuContainerCommon = css`
-  background: #383838;
-  border: 1px solid #1b1f23;
+  background: #252525;
+  border: 1px solid #363636;
   border-radius: 3px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   padding: 6px 0;
-  width: 200px;
+  min-width: 150px;
 `
 
 const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
@@ -159,7 +159,7 @@ const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
 
 export const ContextMenuSeparator = styled.div`
   height: 1px;
-  background: #4b5257;
+  background: #363636;
   margin: 6px 0;
 `
 
