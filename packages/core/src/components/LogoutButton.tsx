@@ -3,6 +3,7 @@ import { Auth } from "aws-amplify"
 import { useHistory } from "react-router-dom"
 
 import { useAuthContext } from "./Auth"
+import { Button } from "./Button"
 
 export const LogoutButton: React.FC<{
   onBeforeLogout?: () => void
@@ -22,5 +23,6 @@ export const LogoutButton: React.FC<{
     history.push("/")
   }
 
-  return <button onClick={() => handleLogout()}>Logout</button>
+  // TODO: add some special styling and maybe a confirmation modal
+  return <Button onClick={handleLogout}>Logout</Button>
 }
