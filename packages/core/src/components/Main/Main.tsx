@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo, useCallback } from "react"
 import styled from "styled-components/macro"
 import { useEditor } from "slate-react"
 import SplitPane from "react-split-pane"
@@ -12,13 +12,87 @@ import { useEditorState } from "../EditorStateProvider"
 import { useMainState } from "../MainProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { Topbar } from "../Topbar"
+import { getDefaultSize, setDefaultSize } from "./helpers"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
+/**
+ * Renders the editor if there is a document selected
+ */
+const EditorRenderer: React.FC = () => {
+  const { currentDocument } = useMainState()
+
+  return currentDocument ? (
+    <EditorComponent
+      key={currentDocument.id} // Necessary to reload the component on id change
+      currentDocument={currentDocument}
+    />
+  ) : (
+    // This div is here to prevent issues with split pane rendering
+    <div />
+  )
+}
+
+/**
+ * Renders the navigator sidebar and the rest of the editor in split panes
+ */
+const OuterRenderer: React.FC = () => {
+  const { navigatorSidebar } = useViewState()
+  const storageKey = "splitPosOuter"
+  const defaultSize = useMemo(() => getDefaultSize(storageKey, 200), [])
+  const handleChange = useCallback((s) => setDefaultSize(storageKey, s), [])
+
+  return navigatorSidebar.isOpen ? (
+    <SplitPane
+      split="vertical"
+      minSize={170}
+      maxSize={400}
+      defaultSize={defaultSize}
+      onChange={handleChange}
+    >
+      <NavigatorSidebar />
+      <InnerRenderer />
+    </SplitPane>
+  ) : (
+    <InnerRenderer />
+  )
+}
+
+/**
+ * Renders the topbar, primary sidebar and the rest of the editor in split panes
+ */
+const InnerRenderer: React.FC = () => {
+  const { primarySidebar } = useViewState()
+  const storageKey = "splitPosInner"
+  const defaultSize = useMemo(() => getDefaultSize(storageKey, 280), [])
+  const handleChange = useCallback((s) => setDefaultSize(storageKey, s), [])
+
+  return (
+    <InnerContainerWrapper>
+      <Topbar />
+      <InnerContainer>
+        {primarySidebar.isOpen ? (
+          <SplitPane
+            split="vertical"
+            minSize={200}
+            maxSize={800}
+            defaultSize={defaultSize}
+            onChange={handleChange}
+          >
+            <PrimarySidebar />
+            <EditorRenderer />
+          </SplitPane>
+        ) : (
+          <EditorRenderer />
+        )}
+      </InnerContainer>
+    </InnerContainerWrapper>
+  )
+}
+
 const Main = () => {
-  const { navigatorSidebar, primarySidebar } = useViewState()
   const { editorValue } = useEditorState()
-  const { currentDocument, isLoading } = useMainState()
+  const { isLoading } = useMainState()
   const editor = useEditor()
 
   // DevTools utils
@@ -29,39 +103,8 @@ const Main = () => {
 
   return (
     <OuterContainer>
-      {isLoading
-        ? "Loading..."
-        : error ?? (
-            <>
-              <SplitPane
-                split="vertical"
-                minSize={170}
-                maxSize={400}
-                defaultSize={200}
-              >
-                {navigatorSidebar.isOpen && <NavigatorSidebar />}
-                <InnerContainerWrapper>
-                  <Topbar />
-                  <InnerContainer>
-                    <SplitPane
-                      split="vertical"
-                      minSize={200}
-                      maxSize={800}
-                      defaultSize={280}
-                    >
-                      {primarySidebar.isOpen && <PrimarySidebar />}
-                      {currentDocument && (
-                        <EditorComponent
-                          key={currentDocument.id} // Necessary to reload the component on id change
-                          currentDocument={currentDocument}
-                        />
-                      )}
-                    </SplitPane>
-                  </InnerContainer>
-                </InnerContainerWrapper>
-              </SplitPane>
-            </>
-          )}
+      {/* TODO: loading state handling */}
+      {isLoading ? null : error ? error : <OuterRenderer />}
     </OuterContainer>
   )
 }
