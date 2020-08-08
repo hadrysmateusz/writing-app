@@ -94,6 +94,7 @@ const SidebarDocumentItem: React.FC<{
           <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>
         {snippet.trim().length > 0 && <Snippet>{snippet}</Snippet>}
+        {/* TODO: add created at date */}
       </MainContainer>
       {isMenuOpen && <DocumentContextMenu />}
     </Container>
@@ -115,12 +116,14 @@ const DeleteButton = styled.div`
 
 const Group = styled.div`
   font-size: 10px;
+  line-height: 16px;
   text-transform: uppercase;
   font-weight: 500;
   color: #717171;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 2px;
 `
 
 const Title = styled.div`
@@ -140,7 +143,7 @@ const Title = styled.div`
 `
 
 const Snippet = styled.div`
-  --line-height: 15px;
+  --line-height: 16px;
   line-height: var(--line-height);
   max-height: calc(2 * var(--line-height));
   overflow: hidden;
@@ -152,7 +155,6 @@ const Snippet = styled.div`
 
   color: #bebebe;
   font-size: 11px;
-  padding-bottom: 4px;
   padding-top: 1px;
 `
 
@@ -169,7 +171,7 @@ const MainContainer = styled.div<{ isCurrent: boolean }>`
   max-width: 100%;
   overflow: hidden;
   min-width: 0;
-  padding: 10px 20px;
+  padding: 10px 20px 12px;
   border-bottom: 1px solid;
   border-color: #363636;
   cursor: pointer;
