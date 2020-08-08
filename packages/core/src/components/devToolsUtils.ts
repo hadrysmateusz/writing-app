@@ -11,6 +11,7 @@ import {
 } from "@writing-tool/core"
 import { useSlate } from "slate-react"
 import { Editor } from "slate"
+import { serializeText } from "../slate-helpers/serialize/text"
 
 export const useLogValue = (value: Node[]) => {
   const editor = useSlate()
@@ -23,6 +24,8 @@ export const useLogValue = (value: Node[]) => {
       console.dir(value.map((node) => parseToMarkdown(node)).join("\n"))
       console.log("HTML")
       console.log(pretty(serializeHTML(editor)))
+      console.log("TEXT")
+      console.log(serializeText(editor.children))
     }
   }, [editor, value])
 }
