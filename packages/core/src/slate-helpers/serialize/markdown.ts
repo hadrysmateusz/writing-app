@@ -15,6 +15,7 @@ import { ListType } from "../../slateTypes"
 
 import { Node } from "slate"
 
+// TODO: handle nested nodes
 export function parseToMarkdown(chunk: Node & { parentType?: string }) {
   const isElement = chunk.type !== undefined
 
