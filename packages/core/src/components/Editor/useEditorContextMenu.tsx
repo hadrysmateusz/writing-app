@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react"
 import { useEditor, ReactEditor } from "slate-react"
 import { Node } from "slate"
+import styled from "styled-components/macro"
 
 import {
   ContextMenuItem,
@@ -9,29 +10,63 @@ import {
   ContextSubmenu,
 } from "../ContextMenu"
 import FormatButton from "../FormatButton"
+import { TurnIntoContextMenuContent } from "../NodeToolbar"
+import { useImageModal } from "../ImageModal"
+import { useLinkModal } from "../LinkPrompt"
 
 import { MARKS } from "../../constants/Slate"
-import {
-  CODE_INLINE,
-  LINK,
-  insertLink,
-  insertHorizontalRule,
-  insertImage,
-} from "../../slate-plugins"
-import { TurnIntoContextMenuContent } from "../NodeToolbar"
+import { CODE_INLINE, LINK, insertHorizontalRule } from "../../slate-plugins"
 
 type ContextMenuType = {
   base: string
   node?: Element
 }
 
+const InlineFormattingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Accounts for padding of icons */
+  padding: 0 14px;
+  color: #a1a1a1;
+  min-width: 100%;
+`
+
+// TODO: on any context menu that is fully inside a link node, show an option to edit and remove the link
 const useEditorContextMenu = () => {
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const editor = useEditor()
   const [
     contextMenuType,
     setContextMenuType,
   ] = useState<ContextMenuType | null>(null)
-  const editor = useEditor()
+  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { open: openImageModal } = useImageModal()
+  const { open: openLinkModal } = useLinkModal()
+
+  // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
+  const handleInsertHorizontalRule = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      insertHorizontalRule(editor)
+    },
+    [editor]
+  )
+
+  const handleToggleLink = useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault()
+      openLinkModal()
+    },
+    [openLinkModal]
+  )
+
+  const handleInsertImage = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      openImageModal()
+    },
+    [openImageModal]
+  )
 
   const renderContextMenu = useCallback(() => {
     if (contextMenuType === null) {
@@ -40,46 +75,21 @@ const useEditorContextMenu = () => {
       )
     }
 
-    // TODO: extract this logic to a helper
-    const onToggleLink = (event: React.MouseEvent) => {
-      event.preventDefault()
-
-      const url = window.prompt("Enter the URL of the link:") // TODO: replace the prompt
-      if (!url) return
-      insertLink(editor, url)
-    }
-
-    // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
-
-    const handleInsertHorizontalRule = (
-      event: React.MouseEvent<HTMLDivElement>
-    ) => {
-      event.preventDefault()
-      insertHorizontalRule(editor)
-    }
-
-    const handleInsertImage = (event: React.MouseEvent<HTMLDivElement>) => {
-      event.preventDefault()
-
-      // TODO: replace the prompt in electron
-      const url = window.prompt("Enter the URL of the image:")
-      if (!url) return
-      insertImage(editor, url)
-    }
-
     const renderItems = () => {
       const { base, node } = contextMenuType
 
       if (base === "expanded") {
         return (
           <>
-            <div style={{ display: "flex" }}>
+            <InlineFormattingContainer>
               <FormatButton format={MARKS.BOLD} />
               <FormatButton format={MARKS.ITALIC} />
               <FormatButton format={MARKS.STRIKE} />
               <FormatButton format={CODE_INLINE} />
-              <FormatButton format={LINK} onMouseDown={onToggleLink} />
-            </div>
+              {/* TODO: This doesn't work for turning the link off */}
+              <FormatButton format={LINK} onMouseDown={handleToggleLink} />
+            </InlineFormattingContainer>
+            <ContextMenuSeparator />
             <ContextMenuItem
               onMouseDown={() => {
                 console.warn("TODO: implement common actions")
@@ -101,19 +111,39 @@ const useEditorContextMenu = () => {
             >
               Paste
             </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem
+              onMouseDown={() => {
+                // TODO: implement
+                console.warn("TODO: implement common actions")
+              }}
+            >
+              Select Block
+            </ContextMenuItem>
           </>
         )
       }
 
       if (base === "collapsed") {
         return (
-          <ContextMenuItem
-            onMouseDown={() => {
-              console.warn("TODO: implement common actions")
-            }}
-          >
-            Paste
-          </ContextMenuItem>
+          <>
+            <ContextMenuItem
+              onMouseDown={() => {
+                console.warn("TODO: implement common actions")
+              }}
+            >
+              Paste
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem
+              onMouseDown={() => {
+                // TODO: implement
+                console.warn("TODO: implement common actions")
+              }}
+            >
+              Select Block
+            </ContextMenuItem>
+          </>
         )
       }
 
@@ -190,7 +220,13 @@ const useEditorContextMenu = () => {
     }
 
     return <ContextMenu>{renderItems()}</ContextMenu>
-  }, [contextMenuType, editor])
+  }, [
+    contextMenuType,
+    editor,
+    handleInsertHorizontalRule,
+    handleInsertImage,
+    handleToggleLink,
+  ])
 
   const openMenuWithType = (
     event: React.MouseEvent<Element, globalThis.MouseEvent>,

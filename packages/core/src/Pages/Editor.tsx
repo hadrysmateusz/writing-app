@@ -6,6 +6,7 @@ import { EditorStateProvider } from "../components/EditorStateProvider"
 import { MainProvider } from "../components/MainProvider"
 import Main from "../components/Main"
 import { ImageModalProvider } from "../components/ImageModal"
+import { LinkModalProvider } from "../components/LinkPrompt"
 
 const EditorPage = () => (
   <DatabaseProvider>
@@ -13,7 +14,9 @@ const EditorPage = () => (
       <ViewStateProvider>
         <MainProvider>
           <ImageModalProvider>
-            <Main />
+            <LinkModalProvider>
+              <Main />
+            </LinkModalProvider>
           </ImageModalProvider>
         </MainProvider>
       </ViewStateProvider>

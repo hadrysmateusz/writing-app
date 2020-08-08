@@ -6,3 +6,20 @@ export const insertImage = (editor: Editor, url: string | ArrayBuffer) => {
   const image = { type: IMAGE, url, children: [text] }
   Transforms.insertNodes(editor, image)
 }
+
+// const ImageModalProvider: React.FC = ({ children }) => {
+//   // const {open,close} = useToggleable(false)
+
+//   const el = useMemo(() => document.createElement("div"), [])
+
+//   // useEffect(() => {
+//   //   modalRoot.appendChild
+//   // }, [])
+
+//   return (
+//     <>
+//       {ReactDOM.createPortal(modalContents, el)}
+//       {children}
+//     </>
+//   )
+// }
