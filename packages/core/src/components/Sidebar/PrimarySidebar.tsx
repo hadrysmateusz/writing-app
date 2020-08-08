@@ -78,7 +78,6 @@ export const PrimarySidebar: React.FC<{}> = () => {
         )
       }
       default: {
-        // TODO: treat the view as a group id and render a document list for that group
         return (
           <Container>
             <InnerContainer onContextMenu={openMenu}>

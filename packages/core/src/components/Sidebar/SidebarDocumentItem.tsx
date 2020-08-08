@@ -7,12 +7,14 @@ import { EditableText } from "../RenamingInput"
 import { useMainState } from "../MainProvider"
 import { formatOptional } from "../../utils"
 import { useDocumentContextMenu } from "../DocumentContextMenu"
+import { GroupTreeBranch } from "../../helpers/createGroupTree"
 
 const SNIPPET_LENGTH = 130
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
-}> = ({ document }) => {
+  group?: GroupTreeBranch
+}> = ({ document, group }) => {
   const {
     openMenu,
     isMenuOpen,
@@ -20,6 +22,9 @@ const SidebarDocumentItem: React.FC<{
     getEditableProps,
   } = useDocumentContextMenu(document)
   const { groups, currentDocument, switchDocument } = useMainState()
+
+  // TODO: optimize this
+  const isInCurrentGroup = group ? document.parentGroup === group.id : false
 
   const isCurrent = useMemo(() => {
     // TODO: something doesn't work here
@@ -61,11 +66,12 @@ const SidebarDocumentItem: React.FC<{
 
   const groupName = useMemo(() => {
     if (document.parentGroup === null) {
-      return null
+      return "Inbox"
     }
 
     const group = groups.find((group) => group.id === document.parentGroup)
 
+    // TODO: better handle this
     if (group === undefined) {
       return null
     }
@@ -92,7 +98,7 @@ const SidebarDocumentItem: React.FC<{
       }}
     >
       <MainContainer onClick={handleClick} isCurrent={isCurrent}>
-        <Group>{groupName}</Group>
+        {!isInCurrentGroup && <Group>{groupName}</Group>}
         <Title>
           <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>

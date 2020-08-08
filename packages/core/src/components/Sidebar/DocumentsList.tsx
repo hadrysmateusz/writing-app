@@ -24,14 +24,19 @@ import { useDocumentsAPI } from "../MainProvider"
 export const DocumentsList: React.FC<{
   title: string
   documents: DocumentDoc[]
-}> = ({ title, documents }) => {
+  group?: GroupTreeBranch
+}> = ({ title, documents, group }) => {
   return (
     <>
       <SectionHeader>
         <span>{" " + title}</span>
       </SectionHeader>
       {documents.map((document) => (
-        <SidebarDocumentItem key={document.id} document={document} />
+        <SidebarDocumentItem
+          key={document.id}
+          document={document}
+          group={group}
+        />
       ))}
     </>
   )
@@ -145,10 +150,11 @@ export const DocumentsGroupList: React.FC<{
 }> = ({ groupId }) => {
   const db = useDatabase()
   const { groups } = useMainState()
+  const { primarySidebar } = useViewState()
+
   const [documents, setDocuments] = useState<DocumentDoc[] | null>(null)
   const [group, setGroup] = useState<GroupTreeBranch | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const { primarySidebar } = useViewState()
 
   // TODO: extract most of this logic into a reusable hook
   // TODO: use the new apis
@@ -165,7 +171,6 @@ export const DocumentsGroupList: React.FC<{
         const groupTree = createGroupTree(groups)
         const foundGroup = findInTree(groupTree, groupId)
         if (foundGroup === null) {
-          // TODO: consider if other alternatives have better UX
           primarySidebar.switchView(VIEWS.ALL)
           setGroup(null)
           setIsLoading(false)
@@ -216,6 +221,7 @@ export const DocumentsGroupList: React.FC<{
     <DocumentsList
       title={formatOptional(group.name, "Unnamed Collection")}
       documents={documents}
+      group={group}
     />
   )
 }
