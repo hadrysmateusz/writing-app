@@ -2,6 +2,7 @@ import React from "react"
 import { RenderElementProps, useFocused, useSelected } from "slate-react"
 import styled from "styled-components/macro"
 import { IMAGE } from "../types"
+import escapeHtml from "escape-html"
 
 const StyledImage = styled.img<{ selected: boolean; focused: boolean }>`
   display: block;
@@ -20,15 +21,13 @@ export const ImageElement = ({
   const selected = useSelected()
   const focused = useFocused()
 
+  // TODO: handle missing or broken urls
+  const src = typeof element.url === "string" ? escapeHtml(element.url) : ""
+
   return (
     <div {...attributes} data-slate-type={IMAGE}>
       <div contentEditable={false}>
-        <StyledImage
-          src={element.url}
-          alt=""
-          selected={selected}
-          focused={focused}
-        />
+        <StyledImage src={src} alt="" selected={selected} focused={focused} />
       </div>
       {children}
     </div>
