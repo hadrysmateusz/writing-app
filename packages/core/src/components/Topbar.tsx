@@ -11,12 +11,30 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "./ContextMenu"
+import { getGroupName } from "../helpers/getGroupName"
+import { Button } from "./Button"
 
-export const Topbar: React.FC<{}> = () => {
-  const { currentDocument, groups } = useMainState()
+const SidebarToggler: React.FC = () => {
   const { primarySidebar, navigatorSidebar } = useViewState()
-  const { renameDocument, moveDocumentToGroup } = useDocumentsAPI()
-  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  return (
+    <IconContainer
+      onClick={() => {
+        primarySidebar.toggle()
+      }}
+      onContextMenu={(e) => {
+        // TODO: remove this if I ever implement the auto-hiding behavior and/or replace it with a context menu for controlling other view-related stuff
+        e.preventDefault()
+        navigatorSidebar.toggle()
+      }}
+    >
+      <Icon icon="sidebarLeft" />
+    </IconContainer>
+  )
+}
+
+const DocumentTitle: React.FC<{}> = () => {
+  const { renameDocument } = useDocumentsAPI()
+  const { currentDocument } = useMainState()
 
   const { getProps: getEditableProps } = useEditableText(
     formatOptional(currentDocument?.title, ""),
@@ -27,53 +45,35 @@ export const Topbar: React.FC<{}> = () => {
   )
 
   const title = formatOptional(currentDocument?.title, "Untitled")
-  const parentGroupId =
-    currentDocument === null ? null : currentDocument.parentGroup
-
-  // TODO: extract this to helper function or hook
-  const groupName = useMemo(() => {
-    if (parentGroupId === null) {
-      return null
-    }
-
-    const group = groups.find((group) => group.id === parentGroupId)
-
-    if (group === undefined) {
-      return null
-    }
-
-    return group.name
-  }, [parentGroupId, groups])
 
   return (
-    <TopbarContainer>
-      <IconContainer
-        onClick={() => {
-          primarySidebar.toggle()
-        }}
-        onContextMenu={(e) => {
-          // TODO: remove this if I ever implement the auto-hiding behavior and/or replace it with a context menu for controlling other view-related stuff
-          e.preventDefault()
-          navigatorSidebar.toggle()
-        }}
-      >
-        <Icon icon="sidebarLeft" />
-      </IconContainer>
+    <TitleContainer>
+      <EditableText {...getEditableProps()} disabled={currentDocument === null}>
+        {title}
+      </EditableText>
+    </TitleContainer>
+  )
+}
+
+const GroupDisplay: React.FC = () => {
+  const { currentDocument, groups } = useMainState()
+  const { moveDocumentToGroup } = useDocumentsAPI()
+  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+
+  const parentGroupId = useMemo(() => {
+    return currentDocument === null ? null : currentDocument.parentGroup
+  }, [currentDocument])
+
+  const groupName = useMemo(() => getGroupName(parentGroupId, groups), [
+    parentGroupId,
+    groups,
+  ])
+
+  return (
+    <>
       <GroupContainer onClick={openMenu}>
         {groupName ?? <InboxContainer>Inbox</InboxContainer>}
       </GroupContainer>
-      <SeparatorContainer>
-        <Icon icon={"caretRight"} />
-      </SeparatorContainer>
-      <TitleContainer>
-        <EditableText
-          {...getEditableProps()}
-          disabled={currentDocument === null}
-        >
-          {title}
-        </EditableText>
-      </TitleContainer>
-
       {isMenuOpen && (
         <ContextMenu>
           {groupName !== null && (
@@ -125,9 +125,33 @@ export const Topbar: React.FC<{}> = () => {
           {/* TODO: add an option to create new group and move it there (DO THE SAME IN THE GROUP TREE ITEM) */}
         </ContextMenu>
       )}
+    </>
+  )
+}
+
+export const Topbar: React.FC<{}> = () => {
+  return (
+    <TopbarContainer>
+      <SidebarToggler />
+
+      <GroupDisplay />
+
+      <SeparatorContainer>
+        <Icon icon={"caretRight"} />
+      </SeparatorContainer>
+
+      <DocumentTitle />
+
+      <RightSideContainer>
+        <Button variant="default">Export</Button>
+      </RightSideContainer>
     </TopbarContainer>
   )
 }
+
+const RightSideContainer = styled.div`
+  margin-left: auto;
+`
 
 const IconContainer = styled.div`
   color: #6a6a6a;
