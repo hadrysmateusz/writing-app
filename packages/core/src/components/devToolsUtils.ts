@@ -10,7 +10,7 @@ import {
   // removeDevToolsEventHandler,
 } from "@writing-tool/core"
 import { useSlate } from "slate-react"
-import { Editor } from "slate"
+import { Editor, Node } from "slate"
 import { serializeText } from "../slate-helpers/serialize/text"
 
 export const useLogValue = (value: Node[]) => {
