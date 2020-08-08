@@ -8,6 +8,7 @@ import { useMainState } from "../MainProvider"
 import { formatOptional } from "../../utils"
 import { useDocumentContextMenu } from "../DocumentContextMenu"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
+import { getGroupName } from "../../helpers/getGroupName"
 
 const SNIPPET_LENGTH = 130
 
@@ -64,20 +65,10 @@ const SidebarDocumentItem: React.FC<{
     return textContent.slice(0, SNIPPET_LENGTH)
   }, [document.content])
 
-  const groupName = useMemo(() => {
-    if (document.parentGroup === null) {
-      return "Inbox"
-    }
-
-    const group = groups.find((group) => group.id === document.parentGroup)
-
-    // TODO: better handle this
-    if (group === undefined) {
-      return null
-    }
-
-    return group.name
-  }, [document.parentGroup, groups])
+  const groupName = useMemo(() => getGroupName(document.parentGroup, groups), [
+    document.parentGroup,
+    groups,
+  ])
 
   const openDocument = useCallback(() => {
     switchDocument(document.id)
