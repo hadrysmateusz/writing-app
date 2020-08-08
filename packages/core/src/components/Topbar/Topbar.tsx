@@ -2,11 +2,11 @@ import React from "react"
 import styled from "styled-components/macro"
 
 import Icon from "../Icon"
-import { Button } from "../Button"
 
 import { SidebarToggler } from "./SidebarToggler"
 import { GroupDisplay } from "./GroupDisplay"
 import { DocumentTitle } from "./DocumentTitle"
+import { ExportButton } from "./ExportButton"
 
 export const Topbar: React.FC = () => {
   return (
@@ -22,7 +22,7 @@ export const Topbar: React.FC = () => {
       <DocumentTitle />
 
       <RightSideContainer>
-        <Button>Export</Button>
+        <ExportButton />
       </RightSideContainer>
     </TopbarContainer>
   )
