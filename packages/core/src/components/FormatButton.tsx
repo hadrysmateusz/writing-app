@@ -2,7 +2,7 @@ import React, { useCallback } from "react"
 import { useSlate } from "slate-react"
 
 import Icon from "./Icon"
-import Button from "./Button"
+import { Button } from "./Button"
 import { isFormatActive, toggleFormat } from "../slate-helpers"
 
 const FormatButton = ({
