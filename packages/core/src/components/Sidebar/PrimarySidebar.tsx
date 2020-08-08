@@ -116,7 +116,7 @@ const OuterContainer = styled.div`
 const Container = styled.div`
   min-height: 0;
   height: 100%;
-  width: 280px;
+  width: 100%;
   display: grid;
   grid-template-rows: 1fr min-content;
 `

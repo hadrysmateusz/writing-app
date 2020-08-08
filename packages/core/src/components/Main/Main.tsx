@@ -1,6 +1,7 @@
 import React from "react"
 import styled from "styled-components/macro"
 import { useEditor } from "slate-react"
+import SplitPane from "react-split-pane"
 
 import { PrimarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
@@ -32,19 +33,33 @@ const Main = () => {
         ? "Loading..."
         : error ?? (
             <>
-              {navigatorSidebar.isOpen && <NavigatorSidebar />}
-              <InnerContainerWrapper>
-                <Topbar />
-                <InnerContainer>
-                  {primarySidebar.isOpen && <PrimarySidebar />}
-                  {currentDocument && (
-                    <EditorComponent
-                      key={currentDocument.id} // Necessary to reload the component on id change
-                      currentDocument={currentDocument}
-                    />
-                  )}
-                </InnerContainer>
-              </InnerContainerWrapper>
+              <SplitPane
+                split="vertical"
+                minSize={170}
+                maxSize={400}
+                defaultSize={200}
+              >
+                {navigatorSidebar.isOpen && <NavigatorSidebar />}
+                <InnerContainerWrapper>
+                  <Topbar />
+                  <InnerContainer>
+                    <SplitPane
+                      split="vertical"
+                      minSize={200}
+                      maxSize={800}
+                      defaultSize={280}
+                    >
+                      {primarySidebar.isOpen && <PrimarySidebar />}
+                      {currentDocument && (
+                        <EditorComponent
+                          key={currentDocument.id} // Necessary to reload the component on id change
+                          currentDocument={currentDocument}
+                        />
+                      )}
+                    </SplitPane>
+                  </InnerContainer>
+                </InnerContainerWrapper>
+              </SplitPane>
             </>
           )}
     </OuterContainer>
@@ -76,7 +91,7 @@ const InnerContainerWrapper = styled.div`
 const InnerContainer = styled.div`
   min-height: 0;
   height: 100%;
-  display: flex;
+  position: relative;
 `
 
 export default Main

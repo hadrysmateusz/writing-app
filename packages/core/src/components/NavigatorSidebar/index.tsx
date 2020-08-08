@@ -155,8 +155,7 @@ const OuterContainer = styled.div`
   border-color: #383838;
   background-color: #171717;
   height: 100vh;
-  width: 200px;
-  min-width: 200px;
+  width: 100%;
 `
 
 const SectionHeader = styled.div`
