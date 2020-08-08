@@ -1,9 +1,17 @@
 import React, { useCallback } from "react"
 import { useSlate } from "slate-react"
+import styled from "styled-components/macro"
 
 import Icon from "./Icon"
-import { Button } from "./Button"
 import { isFormatActive, toggleFormat } from "../slate-helpers"
+
+const StyledButton = styled.button<{ active: boolean }>`
+  background: none;
+  border: none;
+  border-radius: none;
+  padding: 6px;
+  color: ${(p) => (p.active ? "white" : "inherit")};
+`
 
 const FormatButton = ({
   format,
@@ -26,9 +34,12 @@ const FormatButton = ({
   )
 
   return (
-    <Button active={isActive} onMouseDown={onMouseDown ?? defaultOnMouseDown}>
+    <StyledButton
+      active={isActive}
+      onMouseDown={onMouseDown ?? defaultOnMouseDown}
+    >
       {text ? text : <Icon icon={format} />}
-    </Button>
+    </StyledButton>
   )
 }
 

@@ -15,6 +15,7 @@ import {
   FaEllipsisV,
   FaInbox,
   FaUser,
+  FaSpinner,
 } from "react-icons/fa"
 import {
   AiFillCloud,
@@ -75,6 +76,7 @@ const iconLibrary = {
   ellipsisVertical: FaEllipsisV,
   inbox: FaInbox,
   user: FaUser,
+  spinner: FaSpinner,
 }
 
 export default iconLibrary
