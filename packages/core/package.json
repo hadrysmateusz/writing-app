@@ -39,6 +39,7 @@
     "pouchdb-fetch": "^7.2.1",
     "pouchdb-replication": "^7.2.1",
     "pouchdb-server": "^4.2.0",
+    "pretty": "^2.0.0",
     "prismjs": "^1.19.0",
     "react": "^16.13.1",
     "react-autosize-textarea": "^7.0.0",
