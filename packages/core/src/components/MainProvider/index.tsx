@@ -34,12 +34,6 @@ import {
   MainState,
 } from "./types"
 
-declare global {
-  interface Window {
-    ipcRenderer: any
-  }
-}
-
 export const [
   useDocumentsAPI,
   DocumentsAPIProvider,
