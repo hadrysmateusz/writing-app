@@ -13,9 +13,13 @@ import {
 } from "./../../slate-plugins"
 import { ListType } from "../../slateTypes"
 
-import { Node } from "slate"
+import { Node, Editor } from "slate"
 
-// TODO: handle nested nodes
+export const serializeMarkdown = (editor: Editor) => {
+  return editor.children.map((node) => parseToMarkdown(node)).join("\n")
+}
+
+// TODO: handle nested (indented) nodes
 export function parseToMarkdown(chunk: Node & { parentType?: string }) {
   const isElement = chunk.type !== undefined
 
