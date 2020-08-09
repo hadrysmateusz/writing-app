@@ -46,5 +46,8 @@
     "nodemon": "^2.0.4",
     "typescript": "^3.9.5",
     "wait-on": "^4.0.2"
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.1"
   }
 }
