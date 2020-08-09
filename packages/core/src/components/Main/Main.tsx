@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 import { useEditor } from "slate-react"
 import SplitPane from "react-split-pane"
 
-import { PrimarySidebar } from "../Sidebar"
+import { PrimarySidebar, SecondarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
 import { useLogEditor, useLogValue } from "../devToolsUtils"
 
@@ -15,6 +15,8 @@ import { Topbar } from "../Topbar"
 import { getDefaultSize, setDefaultSize } from "./helpers"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
+
+// TODO: consider adding an onChange to split panes that will close them when they get below a certain size
 
 /**
  * Renders the editor if there is a document selected
@@ -38,7 +40,7 @@ const EditorRenderer: React.FC = () => {
  */
 const OuterRenderer: React.FC = () => {
   const { navigatorSidebar } = useViewState()
-  const storageKey = "splitPosOuter"
+  const storageKey = "splitPosNavigator"
   const defaultSize = useMemo(() => getDefaultSize(storageKey, 200), [])
   const handleChange = useCallback((s) => setDefaultSize(storageKey, s), [])
 
@@ -63,7 +65,7 @@ const OuterRenderer: React.FC = () => {
  */
 const InnerRenderer: React.FC = () => {
   const { primarySidebar } = useViewState()
-  const storageKey = "splitPosInner"
+  const storageKey = "splitPosPrimary"
   const defaultSize = useMemo(() => getDefaultSize(storageKey, 280), [])
   const handleChange = useCallback((s) => setDefaultSize(storageKey, s), [])
 
@@ -80,13 +82,39 @@ const InnerRenderer: React.FC = () => {
             onChange={handleChange}
           >
             <PrimarySidebar />
-            <EditorRenderer />
+            <InnermostRenderer />
           </SplitPane>
         ) : (
-          <EditorRenderer />
+          <InnermostRenderer />
         )}
       </InnerContainer>
     </InnerContainerWrapper>
+  )
+}
+
+/**
+ * Renders the editor and right-side drawer in split panes
+ */
+const InnermostRenderer: React.FC = () => {
+  const { secondarySidebar } = useViewState()
+  const storageKey = "splitPosSecondary"
+  const defaultSize = useMemo(() => getDefaultSize(storageKey, 280), [])
+  const handleChange = useCallback((s) => setDefaultSize(storageKey, s), [])
+
+  return secondarySidebar.isOpen ? (
+    <SplitPane
+      split="vertical"
+      primary="second"
+      minSize={200}
+      maxSize={800}
+      defaultSize={defaultSize}
+      onChange={handleChange}
+    >
+      <EditorRenderer />
+      <SecondarySidebar />
+    </SplitPane>
+  ) : (
+    <EditorRenderer />
   )
 }
 

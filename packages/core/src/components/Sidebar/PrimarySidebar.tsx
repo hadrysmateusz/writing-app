@@ -13,7 +13,6 @@ import { useDocumentsAPI } from "../MainProvider"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 
 export const PrimarySidebar: React.FC<{}> = () => {
-  // Can be one of the special views or an id of a document group
   const { createDocument } = useDocumentsAPI()
   const { primarySidebar } = useViewState()
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()

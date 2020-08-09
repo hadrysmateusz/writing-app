@@ -4,12 +4,21 @@ import styled from "styled-components/macro"
 import Icon from "../Icon"
 import { useViewState } from "../View/ViewStateProvider"
 
-export const SidebarToggler: React.FC = () => {
-  const { primarySidebar, navigatorSidebar } = useViewState()
+export const SidebarToggler: React.FC<{ which: "primary" | "secondary" }> = ({
+  which,
+}) => {
+  const { primarySidebar, secondarySidebar, navigatorSidebar } = useViewState()
+
+  const sidebar = { primary: primarySidebar, secondary: secondarySidebar }[
+    which
+  ]
+
+  const icon = { primary: "sidebarLeft", secondary: "sidebarRight" }[which]
+
   return (
     <IconContainer
       onClick={() => {
-        primarySidebar.toggle()
+        sidebar.toggle()
       }}
       onContextMenu={(e) => {
         // TODO: remove this if I ever implement the auto-hiding behavior and/or replace it with a context menu for controlling other view-related stuff
@@ -17,7 +26,7 @@ export const SidebarToggler: React.FC = () => {
         navigatorSidebar.toggle()
       }}
     >
-      <Icon icon="sidebarLeft" />
+      <Icon icon={icon} />
     </IconContainer>
   )
 }

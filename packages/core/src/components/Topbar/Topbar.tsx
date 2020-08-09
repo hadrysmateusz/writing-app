@@ -11,7 +11,7 @@ import { ExportButton } from "./ExportButton"
 export const Topbar: React.FC = () => {
   return (
     <TopbarContainer>
-      <SidebarToggler />
+      <SidebarToggler which="primary" />
 
       <GroupDisplay />
 
@@ -23,6 +23,7 @@ export const Topbar: React.FC = () => {
 
       <RightSideContainer>
         <ExportButton />
+        <SidebarToggler which="secondary" />
       </RightSideContainer>
     </TopbarContainer>
   )
@@ -30,6 +31,12 @@ export const Topbar: React.FC = () => {
 
 const RightSideContainer = styled.div`
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  > * + * {
+    margin-left: 12px;
+  }
 `
 
 const SeparatorContainer = styled.div`

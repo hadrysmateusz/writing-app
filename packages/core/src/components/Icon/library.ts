@@ -28,6 +28,7 @@ import {
   BsCaretRightFill,
   BsCaretDownFill,
   BsLayoutSidebar,
+  BsLayoutSidebarReverse,
 } from "react-icons/bs"
 
 // First-Party icons
@@ -69,6 +70,7 @@ const iconLibrary = {
   starFilled: FaStar,
   starOutline: FaRegStar,
   sidebarLeft: BsLayoutSidebar,
+  sidebarRight: BsLayoutSidebarReverse,
   trash: IoMdTrash,
   folderOpen: AiFillFolderOpen,
   folderClosed: AiFillFolder,

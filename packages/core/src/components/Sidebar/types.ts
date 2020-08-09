@@ -5,4 +5,8 @@ export const VIEWS = {
   INBOX: "__INBOX__",
 }
 
+export const SECONDARY_VIEWS = {
+  SNIPPETS: "__SNIPPETS__",
+}
+
 export type ChangeViewFn = React.Dispatch<React.SetStateAction<string>>
