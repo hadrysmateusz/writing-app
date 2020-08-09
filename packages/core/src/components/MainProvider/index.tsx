@@ -598,11 +598,10 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     fn()
   }, [currentEditor, findDocumentById])
 
-  // Handle "new-document" messages from the main process
   useEffect(
     () =>
-      // TODO: check if this needs cleanup
-      listenForIpcEvent("new-document", () => {
+      // Handle "new-document" messages from the main process
+      listenForIpcEvent("new-cloud-document", () => {
         // Remove domSelection to prevent errors
         window.getSelection()?.removeAllRanges()
         // Create the new document

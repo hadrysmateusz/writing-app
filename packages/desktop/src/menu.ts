@@ -6,11 +6,12 @@ function setUpApplicationMenu() {
       label: "File",
       submenu: [
         {
-          label: "New Document",
+          label: "New Cloud Document",
           click() {
             const [win] = BrowserWindow.getAllWindows()
             // TODO: consider creating a wrapper function that will also 'restore' the window on macOS
-            win.webContents.send("new-document", "whoooooooh!")
+            // TODO: move the message name to a shared constants file
+            win.webContents.send("new-cloud-document", "whoooooooh!")
           },
         },
       ],
