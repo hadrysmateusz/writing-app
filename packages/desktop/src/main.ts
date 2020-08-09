@@ -6,7 +6,7 @@ import os from "os"
 import IS_DEV from "./helpers/electron-is-dev"
 import { setUpApplicationMenu } from "./menu"
 
-const APP_NAME = "writing-app" // TODO: move to shared constants file and replace all current uses
+const APP_NAME = "writing-tool" // TODO: move to shared constants file and replace all current uses
 
 // TODO: move to shared location
 export enum FileFormats {
@@ -36,6 +36,10 @@ function createWindow() {
     width: 1850,
     height: 1150,
     minWidth: 980,
+    title: APP_NAME,
+    // devTools: false, TODO: consider setting this in prod to prevent opening the devtools
+    // frame: false,
+    acceptFirstMouse: true,
     backgroundColor: "#1e1e1e",
     webPreferences: {
       nodeIntegration: false,

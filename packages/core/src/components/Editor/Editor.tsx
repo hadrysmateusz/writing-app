@@ -266,7 +266,7 @@ const EditorComponent: React.FC<{
       <OuterContainer>
         <InnerContainer>
           {/* <HoveringToolbar /> */}
-          {/* <Toolbar /> */}
+          <Toolbar />
           <StyledNamingInput
             ref={titleRef}
             value={title}
