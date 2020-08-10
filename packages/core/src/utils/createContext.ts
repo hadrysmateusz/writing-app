@@ -6,6 +6,8 @@ import React from "react"
  * that the value is not undefined to help with typescript's type-checking
  */
 
+// TODO: remove the provider, it only complicates creating the component that will actually manage the state and logic for this context and it can be easily retrieved from the Context itself
+
 type ContextHook<ContextType> = () => ContextType
 
 type ContextProvider<ContextType> = React.Provider<ContextType | undefined>
