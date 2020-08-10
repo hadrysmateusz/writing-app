@@ -12655,7 +12655,7 @@ pouchdb-abstract-mapreduce@7.2.2:
     pouchdb-md5 "7.2.2"
     pouchdb-utils "7.2.2"
 
-pouchdb-adapter-http@^7.0.0, pouchdb-adapter-http@^7.2.1:
+pouchdb-adapter-http@^7.0.0, pouchdb-adapter-http@^7.2.2:
   version "7.2.2"
   resolved "https://registry.yarnpkg.com/pouchdb-adapter-http/-/pouchdb-adapter-http-7.2.2.tgz#7b04a247aae5db67af6ea8567cc93b2aca8e282f"
   integrity sha512-6Z6umJq7b5sRXwDM3CLfHrGhJPMR02M5osUxkwH1PpqcTF0EXPJvX+PtzTjSPcXWfaK6kgH3zNrRKQDdpzjI9A==
@@ -12666,7 +12666,7 @@ pouchdb-adapter-http@^7.0.0, pouchdb-adapter-http@^7.2.1:
     pouchdb-fetch "7.2.2"
     pouchdb-utils "7.2.2"
 
-pouchdb-adapter-idb@^7.2.1:
+pouchdb-adapter-idb@^7.2.2:
   version "7.2.2"
   resolved "https://registry.yarnpkg.com/pouchdb-adapter-idb/-/pouchdb-adapter-idb-7.2.2.tgz#0a4b6c6f6639f93e2e50cb20d50b5fb6eaf1e80e"
   integrity sha512-swSVQFm/p5CPKP0zyOmtv/hFpTyjtDlPAKTpxH4gEm9V+K30kDZ8ciAHaCkGEBSfWfZFYUI8/VOnAL2L0WIIeA==
@@ -12907,7 +12907,7 @@ pouchdb-core@7.2.1:
     pouchdb-merge "7.2.1"
     pouchdb-utils "7.2.1"
 
-pouchdb-core@^7.0.0, pouchdb-core@^7.2.1:
+pouchdb-core@^7.0.0, pouchdb-core@^7.2.2:
   version "7.2.2"
   resolved "https://registry.yarnpkg.com/pouchdb-core/-/pouchdb-core-7.2.2.tgz#519402cf0fcaffcc903db9d484d901fc9dde33d5"
   integrity sha512-AnMmSH+xx12Vk6oASDRQoElXfV9fSn8MIwfus0oa2lqkxowx4bvidofZbhZfKEiE6QgKwFEOBzs56MS3znI8TQ==
@@ -12964,7 +12964,7 @@ pouchdb-fetch@7.2.1:
     fetch-cookie "0.7.3"
     node-fetch "2.4.1"
 
-pouchdb-fetch@7.2.2, pouchdb-fetch@^7.2.1:
+pouchdb-fetch@7.2.2, pouchdb-fetch@^7.2.2:
   version "7.2.2"
   resolved "https://registry.yarnpkg.com/pouchdb-fetch/-/pouchdb-fetch-7.2.2.tgz#492791236d60c899d7e9973f9aca0d7b9cc02230"
   integrity sha512-lUHmaG6U3zjdMkh8Vob9GvEiRGwJfXKE02aZfjiVQgew+9SLkuOxNw3y2q4d1B6mBd273y1k2Lm0IAziRNxQnA==
@@ -13140,7 +13140,7 @@ pouchdb-replication@7.2.1:
     pouchdb-generate-replication-id "7.2.1"
     pouchdb-utils "7.2.1"
 
-pouchdb-replication@^7.0.0, pouchdb-replication@^7.2.1:
+pouchdb-replication@^7.0.0, pouchdb-replication@^7.2.2:
   version "7.2.2"
   resolved "https://registry.yarnpkg.com/pouchdb-replication/-/pouchdb-replication-7.2.2.tgz#927abe24f9e69b68951c7b130e4926f14b984b1c"
   integrity sha512-+Q2zqXWaHPOut0jGMABplmlML+8jUzkefyxZXgU6bXSbC9kEJCBAkjaFeZsF10HpsQZ9tHZ577g5EOqj7V1lTQ==
