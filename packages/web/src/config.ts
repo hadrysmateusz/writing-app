@@ -1,8 +1,8 @@
 const config = {
-  logOperations: false,
+  logOperations: true,
   logSelection: false,
   logValue: false,
-  dbSync: false,
+  dbSync: true,
   debugStyles: false,
 }
 
