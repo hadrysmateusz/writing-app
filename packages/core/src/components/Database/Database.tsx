@@ -1,9 +1,9 @@
 import React, { useState, useContext, createContext, useEffect } from "react"
-import { addRxPlugin, createRxDatabase } from "rxdb"
+import { addRxPlugin, createRxDatabase, RxCollectionCreator } from "rxdb"
 import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import PouchDB from "pouchdb-core"
-import { fetch } from "pouchdb-fetch"
+import { fetch } from "pouchdb-fetch" // TODO: create declaration file
 import { Auth } from "aws-amplify"
 import { documentSchema, groupSchema } from "./Schema"
 import {
@@ -13,49 +13,19 @@ import {
   DocumentCollection,
 } from "./types"
 import { config } from "../../dev-tools"
+import {
+  remoteDbDomain,
+  remoteDbPort,
+  usernameStartWord,
+  dbNameBase,
+} from "./constants"
+import { encodeDbName, getUserRemoteDbName } from "./helpers"
 
 addRxPlugin(PouchDbAdapterIdb)
-addRxPlugin(PouchDbAdapterHttp) //enable syncing over http
+addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
 
-const dbNameBase = "writing_tool" // TODO: change to the name of the app
-const remoteDbDomain = "localhost"
-const remoteDbPort = "5984"
-const usernameStartWord: string = "__uid__"
-
-const getUserRemoteDbName = (userName: string, tableName: string) => {
-  return `uid-${userName}-${tableName}`
-}
-
-const validateDbName = (name: string): void => {
-  if (!name.includes(usernameStartWord)) {
-    throw new Error(
-      `Not a proper name. Name must contain the string: ${usernameStartWord}`
-    )
-  }
-}
-
-const findDbUsername = (name: string): [string, number] => {
-  const usernameIndex: number = name.indexOf("_uid_") + usernameStartWord.length
-  const username: string = name.substring(usernameIndex)
-  return [username, usernameIndex]
-}
-
-// The encode function only replaces the dashes in the username part of the string to prevent unexpected results when decoding if an iproper dbNameBase is used
-// TODO: consider reimplementing with a regex (for possible startup performance improvement)
-const encodeDbName = (name: string): string => {
-  validateDbName(name)
-  const [username, usernameIndex] = findDbUsername(name)
-  return name.substring(0, usernameIndex) + username.replace(/-/g, "_")
-}
-
-const decodeDbName = (name: string): string => {
-  validateDbName(name)
-  const [username, usernameIndex] = findDbUsername(name)
-  return name.substring(0, usernameIndex) + username.replace(/_/g, "-")
-}
-
+// TODO: replace with custom createContext
 const DatabaseContext = createContext<MyDatabase | null>(null)
-
 export const useDatabase = () => {
   const database = useContext(DatabaseContext)
 
@@ -66,6 +36,8 @@ export const useDatabase = () => {
   return database
 }
 
+// TODO: figure out the cause of the "invalid adapter: http" error and if it can impact the production environment
+// TODO: make sure that the user is online and the database server is responding and all remote databases have been created and configured properly before creating local databases - throw an error otherwise because the frontend is unable to create databases with proper permissions and this will lead to many issues. Instead, if the user is online call a special api endpoint that will attempt to fix the remote database setup and if successful, the frontend should continue creating local databases and starting the app
 // TODO: figure out encryption or local db removal
 // TODO: finish cognito jwt auth once the new couchdb version is released
 export const DatabaseProvider: React.FC<{}> = ({ children }) => {
@@ -88,13 +60,23 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       const db = await createRxDatabase<MyDatabaseCollections>({
         name: encodeDbName(`${dbNameBase}${usernameStartWord}${username}`),
         adapter: "idb",
+        pouchSettings: {
+          // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
+          skip_setup: true,
+        },
         ignoreDuplicate: true, // TODO: this flag is set to address the issue with the auth provider remounting the component after logging in to the same account twice but it probably will have some unintended consequences so try to find a better solution
       })
 
       // write to window for debugging
+      // TODO: disable in prod
       window["db"] = db
 
-      const collections = [
+      const collections: (RxCollectionCreator & {
+        /**
+         * Custom property, indicates if the collection should be automatically synced with remote db
+         */
+        sync: boolean
+      })[] = [
         {
           name: "documents",
           schema: documentSchema,
@@ -117,32 +99,24 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
             },
           },
           migrationStrategies: {},
+          pouchSettings: {
+            // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
+            skip_setup: true,
+          },
         },
         {
           name: "groups",
           schema: groupSchema,
           sync: true,
+          pouchSettings: {
+            // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
+            skip_setup: true,
+          },
         },
       ]
 
       // create collections
       await Promise.all(collections.map((colData) => db.collection(colData)))
-
-      // // Hook that intercepts document remove calls and soft-deletes them instead
-      // /*
-      //   TODO: A way to permanently delete a document might be needed
-      //   A possible solution is to use a flag that if present will prevent this hook for stopping the remove operation - it could be further improved with a custom method on the DocumentDoc that would automatically set the flag and remove it in one go
-      // */
-      // db.documents.preRemove((_, documentDoc) => {
-      //   documentDoc.update({
-      //     $set: {
-      //       isDeleted: true,
-      //     },
-      //   })
-      //   throw new Error(
-      //     "Stopped document remove operation. Setting soft-delete flag instead."
-      //   )
-      // }, false)
 
       // Hook to remove nested groups and documents when a group is removed
       db.groups.preRemove(async (groupData) => {
@@ -191,6 +165,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
 
             db[colName].sync({
               remote: new PouchDB(
+                // TODO: when jwt auth is fixed, remove the admin credentials from this url and add the proper headers
                 `http://admin:kurczok99@${remoteDbDomain}:${remoteDbPort}/${dbName}/`,
                 {
                   fetch: (url, opts) => {
@@ -211,6 +186,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
 
                     return fetch(url, opts)
                   },
+                  skip_setup: true,
                 }
               ),
               waitForLeadership: true,
@@ -250,3 +226,19 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
     </>
   )
 }
+
+// // Hook that intercepts document remove calls and soft-deletes them instead
+// /*
+//   TODO: A way to permanently delete a document might be needed
+//   A possible solution is to use a flag that if present will prevent this hook for stopping the remove operation - it could be further improved with a custom method on the DocumentDoc that would automatically set the flag and remove it in one go
+// */
+// db.documents.preRemove((_, documentDoc) => {
+//   documentDoc.update({
+//     $set: {
+//       isDeleted: true,
+//     },
+//   })
+//   throw new Error(
+//     "Stopped document remove operation. Setting soft-delete flag instead."
+//   )
+// }, false)
