@@ -1,7 +1,9 @@
-const COUCHDB_BASE_URL = "http://localhost:5984"
+const COUCHDB_BASE_URL = "http://localhost:5984" // TODO: replace with actual url
 
 // TODO: set up SSL
 
+// Because this function is run in a trusted environment, I can simply use Basic authentication (provided that the actual credentials are safely stored)
+// TODO: consider adding a different admin with limited permissions (if possible) to avoid using the main one
 const getAdminAuthHeader = () => {
   // TODO: replace these placeholder credentials
   const ADMIN_USERNAME = "admin"
