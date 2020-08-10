@@ -1,9 +1,9 @@
 const config = {
-  logOperations: true,
-  logSelection: true,
-  logValue: true,
-  dbSync: true,
-  debugStyles: true,
+  logOperations: false,
+  logSelection: false,
+  logValue: false,
+  dbSync: false,
+  debugStyles: false,
 }
 
 export default config
