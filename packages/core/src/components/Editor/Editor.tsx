@@ -284,7 +284,7 @@ const EditorComponent: React.FC<{
                   plugins={plugins}
                   placeholder="Start writing"
                   onKeyDown={[handleSaveDocument, handleFixSelection]}
-                  spellCheck={false}
+                  spellCheck={true}
                 />
                 <InsertBlockField onMouseDown={handleInsertEmptyBlock} />
 
