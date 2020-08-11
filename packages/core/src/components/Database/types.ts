@@ -1,6 +1,6 @@
 import { RxDatabase, RxDocument, RxCollection, RxQuery } from "rxdb"
 
-// ------ Document ------
+//#region Document
 
 export type DocumentDocType = {
   /**
@@ -67,7 +67,45 @@ export type DocumentCollection = RxCollection<
   DocumentCollectionMethods
 >
 
-// ------ Group ------
+//#endregion
+
+//#region Userdata
+
+/**
+ * Contains mutable, user-editable data about the user like:
+ *
+ * - preferences/settings
+ * - onboarding status (which features has the user interacted with already)
+ *
+ * Sensitive data, like subscription status etc. shouldn't be stored here,
+ * but in a separate, cloud only database that can only be interacted with
+ * through a secure API.
+ *
+ * @todo consider moving all preferences to a separate object
+ */
+export type UserdataDocType = {
+  /**
+   * UID of the user this settings object belongs to
+   */
+  userId: string
+  isSpellCheckEnabled: boolean
+}
+
+export type UserdataDocMethods = {}
+
+export type UserdataDoc = RxDocument<UserdataDocType, UserdataDocMethods>
+
+export type UserdataCollectionMethods = {}
+
+export type UserdataCollection = RxCollection<
+  GroupDocType,
+  GroupDocMethods,
+  GroupCollectionMethods
+>
+
+//#endregion
+
+//#region Group
 
 export type GroupDocType = {
   id: string
@@ -95,7 +133,9 @@ export type GroupCollection = RxCollection<
   GroupCollectionMethods
 >
 
-// ------ Database -------
+//#endregion
+
+//#region Database
 
 export type MyDatabaseCollections = {
   documents: DocumentCollection
@@ -103,3 +143,5 @@ export type MyDatabaseCollections = {
 }
 
 export type MyDatabase = RxDatabase<MyDatabaseCollections>
+
+//#endregion

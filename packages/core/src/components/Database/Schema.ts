@@ -1,6 +1,6 @@
 import { RxJsonSchema } from "rxdb"
 
-import { DocumentDocType, GroupDocType } from "./types"
+import { DocumentDocType, GroupDocType, UserdataDocType } from "./types"
 
 export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
@@ -55,6 +55,23 @@ export const groupSchema: RxJsonSchema<GroupDocType> = {
     },
     parentGroup: {
       type: ["string", "null"],
+    },
+  },
+}
+
+export const userdataSchema: RxJsonSchema<UserdataDocType> = {
+  title: "userdata schema",
+  description: "describes a set of user data",
+  version: 0,
+  type: "object",
+  properties: {
+    userId: {
+      type: "string",
+      primary: true,
+      final: true,
+    },
+    isSpellCheckEnabled: {
+      type: "boolean",
     },
   },
 }
