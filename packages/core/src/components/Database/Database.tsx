@@ -5,7 +5,7 @@ import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import PouchDB from "pouchdb-core"
 import { fetch } from "pouchdb-fetch" // TODO: create declaration file
 import { Auth } from "aws-amplify"
-import { documentSchema, groupSchema } from "./Schema"
+import { documentSchema, groupSchema, userdataSchema } from "./Schema"
 import {
   MyDatabaseCollections,
   MyDatabase,
@@ -40,6 +40,8 @@ export const useDatabase = () => {
 // TODO: make sure that the user is online and the database server is responding and all remote databases have been created and configured properly before creating local databases - throw an error otherwise because the frontend is unable to create databases with proper permissions and this will lead to many issues. Instead, if the user is online call a special api endpoint that will attempt to fix the remote database setup and if successful, the frontend should continue creating local databases and starting the app
 // TODO: figure out encryption or local db removal
 // TODO: finish cognito jwt auth once the new couchdb version is released
+// TODO: make sure to wait for the userdata document(s) to come in before letting the user interact with the actual app (or use some fallback system, using locally saved data or defaults to prevent overwriting the userdata document stored in the remote db)
+// TODO: eventually migrate to one shared userdata database with filtered queries and proper access control etc.
 export const DatabaseProvider: React.FC<{}> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [database, setDatabase] = useState<MyDatabase | null>(null)
@@ -107,6 +109,15 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
         {
           name: "groups",
           schema: groupSchema,
+          sync: true,
+          pouchSettings: {
+            // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
+            skip_setup: true,
+          },
+        },
+        {
+          name: "userdata",
+          schema: userdataSchema,
           sync: true,
           pouchSettings: {
             // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail

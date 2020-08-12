@@ -1,5 +1,4 @@
 import React from "react"
-import { Auth } from "aws-amplify"
 import { useHistory } from "react-router-dom"
 
 import { useAuthContext } from "./Auth"
@@ -10,17 +9,17 @@ export const LogoutButton: React.FC<{
   onAfterLogout?: () => void
 }> = ({ onBeforeLogout, onAfterLogout }) => {
   const history = useHistory()
-  const { setIsAuthenticated } = useAuthContext()
+  const { logout } = useAuthContext()
 
   const handleLogout = async () => {
     onBeforeLogout && onBeforeLogout()
 
-    await Auth.signOut()
-    setIsAuthenticated(false)
+    const success = logout()
 
-    onAfterLogout && onAfterLogout()
-
-    history.push("/")
+    if (success) {
+      onAfterLogout && onAfterLogout() // TODO: consider supporting a hook after a failed logout
+      history.push("/")
+    }
   }
 
   // TODO: add some special styling and maybe a confirmation modal

@@ -72,6 +72,13 @@ export type DocumentCollection = RxCollection<
 //#region Userdata
 
 /**
+ * Contains only the actual user preferences/settings, for use elsewhere
+ */
+export type UserSettings = {
+  isSpellCheckEnabled: boolean
+}
+
+/**
  * Contains mutable, user-editable data about the user like:
  *
  * - preferences/settings
@@ -83,12 +90,11 @@ export type DocumentCollection = RxCollection<
  *
  * @todo consider moving all preferences to a separate object
  */
-export type UserdataDocType = {
+export type UserdataDocType = UserSettings & {
   /**
    * UID of the user this settings object belongs to
    */
   userId: string
-  isSpellCheckEnabled: boolean
 }
 
 export type UserdataDocMethods = {}
@@ -98,9 +104,9 @@ export type UserdataDoc = RxDocument<UserdataDocType, UserdataDocMethods>
 export type UserdataCollectionMethods = {}
 
 export type UserdataCollection = RxCollection<
-  GroupDocType,
-  GroupDocMethods,
-  GroupCollectionMethods
+  UserdataDocType,
+  UserdataDocMethods,
+  UserdataCollectionMethods
 >
 
 //#endregion
@@ -140,6 +146,7 @@ export type GroupCollection = RxCollection<
 export type MyDatabaseCollections = {
   documents: DocumentCollection
   groups: GroupCollection
+  userdata: UserdataCollection
 }
 
 export type MyDatabase = RxDatabase<MyDatabaseCollections>

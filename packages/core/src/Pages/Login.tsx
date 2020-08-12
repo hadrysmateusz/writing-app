@@ -1,11 +1,10 @@
 import React, { useState, FormEvent } from "react"
-import { Auth } from "aws-amplify"
 import { Link, Redirect } from "react-router-dom"
 
 import { useAuthContext } from "@writing-tool/core"
 
 const Login = () => {
-  const { setIsAuthenticated, isAuthenticated } = useAuthContext()
+  const { login, isAuthenticated } = useAuthContext()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -15,13 +14,7 @@ const Login = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
-
-    try {
-      await Auth.signIn(email, password)
-      setIsAuthenticated(true)
-    } catch (error) {
-      alert(error.message)
-    }
+    login(email, password)
   }
 
   return isAuthenticated ? (

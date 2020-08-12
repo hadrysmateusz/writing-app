@@ -65,6 +65,8 @@ export const userdataSchema: RxJsonSchema<UserdataDocType> = {
   version: 0,
   type: "object",
   properties: {
+    // The userId is set as the primaryKey but that is only for the local database, in the remote it is still saved under the key _id, and there will be no userId key in the couchdb document (so when creating this document from a server, use the cognito user id in the request parameter as the {docid} but don't include a `userId` in the json object)
+    // TODO: create the userdata document for the user in the postConfirmation hook
     userId: {
       type: "string",
       primary: true,

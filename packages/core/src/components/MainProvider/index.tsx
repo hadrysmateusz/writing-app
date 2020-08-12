@@ -353,6 +353,8 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   /**
    * Updates the document using an object or function
    *
+   * TODO: consider using atomicUpdate or atomicSet
+   *
    * TODO: create an advanced version of the function that uses the full mongo update syntax: https://docs.mongodb.com/manual/reference/operator/update-field/
    */
   const updateDocument: UpdateDocumentFn = useCallback(

@@ -1,14 +1,8 @@
-import React, { useState, useEffect } from "react"
-import { Auth } from "aws-amplify"
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom"
+import React, { useEffect } from "react"
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
+import { Amplify } from "aws-amplify"
 
-import { useAsyncEffect } from "../hooks"
-import { AuthContextProvider } from "./Auth"
+import { AuthContextProvider, AuthenticatedRoute } from "./Auth"
 import GlobalStyles from "./GlobalStyles"
 
 import {
@@ -18,22 +12,19 @@ import {
   SignupPage,
 } from "../Pages"
 
+// window.LOG_LEVEL = "DEBUG"
+
+Amplify.configure({
+  Auth: {
+    identityPoolId: "us-east-1:b43ad165-df33-434c-a243-d204feb25d31",
+    region: "us-east-1",
+    userPoolId: "us-east-1_U9vIjaJBz",
+    userPoolWebClientId: "n2cs9p5s667sck722q74nieq9",
+    mandatorySignIn: true,
+  },
+})
+
 export const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isAuthenticating, setIsAuthenticating] = useState(true)
-
-  useAsyncEffect(async () => {
-    try {
-      await Auth.currentSession()
-      setIsAuthenticated(true)
-    } catch (error) {
-      if (error !== "No current user") {
-        alert(error)
-      }
-    }
-    setIsAuthenticating(false)
-  }, [])
-
   // This effect catches all uncaught contextmenu events and prevents the display of the default context menu
   // TODO: make sure all basic context menu actions have a custom alternative (especially text-related in the editor like cutting and pasting )
   useEffect(() => {
@@ -52,34 +43,35 @@ export const App = () => {
     }
   })
 
-  // TODO: create AuthenticatedRoute and UnauthenticatedRoute components to simplify routing
   return (
     <>
       <GlobalStyles />
 
-      {isAuthenticating ? null : (
-        <AuthContextProvider value={{ isAuthenticated, setIsAuthenticated }}>
-          <Router>
-            <Switch>
-              <Route exact path="/login">
-                <LoginPage />
-              </Route>
-              <Route exact path="/signup">
-                <SignupPage />
-              </Route>
-              <Route path="/medium-auth-callback">
-                <MediumAuthRedirectPage />
-              </Route>
-              <Route path="/" exact>
-                {isAuthenticated ? <EditorPage /> : <Redirect to="/login" />}
-              </Route>
-              <Route>
-                <h2>Page not found!</h2>
-              </Route>
-            </Switch>
-          </Router>
-        </AuthContextProvider>
-      )}
+      <AuthContextProvider>
+        <Router>
+          <Switch>
+            <Route exact path="/login">
+              <LoginPage />
+            </Route>
+
+            <Route exact path="/signup">
+              <SignupPage />
+            </Route>
+
+            <Route path="/medium-auth-callback">
+              <MediumAuthRedirectPage />
+            </Route>
+
+            <AuthenticatedRoute path="/" exact>
+              <EditorPage />
+            </AuthenticatedRoute>
+
+            <Route>
+              <h2>Page not found!</h2>
+            </Route>
+          </Switch>
+        </Router>
+      </AuthContextProvider>
     </>
   )
 }
