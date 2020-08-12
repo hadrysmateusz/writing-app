@@ -24,7 +24,7 @@
     "@types/styled-components": "^5.0.1",
     "@types/uuid": "^7.0.3",
     "@udecode/slate-plugins": "0.65.0",
-    "aws-amplify": "^3.0.8",
+    "aws-amplify": "^3.0.23",
     "body-scroll-lock": "^3.0.3",
     "electron": "^8.2.5",
     "image-extensions": "^1.1.0",
