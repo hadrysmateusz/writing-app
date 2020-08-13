@@ -143,6 +143,7 @@ const GroupTreeItem: React.FC<{
         onClick={handleClick}
         childNodes={childNodes}
         isExpanded={isExpanded}
+        isActive={primarySidebar.currentView === group.id}
         setIsExpanded={setIsExpanded}
         // TODO: prevent flicker
         icon={

@@ -48,6 +48,8 @@ export const NavigatorSidebar: React.FC<{}> = () => {
     createGroup(null)
   }
 
+  const { currentView } = primarySidebar
+
   return (
     <OuterContainer onContextMenu={openMenu}>
       {/* <SectionHeader>Library</SectionHeader> */}
@@ -56,6 +58,7 @@ export const NavigatorSidebar: React.FC<{}> = () => {
           icon="cloud"
           onClick={() => primarySidebar.switchView(VIEWS.ALL)}
           depth={0}
+          isActive={currentView === VIEWS.ALL}
         >
           All Documents
         </TreeItem>

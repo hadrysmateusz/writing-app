@@ -9,6 +9,7 @@ export const TreeItem: React.FC<StaticTreeItemProps> = ({
   children,
   disabled = false,
   isSpecial = false,
+  isActive = false,
   onClick,
   onContextMenu,
   ...rest
@@ -17,6 +18,7 @@ export const TreeItem: React.FC<StaticTreeItemProps> = ({
     <OuterContainer
       depth={depth}
       disabled={disabled}
+      isActive={isActive}
       onClick={onClick}
       onContextMenu={onContextMenu}
       {...rest}
@@ -44,6 +46,7 @@ const OuterContainer = styled.div<{
   depth: number
   disabled?: boolean
   isSpecial?: boolean
+  isActive?: boolean
 }>`
   padding-left: ${(p) => (p.depth + 1) * 16}px;
   width: 100%;
@@ -51,16 +54,23 @@ const OuterContainer = styled.div<{
   color: ${(p) => (p.isSpecial ? "#f2f2f2" : "#f0f0f0")};
 
   ${(p) =>
+    p.isActive &&
+    `
+    color: white;
+    background: #222;
+    `}
+
+  ${(p) =>
     p.disabled
       ? `
-          color: #aaa;
-          cursor: default;
-        `
+      color: #aaa;
+      cursor: default;
+      `
       : `
-          :hover {
+      cursor: pointer;
+      :hover {
             color: white;
             background: #222;
-            cursor: pointer;
           }
         `}
 `

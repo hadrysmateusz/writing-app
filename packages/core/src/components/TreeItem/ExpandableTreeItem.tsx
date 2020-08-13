@@ -35,6 +35,7 @@ export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemPr
   children,
   isExpanded,
   isSpecial,
+  isActive,
   setIsExpanded,
   onBeforeExpand,
   onClick,
@@ -109,7 +110,7 @@ export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemPr
   return (
     // TODO: check if the context menu listener shouldn't be placed on the tree item instead
     <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
-      <TreeItem depth={depth} isSpecial={isSpecial}>
+      <TreeItem depth={depth} isSpecial={isSpecial} isActive={isActive}>
         <InnerContainer>
           {isCaretShown && (
             <CaretContainer onClick={handleToggleClick} isExpanded={isExpanded}>

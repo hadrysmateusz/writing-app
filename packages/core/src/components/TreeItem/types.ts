@@ -9,6 +9,7 @@ export type CoreTreeItemProps = {
   icon?: string
   depth?: number
   disabled?: boolean
+  isActive?: boolean
   /**
    * Means that the item should get special rendering to make it stand out
    */
