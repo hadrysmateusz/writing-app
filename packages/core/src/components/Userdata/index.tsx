@@ -3,8 +3,11 @@ import createContext from "../../utils/createContext"
 import { UserSettings, useDatabase, UserdataDoc } from "../Database"
 import { useCurrentUser } from "../Auth"
 
-export type UserdataState = {
-  // settings: UserSettings
+export type UserdataState = UserSettings & {
+  updateSetting: <K extends keyof UserSettings>(
+    key: K,
+    value: UserSettings[K]
+  ) => Promise<UserdataDoc>
 }
 
 export const [useUserdata, _, UserdataContext] = createContext<UserdataState>()
