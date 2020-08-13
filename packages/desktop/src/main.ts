@@ -15,7 +15,7 @@ export enum FileFormats {
 }
 
 // TODO: move to shared location
-export enum SavingStatus {
+export enum DialogStatus {
   SUCCESS = "success",
   ERROR = "error",
   CANCELED = "canceled",
@@ -91,7 +91,7 @@ ipcMain.handle(
       format: FileFormats
       name: string | undefined
     }
-  ): Promise<{ status: SavingStatus; error: string | null }> => {
+  ): Promise<{ status: DialogStatus; error: string | null }> => {
     // TODO: make sure the event can be trusted
 
     const { content, format, name } = payload
@@ -107,6 +107,7 @@ ipcMain.handle(
     } catch (error) {
       // TODO: better error handling
       console.log(error)
+      throw error
     }
 
     if (typeof name === "string" && name.trim() !== "") {
@@ -115,16 +116,17 @@ ipcMain.handle(
 
     const filter = filters[format]
 
+    // TODO: investigate if I should use the browserWindow argument to make the dialog modal
     const file = await dialog.showSaveDialog({
       title: "Export", // TODO: a better title
       defaultPath,
       buttonLabel: "Export",
       filters: [filter],
-      properties: [],
+      properties: ["showOverwriteConfirmation"],
     })
 
     if (file.canceled) {
-      return { status: SavingStatus.CANCELED, error: null }
+      return { status: DialogStatus.CANCELED, error: null }
     }
 
     // filePath is always string if the dialog wasn't cancelled
@@ -133,12 +135,62 @@ ipcMain.handle(
     try {
       fs.writeFile(filePath, content)
       shell.showItemInFolder(filePath) // TODO: make this optional
-      return { status: SavingStatus.SUCCESS, error: null }
+      return { status: DialogStatus.SUCCESS, error: null }
     } catch (error) {
       console.log(error)
-      return { status: SavingStatus.ERROR, error }
+      return { status: DialogStatus.ERROR, error }
     }
   }
 )
+
+ipcMain.handle("read-file", async (_event, payload) => {
+  const { format } = payload
+
+  // TODO: better default path
+  // TODO: save the last used path for later
+  let defaultPath = path.join(os.homedir())
+
+  try {
+    await fs.ensureDir(defaultPath)
+  } catch (error) {
+    // TODO: better error handling
+    console.log(error)
+    throw error
+  }
+
+  const filter = filters[format]
+
+  // TODO: investigate if I should use the browserWindow argument to make the dialog modal
+  const dialogRes = await dialog.showOpenDialog({
+    title: "Import",
+    defaultPath,
+    buttonLabel: "Import",
+    filters: [filter],
+    properties: ["openFile", "multiSelections"],
+  })
+
+  // TODO: consider making canceled and empty separate statuses
+  if (dialogRes.canceled || dialogRes.filePaths.length === 0) {
+    return { status: DialogStatus.CANCELED, error: null, data: null }
+  }
+
+  const files = []
+
+  for (const filePath of dialogRes.filePaths) {
+    try {
+      // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
+      const data = fs.readFileSync(filePath, { encoding: "utf-8" })
+      files.push(data)
+    } catch (error) {
+      return {
+        status: DialogStatus.ERROR,
+        error: "An error ocurred reading the file :" + error.message,
+        data: null,
+      }
+    }
+  }
+
+  return { status: DialogStatus.SUCCESS, error: null, data: files }
+})
 
 export {}

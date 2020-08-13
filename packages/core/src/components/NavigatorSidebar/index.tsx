@@ -14,6 +14,7 @@ import DocumentTreeItem from "../DocumentTreeItem"
 import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { useModal } from "../Modal"
 import { AccountModalContent } from "../AccountModal"
+import { ImportModalContent } from "../Importer"
 
 export const NavigatorSidebar: React.FC<{}> = () => {
   const { groups, favorites } = useMainState()
@@ -26,9 +27,18 @@ export const NavigatorSidebar: React.FC<{}> = () => {
     close: closeAccountModal,
     Modal: AccountModal,
   } = useModal(false)
+  const {
+    open: openImportModal,
+    close: closeImportModal,
+    Modal: ImportModal,
+  } = useModal(false)
 
   // map the flat groups list to a tree structure
   const groupsTree = useMemo(() => createGroupTree(groups), [groups])
+
+  const handleImport = () => {
+    openImportModal()
+  }
 
   const handleNewDocument = () => {
     createDocument(null)
@@ -102,7 +112,7 @@ export const NavigatorSidebar: React.FC<{}> = () => {
           Trash
         </TreeItem>
 
-        <TreeItem icon="import" onClick={() => alert("todo")} depth={0}>
+        <TreeItem icon="import" onClick={handleImport} depth={0}>
           Import
         </TreeItem>
       </SectionContainer>
@@ -117,6 +127,10 @@ export const NavigatorSidebar: React.FC<{}> = () => {
           </ContextMenuItem>
         </ContextMenu>
       )}
+
+      <ImportModal>
+        <ImportModalContent close={closeImportModal} />
+      </ImportModal>
 
       <AccountModal>
         <AccountModalContent close={closeAccountModal} />
