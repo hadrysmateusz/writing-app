@@ -40,43 +40,28 @@ export const NavigatorSidebar: React.FC<{}> = () => {
 
   return (
     <OuterContainer onContextMenu={openMenu}>
-      <SectionHeader>Library</SectionHeader>
+      {/* <SectionHeader>Library</SectionHeader> */}
+      <SectionContainer>
+        <TreeItem
+          icon="cloud"
+          onClick={() => primarySidebar.switchView(VIEWS.ALL)}
+          depth={0}
+        >
+          All Documents
+        </TreeItem>
 
-      <TreeItem
-        icon="cloud"
-        onClick={() => primarySidebar.switchView(VIEWS.ALL)}
-        depth={1}
-        isSpecial
-      >
-        All Documents
-      </TreeItem>
+        <TreeItem
+          icon="inbox"
+          onClick={() => primarySidebar.switchView(VIEWS.INBOX)}
+          depth={0}
+        >
+          Inbox
+        </TreeItem>
 
-      <TreeItem
-        icon="inbox"
-        onClick={() => primarySidebar.switchView(VIEWS.INBOX)}
-        depth={1}
-        isSpecial
-      >
-        Inbox
-      </TreeItem>
-
-      <TreeItem
-        icon="trash"
-        onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
-        depth={1}
-        isSpecial
-      >
-        Trash
-      </TreeItem>
-
-      <TreeItem
-        icon="user"
-        onClick={() => openAccountModal()}
-        depth={1}
-        isSpecial
-      >
-        Your Account
-      </TreeItem>
+        <TreeItem icon="settings" onClick={() => openAccountModal()} depth={0}>
+          Settings
+        </TreeItem>
+      </SectionContainer>
 
       {favorites.length > 0 && (
         <>
@@ -98,6 +83,25 @@ export const NavigatorSidebar: React.FC<{}> = () => {
       {groupsTree.map((group) => (
         <GroupTreeItem key={group.id} group={group} depth={1} />
       ))}
+
+      {/* TODO: a nicer, smaller plus icon */}
+      <TreeItem icon="plus" onClick={handleNewGroup} depth={1}>
+        Add Collection
+      </TreeItem>
+
+      <SectionContainer>
+        <TreeItem
+          icon="trash"
+          onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
+          depth={0}
+        >
+          Trash
+        </TreeItem>
+
+        <TreeItem icon="import" onClick={() => alert("todo")} depth={0}>
+          Import
+        </TreeItem>
+      </SectionContainer>
 
       {isMenuOpen && (
         <ContextMenu>
@@ -149,6 +153,10 @@ export const NavigatorSidebar: React.FC<{}> = () => {
 //   }, [findDocuments])
 // }
 
+const SectionContainer = styled.div`
+  padding: 20px 0;
+`
+
 const OuterContainer = styled.div`
   font-size: 12px;
   border-right: 1px solid;
@@ -165,7 +173,8 @@ const SectionHeader = styled.div`
   color: #a3a3a3;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  padding: 16px 20px 5px;
+  /* padding: 16px 20px 5px; */
+  padding: 0 20px 5px;
 
   user-select: none;
 `

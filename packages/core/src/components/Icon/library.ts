@@ -9,7 +9,6 @@ import {
   FaImage,
   FaListOl,
   FaListUl,
-  FaPlus,
   FaStar,
   FaRegStar,
   FaEllipsisV,
@@ -22,14 +21,17 @@ import {
   AiFillFolderOpen,
   AiFillFolder,
   AiOutlineFolder,
+  // AiOutlineDownload,
 } from "react-icons/ai"
-import { IoMdTrash } from "react-icons/io"
+import { IoMdTrash, IoMdSettings } from "react-icons/io"
 import {
   BsCaretRightFill,
   BsCaretDownFill,
   BsLayoutSidebar,
   BsLayoutSidebarReverse,
 } from "react-icons/bs"
+
+import { FiDownload, FiPlus } from "react-icons/fi"
 
 // First-Party icons
 import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
@@ -63,7 +65,7 @@ const iconLibrary = {
   [ListType.UL_LIST]: FaListUl,
   [HeadingType.H1]: Heading1,
   [HeadingType.H2]: Heading2,
-  plus: FaPlus,
+  plus: FiPlus,
   cloud: AiFillCloud,
   caretRight: BsCaretRightFill,
   caretDown: BsCaretDownFill,
@@ -79,6 +81,8 @@ const iconLibrary = {
   inbox: FaInbox,
   user: FaUser,
   spinner: FaSpinner,
+  settings: IoMdSettings,
+  import: FiDownload,
 }
 
 export default iconLibrary
