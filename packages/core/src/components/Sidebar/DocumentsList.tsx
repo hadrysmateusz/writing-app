@@ -196,7 +196,7 @@ export const TrashDocumentsList: React.FC = () => {
 
   // TODO: better state handling
   return !documents || isLoading ? null : (
-    <DocumentsList title="Trash" documents={documents} />
+    <DocumentsList title="Trash" documents={documents} flat />
   )
 }
 
