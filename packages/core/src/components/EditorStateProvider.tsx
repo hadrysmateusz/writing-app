@@ -23,7 +23,7 @@ export const useEditorState = () => {
   )
 }
 
-export const defaultEditorValue = [
+export const defaultEditorValue: Node[] = [
   { type: "paragraph", children: [{ text: "" }] },
 ]
 

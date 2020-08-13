@@ -5,6 +5,7 @@ import {
   GroupDoc,
 } from "../Database"
 import { RxDocument, RxQuery } from "rxdb"
+import { Node } from "slate"
 
 // Documents
 
@@ -38,7 +39,10 @@ export type UpdateDocumentFn = (
 
 export type CreateDocumentFn = (
   parentGroup: string | null,
-  values?: Partial<GroupDoc>,
+  values?: {
+    title?: string
+    content?: Node[]
+  },
   options?: {
     switchTo?: boolean
   }

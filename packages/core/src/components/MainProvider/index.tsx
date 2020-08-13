@@ -383,24 +383,25 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
    * Handles creating a new document
    */
   const createDocument: CreateDocumentFn = useCallback(
-    async (parentGroup: string | null, values, options = {}) => {
+    async (parentGroup, values = {}, options = {}) => {
       const { switchTo = true } = options
+      const { title = "", content = defaultEditorValue } = values
 
       // TODO: consider using null value for content for empty documents
 
       const timestamp = Date.now()
       const docId = uuidv4()
+      const serializedContent = JSON.stringify(content)
 
       const newDocument = await db.documents.insert({
         id: docId,
-        title: "",
-        content: JSON.stringify(defaultEditorValue),
+        title,
+        content: serializedContent,
         parentGroup: parentGroup,
         createdAt: timestamp,
         modifiedAt: timestamp,
         isFavorite: false,
         isDeleted: false,
-        ...values,
       })
 
       if (switchTo) {
