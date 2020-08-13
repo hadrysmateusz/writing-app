@@ -10,7 +10,7 @@ import { useDocumentContextMenu } from "../DocumentContextMenu"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
 import { getGroupName } from "../../helpers/getGroupName"
 
-const SNIPPET_LENGTH = 130
+const SNIPPET_LENGTH = 340
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
