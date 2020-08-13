@@ -1,5 +1,5 @@
 import React from "react"
-import styled from "styled-components/macro"
+import styled, { css } from "styled-components/macro"
 import Icon from "../Icon"
 import { StaticTreeItemProps } from "./types"
 
@@ -7,6 +7,7 @@ export const TreeItem: React.FC<StaticTreeItemProps> = ({
   icon,
   depth = 0,
   children,
+  disabled = false,
   isSpecial = false,
   onClick,
   onContextMenu,
@@ -15,6 +16,7 @@ export const TreeItem: React.FC<StaticTreeItemProps> = ({
   return (
     <OuterContainer
       depth={depth}
+      disabled={disabled}
       onClick={onClick}
       onContextMenu={onContextMenu}
       {...rest}
@@ -38,22 +40,34 @@ const MidContainer = styled.div`
   width: calc(100% - 20px); /* to respect right-side padding */
 `
 
-const OuterContainer = styled.div<{ depth: number }>`
+const OuterContainer = styled.div<{
+  depth: number
+  disabled?: boolean
+  isSpecial?: boolean
+}>`
   padding-left: ${(p) => (p.depth + 1) * 16}px;
   width: 100%;
-  :hover {
-    color: white;
-    background: #222;
-  }
-
-  cursor: pointer;
   user-select: none;
+  color: ${(p) => (p.isSpecial ? "#f2f2f2" : "#f0f0f0")};
+
+  ${(p) =>
+    p.disabled
+      ? `
+          color: #aaa;
+          cursor: default;
+        `
+      : `
+          :hover {
+            color: white;
+            background: #222;
+            cursor: pointer;
+          }
+        `}
 `
 
 const InnerContainer = styled.div<{ isSpecial: boolean }>`
   font-family: "Segoe UI"; /* TODO: create global font-stacks */
   font-size: 12px;
-  color: ${(p) => (p.isSpecial ? "#f2f2f2" : "#f0f0f0")};
   font-weight: ${(p) => (p.isSpecial ? "bold" : "normal")};
   text-rendering: optimizeLegibility;
   letter-spacing: 0.02em;

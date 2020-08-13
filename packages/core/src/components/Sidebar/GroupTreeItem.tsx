@@ -25,7 +25,7 @@ const GroupTreeItem: React.FC<{
   const { primarySidebar } = useViewState()
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isEmpty, setIsEmpty] = useState(false)
+  const [isEmpty, setIsEmpty] = useState(true)
 
   const updateIsEmpty = useCallback((documents) => {
     setIsEmpty(documents.length === 0)

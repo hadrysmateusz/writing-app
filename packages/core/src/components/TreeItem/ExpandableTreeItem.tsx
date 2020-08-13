@@ -28,7 +28,7 @@ export const ExpandableTreeItem: React.FC<StatefulExpandableTreeItemProps> = ({
 
 export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemProps> = ({
   icon,
-  hideToggleWhenEmpty = true,
+  hideToggleWhenEmpty = false,
   depth = 0,
   childNodes,
   children,
@@ -103,6 +103,7 @@ export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemPr
   }, [hideToggleWhenEmpty, isEmpty])
 
   // TODO: save the toggled state between restarts (this will probably require making this component controlled)
+  const isRoot = depth === 0
 
   return (
     // TODO: check if the context menu listener shouldn't be placed on the tree item instead
@@ -115,7 +116,7 @@ export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemPr
             </CaretContainer>
           )}
           {icon && (
-            <IconContainer isRoot={depth === 0}>
+            <IconContainer isRoot={isRoot}>
               <Icon icon={icon} />
             </IconContainer>
           )}
@@ -123,20 +124,27 @@ export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemPr
         </InnerContainer>
       </TreeItem>
 
-      {isExpanded && !isEmpty && (
-        <DetailsContainer>{childrenWithProps}</DetailsContainer>
-      )}
+      {isExpanded ? (
+        isEmpty ? (
+          <TreeItem depth={depth + 1} disabled>
+            No Nested Collections
+          </TreeItem>
+        ) : (
+          <DetailsContainer>{childrenWithProps}</DetailsContainer>
+        )
+      ) : null}
     </OuterContainer>
   )
 }
 
 const OuterContainer = styled.div``
 
-const IconContainer = styled.div<{ isRoot: boolean }>`
+const IconContainer = styled.div<{ isRoot: boolean; isHidden?: boolean }>`
   margin-right: 8px;
   margin-bottom: -4px; /* to help align the icon with the text */
   color: ${(p) => (p.isRoot ? "#858585" : "#5D5D5D")};
   font-size: 1.4em;
+  ${(p) => p.isHidden === true && `opacity: 0;`}
 `
 
 const CaretContainer = styled.div<{ isExpanded: boolean }>`

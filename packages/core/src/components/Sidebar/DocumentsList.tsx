@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useMemo } from "react"
 import styled from "styled-components/macro"
 
 import SidebarDocumentItem from "./SidebarDocumentItem"
@@ -14,6 +14,8 @@ import { formatOptional } from "../../utils"
 import { useViewState } from "../View/ViewStateProvider"
 import { VIEWS } from "./types"
 import { useDocumentsAPI } from "../MainProvider"
+import { getGroupName } from "../../helpers/getGroupName"
+import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 
 /**
  * Base presentational component
@@ -25,17 +27,73 @@ export const DocumentsList: React.FC<{
   title: string
   documents: DocumentDoc[]
   group?: GroupTreeBranch
-}> = ({ title, documents, group }) => {
+  flat?: boolean
+}> = ({ title, documents, group, flat = false }) => {
+  const { rootDocs, groups } = useMemo(() => {
+    if (flat) {
+      return { rootDocs: documents, groups: [] }
+    }
+
+    const rootDocs: DocumentDoc[] = []
+    const groups: { [key: string]: DocumentDoc[] } = {}
+    documents.forEach((doc) => {
+      if (doc.parentGroup === null || doc.parentGroup === group?.id) {
+        rootDocs.push(doc)
+        return
+      }
+      if (!(doc.parentGroup in groups)) {
+        groups[doc.parentGroup] = []
+      }
+      groups[doc.parentGroup].push(doc)
+    })
+
+    return { rootDocs, groups }
+  }, [documents, flat, group])
+
   return (
     <>
-      <SectionHeader>
+      <SectionHeader groupId={group ? group.id : undefined}>
         <span>{" " + title}</span>
+      </SectionHeader>
+      {rootDocs.length === 0 ? (
+        <Empty>Empty</Empty>
+      ) : (
+        rootDocs.map((document) => (
+          <SidebarDocumentItem
+            key={document.id}
+            document={document}
+            group={group}
+          />
+        ))
+      )}
+      {Object.entries(groups).map(([key, val]) => {
+        return <DocumentsSubList groupId={key} documents={val} key={key} />
+      })}
+    </>
+  )
+}
+
+const DocumentsSubList: React.FC<{
+  groupId: string
+  documents: DocumentDoc[]
+}> = ({ groupId, documents }) => {
+  const { groups } = useMainState()
+
+  const groupName = useMemo(() => getGroupName(groupId, groups), [
+    groupId,
+    groups,
+  ])
+
+  return (
+    <>
+      <SectionHeader groupId={groupId}>
+        <span>{" " + groupName}</span>
       </SectionHeader>
       {documents.map((document) => (
         <SidebarDocumentItem
           key={document.id}
           document={document}
-          group={group}
+          group={groupId}
         />
       ))}
     </>
@@ -49,7 +107,7 @@ export const AllDocumentsList: React.FC<{}> = () => {
   // TODO: probably should replace with a paged query to the database
   const { documents } = useMainState()
 
-  return <DocumentsList title="All Documents" documents={documents} />
+  return <DocumentsList title="All Documents" documents={documents} flat />
 }
 
 /**
@@ -226,7 +284,57 @@ export const DocumentsGroupList: React.FC<{
   )
 }
 
-const SectionHeader = styled.div`
+const SectionHeader: React.FC<{ groupId?: string }> = ({
+  children,
+  groupId,
+}) => {
+  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+
+  const { createDocument } = useDocumentsAPI()
+
+  const handleNewDocument = () => {
+    if (groupId !== undefined) {
+      createDocument(groupId)
+    }
+    closeMenu()
+  }
+
+  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    if (groupId === undefined) return
+    openMenu(e)
+  }
+
+  return (
+    <>
+      <SectionHeaderContainer onContextMenu={handleContextMenu}>
+        {children}
+      </SectionHeaderContainer>
+      {isMenuOpen && (
+        <ContextMenu>
+          <ContextMenuItem onClick={handleNewDocument}>
+            New Document
+          </ContextMenuItem>
+        </ContextMenu>
+      )}
+    </>
+  )
+}
+
+const Empty = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: #aaa;
+  user-select: none;
+  font-size: 11px;
+  font-weight: 500;
+  :not(:last-child) {
+    border-bottom: 1px solid;
+    border-color: #383838;
+  }
+`
+
+const SectionHeaderContainer = styled.div`
   font-family: Poppins;
   font-weight: bold;
   font-size: 10px;
@@ -238,4 +346,5 @@ const SectionHeader = styled.div`
   border-bottom: 1px solid;
   border-color: #383838;
   color: #a3a3a3;
+  background: #1c1c1c;
 `

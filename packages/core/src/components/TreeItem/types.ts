@@ -8,6 +8,7 @@ export type ExpandableChildrenRenderProps = {
 export type CoreTreeItemProps = {
   icon?: string
   depth?: number
+  disabled?: boolean
   /**
    * Means that the item should get special rendering to make it stand out
    */

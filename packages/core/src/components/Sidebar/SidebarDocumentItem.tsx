@@ -14,7 +14,7 @@ const SNIPPET_LENGTH = 130
 
 const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
-  group?: GroupTreeBranch
+  group?: GroupTreeBranch | string
 }> = ({ document, group }) => {
   const {
     openMenu,
@@ -25,7 +25,13 @@ const SidebarDocumentItem: React.FC<{
   const { groups, currentDocument, switchDocument } = useMainState()
 
   // TODO: optimize this
-  const isInCurrentGroup = group ? document.parentGroup === group.id : false
+  const isInCurrentGroup = useMemo(() => {
+    if (typeof group === "string") {
+      return document.parentGroup === group
+    } else {
+      return group ? document.parentGroup === group.id : false
+    }
+  }, [document.parentGroup, group])
 
   const isCurrent = useMemo(() => {
     // TODO: something doesn't work here
