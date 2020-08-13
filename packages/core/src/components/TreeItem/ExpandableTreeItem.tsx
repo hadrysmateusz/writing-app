@@ -8,6 +8,7 @@ import {
   StatefulExpandableTreeItemProps,
   ExpandableChildrenRenderProps,
 } from "./types"
+import Ellipsis from "../Ellipsis"
 
 // TODO: unify the static and expandable tree items and infer the type based on the presence and length of the childNodes prop
 
@@ -127,7 +128,7 @@ export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemPr
       {isExpanded ? (
         isEmpty ? (
           <TreeItem depth={depth + 1} disabled>
-            No Nested Collections
+            <Ellipsis>No Nested Collections</Ellipsis>
           </TreeItem>
         ) : (
           <DetailsContainer>{childrenWithProps}</DetailsContainer>
