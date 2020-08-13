@@ -17,14 +17,11 @@ export const GroupDisplay: React.FC = () => {
   const { moveDocumentToGroup } = useDocumentsAPI()
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
 
-  const parentGroupId = useMemo(() => {
-    return currentDocument === null ? null : currentDocument.parentGroup
-  }, [currentDocument])
-
-  const groupName = useMemo(() => getGroupName(parentGroupId, groups), [
-    parentGroupId,
-    groups,
-  ])
+  // TODO: when you change the document's group using the context menu on this component, the group name doesn't get updated
+  const groupName = useMemo(() => {
+    const groupId = currentDocument?.parentGroup ?? null
+    return getGroupName(groupId, groups)
+  }, [currentDocument, groups])
 
   return (
     <>
