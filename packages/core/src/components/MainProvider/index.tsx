@@ -52,6 +52,8 @@ export const [
   MainStateContext,
 ] = createContext<MainState>()
 
+const CURRENT_EDITOR_STORAGE_KEY = "currentEditorId"
+
 export const MainProvider: React.FC<{}> = ({ children }) => {
   const db = useDatabase()
   const editor = useEditor()
@@ -67,7 +69,9 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   const [groups, setGroups] = useState<GroupDoc[]>([])
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
-  const [currentEditor, setCurrentEditor] = useState<string | null>(null)
+  const [currentEditor, setCurrentEditor] = useState<string | null>(() => {
+    return localStorage.getItem(CURRENT_EDITOR_STORAGE_KEY)
+  })
   const [currentDocument, setCurrentDocument] = useState<DocumentDoc | null>(
     null
   )
@@ -98,6 +102,11 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
    */
   const switchDocument: SwitchDocumentFn = useCallback((id: string | null) => {
     setCurrentEditor(id)
+    if (typeof id === "string") {
+      localStorage.setItem(CURRENT_EDITOR_STORAGE_KEY, id)
+    } else {
+      localStorage.removeItem(CURRENT_EDITOR_STORAGE_KEY)
+    }
   }, [])
 
   /**
@@ -132,7 +141,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
           favoritesPromise,
         ])
 
-        if (newDocuments && newDocuments[0]) {
+        if (newDocuments && newDocuments[0] && currentEditor === null) {
           switchDocument(newDocuments[0].id)
         }
 
@@ -172,6 +181,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
       }
     }
   }, [
+    currentEditor,
     db.documents,
     db.groups,
     isInitialLoad,
