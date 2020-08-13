@@ -35,7 +35,9 @@ export const ImportModalContent: React.FC<{
 
   const importFile = useCallback(
     async (format: "html" | "md" /* TODO: replace with FileFormats enum */) => {
-      const deserializer = { md: deserializeMarkdown }[format]
+      const deserializer = { md: deserializeMarkdown }[format] as (
+        content: string
+      ) => Node[]
 
       const result = await window.ipcRenderer.invoke("read-file", {
         format: format,
@@ -47,14 +49,19 @@ export const ImportModalContent: React.FC<{
       }
 
       if (result.status === "success") {
-        const files = result.data as string[]
+        const files = result.data as { fileName: string; content: string }[]
 
-        const parsed = files.map<Node[]>((rawContent) =>
-          deserializer(rawContent)
-        )
+        const parsed = files.map((file) => {
+          const { fileName, content } = file
+          return {
+            title: fileName,
+            content: deserializer(content),
+          }
+        })
 
-        parsed.forEach((content) => {
-          createDocument(null, { content }, { switchTo: false })
+        parsed.forEach(({ title, content }) => {
+          // If I switch to using the first heading as title, then inferring the title might not be necessary (although if there is no first heading then I should probably use the file name)
+          createDocument(null, { title, content }, { switchTo: false })
         })
       }
 

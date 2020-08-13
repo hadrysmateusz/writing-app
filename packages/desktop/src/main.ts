@@ -179,8 +179,9 @@ ipcMain.handle("read-file", async (_event, payload) => {
   for (const filePath of dialogRes.filePaths) {
     try {
       // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
-      const data = fs.readFileSync(filePath, { encoding: "utf-8" })
-      files.push(data)
+      const content = fs.readFileSync(filePath, { encoding: "utf-8" })
+      const fileName = path.basename(filePath, path.extname(filePath))
+      files.push({ fileName, content })
     } catch (error) {
       return {
         status: DialogStatus.ERROR,
