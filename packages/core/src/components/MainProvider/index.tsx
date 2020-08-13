@@ -490,6 +490,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
 
       try {
         await original.remove()
+        switchDocument(null)
         return true
       } catch (error) {
         // TODO: return this and create a system to show when something like this fails
@@ -497,7 +498,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
         return false
       }
     },
-    [findDocumentById]
+    [findDocumentById, switchDocument]
   )
 
   /**
