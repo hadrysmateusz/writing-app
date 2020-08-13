@@ -31,6 +31,7 @@ import useEditorContextMenu from "./useEditorContextMenu"
 import { Toolbar } from "../Toolbar"
 import { ListContextProvider } from "../../slate-plugins"
 import { ListItemContextProvider } from "../../slate-plugins/elements/list/ListItemContext"
+import { useUserdata } from "../Userdata"
 
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
@@ -43,6 +44,7 @@ const EditorComponent: React.FC<{
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
   const editor = useEditor()
   const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
+  const { isSpellCheckEnabled } = useUserdata()
 
   // TODO: check if this is still needed
   const fixSelection = () => {
@@ -258,6 +260,8 @@ const EditorComponent: React.FC<{
     setTitle(newValue)
   }
 
+  console.log("isSpellCheckEnabled", isSpellCheckEnabled)
+
   return (
     <OutermostContainer>
       {currentDocument.isDeleted && (
@@ -266,7 +270,7 @@ const EditorComponent: React.FC<{
       <OuterContainer>
         <InnerContainer>
           {/* <HoveringToolbar /> */}
-          <Toolbar />
+          {/* <Toolbar /> */}
           <StyledNamingInput
             ref={titleRef}
             value={title}
@@ -284,7 +288,7 @@ const EditorComponent: React.FC<{
                   plugins={plugins}
                   placeholder="Start writing"
                   onKeyDown={[handleSaveDocument, handleFixSelection]}
-                  spellCheck={true}
+                  spellCheck={isSpellCheckEnabled}
                 />
                 <InsertBlockField onMouseDown={handleInsertEmptyBlock} />
 
