@@ -25,15 +25,34 @@ export const useViewState = () => {
   )
 }
 
+// TODO: save open state of sidebars
+// const NAVIGATOR_SIDEBAR_IS_OPEN_KEY = "NAVIGATOR_SIDEBAR_IS_OPEN"
+// const PRIMARY_SIDEBAR_IS_OPEN_KEY = "PRIMARY_SIDEBAR_IS_OPEN"
+// const SECONDARY_SIDEBAR_IS_OPEN_KEY = "SECONDARY_SIDEBAR_IS_OPEN"
+
+const PRIMARY_SIDEBAR_CURRENT_VIEW_KEY = "PRIMARY_SIDEBAR_CURRENT_VIEW"
+const SECONDARY_SIDEBAR_CURRENT_VIEW_KEY = "SECONDARY_SIDEBAR_CURRENT_VIEW"
+
+const PRIMARY_SIDEBAR_DEFAULT_VIEW = VIEWS.ALL
+const SECONDARY_SIDEBAR_DEFAULT_VIEW = SECONDARY_VIEWS.SNIPPETS
+
 const usePrimarySidebar = (initialState: boolean) => {
   const primarySidebar = useToggleable(initialState)
-
   // TODO: consider moving this state up and generalizing it
   // TODO: store the currentView state between restarts
-  const [currentView, setCurrentView] = useState<string>(VIEWS.ALL)
+  const [currentView, setCurrentView] = useState<string>(() => {
+    return (
+      localStorage.getItem(PRIMARY_SIDEBAR_CURRENT_VIEW_KEY) ??
+      PRIMARY_SIDEBAR_DEFAULT_VIEW
+    )
+  })
 
   const switchView: SwitchViewFn = (view) => {
-    setCurrentView(view || VIEWS.ALL)
+    const newView = view || PRIMARY_SIDEBAR_DEFAULT_VIEW
+
+    setCurrentView(newView)
+    localStorage.setItem(PRIMARY_SIDEBAR_CURRENT_VIEW_KEY, newView)
+
     if (!primarySidebar.isOpen) {
       primarySidebar.open()
     }
@@ -51,12 +70,19 @@ const useSecondarySidebar = (initialState: boolean) => {
 
   // TODO: consider moving this state up and generalizing it
   // TODO: store the currentView state between restarts
-  const [currentView, setCurrentView] = useState<string>(
-    SECONDARY_VIEWS.SNIPPETS
-  )
+  const [currentView, setCurrentView] = useState<string>(() => {
+    return (
+      localStorage.getItem(SECONDARY_SIDEBAR_CURRENT_VIEW_KEY) ??
+      SECONDARY_SIDEBAR_DEFAULT_VIEW
+    )
+  })
 
   const switchView: SwitchViewFn = (view) => {
-    setCurrentView(view || SECONDARY_VIEWS.SNIPPETS)
+    const newView = view || SECONDARY_SIDEBAR_DEFAULT_VIEW
+
+    setCurrentView(newView)
+    localStorage.setItem(SECONDARY_SIDEBAR_CURRENT_VIEW_KEY, newView)
+
     if (!secondarySidebar.isOpen) {
       secondarySidebar.open()
     }
