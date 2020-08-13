@@ -63,31 +63,35 @@ export const NavigatorSidebar: React.FC<{}> = () => {
         </TreeItem>
       </SectionContainer>
 
-      {favorites.length > 0 && (
-        <>
-          <SectionHeader>Favorites</SectionHeader>
+      <SectionContainer>
+        {favorites.length > 0 && (
+          <>
+            <SectionHeader>Favorites</SectionHeader>
 
-          {favorites.map((document) => (
-            <DocumentTreeItem
-              key={document.id}
-              depth={1}
-              document={document}
-              icon="starFilled"
-            />
-          ))}
-        </>
-      )}
+            {favorites.map((document) => (
+              <DocumentTreeItem
+                key={document.id}
+                depth={0}
+                document={document}
+                icon="starFilled"
+              />
+            ))}
+          </>
+        )}
+      </SectionContainer>
 
-      <SectionHeader>Collections</SectionHeader>
+      <SectionContainer>
+        <SectionHeader>Collections</SectionHeader>
 
-      {groupsTree.map((group) => (
-        <GroupTreeItem key={group.id} group={group} depth={1} />
-      ))}
+        {groupsTree.map((group) => (
+          <GroupTreeItem key={group.id} group={group} depth={1} />
+        ))}
 
-      {/* TODO: a nicer, smaller plus icon */}
-      <TreeItem icon="plus" onClick={handleNewGroup} depth={1}>
-        Add Collection
-      </TreeItem>
+        {/* TODO: a nicer, smaller plus icon */}
+        <TreeItem icon="plus" onClick={handleNewGroup} depth={1}>
+          Add Collection
+        </TreeItem>
+      </SectionContainer>
 
       <SectionContainer>
         <TreeItem
@@ -154,7 +158,7 @@ export const NavigatorSidebar: React.FC<{}> = () => {
 // }
 
 const SectionContainer = styled.div`
-  padding: 20px 0;
+  padding-top: 20px;
 `
 
 const OuterContainer = styled.div`
