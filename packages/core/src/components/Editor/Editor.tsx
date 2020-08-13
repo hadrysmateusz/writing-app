@@ -260,8 +260,6 @@ const EditorComponent: React.FC<{
     setTitle(newValue)
   }
 
-  console.log("isSpellCheckEnabled", isSpellCheckEnabled)
-
   return (
     <OutermostContainer>
       {currentDocument.isDeleted && (
