@@ -9,7 +9,7 @@ import {
   FaImage,
   FaListOl,
   FaListUl,
-  FaStar,
+  // FaStar,
   FaRegStar,
   FaEllipsisV,
   FaInbox,
@@ -32,6 +32,8 @@ import {
 } from "react-icons/bs"
 
 import { FiDownload, FiPlus } from "react-icons/fi"
+
+import { MdStar } from "react-icons/md"
 
 // First-Party icons
 import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
@@ -69,7 +71,7 @@ const iconLibrary = {
   cloud: AiFillCloud,
   caretRight: BsCaretRightFill,
   caretDown: BsCaretDownFill,
-  starFilled: FaStar,
+  starFilled: MdStar,
   starOutline: FaRegStar,
   sidebarLeft: BsLayoutSidebar,
   sidebarRight: BsLayoutSidebarReverse,
