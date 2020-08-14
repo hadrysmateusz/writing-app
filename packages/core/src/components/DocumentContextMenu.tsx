@@ -23,6 +23,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     moveDocumentToGroup,
     toggleDocumentFavorite,
     restoreDocument,
+    permanentlyRemoveDocument,
   } = useDocumentsAPI()
 
   const { startRenaming, getProps: getEditableProps } = useEditableText(
@@ -44,6 +45,10 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   const handleRestoreDocument = useCallback(() => {
     restoreDocument(document.id)
   }, [document.id, restoreDocument])
+
+  const handlePermanentlyRemoveDocument = useCallback(() => {
+    permanentlyRemoveDocument(document.id)
+  }, [document.id, permanentlyRemoveDocument])
 
   const handleRenameDocument = useCallback(() => {
     closeMenu()
@@ -74,37 +79,54 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   const DocumentContextMenu: React.FC<{}> = () => {
     return (
       <ContextMenu>
-        <ContextMenuItem onClick={handleRenameDocument}>Rename</ContextMenuItem>
-        <ContextMenuItem
-          onClick={handleToggleDocumentFavorite}
-          disabled={isLoadingFavorite}
-        >
-          {document.isFavorite ? "Remove from favorites" : "Add to favorites"}
-        </ContextMenuItem>
-        {document.isDeleted ? (
-          <ContextMenuItem onClick={handleRestoreDocument}>
-            Restore
-          </ContextMenuItem>
-        ) : (
-          <ContextMenuItem onClick={handleRemoveDocument}>
-            Delete
-          </ContextMenuItem>
-        )}
-        <ContextMenuSeparator />
-        <ContextSubmenu text="Move to">
-          {groups.map((group) => (
-            <ContextMenuItem
-              key={group.id}
-              onClick={() => moveToGroup(group.id)}
-            >
-              {formatOptional(group.name, "Unnamed Collection")}
+        {!document.isDeleted ? (
+          <>
+            <ContextMenuItem onClick={handleRenameDocument}>
+              Rename
             </ContextMenuItem>
-          ))}
-        </ContextSubmenu>
-        <ContextMenuSeparator />
-        <ContextMeta>
-          <span>Last edited</span> {modifiedAt}
-        </ContextMeta>
+            <ContextMenuItem
+              onClick={handleToggleDocumentFavorite}
+              disabled={isLoadingFavorite}
+            >
+              {document.isFavorite
+                ? "Remove from favorites"
+                : "Add to favorites"}
+            </ContextMenuItem>
+            <ContextMenuItem onClick={handleRemoveDocument}>
+              Delete
+            </ContextMenuItem>
+
+            <ContextMenuSeparator />
+            <ContextSubmenu text="Move to">
+              {groups.map((group) => (
+                <ContextMenuItem
+                  key={group.id}
+                  onClick={() => moveToGroup(group.id)}
+                >
+                  {formatOptional(group.name, "Unnamed Collection")}
+                </ContextMenuItem>
+              ))}
+            </ContextSubmenu>
+            <ContextMenuSeparator />
+            <ContextMeta>
+              <span>Last edited</span> {modifiedAt}
+            </ContextMeta>
+          </>
+        ) : (
+          <>
+            <ContextMenuItem onClick={handleRestoreDocument}>
+              Restore
+            </ContextMenuItem>
+            <ContextMenuItem onClick={handlePermanentlyRemoveDocument}>
+              Delete permanently
+            </ContextMenuItem>
+
+            <ContextMenuSeparator />
+            <ContextMeta>
+              <span>Last edited</span> {modifiedAt}
+            </ContextMeta>
+          </>
+        )}
       </ContextMenu>
     )
   }
