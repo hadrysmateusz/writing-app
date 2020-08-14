@@ -52,7 +52,6 @@ export const NavigatorSidebar: React.FC<{}> = () => {
 
   return (
     <OuterContainer onContextMenu={openMenu}>
-      {/* <SectionHeader>Library</SectionHeader> */}
       <SectionContainer>
         <TreeItem
           icon="cloud"
@@ -195,7 +194,7 @@ const SectionHeader = styled.div`
   letter-spacing: 0.02em;
   text-transform: uppercase;
   /* padding: 16px 20px 5px; */
-  padding: 0 20px 5px;
+  padding: 0 18px 5px;
 
   user-select: none;
 `
