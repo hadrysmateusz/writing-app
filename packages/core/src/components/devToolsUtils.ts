@@ -27,6 +27,7 @@ export const useLogEditor = (editor: Editor) => {
     const logEditor = () => {
       console.dir(cloneDeep(editor))
     }
+    // TODO: this is potentially a memory leak (fix the handler remover)
     addDevToolsEventHandler("logEditor", logEditor)
     // TODO: this is removed temporarily due to some issues
     // return removeDevToolsEventHandler("logEditor", logEditor)
