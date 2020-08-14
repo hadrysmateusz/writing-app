@@ -78,9 +78,8 @@ const writeCollection = (value: Collection) => {
   localStorage.setItem("collection", JSON.stringify(value))
 }
 
-const rank = new Lexorank()
-
 const insertAfter = (id: number) => {
+  const rank = new Lexorank()
   const col = readCollection()
   const sorted = getSorted(col)
 
@@ -99,7 +98,15 @@ const insertAfter = (id: number) => {
   writeCollection(newCol)
 }
 
-insertAfter(2)
+// insertAfter(2)
 
 console.log(readCollection())
 console.log(getSorted(readCollection()))
+
+export {}
+
+// console.log(rank.MIN_CHAR, rank.MAX_CHAR)
+
+// for (let i = rank.MIN_CHAR; i <= rank.MAX_CHAR; i++) {
+//   console.log(String.fromCharCode(i))
+// }
