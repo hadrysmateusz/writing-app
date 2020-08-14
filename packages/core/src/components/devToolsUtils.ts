@@ -1,20 +1,16 @@
 import { useEffect } from "react"
 import { cloneDeep } from "lodash"
-import pretty from "pretty"
 
-import { parseToMarkdown, serializeHTML } from "./../slate-helpers"
+import { parseToMarkdown } from "./../slate-helpers"
 
 import {
   config,
   addDevToolsEventHandler,
   // removeDevToolsEventHandler,
 } from "@writing-tool/core"
-import { useSlate } from "slate-react"
 import { Editor, Node } from "slate"
-import { serializeText } from "../slate-helpers/serialize/text"
 
 export const useLogValue = (value: Node[]) => {
-  const editor = useSlate()
   useEffect(() => {
     if (config.logValue) {
       console.clear()
@@ -22,12 +18,8 @@ export const useLogValue = (value: Node[]) => {
       console.log(JSON.stringify(value, null, 2))
       console.log("MARKDOWN")
       console.dir(value.map((node) => parseToMarkdown(node)).join("\n"))
-      console.log("HTML")
-      console.log(pretty(serializeHTML(editor)))
-      console.log("TEXT")
-      console.log(serializeText(editor.children))
     }
-  }, [editor, value])
+  }, [value])
 }
 
 export const useLogEditor = (editor: Editor) => {
