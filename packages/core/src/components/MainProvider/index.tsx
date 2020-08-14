@@ -7,6 +7,8 @@ import { deserialize, serialize } from "../Editor/serialization"
 import { useDatabase, DocumentDoc, GroupDoc } from "../Database"
 import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
 import { useViewState } from "../View"
+import { useModal } from "../Modal"
+import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
 
 import { listenForIpcEvent } from "../../utils"
 import createContext from "../../utils/createContext"
@@ -75,9 +77,11 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   const [currentDocument, setCurrentDocument] = useState<DocumentDoc | null>(
     null
   )
-  const [isInitialLoad, setIsInitialLoad] = useState(() => {
-    return true
-  }) // Flag to manage whether this is the first time documents are loaded
+  // Flag to manage whether this is the first time documents are loaded
+  const [isInitialLoad, setIsInitialLoad] = useState(() => true)
+  const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<{
+    documentId: string
+  }>(false)
 
   const updateDocumentsList = useCallback((documents: DocumentDoc[]) => {
     try {
@@ -488,27 +492,12 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
 
   /**
    * Permanently removes a document
-   *
-   * TODO: switch to another document or empty state after deleting
    */
   const permanentlyRemoveDocument: PermanentlyRemoveDocumentFn = useCallback(
-    async (documentId: string) => {
-      const original = await findDocumentById(documentId, true)
-      if (original === null) {
-        throw new Error(`no document found matching this id (${documentId})`)
-      }
-
-      try {
-        await original.remove()
-        switchDocument(null)
-        return true
-      } catch (error) {
-        // TODO: return this and create a system to show when something like this fails
-        console.warn("The document was not removed")
-        return false
-      }
+    (documentId: string) => {
+      openConfirmDeleteModal({ documentId })
     },
-    [findDocumentById, switchDocument]
+    [openConfirmDeleteModal]
   )
 
   /**
@@ -587,12 +576,6 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     return null
   }, [editorValue, isModified, setIsModified, updateCurrentDocument])
 
-  // TODO: figure out a replacement for the old newDocument function that also switches to it, or just expose this function
-  const createNewDocument = useCallback(async () => {
-    const newDocument = await createDocument(null)
-    switchDocument(newDocument.id)
-  }, [createDocument, switchDocument])
-
   // TODO: figure out a way to reduce duplication of these queries
   useEffect(() => {
     const fn = async () => {
@@ -614,9 +597,9 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
         window.getSelection()?.removeAllRanges()
         // Create the new document
         // TODO: maybe infer the collection somehow from the current document or something else
-        createNewDocument()
+        createDocument(null)
       }),
-    [createNewDocument]
+    [createDocument]
   )
 
   return (
@@ -653,6 +636,9 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
             createGroup,
           }}
         >
+          <ConfirmDeleteModal>
+            <ConfirmDeleteModalContent />
+          </ConfirmDeleteModal>
           {children}
         </GroupsAPIProvider>
       </DocumentsAPIProvider>

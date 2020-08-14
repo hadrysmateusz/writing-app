@@ -6,6 +6,7 @@ import {
 } from "../Database"
 import { RxDocument, RxQuery } from "rxdb"
 import { Node } from "slate"
+import { Toggleable } from "../../hooks"
 
 // Documents
 
@@ -55,9 +56,7 @@ export type RenameDocumentFn = (
 
 export type RemoveDocumentFn = (documentId: string) => Promise<boolean>
 
-export type PermanentlyRemoveDocumentFn = (
-  documentId: string
-) => Promise<boolean>
+export type PermanentlyRemoveDocumentFn = (documentId: string) => void
 
 export type RestoreDocumentFn = (documentId: string) => Promise<DocumentDoc>
 
@@ -123,3 +122,10 @@ export type UpdateCurrentDocumentFn = (
 export type SaveDocumentFn = () => Promise<DocumentDocType | null>
 
 export type SwitchDocumentFn = (documentId: string | null) => void
+
+// Other
+
+export type ConfirmDeleteModalContext = {
+  close: Toggleable["close"]
+  props: { documentId: string }
+}
