@@ -1,19 +1,8 @@
 import React from "react"
-import styled, { keyframes } from "styled-components/macro"
+import styled from "styled-components/macro"
 import Icon from "../Icon"
 import { StaticTreeItemProps } from "./types"
-import { UnstyledButton } from "../Button"
-import { useDocumentsAPI } from "../MainProvider"
-
-const fadein = keyframes`
-from {
-  opacity: 0;
-}
-
-to {
-  opacity: 1;;
-}
-`
+import { TreeItem_AddDocumentButton } from "./AddButton"
 
 export const TreeItem: React.FC<StaticTreeItemProps> = ({
   icon,
@@ -47,50 +36,6 @@ export const TreeItem: React.FC<StaticTreeItemProps> = ({
   )
 }
 
-export const TreeItem_AddDocumentButton = "TreeItem_AddDocumentButton"
-
-export const AddButton: React.FC<{ tooltip?: string; groupId: string }> = ({
-  // TODO: create custom tooltips that better match the style of the app
-  tooltip = "Add a document inside",
-  groupId,
-}) => {
-  const { createDocument } = useDocumentsAPI()
-
-  const handleClick = () => {
-    createDocument(groupId)
-  }
-
-  return (
-    <AddButtonComponent title={tooltip} onClick={handleClick}>
-      <Icon icon="plus" />
-    </AddButtonComponent>
-  )
-}
-
-const AddButtonComponent = styled(UnstyledButton).attrs({
-  className: "TreeItem_AddDocumentButton",
-})`
-  color: #707070;
-  border: 1px solid #4d4d4d;
-  border-radius: 3px;
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  margin-bottom: -2px;
-  margin-left: 3px;
-  align-items: center;
-  justify-content: center;
-  display: none;
-
-  transition: background 200ms ease;
-  animation: 200ms ease-out both ${fadein};
-
-  :hover {
-    color: #838383;
-    background: #343434;
-  }
-`
-
 const MidContainer = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -110,7 +55,6 @@ const OuterContainer = styled.div<{
   color: ${(p) => (p.isSpecial ? "#f2f2f2" : "#f0f0f0")};
 
   &:hover .${TreeItem_AddDocumentButton} {
-    // opacity: 1;
     display: flex;
   }
 
@@ -130,10 +74,10 @@ const OuterContainer = styled.div<{
       : `
       cursor: pointer;
       :hover {
-            color: white;
-            background: #222;
-          }
-        `}
+        color: white;
+        background: #222;
+      }
+    `}
 `
 
 const InnerContainer = styled.div<{ isSpecial: boolean }>`
