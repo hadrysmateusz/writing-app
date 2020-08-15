@@ -181,9 +181,6 @@ const InnerContainer = styled.div`
   width: 100%;
 `
 
-const DetailsContainer = styled.div`
-  margin-top: 2px;
-  margin-bottom: 8px; /* bottom is intentionally larger than top */
-`
+const DetailsContainer = styled.div``
 
 export default ExpandableTreeItem
