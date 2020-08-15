@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react"
+import React, { useState, useRef, useCallback, useLayoutEffect } from "react"
 import styled, { css } from "styled-components/macro"
 import usePortal from "react-useportal"
 
@@ -6,6 +6,7 @@ import { useOnClickOutside } from "../hooks/useOnClickOutside"
 import { BsCaretRightFill } from "react-icons/bs"
 import { ToggleableHooks } from "../hooks"
 
+// TODO: prevent submenus from going-offscreen. Probably by positioning them with js like regular menus. Prevent the main menu from being closed when a submenu is open.
 // TODO: look into replacing some of the code and types with the useToggleable logic - probably will require removing the react-useportal dependency first to have full control over the portal state
 // TODO: use ellipsis to hide overflow without hiding submenus (possible solutions include: portals, wrapper component for the static text)
 export const useContextMenu = ({
@@ -17,18 +18,19 @@ export const useContextMenu = ({
   // TODO: capture focus inside the context menu and restore it when it closes
   // TODO: maybe - replace the usePortal hook for more control (try using a single designated root DOM node instead of creating millions of empty divs)
   const { openPortal, closePortal, isOpen, Portal } = usePortal()
-  const containerRef = useRef<any>()
-  const [x, setX] = useState(0)
-  const [y, setY] = useState(0)
+  const containerRef = useRef<HTMLDivElement>()
+  const [eventX, setEventX] = useState(0)
+  const [eventY, setEventY] = useState(0)
 
   const openMenu = useCallback(
     (event: React.MouseEvent) => {
-      // TODO: make sure the context menu doesn't go outside the window
       onBeforeOpen && onBeforeOpen()
 
-      setX(event.pageX)
-      setY(event.pageY)
+      setEventX(event.pageX)
+      setEventY(event.pageY)
+
       openPortal(event)
+
       onAfterOpen && onAfterOpen()
     },
     [onAfterOpen, onBeforeOpen, openPortal]
@@ -36,7 +38,13 @@ export const useContextMenu = ({
 
   const closeMenu = () => {
     onBeforeClose && onBeforeClose()
+
     closePortal()
+
+    // Reset the coordinates
+    setEventX(0)
+    setEventY(0)
+
     onAfterClose && onAfterClose()
   }
 
@@ -55,9 +63,43 @@ export const useContextMenu = ({
    * TODO: this component should take a prop that would set the value for react context that all contextmenuitem children should have access to
    */
   const ContextMenu: React.FC<{}> = ({ children }) => {
+    const [x, setX] = useState(eventX)
+    const [y, setY] = useState(eventY)
+
     useOnClickOutside(containerRef, () => {
       closeMenu()
     })
+
+    useLayoutEffect(() => {
+      if (x !== eventX || y !== eventY) {
+        console.log("already adjusted")
+        return
+      }
+
+      const menuEl = containerRef?.current
+
+      if (menuEl === undefined) {
+        console.log("element unavailable")
+        return
+      }
+
+      const rect = menuEl.getBoundingClientRect()
+
+      const menuWidth = Math.ceil(rect.width)
+      const menuHeight = Math.ceil(rect.height)
+
+      const rightMenuEdge = x + menuWidth
+      const bottomMenuEdge = y + menuHeight
+
+      if (bottomMenuEdge > window.innerHeight) {
+        setY((y) => y - menuHeight)
+      }
+
+      if (rightMenuEdge > window.innerWidth) {
+        setX((x) => x - menuWidth)
+      }
+    }, [x, y])
+
     return (
       <Portal>
         <MenuContainer
@@ -148,7 +190,11 @@ const menuContainerCommon = css`
   min-width: 150px;
 `
 
-const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
+const MenuContainer = styled.div<{
+  xPos: number
+  yPos: number
+  inverse: boolean
+}>`
   /* Base function styles */
   position: absolute;
   top: ${(p) => p.yPos}px;
