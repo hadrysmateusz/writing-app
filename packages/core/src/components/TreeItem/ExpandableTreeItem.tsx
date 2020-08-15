@@ -161,16 +161,16 @@ const IconContainer = styled.div<{ isRoot: boolean; isHidden?: boolean }>`
 `
 
 const CaretContainer = styled.div<{ isExpanded: boolean }>`
-  /* margin-right: 2px; */
-  margin-left: -3px;
-  padding: 5px;
-  padding-bottom: 0;
+  padding: 8px;
   position: absolute;
-  left: -15px;
+  top: -3px;
+  left: -23px;
+
   font-size: 0.85em;
-  border-radius: 2px;
   color: #454545;
-  /* TODO: animate and improve this */
+
+  transition: transform 100ms ease-out;
+  transform-origin: center;
   ${(p) => p.isExpanded && "transform: rotate(90deg)"}
 `
 
