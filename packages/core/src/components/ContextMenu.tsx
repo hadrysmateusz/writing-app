@@ -153,6 +153,7 @@ const MenuContainer = styled.div<{ xPos: number; yPos: number }>`
   position: absolute;
   top: ${(p) => p.yPos}px;
   left: ${(p) => p.xPos}px;
+  z-index: 3000;
   /* Visual styles */
   ${menuContainerCommon}
 `
@@ -185,7 +186,7 @@ export const SubmenuLabel = styled.div`
 export const SubmenuContainer = styled.div`
   /* Base styles */
   position: absolute;
-  right: calc(-100% - 2px); /* -2px to account for borders */
+  left: 100%;
   top: -7px; /* based on the padding of the the container and border width*/
   max-height: 322px;
   overflow-y: auto;
