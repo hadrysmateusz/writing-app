@@ -1,10 +1,24 @@
-import styled from "styled-components/macro"
+import styled, { css } from "styled-components/macro"
 
-const Heading = styled.div`
+const Heading = styled.div<{ isEmpty: boolean }>`
   font-weight: bold;
   font-family: "Poppins";
   letter-spacing: 0.01em;
   position: relative;
+  ${(p) =>
+    p.isEmpty &&
+    css`
+      :before {
+        color: #727475;
+        user-select: none;
+        pointer-events: none;
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        content: attr(data-placeholder);
+      }
+    `}
 `
 
 export const Heading1 = styled(Heading)`
