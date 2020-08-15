@@ -1,4 +1,10 @@
-import React, { useState, useRef, useCallback, useLayoutEffect } from "react"
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useLayoutEffect,
+  useEffect,
+} from "react"
 import styled, { css } from "styled-components/macro"
 import usePortal from "react-useportal"
 
@@ -6,6 +12,7 @@ import { useOnClickOutside } from "../hooks/useOnClickOutside"
 import { BsCaretRightFill } from "react-icons/bs"
 import { ToggleableHooks } from "../hooks"
 
+// TODO: unify how context menus are opened, because some are opened on mousedown and some on click, which leads to very different behaviors, especially when opening a menu with another already open
 // TODO: prevent submenus from going-offscreen. Probably by positioning them with js like regular menus. Prevent the main menu from being closed when a submenu is open.
 // TODO: look into replacing some of the code and types with the useToggleable logic - probably will require removing the react-useportal dependency first to have full control over the portal state
 // TODO: use ellipsis to hide overflow without hiding submenus (possible solutions include: portals, wrapper component for the static text)
@@ -59,8 +66,6 @@ export const useContextMenu = ({
 
   /**
    * A component returned from the hook that will render the context menu inside a portal at the correct position
-   *
-   * TODO: this component should take a prop that would set the value for react context that all contextmenuitem children should have access to
    */
   const ContextMenu: React.FC<{}> = ({ children }) => {
     const [x, setX] = useState(eventX)
@@ -69,6 +74,14 @@ export const useContextMenu = ({
     useOnClickOutside(containerRef, () => {
       closeMenu()
     })
+
+    useEffect(() => {
+      const listener = () => {
+        closeMenu()
+      }
+      document.addEventListener("wheel", listener, { once: true })
+      return () => document.removeEventListener("wheel", listener)
+    }, [])
 
     useLayoutEffect(() => {
       if (x !== eventX || y !== eventY) {
