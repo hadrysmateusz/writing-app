@@ -1,7 +1,11 @@
 import React, { useMemo, useCallback, useState, useEffect } from "react"
 import styled from "styled-components/macro"
 
-import { StatelessExpandableTreeItem } from "../TreeItem"
+import {
+  StatelessExpandableTreeItem,
+  TreeItem_AddDocumentButton,
+  AddButton,
+} from "../TreeItem"
 import {
   useContextMenu,
   ContextMenuItem,
@@ -14,6 +18,8 @@ import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { formatOptional } from "../../utils"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
 import { Subscription } from "rxjs"
+import Icon from "../Icon"
+import { UnstyledButton } from "../Button"
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
@@ -145,12 +151,12 @@ const GroupTreeItem: React.FC<{
         isExpanded={isExpanded}
         isActive={primarySidebar.currentView === group.id}
         setIsExpanded={setIsExpanded}
-        // TODO: prevent flicker
         icon={
           isExpanded ? "folderOpen" : isEmpty ? "folderEmpty" : "folderClosed"
         }
       >
         <EditableText {...getProps()}>{groupName}</EditableText>
+        <AddButton groupId={group.id} />
       </StatelessExpandableTreeItem>
       {isMenuOpen && (
         <ContextMenu>
@@ -173,6 +179,18 @@ const GroupTreeItem: React.FC<{
 }
 
 export default GroupTreeItem
+
+// const InnerContainer = styled.div`
+//   &:hover .${TreeItem_AddDocumentButton} {
+//     opacity: 1;
+//   }
+//   display: flex;
+//   align-items: center;
+//   width: 100%;
+//   max-width: 100%;
+//   flex-grow: 1;
+//   flex-shrink: 0;
+// `
 
 const NewGroupContainer = styled.div<{ depth: number }>`
   padding-left: ${(p) => (p.depth + 1) * 16}px;

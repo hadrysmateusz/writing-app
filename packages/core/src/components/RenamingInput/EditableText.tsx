@@ -131,6 +131,8 @@ const Container = styled.div`
   white-space: pre-wrap;
   word-break: break-word;
   width: 100%;
+  min-width: 0;
+  flex-shrink: 1;
 `
 
 const Static = styled.div`

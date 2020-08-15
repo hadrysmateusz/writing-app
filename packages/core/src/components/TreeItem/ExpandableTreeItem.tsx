@@ -122,7 +122,9 @@ export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemPr
               <Icon icon={icon} />
             </IconContainer>
           )}
-          {typeof children === "function" ? children(renderProps) : children}
+          <ChildrenContainer>
+            {typeof children === "function" ? children(renderProps) : children}
+          </ChildrenContainer>
         </InnerContainer>
       </TreeItem>
 
@@ -139,7 +141,16 @@ export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemPr
   )
 }
 
-const OuterContainer = styled.div``
+const OuterContainer = styled.div`
+  width: 100%;
+`
+
+const ChildrenContainer = styled.div`
+  width: 100%;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+`
 
 const IconContainer = styled.div<{ isRoot: boolean; isHidden?: boolean }>`
   margin-right: 8px;
@@ -167,6 +178,7 @@ const InnerContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 `
 
 const DetailsContainer = styled.div`
