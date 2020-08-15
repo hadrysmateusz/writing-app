@@ -13,8 +13,3 @@ export interface ModalRenderProps<ModalProps> {
     props: ({ close: () => void } & ModalProps) | { close: () => void }
   ) => ReactNode
 }
-
-interface Document {
-  createElement(tagName: string): HTMLElement
-  createElement(tagName: "canvas"): HTMLCanvasElement
-}
