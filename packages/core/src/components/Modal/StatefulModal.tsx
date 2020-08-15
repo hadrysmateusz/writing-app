@@ -1,45 +1,10 @@
-import React, {
-  useMemo,
-  useCallback,
-  useState,
-  FunctionComponent,
-  // useContext,
-} from "react"
+import React, { useMemo, useCallback, useState, FunctionComponent } from "react"
 
 import Modal from "./Modal"
-import { useToggleable, ToggleableHooks, Toggleable } from "../../hooks"
-import createContext from "../../utils/createContext"
+import { useToggleable, ToggleableHooks } from "../../hooks"
+import { UseModalReturn, OpenModalFn, ModalRenderProps } from "./types"
 
-// TODO: Consider adding a context provider to the returned modal, which passes all of the toggleable props to the modal contents, and things passed into the open function
 // TODO: Consider making modals and context menus centralized with the root component not having to be added to the tree manually from the hook and only using some kind of hook to manage its state
-
-interface ModalContext {
-  close: Toggleable["close"]
-  [key: string]: any
-}
-
-const [useModalContext, _, ModalContext] = createContext<ModalContext>()
-
-// TODO: create a custom useModalContext hook to allow providing the ModalProps type
-// const ModalContext = React.createContext<ModalContext | undefined>(undefined)
-
-// function useModalContext<ModalProps>() {
-//   const c = useContext(ModalContext)
-//   if (!c)
-//     throw new Error(
-//       "This context can't be accessed outside a Provider with a value"
-//     )
-//   return c
-// }
-
-type OpenModalFn<ModalProps> = (props?: ModalProps) => void
-
-type UseModalReturn<ModalProps> = Omit<Toggleable, "open"> & {
-  open: OpenModalFn<ModalProps>
-  Modal: FunctionComponent
-}
-
-// TODO: using render props and passing might make exposing proper types to the modal content easier and more reliable
 
 export function useModal<ModalProps>(
   initialState: boolean,
@@ -72,16 +37,20 @@ export function useModal<ModalProps>(
     [closeModal, isOpen, openModal]
   )
 
-  const StatefulModal: FunctionComponent = useMemo(
-    () => (props) => {
+  const StatefulModal: FunctionComponent<ModalRenderProps<
+    ModalProps
+  >> = useMemo(() => {
+    // TODO: figure out a way to guarantee that the ModalProps will be available in the render method
+    return ({ render, children, ...props }) => {
       return isOpen ? (
-        <ModalContext.Provider value={{ close, props: modalProps }}>
-          <Modal onRequestClose={close} {...props} />
-        </ModalContext.Provider>
+        <Modal onRequestClose={close} {...props}>
+          {render
+            ? render(modalProps ? { close, ...modalProps } : { close })
+            : children}
+        </Modal>
       ) : null
-    },
-    [close, isOpen, modalProps]
-  )
+    }
+  }, [close, isOpen, modalProps])
 
   return {
     close: closeModal,
@@ -91,8 +60,6 @@ export function useModal<ModalProps>(
     Modal: StatefulModal,
   }
 }
-
-export { useModalContext }
 
 // type ChildrenWrapper = (children: React.ReactNode) => JSX.Element | null
 

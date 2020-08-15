@@ -125,7 +125,7 @@ export type SwitchDocumentFn = (documentId: string | null) => void
 
 // Other
 
-export type ConfirmDeleteModalContext = {
+export type ConfirmDeleteModalProps = {
   close: Toggleable["close"]
-  props: { documentId: string }
+  documentId?: string
 }

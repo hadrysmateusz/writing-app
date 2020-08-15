@@ -1,10 +1,9 @@
 import React, { FunctionComponent, useCallback } from "react"
 import styled from "styled-components/macro"
 
-import { useModalContext } from "../Modal"
 import { Button } from "../Button"
 import { useDocumentsAPI, useMainState } from "."
-import { ConfirmDeleteModalContext } from "./types"
+import { ConfirmDeleteModalProps } from "./types"
 
 const ModalContainer = styled.div`
   background: #252525;
@@ -19,8 +18,10 @@ const Container = styled.div`
   margin-bottom: 16px;
 `
 
-export const ConfirmDeleteModalContent: FunctionComponent = () => {
-  const { close, props } = useModalContext() as ConfirmDeleteModalContext
+export const ConfirmDeleteModalContent: FunctionComponent<ConfirmDeleteModalProps> = ({
+  documentId,
+  close,
+}) => {
   const { findDocumentById } = useDocumentsAPI()
   const { switchDocument } = useMainState()
 
@@ -36,16 +37,21 @@ export const ConfirmDeleteModalContent: FunctionComponent = () => {
         switchDocument(null)
       } catch (error) {
         // TODO: better surface this error to the user
-        console.warn("The document was not removed")
+        console.error("The document was not removed")
       }
     },
     [findDocumentById, switchDocument]
   )
 
   const handleConfirm = useCallback(() => {
-    permanentlyRemoveDocument(props.documentId)
+    if (documentId) {
+      permanentlyRemoveDocument(documentId)
+    } else {
+      console.error("Missing documentId")
+      // TODO: better error handling
+    }
     close()
-  }, [close, permanentlyRemoveDocument, props])
+  }, [close, documentId, permanentlyRemoveDocument])
 
   const handleCancel = useCallback(() => {
     close()

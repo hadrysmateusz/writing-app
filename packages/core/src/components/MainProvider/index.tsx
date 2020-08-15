@@ -80,7 +80,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   // Flag to manage whether this is the first time documents are loaded
   const [isInitialLoad, setIsInitialLoad] = useState(() => true)
   const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<{
-    documentId: string
+    documentId?: string
   }>(false)
 
   const updateDocumentsList = useCallback((documents: DocumentDoc[]) => {
@@ -636,9 +636,9 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
             createGroup,
           }}
         >
-          <ConfirmDeleteModal>
-            <ConfirmDeleteModalContent />
-          </ConfirmDeleteModal>
+          <ConfirmDeleteModal
+            render={(props) => <ConfirmDeleteModalContent {...props} />}
+          />
           {children}
         </GroupsAPIProvider>
       </DocumentsAPIProvider>
