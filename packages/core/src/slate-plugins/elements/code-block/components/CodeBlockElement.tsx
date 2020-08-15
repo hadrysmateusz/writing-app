@@ -23,14 +23,13 @@ export const CodeBlockElement = ({
   children,
   element,
 }: RenderElementProps) => {
-  // TODO: when inside a code block handle line breaks like soft-breaks because otherwise it creates a separate block for every line
-
+  // If there are issues with slate, try merging the pre and code html elements and use css to replicate their behavior
   return (
-    <StyledPre>
+    <>
       <Toolbar nodeRef={attributes.ref} slateNode={element} />
-      <code {...attributes} data-slate-type={CODE_BLOCK}>
-        {children}
-      </code>
-    </StyledPre>
+      <StyledPre {...attributes} data-slate-type={CODE_BLOCK}>
+        <code>{children}</code>
+      </StyledPre>
+    </>
   )
 }
