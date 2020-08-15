@@ -4,7 +4,7 @@ import styled from "styled-components/macro"
 // TODO: move common components out of the sidebar direcotory
 import GroupTreeItem from "../Sidebar/GroupTreeItem"
 import { VIEWS } from "../Sidebar/types"
-import { TreeItem } from "../TreeItem"
+import { TreeItem, AddButton } from "../TreeItem"
 import { useMainState } from "../MainProvider"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
 import { useViewState } from "../View/ViewStateProvider"
@@ -59,7 +59,8 @@ export const NavigatorSidebar: React.FC<{}> = () => {
           depth={0}
           isActive={currentView === VIEWS.ALL}
         >
-          All Documents
+          <div style={{ width: "100%" }}>All Documents</div>
+          <AddButton groupId={null} />
         </TreeItem>
 
         <TreeItem
@@ -67,7 +68,8 @@ export const NavigatorSidebar: React.FC<{}> = () => {
           onClick={() => primarySidebar.switchView(VIEWS.INBOX)}
           depth={0}
         >
-          Inbox
+          <div style={{ width: "100%" }}>Inbox</div>
+          <AddButton groupId={null} />
         </TreeItem>
 
         <TreeItem icon="settings" onClick={() => openAccountModal()} depth={0}>

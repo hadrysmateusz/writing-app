@@ -1,11 +1,7 @@
 import React, { useMemo, useCallback, useState, useEffect } from "react"
 import styled from "styled-components/macro"
 
-import {
-  StatelessExpandableTreeItem,
-  TreeItem_AddDocumentButton,
-  AddButton,
-} from "../TreeItem"
+import { StatelessExpandableTreeItem, AddButton } from "../TreeItem"
 import {
   useContextMenu,
   ContextMenuItem,
@@ -18,8 +14,6 @@ import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { formatOptional } from "../../utils"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
 import { Subscription } from "rxjs"
-import Icon from "../Icon"
-import { UnstyledButton } from "../Button"
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch

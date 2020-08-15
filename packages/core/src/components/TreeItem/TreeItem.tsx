@@ -88,9 +88,12 @@ const InnerContainer = styled.div<{ isSpecial: boolean }>`
   text-rendering: optimizeLegibility;
   letter-spacing: 0.02em;
   padding: 4px 0 6px;
+
   min-width: 0;
-  flex-shrink: 1;
   width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
 `
 
 const IconContainer = styled.div<{ isSpecial: boolean }>`

@@ -16,7 +16,10 @@ const fadein = keyframes`
 
 export const TreeItem_AddDocumentButton = "TreeItem_AddDocumentButton"
 
-export const AddButton: React.FC<{ tooltip?: string; groupId: string }> = ({
+export const AddButton: React.FC<{
+  tooltip?: string
+  groupId: string | null
+}> = ({
   // TODO: create custom tooltips that better match the style of the app
   tooltip = "Add a document inside",
   groupId,
