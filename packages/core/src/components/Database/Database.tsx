@@ -163,6 +163,11 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
         await Promise.all(groups.map((doc) => doc.remove()))
       }, false)
 
+      // Update the modifiedAt field on every update
+      db.documents.preSave(async (data, doc) => {
+        data.modifiedAt = Date.now()
+      }, false)
+
       // sync
       if (config.dbSync) {
         // TODO: check if sync returns a promise to be resolved
