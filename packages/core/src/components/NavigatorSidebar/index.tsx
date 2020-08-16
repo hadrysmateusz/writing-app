@@ -1,5 +1,6 @@
 import React, { useMemo } from "react"
 import styled from "styled-components/macro"
+import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd"
 
 // TODO: move common components out of the sidebar direcotory
 import GroupTreeItem from "../Sidebar/GroupTreeItem"
@@ -15,6 +16,7 @@ import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { useModal } from "../Modal"
 import { AccountModalContent } from "../AccountModal"
 import { ImportModalContent } from "../Importer"
+import { Droppable } from "react-beautiful-dnd"
 
 export const NavigatorSidebar: React.FC = React.memo(() => {
   const { createDocument } = useDocumentsAPI()
@@ -163,6 +165,20 @@ const Collections: React.FC = React.memo(() => {
   const handleNewGroup = () => {
     createGroup(null)
   }
+  const onDragEnd: OnDragEndResponder = (result) => {
+    const { destination, source, draggableId } = result
+
+    if (!destination) {
+      return
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return
+    }
+  }
 
   // map the flat groups list to a tree structure
   const groupsTree = useMemo(() => createGroupTree(groups), [groups])
@@ -171,9 +187,23 @@ const Collections: React.FC = React.memo(() => {
     <SectionContainer>
       <SectionHeader>Collections</SectionHeader>
 
-      {groupsTree.map((group) => (
-        <GroupTreeItem key={group.id} group={group} depth={1} />
-      ))}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId={"collection_root"}>
+          {({ innerRef, droppableProps, placeholder }) => (
+            <GroupList ref={innerRef} {...droppableProps}>
+              {groupsTree.map((group, index) => (
+                <GroupTreeItem
+                  key={group.id}
+                  group={group}
+                  depth={1}
+                  index={index}
+                />
+              ))}
+              {placeholder}
+            </GroupList>
+          )}
+        </Droppable>
+      </DragDropContext>
 
       {/* TODO: a nicer, smaller plus icon */}
       <TreeItem icon="plus" onClick={handleNewGroup} depth={1}>
@@ -182,6 +212,36 @@ const Collections: React.FC = React.memo(() => {
     </SectionContainer>
   )
 })
+
+const GroupList = styled.div``
+
+const InnerContainer = styled.div``
+
+const SectionContainer = styled.div`
+  padding-top: 20px;
+`
+
+const OuterContainer = styled.div`
+  font-size: 12px;
+  border-right: 1px solid;
+  border-color: #383838;
+  background-color: #171717;
+  height: 100vh;
+  width: 100%;
+`
+
+const SectionHeader = styled.div`
+  font-family: Poppins;
+  font-weight: bold;
+  font-size: 10px;
+  color: #a3a3a3;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  /* padding: 16px 20px 5px; */
+  padding: 0 18px 5px;
+
+  user-select: none;
+`
 
 // TODO: work in progress useSubscription hook
 // function useSubscription<RxDocumentType, RxQueryResult>(collection: string, queryFactory: any): RxQueryResult {
@@ -214,31 +274,3 @@ const Collections: React.FC = React.memo(() => {
 //     }
 //   }, [findDocuments])
 // }
-
-const InnerContainer = styled.div``
-
-const SectionContainer = styled.div`
-  padding-top: 20px;
-`
-
-const OuterContainer = styled.div`
-  font-size: 12px;
-  border-right: 1px solid;
-  border-color: #383838;
-  background-color: #171717;
-  height: 100vh;
-  width: 100%;
-`
-
-const SectionHeader = styled.div`
-  font-family: Poppins;
-  font-weight: bold;
-  font-size: 10px;
-  color: #a3a3a3;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  /* padding: 16px 20px 5px; */
-  padding: 0 18px 5px;
-
-  user-select: none;
-`

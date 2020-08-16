@@ -1,4 +1,10 @@
-import React, { useState, isValidElement, cloneElement, useMemo } from "react"
+import React, {
+  useState,
+  isValidElement,
+  cloneElement,
+  useMemo,
+  FC,
+} from "react"
 import styled from "styled-components/macro"
 import { TreeItem } from "./TreeItem"
 import Icon from "../Icon"
@@ -12,7 +18,7 @@ import Ellipsis from "../Ellipsis"
 
 // TODO: unify the static and expandable tree items and infer the type based on the presence and length of the childNodes prop
 
-export const ExpandableTreeItem: React.FC<StatefulExpandableTreeItemProps> = ({
+export const ExpandableTreeItem: FC<StatefulExpandableTreeItemProps> = ({
   startExpanded = false,
   ...props
 }) => {
@@ -27,20 +33,24 @@ export const ExpandableTreeItem: React.FC<StatefulExpandableTreeItemProps> = ({
   )
 }
 
-export const StatelessExpandableTreeItem: React.FC<StatelessExpandableTreeItemProps> = ({
-  icon,
-  hideToggleWhenEmpty = false,
-  depth = 0,
-  childNodes,
-  children,
-  isExpanded,
-  isSpecial,
-  isActive,
-  setIsExpanded,
-  onBeforeExpand,
-  onClick,
-  onContextMenu,
-}) => {
+export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> = (
+  props
+) => {
+  const {
+    icon,
+    hideToggleWhenEmpty = false,
+    depth = 0,
+    childNodes,
+    children,
+    isExpanded,
+    isSpecial,
+    isActive,
+    setIsExpanded,
+    onBeforeExpand,
+    onClick,
+    onContextMenu,
+  } = props
+
   const isEmpty = childNodes.length === 0
 
   const expand = () => {

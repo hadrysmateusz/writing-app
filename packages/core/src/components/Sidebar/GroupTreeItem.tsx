@@ -14,11 +14,13 @@ import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { formatOptional } from "../../utils"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
 import { Subscription } from "rxjs"
+import { Draggable } from "react-beautiful-dnd"
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
+  index: number
   depth?: number
-}> = ({ group, depth }) => {
+}> = ({ group, depth, index }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const { createDocument, findDocuments } = useDocumentsAPI()
   const { createGroup, renameGroup, removeGroup } = useGroupsAPI()
@@ -116,8 +118,8 @@ const GroupTreeItem: React.FC<{
   }, [closeMenu, startRenaming])
 
   const childNodes = useMemo(() => {
-    const nodes = group.children.map((subgroup) => (
-      <GroupTreeItem key={subgroup.id} group={subgroup} />
+    const nodes = group.children.map((subgroup, index) => (
+      <GroupTreeItem key={subgroup.id} group={subgroup} index={index} />
     ))
 
     if (isCreatingGroup) {
@@ -136,22 +138,38 @@ const GroupTreeItem: React.FC<{
 
   return (
     <>
-      <StatelessExpandableTreeItem
-        key={group.id}
-        depth={depth}
-        onContextMenu={openMenu}
-        onClick={handleClick}
-        childNodes={childNodes}
-        isExpanded={isExpanded}
-        isActive={primarySidebar.currentView === group.id}
-        setIsExpanded={setIsExpanded}
-        icon={
-          isExpanded ? "folderOpen" : isEmpty ? "folderEmpty" : "folderClosed"
-        }
-      >
-        <EditableText {...getProps()}>{groupName}</EditableText>
-        <AddButton groupId={group.id} />
-      </StatelessExpandableTreeItem>
+      <Draggable draggableId={group.id} index={index}>
+        {(provided) => {
+          return (
+            <DraggableWrapper
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              ref={provided.innerRef}
+            >
+              <StatelessExpandableTreeItem
+                key={group.id}
+                depth={depth}
+                onContextMenu={openMenu}
+                onClick={handleClick}
+                childNodes={childNodes}
+                isExpanded={isExpanded}
+                isActive={primarySidebar.currentView === group.id}
+                setIsExpanded={setIsExpanded}
+                icon={
+                  isExpanded
+                    ? "folderOpen"
+                    : isEmpty
+                    ? "folderEmpty"
+                    : "folderClosed"
+                }
+              >
+                <EditableText {...getProps()}>{groupName}</EditableText>
+                <AddButton groupId={group.id} />
+              </StatelessExpandableTreeItem>
+            </DraggableWrapper>
+          )
+        }}
+      </Draggable>
       {isMenuOpen && (
         <ContextMenu>
           <ContextMenuItem onClick={handleRenameDocument}>
@@ -174,17 +192,7 @@ const GroupTreeItem: React.FC<{
 
 export default GroupTreeItem
 
-// const InnerContainer = styled.div`
-//   &:hover .${TreeItem_AddDocumentButton} {
-//     opacity: 1;
-//   }
-//   display: flex;
-//   align-items: center;
-//   width: 100%;
-//   max-width: 100%;
-//   flex-grow: 1;
-//   flex-shrink: 0;
-// `
+const DraggableWrapper = styled.div``
 
 const NewGroupContainer = styled.div<{ depth: number }>`
   padding-left: ${(p) => (p.depth + 1) * 16}px;
