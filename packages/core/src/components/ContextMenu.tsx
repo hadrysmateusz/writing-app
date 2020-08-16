@@ -33,10 +33,15 @@ export const useContextMenu = ({
     (event: React.MouseEvent) => {
       onBeforeOpen && onBeforeOpen()
 
-      setEventX(event.pageX)
-      setEventY(event.pageY)
+      try {
+        setEventX(event.pageX)
+        setEventY(event.pageY)
 
-      openPortal(event)
+        openPortal(event)
+      } catch (error) {
+        console.log(error)
+        // TODO: better handle this - event can sometimes be undefined, which is probably caused by event reuse and might be solved in React 17.0
+      }
 
       onAfterOpen && onAfterOpen()
     },
