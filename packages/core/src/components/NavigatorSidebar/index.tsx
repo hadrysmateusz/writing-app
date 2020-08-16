@@ -16,8 +16,7 @@ import { useModal } from "../Modal"
 import { AccountModalContent } from "../AccountModal"
 import { ImportModalContent } from "../Importer"
 
-export const NavigatorSidebar: React.FC<{}> = () => {
-  const { groups, favorites } = useMainState()
+export const NavigatorSidebar: React.FC = React.memo(() => {
   const { createDocument } = useDocumentsAPI()
   const { createGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
@@ -27,18 +26,6 @@ export const NavigatorSidebar: React.FC<{}> = () => {
     close: closeAccountModal,
     Modal: AccountModal,
   } = useModal(false)
-  const {
-    open: openImportModal,
-    close: closeImportModal,
-    Modal: ImportModal,
-  } = useModal(false)
-
-  // map the flat groups list to a tree structure
-  const groupsTree = useMemo(() => createGroupTree(groups), [groups])
-
-  const handleImport = () => {
-    openImportModal()
-  }
 
   const handleNewDocument = () => {
     createDocument(null)
@@ -88,47 +75,19 @@ export const NavigatorSidebar: React.FC<{}> = () => {
           </TreeItem>
         </SectionContainer>
 
-        <SectionContainer>
-          {favorites.length > 0 && (
-            <>
-              <SectionHeader>Favorites</SectionHeader>
+        <Favorites />
 
-              {favorites.map((document) => (
-                <DocumentTreeItem
-                  key={document.id}
-                  depth={0}
-                  document={document}
-                  icon="starFilled"
-                />
-              ))}
-            </>
-          )}
-        </SectionContainer>
+        <Collections />
 
         <SectionContainer>
-          <SectionHeader>Collections</SectionHeader>
+          <Importer />
 
-          {groupsTree.map((group) => (
-            <GroupTreeItem key={group.id} group={group} depth={1} />
-          ))}
-
-          {/* TODO: a nicer, smaller plus icon */}
-          <TreeItem icon="plus" onClick={handleNewGroup} depth={1}>
-            Add Collection
-          </TreeItem>
-        </SectionContainer>
-
-        <SectionContainer>
           <TreeItem
             icon="trash"
             onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
             depth={0}
           >
             Trash
-          </TreeItem>
-
-          <TreeItem icon="import" onClick={handleImport} depth={0}>
-            Import
           </TreeItem>
         </SectionContainer>
       </InnerContainer>
@@ -144,16 +103,85 @@ export const NavigatorSidebar: React.FC<{}> = () => {
         </ContextMenu>
       )}
 
-      <ImportModal>
-        <ImportModalContent close={closeImportModal} />
-      </ImportModal>
-
       <AccountModal>
         <AccountModalContent close={closeAccountModal} />
       </AccountModal>
     </OuterContainer>
   )
+})
+
+const Importer: React.FC = () => {
+  const {
+    open: openImportModal,
+    close: closeImportModal,
+    Modal: ImportModal,
+  } = useModal(false)
+
+  const handleImport = () => {
+    openImportModal()
+  }
+
+  return (
+    <>
+      <TreeItem icon="import" onClick={handleImport} depth={0}>
+        Import
+      </TreeItem>{" "}
+      <ImportModal>
+        <ImportModalContent close={closeImportModal} />
+      </ImportModal>
+    </>
+  )
 }
+
+const Favorites: React.FC = React.memo(() => {
+  const { favorites } = useMainState()
+
+  return (
+    <SectionContainer>
+      {favorites.length > 0 && (
+        <>
+          <SectionHeader>Favorites</SectionHeader>
+
+          {favorites.map((document) => (
+            <DocumentTreeItem
+              key={document.id}
+              depth={0}
+              document={document}
+              icon="starFilled"
+            />
+          ))}
+        </>
+      )}
+    </SectionContainer>
+  )
+})
+
+const Collections: React.FC = React.memo(() => {
+  const { groups } = useMainState()
+  const { createGroup } = useGroupsAPI()
+
+  const handleNewGroup = () => {
+    createGroup(null)
+  }
+
+  // map the flat groups list to a tree structure
+  const groupsTree = useMemo(() => createGroupTree(groups), [groups])
+
+  return (
+    <SectionContainer>
+      <SectionHeader>Collections</SectionHeader>
+
+      {groupsTree.map((group) => (
+        <GroupTreeItem key={group.id} group={group} depth={1} />
+      ))}
+
+      {/* TODO: a nicer, smaller plus icon */}
+      <TreeItem icon="plus" onClick={handleNewGroup} depth={1}>
+        Add Collection
+      </TreeItem>
+    </SectionContainer>
+  )
+})
 
 // TODO: work in progress useSubscription hook
 // function useSubscription<RxDocumentType, RxQueryResult>(collection: string, queryFactory: any): RxQueryResult {
