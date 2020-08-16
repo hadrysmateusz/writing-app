@@ -48,78 +48,90 @@ export const NavigatorSidebar: React.FC<{}> = () => {
     createGroup(null)
   }
 
+  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      openMenu(event)
+    }
+  }
+
   const { currentView } = primarySidebar
 
   return (
-    <OuterContainer onContextMenu={openMenu}>
-      <SectionContainer>
-        <TreeItem
-          icon="cloud"
-          onClick={() => primarySidebar.switchView(VIEWS.ALL)}
-          depth={0}
-          isActive={currentView === VIEWS.ALL}
-        >
-          <div style={{ width: "100%" }}>All Documents</div>
-          <AddButton groupId={null} />
-        </TreeItem>
+    <OuterContainer onContextMenu={handleContextMenu}>
+      <InnerContainer>
+        <SectionContainer>
+          <TreeItem
+            icon="cloud"
+            onClick={() => primarySidebar.switchView(VIEWS.ALL)}
+            depth={0}
+            isActive={currentView === VIEWS.ALL}
+          >
+            <div style={{ width: "100%" }}>All Documents</div>
+            <AddButton groupId={null} />
+          </TreeItem>
 
-        <TreeItem
-          icon="inbox"
-          onClick={() => primarySidebar.switchView(VIEWS.INBOX)}
-          depth={0}
-        >
-          <div style={{ width: "100%" }}>Inbox</div>
-          <AddButton groupId={null} />
-        </TreeItem>
+          <TreeItem
+            icon="inbox"
+            onClick={() => primarySidebar.switchView(VIEWS.INBOX)}
+            depth={0}
+          >
+            <div style={{ width: "100%" }}>Inbox</div>
+            <AddButton groupId={null} />
+          </TreeItem>
 
-        <TreeItem icon="settings" onClick={() => openAccountModal()} depth={0}>
-          Settings
-        </TreeItem>
-      </SectionContainer>
+          <TreeItem
+            icon="settings"
+            onClick={() => openAccountModal()}
+            depth={0}
+          >
+            Settings
+          </TreeItem>
+        </SectionContainer>
 
-      <SectionContainer>
-        {favorites.length > 0 && (
-          <>
-            <SectionHeader>Favorites</SectionHeader>
+        <SectionContainer>
+          {favorites.length > 0 && (
+            <>
+              <SectionHeader>Favorites</SectionHeader>
 
-            {favorites.map((document) => (
-              <DocumentTreeItem
-                key={document.id}
-                depth={0}
-                document={document}
-                icon="starFilled"
-              />
-            ))}
-          </>
-        )}
-      </SectionContainer>
+              {favorites.map((document) => (
+                <DocumentTreeItem
+                  key={document.id}
+                  depth={0}
+                  document={document}
+                  icon="starFilled"
+                />
+              ))}
+            </>
+          )}
+        </SectionContainer>
 
-      <SectionContainer>
-        <SectionHeader>Collections</SectionHeader>
+        <SectionContainer>
+          <SectionHeader>Collections</SectionHeader>
 
-        {groupsTree.map((group) => (
-          <GroupTreeItem key={group.id} group={group} depth={1} />
-        ))}
+          {groupsTree.map((group) => (
+            <GroupTreeItem key={group.id} group={group} depth={1} />
+          ))}
 
-        {/* TODO: a nicer, smaller plus icon */}
-        <TreeItem icon="plus" onClick={handleNewGroup} depth={1}>
-          Add Collection
-        </TreeItem>
-      </SectionContainer>
+          {/* TODO: a nicer, smaller plus icon */}
+          <TreeItem icon="plus" onClick={handleNewGroup} depth={1}>
+            Add Collection
+          </TreeItem>
+        </SectionContainer>
 
-      <SectionContainer>
-        <TreeItem
-          icon="trash"
-          onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
-          depth={0}
-        >
-          Trash
-        </TreeItem>
+        <SectionContainer>
+          <TreeItem
+            icon="trash"
+            onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
+            depth={0}
+          >
+            Trash
+          </TreeItem>
 
-        <TreeItem icon="import" onClick={handleImport} depth={0}>
-          Import
-        </TreeItem>
-      </SectionContainer>
+          <TreeItem icon="import" onClick={handleImport} depth={0}>
+            Import
+          </TreeItem>
+        </SectionContainer>
+      </InnerContainer>
 
       {isMenuOpen && (
         <ContextMenu>
@@ -174,6 +186,8 @@ export const NavigatorSidebar: React.FC<{}> = () => {
 //     }
 //   }, [findDocuments])
 // }
+
+const InnerContainer = styled.div``
 
 const SectionContainer = styled.div`
   padding-top: 20px;
