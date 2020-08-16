@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react"
 import createContext from "../../utils/createContext"
 import { UserSettings, useDatabase, UserdataDoc } from "../Database"
 import { useCurrentUser } from "../Auth"
+import defaultUserdata from "./default"
 
 export type UserdataState = UserSettings & {
   updateSetting: <K extends keyof UserSettings>(
@@ -34,7 +35,7 @@ export const UserdataProvider: React.FC = ({ children }) => {
 
   const [isSpellCheckEnabled, setIsSpellCheckEnabled] = useState<
     UserSettings["isSpellCheckEnabled"]
-  >(true)
+  >(defaultUserdata.isSpellCheckEnabled)
 
   //#endregion
 
@@ -101,7 +102,16 @@ export const UserdataProvider: React.FC = ({ children }) => {
     value: UserSettings[K]
   ) => {
     if (userdataDoc === null) {
-      // TODO: better error handling
+      /*
+        TODO: better error handling
+
+        Consider doing the following:
+
+        If the userdataDoc is null use the defaultUserdata object, apply the 
+        correct modifications and instead of atomicSet, simply insert it into the database
+
+        Consider using upsert or atomicUpsert as well
+      */
       throw Error("The userdataDoc object is missing")
     }
 
