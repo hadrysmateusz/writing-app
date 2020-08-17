@@ -1,7 +1,7 @@
 import React from "react"
 
 import { SectionHeader, SectionContainer } from "./Common"
-import DocumentTreeItem from "../DocumentTreeItem"
+import DocumentTreeItem from "../Sidebar/DocumentTreeItem"
 import { useMainState } from "../MainProvider"
 
 export const FavoritesSection: React.FC = React.memo(() => {

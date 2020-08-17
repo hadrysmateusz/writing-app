@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react"
 
-import { DocumentDoc } from "./Database"
-import { EditableText } from "./RenamingInput"
-import { useMainState } from "./MainProvider"
-import { TreeItem } from "./TreeItem"
-import { formatOptional } from "../utils"
-import { useDocumentContextMenu } from "./DocumentContextMenu"
+import { DocumentDoc } from "../Database"
+import { EditableText } from "../RenamingInput"
+import { useMainState } from "../MainProvider"
+import { TreeItem } from "../TreeItem"
+import { formatOptional } from "../../utils"
+import { useDocumentContextMenu } from "../DocumentContextMenu"
 
 const DocumentTreeItem: React.FC<{
   document: DocumentDoc
@@ -41,15 +41,6 @@ const DocumentTreeItem: React.FC<{
   }
 
   return (
-    // <MainContainer onClick={handleClick} isCurrent={isCurrent}>
-    //   <Meta>{groupName}</Meta>
-    //   <Title>
-    //     <EditableText {...getProps()}>{title}</EditableText>
-    //   </Title>
-    //   <Snippet>{snippet}</Snippet>
-    //   <Meta>{modifiedAt}</Meta>
-    // </MainContainer>
-
     <>
       <TreeItem
         depth={depth}
