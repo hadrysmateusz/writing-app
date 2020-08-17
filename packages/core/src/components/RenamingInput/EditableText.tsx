@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react"
 import styled from "styled-components/macro"
 
 import { NamingInput } from "./NamingInput"
+import { useOnClickOutside } from "../../hooks"
 
 export type EditableTextProps = {
   placeholder?: string
@@ -47,6 +48,11 @@ export const useEditableText = (
     onRename(value)
   }
 
+  useOnClickOutside(inputRef, () => {
+    onRename(value)
+    stopRenaming()
+  })
+
   useEffect(() => {
     // Focus and select the input
     if (isRenaming && inputRef?.current) {
@@ -55,6 +61,7 @@ export const useEditableText = (
     }
   }, [isRenaming])
 
+  // TODO: change names of methods to make them more universal
   return {
     isRenaming,
     startRenaming,
