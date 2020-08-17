@@ -1,22 +1,17 @@
-import React, { useMemo } from "react"
+import React, { useCallback } from "react"
 import styled from "styled-components/macro"
-import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd"
 
-// TODO: move common components out of the sidebar direcotory
-import GroupTreeItem from "../Sidebar/GroupTreeItem"
 import { VIEWS } from "../Sidebar/types"
 import { TreeItem, AddButton } from "../TreeItem"
-import { useMainState } from "../MainProvider"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
 import { useViewState } from "../View/ViewStateProvider"
 
-import createGroupTree from "../../helpers/createGroupTree"
-import DocumentTreeItem from "../DocumentTreeItem"
 import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { useModal } from "../Modal"
 import { AccountModalContent } from "../AccountModal"
-import { ImportModalContent } from "../Importer"
-import { Droppable } from "react-beautiful-dnd"
+import { SidebarImportButton } from "../Importer"
+import { FavoritesSection } from "./FavoritesSection"
+import { GroupsSection } from "./GroupsSection"
 
 export const NavigatorSidebar: React.FC = React.memo(() => {
   const { createDocument } = useDocumentsAPI()
@@ -29,19 +24,22 @@ export const NavigatorSidebar: React.FC = React.memo(() => {
     Modal: AccountModal,
   } = useModal(false)
 
-  const handleNewDocument = () => {
+  const handleNewDocument = useCallback(() => {
     createDocument(null)
-  }
+  }, [createDocument])
 
-  const handleNewGroup = () => {
+  const handleNewGroup = useCallback(() => {
     createGroup(null)
-  }
+  }, [createGroup])
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
-      openMenu(event)
-    }
-  }
+  const handleContextMenu = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (event.target === event.currentTarget) {
+        openMenu(event)
+      }
+    },
+    [openMenu]
+  )
 
   const { currentView } = primarySidebar
 
@@ -77,12 +75,12 @@ export const NavigatorSidebar: React.FC = React.memo(() => {
           </TreeItem>
         </SectionContainer>
 
-        <Favorites />
+        <FavoritesSection />
 
-        <Collections />
+        <GroupsSection />
 
         <SectionContainer>
-          <Importer />
+          <SidebarImportButton />
 
           <TreeItem
             icon="trash"
@@ -112,109 +110,6 @@ export const NavigatorSidebar: React.FC = React.memo(() => {
   )
 })
 
-const Importer: React.FC = () => {
-  const {
-    open: openImportModal,
-    close: closeImportModal,
-    Modal: ImportModal,
-  } = useModal(false)
-
-  const handleImport = () => {
-    openImportModal()
-  }
-
-  return (
-    <>
-      <TreeItem icon="import" onClick={handleImport} depth={0}>
-        Import
-      </TreeItem>{" "}
-      <ImportModal>
-        <ImportModalContent close={closeImportModal} />
-      </ImportModal>
-    </>
-  )
-}
-
-const Favorites: React.FC = React.memo(() => {
-  const { favorites } = useMainState()
-
-  return (
-    <SectionContainer>
-      {favorites.length > 0 && (
-        <>
-          <SectionHeader>Favorites</SectionHeader>
-
-          {favorites.map((document) => (
-            <DocumentTreeItem
-              key={document.id}
-              depth={0}
-              document={document}
-              icon="starFilled"
-            />
-          ))}
-        </>
-      )}
-    </SectionContainer>
-  )
-})
-
-const Collections: React.FC = React.memo(() => {
-  const { groups } = useMainState()
-  const { createGroup } = useGroupsAPI()
-
-  const handleNewGroup = () => {
-    createGroup(null)
-  }
-  const onDragEnd: OnDragEndResponder = (result) => {
-    const { destination, source, draggableId } = result
-
-    if (!destination) {
-      return
-    }
-
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return
-    }
-  }
-
-  // map the flat groups list to a tree structure
-  const groupsTree = useMemo(() => createGroupTree(groups), [groups])
-
-  return (
-    <SectionContainer>
-      <SectionHeader>Collections</SectionHeader>
-
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId={"collection_root"}>
-          {({ innerRef, droppableProps, placeholder }) => (
-            <GroupList ref={innerRef} {...droppableProps}>
-              {groupsTree.map((group, index) => (
-                <GroupTreeItem
-                  key={group.id}
-                  group={group}
-                  depth={1}
-                  index={index}
-                />
-              ))}
-              {placeholder}
-            </GroupList>
-          )}
-        </Droppable>
-      </DragDropContext>
-
-      {/* TODO: a nicer, smaller plus icon */}
-      <TreeItem icon="plus" onClick={handleNewGroup} depth={1}>
-        Add Collection
-      </TreeItem>
-    </SectionContainer>
-  )
-})
-
-const GroupList = styled.div``
-
 const InnerContainer = styled.div``
 
 const SectionContainer = styled.div`
@@ -228,19 +123,6 @@ const OuterContainer = styled.div`
   background-color: #171717;
   height: 100vh;
   width: 100%;
-`
-
-const SectionHeader = styled.div`
-  font-family: Poppins;
-  font-weight: bold;
-  font-size: 10px;
-  color: #a3a3a3;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  /* padding: 16px 20px 5px; */
-  padding: 0 18px 5px;
-
-  user-select: none;
 `
 
 // TODO: work in progress useSubscription hook

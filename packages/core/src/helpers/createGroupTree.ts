@@ -26,13 +26,11 @@ export interface GroupTreeBranch {
   children: GroupTreeBranch[]
 }
 
-export type GroupTree = GroupTreeBranch[]
-
 // TODO: improve type-related stuff
 export const createBranch = (
   group: Group | null,
   allGroups: Group[]
-): GroupTreeBranch | GroupTree => {
+): GroupTreeBranch => {
   const id = group === null ? null : group.id
 
   const children: GroupTreeBranch[] = []
@@ -56,15 +54,11 @@ export const createBranch = (
     }
   }
 
-  if (group === null) {
-    return children as GroupTree
-  } else {
-    return {
-      id: group.id,
-      name: group.name,
-      children,
-    } as GroupTreeBranch
-  }
+  return {
+    id: group ? group.id : null,
+    name: group ? group.name : "All Collections",
+    children,
+  } as GroupTreeBranch
 }
 
 // TODO: make a more reusable algorithm with customisable keys (types are gonna be more complicated - there are probably ready-made algorithms for that)
@@ -112,9 +106,9 @@ export const findChildGroups = (node: GroupTreeBranch): GroupTreeBranch[] => {
   return total
 }
 
-const createGroupTree = (groups: GroupDoc[]): GroupTree => {
+const createGroupTree = (groups: GroupDoc[]): GroupTreeBranch => {
   const plainGroups = groups.map((group) => group.toJSON())
-  const groupTree = createBranch(null, plainGroups) as GroupTree
+  const groupTree = createBranch(null, plainGroups)
   return groupTree
 }
 

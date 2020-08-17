@@ -227,7 +227,7 @@ export const DocumentsGroupList: React.FC<{
 
       try {
         const groupTree = createGroupTree(groups)
-        const foundGroup = findInTree(groupTree, groupId)
+        const foundGroup = findInTree(groupTree.children, groupId)
         if (foundGroup === null) {
           primarySidebar.switchView(VIEWS.ALL)
           setGroup(null)

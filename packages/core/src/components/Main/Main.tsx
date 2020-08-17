@@ -2,6 +2,7 @@ import React, { useMemo, useCallback } from "react"
 import styled from "styled-components/macro"
 import { useEditor } from "slate-react"
 import SplitPane from "react-split-pane"
+import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd"
 
 import { PrimarySidebar, SecondarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
@@ -127,13 +128,30 @@ const Main = () => {
   useLogEditor(editor)
   useLogValue(editorValue)
 
+  const onDragEnd: OnDragEndResponder = (result) => {
+    const { destination, source, draggableId } = result
+
+    if (!destination) {
+      return
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return
+    }
+  }
+
   const error = null // TODO: actual error handling
 
   return (
-    <OuterContainer>
-      {/* TODO: loading state handling */}
-      {isLoading ? null : error ? error : <OuterRenderer />}
-    </OuterContainer>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <OuterContainer>
+        {/* TODO: loading state handling */}
+        {isLoading ? null : error ? error : <OuterRenderer />}
+      </OuterContainer>
+    </DragDropContext>
   )
 }
 
