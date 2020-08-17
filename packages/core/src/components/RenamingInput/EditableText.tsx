@@ -11,6 +11,7 @@ export type EditableTextProps = {
   isEditing: boolean
   inputRef: React.MutableRefObject<HTMLTextAreaElement | undefined>
   disabled?: boolean
+  style?: React.CSSProperties | undefined
   onApply: (value: string) => void
   onChange: (value: string) => void
   startRenaming: () => void
@@ -90,6 +91,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
   onChange,
   onApply,
   startRenaming,
+  style,
 }) => {
   const innerOnKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (!isEditing) {
@@ -108,7 +110,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
   }
 
   return (
-    <Container className={className}>
+    <Container className={className} style={style}>
       {!disabled && isEditing ? (
         <StyledNamingInput
           // TODO: resolve this type issue
