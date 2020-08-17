@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from "react"
 import styled from "styled-components/macro"
 import { Node } from "slate"
+import moment from "moment"
 
 import { DocumentDoc } from "../Database"
 import { EditableText } from "../RenamingInput"
@@ -85,6 +86,8 @@ const SidebarDocumentItem: React.FC<{
     openDocument()
   }, [openDocument])
 
+  const modifiedAt = moment(document.modifiedAt).format("LL")
+
   return (
     <Container
       onContextMenu={(e) => {
@@ -100,12 +103,20 @@ const SidebarDocumentItem: React.FC<{
           <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>
         {snippet.trim().length > 0 && <Snippet>{snippet}</Snippet>}
+        <DateModified>{modifiedAt}</DateModified>
         {/* TODO: add created at date */}
       </MainContainer>
       {isMenuOpen && <DocumentContextMenu />}
     </Container>
   )
 }
+
+const DateModified = styled.div`
+  padding-top: 4px;
+  color: #717171;
+  font-size: 10px;
+  line-height: 13px;
+`
 
 const DeleteButton = styled.div`
   cursor: pointer;
