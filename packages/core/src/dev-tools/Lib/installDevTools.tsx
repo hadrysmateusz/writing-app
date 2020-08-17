@@ -1,7 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 
-import DevTools from "./dev-tools"
+import { DevToolsMenu } from "../Components"
 
 function getLocalDevTools() {
   const requireDevToolsLocal = require.context(
@@ -24,5 +24,5 @@ export function install() {
   // get local dev tools if they exist
   const LocalDevTools = getLocalDevTools()
   document.body.appendChild(devToolsRoot)
-  ReactDOM.render(<DevTools local={<LocalDevTools />} />, devToolsRoot)
+  ReactDOM.render(<DevToolsMenu local={<LocalDevTools />} />, devToolsRoot)
 }

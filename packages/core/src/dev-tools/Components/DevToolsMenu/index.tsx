@@ -1,7 +1,8 @@
 import React from "react"
 import styled from "styled-components/macro"
 
-import { FeatureToggles, TriggerEvent } from "../Components"
+import { FeatureToggles } from "../FeatureToggles"
+import { TriggerEvent } from "../TriggerEvent"
 
 const Toggle = styled.div`
   font-size: 13px;
@@ -33,7 +34,7 @@ const Container = styled.div`
   }
 `
 
-const DevTools = ({ local = null }) => {
+export const DevToolsMenu = ({ local = null }) => {
   return (
     <Container>
       <Toggle>🛠</Toggle>
@@ -50,5 +51,3 @@ const DevTools = ({ local = null }) => {
     </Container>
   )
 }
-
-export default DevTools

@@ -14,6 +14,7 @@ import { useMainState } from "../MainProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { Topbar } from "../Topbar"
 import { getDefaultSize, setDefaultSize } from "./helpers"
+import { useDevUtils } from "../../dev-tools"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
@@ -124,12 +125,12 @@ const Main = () => {
   const { isLoading } = useMainState()
   const editor = useEditor()
 
-  // DevTools utils
-  useLogEditor(editor)
-  useLogValue(editorValue)
+  useDevUtils({ value: editorValue, editor })
 
-  const onDragEnd: OnDragEndResponder = (result) => {
+  const onDragEnd: OnDragEndResponder = useCallback((result) => {
     const { destination, source, draggableId } = result
+
+    alert("TODO: Drag'n'Drop")
 
     if (!destination) {
       return
@@ -141,7 +142,7 @@ const Main = () => {
     ) {
       return
     }
-  }
+  }, [])
 
   const error = null // TODO: actual error handling
 

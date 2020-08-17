@@ -1,5 +1,5 @@
 import React from "react"
-import { config, enable, disable } from "../../Lib/config"
+import { config, enable, disable } from "../../config"
 
 function FeatureToggle({ name }) {
   const [feature, setFeature] = React.useState(config[name])

@@ -1,16 +1,18 @@
 import { useEffect } from "react"
 import { cloneDeep } from "lodash"
-
-import { parseToMarkdown } from "./../slate-helpers"
-
-import {
-  config,
-  addDevToolsEventHandler,
-  // removeDevToolsEventHandler,
-} from "@writing-tool/core"
 import { Editor, Node } from "slate"
 
-export const useLogValue = (value: Node[]) => {
+import { parseToMarkdown } from "../slate-helpers"
+import { addDevToolsEventHandler } from "./Lib"
+import { config } from "./config"
+
+export const useDevUtils = ({
+  value,
+  editor,
+}: {
+  value: Node[]
+  editor: Editor
+}) => {
   useEffect(() => {
     if (config.logValue) {
       console.clear()
@@ -20,9 +22,7 @@ export const useLogValue = (value: Node[]) => {
       console.dir(value.map((node) => parseToMarkdown(node)).join("\n"))
     }
   }, [value])
-}
 
-export const useLogEditor = (editor: Editor) => {
   useEffect(() => {
     const logEditor = () => {
       console.dir(cloneDeep(editor))
@@ -33,3 +33,5 @@ export const useLogEditor = (editor: Editor) => {
     // return removeDevToolsEventHandler("logEditor", logEditor)
   }, [editor])
 }
+
+export const useLogEditor = (editor: Editor) => {}
