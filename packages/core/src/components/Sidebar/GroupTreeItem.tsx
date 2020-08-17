@@ -1,5 +1,7 @@
 import React, { useMemo, useCallback, useState, useEffect } from "react"
 import styled from "styled-components/macro"
+import { Draggable } from "react-beautiful-dnd"
+import { Subscription } from "rxjs"
 
 import { StatelessExpandableTreeItem, AddButton } from "../TreeItem"
 import {
@@ -10,11 +12,10 @@ import {
 import { useViewState } from "../View/ViewStateProvider"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
+import { GroupsList } from "../GroupsList"
 
 import { formatOptional } from "../../utils"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
-import { Subscription } from "rxjs"
-import { Draggable } from "react-beautiful-dnd"
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
@@ -23,7 +24,7 @@ const GroupTreeItem: React.FC<{
 }> = ({ group, depth, index }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const { createDocument, findDocuments } = useDocumentsAPI()
-  const { createGroup, renameGroup, removeGroup } = useGroupsAPI()
+  const { renameGroup, removeGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
@@ -33,6 +34,7 @@ const GroupTreeItem: React.FC<{
     setIsEmpty(documents.length === 0)
   }, [])
 
+  // TODO: this might be unnecessary and could possibly increase costs and/or impact performance
   useEffect(() => {
     if (group.children.length > 0) {
       setIsEmpty(false)
@@ -71,17 +73,6 @@ const GroupTreeItem: React.FC<{
     updateIsEmpty,
   ])
 
-  const {
-    startRenaming: startNamingNew,
-    getProps: getNamingNewProps,
-    stopRenaming,
-  } = useEditableText("", (value: string) => {
-    stopRenaming()
-    setIsCreatingGroup(false)
-    if (value === "") return
-    createGroup(group.id, { name: value })
-  })
-
   const { startRenaming, getProps } = useEditableText(
     formatOptional(group.name, ""),
     (value: string) => {
@@ -89,52 +80,39 @@ const GroupTreeItem: React.FC<{
     }
   )
 
-  const handleNewGroup = (e: React.MouseEvent) => {
+  const handleRenameDocument = useCallback(() => {
+    closeMenu()
+    startRenaming()
+  }, [closeMenu, startRenaming])
+
+  const handleNewGroup = useCallback(() => {
     setIsCreatingGroup(true)
-    startNamingNew()
     setIsExpanded(true)
-  }
+  }, [])
 
-  const handleNewDocument = () => {
+  const handleNewDocument = useCallback(() => {
     createDocument(group.id)
-  }
+  }, [createDocument, group.id])
 
-  const handleDeleteGroup = () => {
+  const handleDeleteGroup = useCallback(() => {
     removeGroup(group.id)
-  }
+  }, [group.id, removeGroup])
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     primarySidebar.switchView(group.id)
-  }
+  }, [group.id, primarySidebar])
 
   const groupName = useMemo(
     () => formatOptional(group.name, "Unnamed Collection"),
     [group.name]
   )
 
-  const handleRenameDocument = useCallback(() => {
-    closeMenu()
-    startRenaming()
-  }, [closeMenu, startRenaming])
-
-  const childNodes = useMemo(() => {
-    const nodes = group.children.map((subgroup, index) => (
-      <GroupTreeItem key={subgroup.id} group={subgroup} index={index} />
-    ))
-
-    if (isCreatingGroup) {
-      nodes.unshift(
-        <NewGroupContainer
-          key="NEW_GROUP_INPUT"
-          depth={typeof depth === "number" ? depth + 1 : 0}
-        >
-          <EditableText placeholder="Unnamed" {...getNamingNewProps()} />
-        </NewGroupContainer>
-      )
-    }
-
-    return nodes
-  }, [getNamingNewProps, group.children, isCreatingGroup, depth])
+  const isActive = primarySidebar.currentView === group.id
+  const icon = isExpanded
+    ? "folderOpen"
+    : isEmpty
+    ? "folderEmpty"
+    : "folderClosed"
 
   return (
     <>
@@ -151,17 +129,18 @@ const GroupTreeItem: React.FC<{
                 depth={depth}
                 onContextMenu={openMenu}
                 onClick={handleClick}
-                childNodes={childNodes}
                 isExpanded={isExpanded}
-                isActive={primarySidebar.currentView === group.id}
+                isActive={isActive}
                 setIsExpanded={setIsExpanded}
-                icon={
-                  isExpanded
-                    ? "folderOpen"
-                    : isEmpty
-                    ? "folderEmpty"
-                    : "folderClosed"
-                }
+                icon={icon}
+                nested={(depth) => (
+                  <GroupsList
+                    depth={depth}
+                    group={group}
+                    isCreatingGroup={isCreatingGroup}
+                    setIsCreatingGroup={setIsCreatingGroup}
+                  />
+                )}
               >
                 <EditableText {...getProps()}>{groupName}</EditableText>
                 <AddButton groupId={group.id} />
@@ -193,17 +172,3 @@ const GroupTreeItem: React.FC<{
 export default GroupTreeItem
 
 const DraggableWrapper = styled.div``
-
-const NewGroupContainer = styled.div<{ depth: number }>`
-  padding-left: ${(p) => (p.depth + 1) * 16}px;
-  width: 100%;
-  :hover {
-    color: white;
-    background: #222;
-  }
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-`

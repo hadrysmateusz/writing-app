@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  isValidElement,
-  cloneElement,
-  useMemo,
-  FC,
-} from "react"
+import React, { useState, FC } from "react"
 import styled from "styled-components/macro"
 import { TreeItem } from "./TreeItem"
 import Icon from "../Icon"
@@ -14,7 +8,7 @@ import {
   StatefulExpandableTreeItemProps,
   ExpandableChildrenRenderProps,
 } from "./types"
-import Ellipsis from "../Ellipsis"
+import { useStatelessToggleable } from "../../hooks"
 
 // TODO: unify the static and expandable tree items and infer the type based on the presence and length of the childNodes prop
 
@@ -38,36 +32,28 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
 ) => {
   const {
     icon,
-    hideToggleWhenEmpty = false,
     depth = 0,
-    childNodes,
+    nested,
     children,
     isExpanded,
     isSpecial,
     isActive,
     setIsExpanded,
-    onBeforeExpand,
     onClick,
     onContextMenu,
+    // Toggleable hooks
+    onBeforeChange,
+    onAfterChange,
   } = props
 
-  const isEmpty = childNodes.length === 0
-
-  const expand = () => {
-    onBeforeExpand && onBeforeExpand()
-    setIsExpanded(true)
-  }
-
-  const collapse = () => setIsExpanded(false)
-
-  const toggle = () => {
-    // The abstraction functions are used to make sure any and all pre-hooks are fired
-    if (isExpanded) {
-      collapse()
-    } else {
-      expand()
+  const { toggle, open: expand, close: collapse } = useStatelessToggleable(
+    isExpanded,
+    setIsExpanded,
+    {
+      onBeforeChange,
+      onAfterChange,
     }
-  }
+  )
 
   const renderProps: ExpandableChildrenRenderProps = {
     isExpanded,
@@ -100,21 +86,8 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
     }
   }
 
-  const childrenWithProps = childNodes.map((child) => {
-    // Checking isValidElement is the safe way and avoids a TS error too.
-    if (isValidElement(child)) {
-      return cloneElement(child, { depth: depth + 1 })
-    }
-
-    return child
-  })
-
-  const isCaretShown = useMemo(() => {
-    // TODO: add some conditional rendering and props for manual control
-    return !(isEmpty && hideToggleWhenEmpty)
-  }, [hideToggleWhenEmpty, isEmpty])
-
   // TODO: save the toggled state between restarts (this will probably require making this component controlled)
+
   const isRoot = depth === 0
 
   return (
@@ -122,11 +95,9 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
     <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
       <TreeItem depth={depth} isSpecial={isSpecial} isActive={isActive}>
         <InnerContainer>
-          {isCaretShown && (
-            <CaretContainer onClick={handleToggleClick} isExpanded={isExpanded}>
-              <Icon icon={"caretRight"} />
-            </CaretContainer>
-          )}
+          <CaretContainer onClick={handleToggleClick} isExpanded={isExpanded}>
+            <Icon icon={"caretRight"} />
+          </CaretContainer>
           {icon && (
             <IconContainer isRoot={isRoot}>
               <Icon icon={icon} />
@@ -139,13 +110,7 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
       </TreeItem>
 
       {isExpanded ? (
-        isEmpty ? (
-          <TreeItem depth={depth + 1} disabled>
-            <Ellipsis>No Nested Collections</Ellipsis>
-          </TreeItem>
-        ) : (
-          <DetailsContainer>{childrenWithProps}</DetailsContainer>
-        )
+        <DetailsContainer>{nested(depth + 1)}</DetailsContainer>
       ) : null}
     </OuterContainer>
   )
@@ -153,6 +118,10 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
 
 const OuterContainer = styled.div`
   width: 100%;
+  :focus {
+    border: none;
+    outline: none;
+  }
 `
 
 const ChildrenContainer = styled.div`

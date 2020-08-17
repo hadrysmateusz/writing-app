@@ -1,3 +1,5 @@
+import { SimplifiedToggleableHooks } from "../../hooks"
+
 export type ExpandableChildrenRenderProps = {
   isExpanded: boolean
   expand: () => void
@@ -19,11 +21,10 @@ export type CoreTreeItemProps = {
   // TODO: allow any react event handlers and other common props to pass through
 }
 
-export type ExpandableTreeItemProps = CoreTreeItemProps & {
-  hideToggleWhenEmpty?: boolean
-  childNodes: React.ReactNode[]
-  onBeforeExpand?: () => void
-}
+export type ExpandableTreeItemProps = CoreTreeItemProps &
+  SimplifiedToggleableHooks & {
+    nested: (depth: number) => React.ReactNode
+  }
 
 export type StatefulExpandableTreeItemProps = ExpandableTreeItemProps & {
   startExpanded?: boolean
