@@ -27,6 +27,11 @@ const GlobalStyles = createGlobalStyle`
     color: white;
   }
 
+  *:focus {
+    /* TODO: replace with visible, but more visually appealing styles */
+    outline: none;
+  }
+
   /* h1,h2,h3,h4,h5,h6 {
     font-family: var(--header-font-stack);
   } */
