@@ -10,18 +10,17 @@ import createGroupTree, {
   findChildGroups,
   GroupTreeBranch,
 } from "../../helpers/createGroupTree"
+import { getGroupName } from "../../helpers/getGroupName"
 import { formatOptional } from "../../utils"
 import { useViewState } from "../View/ViewStateProvider"
 import { VIEWS } from "./types"
 import { useDocumentsAPI } from "../MainProvider"
-import { getGroupName } from "../../helpers/getGroupName"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
+
+type DocumentsSubGroup = { [key: string]: DocumentDoc[] }
 
 /**
  * Base presentational component
- *
- * TODO: maybe split the actual list into a separate component
- * for more customisability in advanced views
  */
 export const DocumentsList: React.FC<{
   title: string
@@ -29,46 +28,38 @@ export const DocumentsList: React.FC<{
   group?: GroupTreeBranch
   flat?: boolean
 }> = ({ title, documents, group, flat = false }) => {
-  const { rootDocs, groups } = useMemo(() => {
-    if (flat) {
-      return { rootDocs: documents, groups: [] }
+  const { rootDocs, subGroups } = useMemo<{
+    rootDocs: DocumentDoc[]
+    subGroups: DocumentsSubGroup
+  }>(() => {
+    if (flat || group === undefined) {
+      return { rootDocs: documents, subGroups: {} }
     }
 
     const rootDocs: DocumentDoc[] = []
-    const groups: { [key: string]: DocumentDoc[] } = {}
+    const subGroups: DocumentsSubGroup = {}
+
     documents.forEach((doc) => {
-      if (doc.parentGroup === null || doc.parentGroup === group?.id) {
+      if (doc.parentGroup === null || doc.parentGroup === group.id) {
         rootDocs.push(doc)
         return
       }
-      if (!(doc.parentGroup in groups)) {
-        groups[doc.parentGroup] = []
+      if (!(doc.parentGroup in subGroups)) {
+        subGroups[doc.parentGroup] = []
       }
-      groups[doc.parentGroup].push(doc)
+      subGroups[doc.parentGroup].push(doc)
     })
 
-    return { rootDocs, groups }
+    return { rootDocs, subGroups }
   }, [documents, flat, group])
 
   return (
     <>
-      <SectionHeader groupId={group ? group.id : undefined}>
-        <span>{" " + title}</span>
-      </SectionHeader>
-      {rootDocs.length === 0 ? (
-        <Empty>Empty</Empty>
-      ) : (
-        rootDocs.map((document) => (
-          <SidebarDocumentItem
-            key={document.id}
-            document={document}
-            group={group}
-          />
-        ))
-      )}
-      {Object.entries(groups).map(([key, val]) => {
-        return <DocumentsSubList groupId={key} documents={val} key={key} />
-      })}
+      <SectionHeader groupId={group?.id}>{title}</SectionHeader>
+      <DocumentsListDumb groupId={group?.id} documents={rootDocs} />
+      {Object.entries(subGroups).map(([key, val]) => (
+        <DocumentsSubList groupId={key} documents={val} />
+      ))}
     </>
   )
 }
@@ -86,14 +77,29 @@ const DocumentsSubList: React.FC<{
 
   return (
     <>
-      <SectionHeader groupId={groupId}>
-        <span>{" " + groupName}</span>
-      </SectionHeader>
+      <SectionHeader groupId={groupId}>{groupName}</SectionHeader>
+      <DocumentsListDumb
+        groupId={groupId}
+        documents={documents}
+        key={groupId}
+      />
+    </>
+  )
+}
+
+const DocumentsListDumb: React.FC<{
+  groupId?: string
+  documents: DocumentDoc[]
+}> = ({ groupId, documents }) => {
+  return documents.length === 0 ? (
+    <Empty>Empty</Empty>
+  ) : (
+    <>
       {documents.map((document) => (
         <SidebarDocumentItem
           key={document.id}
           document={document}
-          group={groupId}
+          groupId={groupId}
         />
       ))}
     </>
@@ -240,12 +246,6 @@ export const DocumentsGroupList: React.FC<{
         const childGroupIds = childGroups.map((group) => group.id)
         const groupIds = [...childGroupIds, groupId]
 
-        //         console.log(`group with id: ${groupId} has following child groups:
-        // ${JSON.stringify(childGroups, null, 2)}`)
-
-        //         console.log(`childGroup IDs:
-        // ${JSON.stringify(childGroupIds, null, 2)}`)
-
         const documentsQuery = db.documents
           .findNotRemoved()
           .where("parentGroup")
@@ -285,8 +285,8 @@ export const DocumentsGroupList: React.FC<{
 }
 
 const SectionHeader: React.FC<{ groupId?: string }> = ({
-  children,
   groupId,
+  children,
 }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
 
