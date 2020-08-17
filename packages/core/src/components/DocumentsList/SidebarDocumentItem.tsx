@@ -12,7 +12,7 @@ import { getGroupName } from "../../helpers/getGroupName"
 
 const SNIPPET_LENGTH = 340
 
-const SidebarDocumentItem: React.FC<{
+export const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
   groupId?: string
 }> = ({ document, groupId }) => {

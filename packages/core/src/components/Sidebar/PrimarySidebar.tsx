@@ -4,10 +4,10 @@ import styled from "styled-components/macro"
 import { useViewState } from "../View/ViewStateProvider"
 import {
   AllDocumentsList,
-  DocumentsGroupList,
+  GroupDocumentsList,
   TrashDocumentsList,
   InboxDocumentsList,
-} from "./DocumentsList"
+} from "../DocumentsList"
 import { VIEWS } from "./types"
 import { useDocumentsAPI } from "../MainProvider"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
@@ -80,7 +80,7 @@ export const PrimarySidebar: React.FC<{}> = () => {
         return (
           <Container>
             <InnerContainer onContextMenu={openMenu}>
-              <DocumentsGroupList groupId={primarySidebar.currentView} />
+              <GroupDocumentsList groupId={primarySidebar.currentView} />
             </InnerContainer>
             <NewButton
               onClick={() => createDocument(primarySidebar.currentView)}
