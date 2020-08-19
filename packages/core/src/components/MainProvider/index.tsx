@@ -125,11 +125,14 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     let favoritesSub: Subscription | undefined
 
     const setup = async () => {
-      const documentsQuery = db.documents.findNotRemoved()
+      const documentsQuery = db.documents
+        .findNotRemoved()
+        .sort({ modifiedAt: "desc" })
       const favoritesQuery = db.documents
         .findNotRemoved()
         .where("isFavorite")
         .eq(true)
+        .sort({ modifiedAt: "desc" })
       const groupsQuery = db.groups.find()
 
       // perform first-time setup

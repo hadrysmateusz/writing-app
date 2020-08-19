@@ -5,7 +5,7 @@ import { DocumentDocType, GroupDocType, UserdataDocType } from "./types"
 export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
   description: "describes a document",
-  version: 0,
+  version: 3,
   type: "object",
   properties: {
     id: {
@@ -36,13 +36,22 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
     },
   },
   // TODO: make sure all fields that should be are marked as required
-  required: ["title", "content"],
+  required: [
+    "title",
+    "content",
+    "parentGroup",
+    "createdAt",
+    "modifiedAt",
+    "isDeleted",
+    "isFavorite",
+  ],
+  indexes: ["modifiedAt", "title"],
 }
 
 export const groupSchema: RxJsonSchema<GroupDocType> = {
   title: "group schema",
   description: "describes a group",
-  version: 0,
+  version: 1,
   type: "object",
   properties: {
     id: {
@@ -57,6 +66,7 @@ export const groupSchema: RxJsonSchema<GroupDocType> = {
       type: ["string", "null"],
     },
   },
+  required: ["name", "parentGroup"],
 }
 
 export const userdataSchema: RxJsonSchema<UserdataDocType> = {

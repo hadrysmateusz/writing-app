@@ -100,7 +100,12 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
               })
             },
           },
-          migrationStrategies: {},
+          // I was changing indexes, that's why these migration strats are so weird.
+          migrationStrategies: {
+            1: (oldDoc) => oldDoc,
+            2: (oldDoc) => oldDoc,
+            3: (oldDoc) => oldDoc,
+          },
           pouchSettings: {
             // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
             skip_setup: true,
@@ -110,6 +115,8 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
           name: "groups",
           schema: groupSchema,
           sync: true,
+          // I was changing indexes, that's why these migration strats are so weird.
+          migrationStrategies: { 1: (oldDoc) => oldDoc },
           pouchSettings: {
             // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
             skip_setup: true,
