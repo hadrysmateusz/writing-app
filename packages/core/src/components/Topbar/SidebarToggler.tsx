@@ -21,9 +21,11 @@ export const SidebarToggler: React.FC<{ which: "primary" | "secondary" }> = ({
         sidebar.toggle()
       }}
       onContextMenu={(e) => {
-        // TODO: remove this if I ever implement the auto-hiding behavior and/or replace it with a context menu for controlling other view-related stuff
-        e.preventDefault()
-        navigatorSidebar.toggle()
+        if (which === "primary") {
+          // TODO: remove this if I ever implement the auto-hiding behavior and/or replace it with a context menu for controlling other view-related stuff
+          e.preventDefault()
+          navigatorSidebar.toggle()
+        }
       }}
     >
       <Icon icon={icon} />
