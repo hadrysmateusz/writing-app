@@ -4,7 +4,12 @@ import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 
 import { deserialize, serialize } from "../Editor/serialization"
-import { useDatabase, DocumentDoc, GroupDoc } from "../Database"
+import {
+  useDatabase,
+  DocumentDoc,
+  GroupDoc,
+  DocumentDocType,
+} from "../Database"
 import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
 import { useViewState } from "../View"
 import { useModal } from "../Modal"
@@ -34,7 +39,10 @@ import {
   UpdateCurrentDocumentFn,
   SwitchDocumentFn,
   MainState,
+  ChangeSortingFn,
+  Sorting,
 } from "./types"
+import { RxQuery } from "rxdb"
 
 export const [
   useDocumentsAPI,
@@ -71,14 +79,27 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   const [groups, setGroups] = useState<GroupDoc[]>([])
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
+
+  // Current editor - the id of the current document
+  // TODO: when tabs are implemented this should reflect the currently open tab
   const [currentEditor, setCurrentEditor] = useState<string | null>(() => {
     return localStorage.getItem(CURRENT_EDITOR_STORAGE_KEY)
   })
+
+  // Current document - the actual document object of the current document
+  // TODO: when tabs are implemented this should probably be handled by individual tabs and shared through context
   const [currentDocument, setCurrentDocument] = useState<DocumentDoc | null>(
     null
   )
+
   // Flag to manage whether this is the first time documents are loaded
   const [isInitialLoad, setIsInitialLoad] = useState(() => true)
+
+  // State of the sorting options for the documents list
+  // TODO: persist this locally
+  const [sorting, setSorting] = useState<Sorting>()
+
+  // The document deletion confirmation modal
   const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<{
     documentId?: string
   }>(false)
@@ -104,7 +125,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   /**
    * Switches the currently open document
    */
-  const switchDocument: SwitchDocumentFn = useCallback((id: string | null) => {
+  const switchDocument: SwitchDocumentFn = useCallback((id) => {
     setCurrentEditor(id)
     if (typeof id === "string") {
       localStorage.setItem(CURRENT_EDITOR_STORAGE_KEY, id)
@@ -113,33 +134,33 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     }
   }, [])
 
-  /**
-   * Initialization effect
-   *
-   * - Fetches all of the user's documents & groups
-   * - Sets up subscriptions
-   */
   useEffect(() => {
     let documentsSub: Subscription | undefined
     let groupsSub: Subscription | undefined
     let favoritesSub: Subscription | undefined
+    let documentsQuery: RxQuery<DocumentDocType, DocumentDoc[]> | undefined
+    let favoritesQuery: RxQuery<DocumentDocType, DocumentDoc[]> | undefined
+    const index = sorting?.index ?? "modifiedAt"
+    const direction = sorting?.direction ?? "desc"
 
     const setup = async () => {
-      const documentsQuery = db.documents
+      documentsQuery = db.documents
         .findNotRemoved()
-        .sort({ modifiedAt: "desc" })
-      const favoritesQuery = db.documents
+        .sort({ [index]: direction })
+
+      favoritesQuery = db.documents
         .findNotRemoved()
         .where("isFavorite")
         .eq(true)
-        .sort({ modifiedAt: "desc" })
+        .sort({ [index]: direction })
+
       const groupsQuery = db.groups.find()
 
       // perform first-time setup
-
       if (isInitialLoad) {
-        const documentsPromise = documentsQuery.exec()
         const groupsPromise = groupsQuery.exec()
+        const documentsPromise = documentsQuery.exec()
+        // TODO: favorites can probably be moved into a separate hook as they are not needed for first load
         const favoritesPromise = favoritesQuery.exec()
 
         const [newGroups, newDocuments, newFavorites] = await Promise.all([
@@ -192,6 +213,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     db.documents,
     db.groups,
     isInitialLoad,
+    sorting,
     switchDocument,
     updateDocumentsList,
   ])
@@ -248,6 +270,13 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     // OTHER DEPENDENCIES ARE PURPOSEFULLY IGNORED - THIS MIGHT NEED A BETTER SOLUTION
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentEditor])
+
+  /**
+   * Changes the sorting options for the documents list
+   */
+  const changeSorting: ChangeSortingFn = useCallback((index, direction) => {
+    setSorting({ index, direction })
+  }, [])
 
   /**
    * Creates a new group under the provided parent group
@@ -613,9 +642,11 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
         favorites,
         documents,
         isLoading,
+        sorting,
         switchDocument,
         saveDocument,
         updateCurrentDocument,
+        changeSorting,
       }}
     >
       <DocumentsAPIProvider

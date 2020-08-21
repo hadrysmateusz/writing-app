@@ -6,7 +6,6 @@ import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd"
 
 import { PrimarySidebar, SecondarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
-import { useLogEditor, useLogValue } from "../devToolsUtils"
 
 import { useViewState } from "../View/ViewStateProvider"
 import { useEditorState } from "../EditorStateProvider"

@@ -9,11 +9,12 @@ import {
   InboxDocumentsList,
 } from "../DocumentsList"
 import { VIEWS } from "./types"
-import { useDocumentsAPI } from "../MainProvider"
+import { useDocumentsAPI, useMainState } from "../MainProvider"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 
 export const PrimarySidebar: React.FC<{}> = () => {
   const { createDocument } = useDocumentsAPI()
+  const { changeSorting } = useMainState()
   const { primarySidebar } = useViewState()
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
 
@@ -100,7 +101,17 @@ export const PrimarySidebar: React.FC<{}> = () => {
     }
   }
 
-  return <OuterContainer>{render()}</OuterContainer>
+  return (
+    <OuterContainer>
+      <div>
+        <button onClick={() => changeSorting("title", "asc")}>TITLE</button>
+        <button onClick={() => changeSorting("modifiedAt", "desc")}>
+          MODIFIEDAT
+        </button>
+      </div>
+      {render()}
+    </OuterContainer>
+  )
 }
 
 const OuterContainer = styled.div`

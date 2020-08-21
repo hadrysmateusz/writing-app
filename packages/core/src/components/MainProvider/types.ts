@@ -8,6 +8,27 @@ import { RxDocument, RxQuery } from "rxdb"
 import { Node } from "slate"
 import { Toggleable } from "../../hooks"
 
+// Misc
+
+export type Direction = "asc" | "desc"
+
+export type SortingIndex = "modifiedAt" | "title"
+
+export type Sorting = {
+  index: SortingIndex
+  direction: Direction
+}
+
+export type ConfirmDeleteModalProps = {
+  close: Toggleable["close"]
+  documentId?: string
+}
+
+export type ChangeSortingFn = (
+  index: SortingIndex,
+  direction: Direction
+) => void
+
 // Documents
 
 export type DocumentsAPI = {
@@ -110,6 +131,8 @@ export type MainState = {
   documents: DocumentDoc[]
   favorites: DocumentDoc[]
   currentDocument: DocumentDoc | null
+  sorting: Sorting
+  changeSorting: ChangeSortingFn
   saveDocument: SaveDocumentFn
   switchDocument: SwitchDocumentFn
   updateCurrentDocument: UpdateCurrentDocumentFn
@@ -122,10 +145,3 @@ export type UpdateCurrentDocumentFn = (
 export type SaveDocumentFn = () => Promise<DocumentDocType | null>
 
 export type SwitchDocumentFn = (documentId: string | null) => void
-
-// Other
-
-export type ConfirmDeleteModalProps = {
-  close: Toggleable["close"]
-  documentId?: string
-}
