@@ -31,6 +31,7 @@ export const GroupDocumentsList: React.FC<{
   const [isLoading, setIsLoading] = useState(true)
 
   // TODO: extract most of this logic into a reusable hook
+  // TODO: optimize this
   // TODO: use the new apis
   useEffect(() => {
     let documentsSub: Subscription | undefined
@@ -38,8 +39,6 @@ export const GroupDocumentsList: React.FC<{
     const setup = async () => {
       // TODO: in-memory caching for better performnce when frequently switching between groups in one session
       // TODO: better decide when I should query the database directly and when to use (and where to store) the local documents list
-
-      setIsLoading(true)
 
       try {
         const groupTree = createGroupTree(groups)
