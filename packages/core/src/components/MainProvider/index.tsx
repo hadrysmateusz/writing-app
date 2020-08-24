@@ -43,6 +43,7 @@ import {
   Sorting,
 } from "./types"
 import { RxQuery } from "rxdb"
+import { VIEWS } from "../Sidebar/types"
 
 export const [
   useDocumentsAPI,
@@ -433,18 +434,19 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
    */
   const createDocument: CreateDocumentFn = useCallback(
     async (parentGroup, values = {}, options = {}) => {
-      const { switchTo = true } = options
+      const { switchToDocument = true, switchToGroup = true } = options
       const { title = "", content = defaultEditorValue } = values
 
       // TODO: consider using null value for content for empty documents
 
       const timestamp = Date.now()
       const docId = uuidv4()
+      // TODO: consider custom serialization / compression / key-compression
       const serializedContent = JSON.stringify(content)
 
       const newDocument = await db.documents.insert({
         id: docId,
-        title,
+        title, // TODO: consider custom title sanitation / formatting
         content: serializedContent,
         parentGroup: parentGroup,
         createdAt: timestamp,
@@ -453,13 +455,18 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
         isDeleted: false,
       })
 
-      if (switchTo) {
+      if (switchToDocument) {
         switchDocument(docId)
+      }
+
+      if (switchToGroup) {
+        // TODO: consider not switching to inbox if current view is all documents
+        primarySidebar.switchView(parentGroup ?? VIEWS.INBOX)
       }
 
       return newDocument
     },
-    [db.documents, switchDocument]
+    [db.documents, primarySidebar, switchDocument]
   )
 
   /**

@@ -59,15 +59,18 @@ export type UpdateDocumentFn = (
   includeRemoved?: boolean
 ) => Promise<RxDocument<DocumentDocType, DocumentDocMethods>>
 
+export type CreateDocumentOptions = {
+  switchToDocument?: boolean
+  switchToGroup?: boolean
+}
+
 export type CreateDocumentFn = (
   parentGroup: string | null,
   values?: {
     title?: string
     content?: Node[]
   },
-  options?: {
-    switchTo?: boolean
-  }
+  options?: CreateDocumentOptions
 ) => Promise<DocumentDoc>
 
 export type RenameDocumentFn = (
