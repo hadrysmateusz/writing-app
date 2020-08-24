@@ -15,6 +15,7 @@ import {
   FaInbox,
   FaUser,
   FaSpinner,
+  FaChevronDown,
 } from "react-icons/fa"
 import {
   AiFillCloud,
@@ -71,6 +72,7 @@ const iconLibrary = {
   cloud: AiFillCloud,
   caretRight: BsCaretRightFill,
   caretDown: BsCaretDownFill,
+  chevronDown: FaChevronDown,
   starFilled: MdStar,
   starOutline: FaRegStar,
   sidebarLeft: BsLayoutSidebar,
