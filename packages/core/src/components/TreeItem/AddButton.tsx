@@ -1,18 +1,9 @@
 import React from "react"
-import styled, { keyframes } from "styled-components/macro"
+import styled from "styled-components/macro"
 import Icon from "../Icon"
 import { UnstyledButton } from "../Button"
 import { useDocumentsAPI } from "../MainProvider"
-
-const fadein = keyframes`
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-`
+import { ANIMATION_FADEIN } from "../../style-utils"
 
 export const TreeItem_AddDocumentButton = "TreeItem_AddDocumentButton"
 
@@ -53,7 +44,7 @@ const AddButtonComponent = styled(UnstyledButton).attrs({
   display: none;
 
   transition: background 200ms ease;
-  animation: 200ms ease-out both ${fadein};
+  animation: 200ms ease-out both ${ANIMATION_FADEIN};
 
   :hover {
     color: #838383;

@@ -26,3 +26,13 @@ export const ANIMATION_SPIN = keyframes`
 		transform: rotate(360deg);
 	}
 `
+
+export const ANIMATION_FADEIN = keyframes`
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+`
