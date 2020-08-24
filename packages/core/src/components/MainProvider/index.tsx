@@ -2,22 +2,23 @@ import React, { useState, useCallback, useEffect } from "react"
 import { useEditor } from "slate-react"
 import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
+import { RxQuery } from "rxdb"
 
+import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
 import { deserialize, serialize } from "../Editor/serialization"
+import { VIEWS } from "../Sidebar/types"
+import { useViewState } from "../View"
+import { useModal } from "../Modal"
 import {
   useDatabase,
   DocumentDoc,
   GroupDoc,
   DocumentDocType,
 } from "../Database"
-import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
-import { useViewState } from "../View"
-import { useModal } from "../Modal"
+
+import { listenForIpcEvent, createContext } from "../../utils"
+
 import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
-
-import { listenForIpcEvent } from "../../utils"
-import createContext from "../../utils/createContext"
-
 import {
   DocumentsAPI,
   GroupsAPI,
@@ -27,7 +28,6 @@ import {
   ToggleDocumentFavoriteFn,
   RemoveDocumentFn,
   RestoreDocumentFn,
-  DocumentUpdater,
   FindDocumentByIdFn,
   UpdateDocumentFn,
   FindDocumentsFn,
@@ -41,9 +41,9 @@ import {
   MainState,
   ChangeSortingFn,
   Sorting,
+  FindGroupByIdFn,
+  UpdateGroupFn,
 } from "./types"
-import { RxQuery } from "rxdb"
-import { VIEWS } from "../Sidebar/types"
 
 export const [
   useDocumentsAPI,
@@ -140,6 +140,11 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     }
   }, [])
 
+  /**
+   * Handles setting up subscriptions and initial fetching of documents, groups etc.
+   *
+   * TODO: needs a significant rewrite
+   */
   useEffect(() => {
     let documentsSub: Subscription | undefined
     let groupsSub: Subscription | undefined
@@ -284,6 +289,8 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     setSorting({ index, direction })
   }, [])
 
+  //#region Groups
+
   /**
    * Creates a new group under the provided parent group
    */
@@ -297,6 +304,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
         id: groupId,
         name: "",
         parentGroup: parentGroup,
+        childGroups: [],
         ...values,
       })
 
@@ -315,27 +323,45 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   )
 
   /**
+   * Finds a single group by id
+   *
+   * TODO: if soft-deleting groups is implemented, add an option and handling for removed groups like in findDocumentById
+   * TODO: if soft-deleting groups is implemented, consider creating a more generic function for both groups and documents
+   */
+  const findGroupById: FindGroupByIdFn = useCallback(
+    async (id) => {
+      return await db.groups.findOne().where("id").eq(id).exec()
+    },
+    [db.groups]
+  )
+
+  // TODO: special handling and protection for the root group
+  const updateGroup: UpdateGroupFn = useCallback(
+    async (id, updater) => {
+      const original = await findGroupById(id)
+      if (original === null) {
+        throw new Error(`no group found matching this id (${id})`)
+      }
+      // TODO: this can be extracted for use with other collections
+      // TODO: handle errors (especially the ones thrown in pre-middleware because they mean the operation wasn't applied) (maybe handle them in more specialized functions like rename and save)
+      const updatedGroup: GroupDoc = await original.update(
+        typeof updater === "function"
+          ? { $set: updater(original) }
+          : { $set: updater }
+      )
+      return updatedGroup
+    },
+    [findGroupById]
+  )
+
+  /**
    * Rename group by id
    */
   const renameGroup: RenameGroupFn = useCallback(
     async (groupId, name) => {
-      const original = await db.groups.findOne().where("id").eq(groupId).exec()
-
-      if (original === null) {
-        throw new Error(`no group found matching this id (${groupId})`)
-      }
-
-      const updated = await original.update({
-        $set: {
-          name: name.trim(),
-        },
-      })
-
-      // TODO: error handling
-
-      return updated as GroupDoc
+      return updateGroup(groupId, { name: name.trim() })
     },
-    [db.groups]
+    [updateGroup]
   )
 
   /**
@@ -344,7 +370,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   const removeGroup: RemoveGroupFn = useCallback(
     async (groupId) => {
       // TODO: consider creating findById static methods on all collections that will abstract this query
-      const original = await db.groups.findOne().where("id").eq(groupId).exec()
+      const original = await findGroupById(groupId)
 
       if (original === null) {
         throw new Error(`no group found matching this id (${groupId})`)
@@ -353,8 +379,12 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
       // TODO: figure out what the returned boolean means
       return original.remove()
     },
-    [db.groups]
+    [findGroupById]
   )
+
+  //#endregion
+
+  //#region Documents
 
   /**
    * Finds a single document by id
@@ -391,7 +421,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
       /**
        * Whether the query should consider removed documents
        */
-      includeRemoved: boolean = false
+      includeRemoved = false
     ) => {
       if (includeRemoved) {
         return db.documents.find()
@@ -410,11 +440,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
    * TODO: create an advanced version of the function that uses the full mongo update syntax: https://docs.mongodb.com/manual/reference/operator/update-field/
    */
   const updateDocument: UpdateDocumentFn = useCallback(
-    async (
-      id: string,
-      updater: DocumentUpdater,
-      includeRemoved: boolean = false
-    ) => {
+    async (id, updater, includeRemoved = false) => {
       const original = await findDocumentById(id, includeRemoved)
       if (original === null) {
         throw new Error(`no document found matching this id (${id})`)
@@ -475,7 +501,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
    * Rename document by id
    */
   const renameDocument: RenameDocumentFn = useCallback(
-    async (documentId: string, title: string) => {
+    async (documentId, title) => {
       return updateDocument(documentId, { title: title.trim() }, true)
     },
     [updateDocument]
@@ -485,7 +511,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
    * Move document to a different group
    */
   const moveDocumentToGroup: MoveDocumentToGroupFn = useCallback(
-    async (documentId: string, groupId: string | null) => {
+    async (documentId, groupId) => {
       // TODO: not sure if this function should include removed documents
       return updateDocument(documentId, { parentGroup: groupId }, true)
     },
@@ -580,7 +606,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
    * Update current document
    */
   const updateCurrentDocument: UpdateCurrentDocumentFn = useCallback(
-    async (updater: DocumentUpdater) => {
+    async (updater) => {
       try {
         if (currentEditor === null) {
           throw new Error("no document is currently selected")
@@ -619,6 +645,8 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     }
     return null
   }, [editorValue, isModified, setIsModified, updateCurrentDocument])
+
+  //#endregion
 
   // TODO: figure out a way to reduce duplication of these queries
   useEffect(() => {
@@ -680,6 +708,8 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
             removeGroup,
             renameGroup,
             createGroup,
+            updateGroup,
+            findGroupById,
           }}
         >
           <ConfirmDeleteModal
