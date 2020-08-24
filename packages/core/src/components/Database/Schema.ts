@@ -51,7 +51,7 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
 export const groupSchema: RxJsonSchema<GroupDocType> = {
   title: "group schema",
   description: "describes a group",
-  version: 1,
+  version: 2,
   type: "object",
   properties: {
     id: {
@@ -65,6 +65,20 @@ export const groupSchema: RxJsonSchema<GroupDocType> = {
     parentGroup: {
       type: ["string", "null"],
     },
+    childGroups: {
+      type: "array",
+      uniqueItems: true,
+      items: {
+        type: "string",
+      },
+    },
+    // childDocuments: {
+    //   type: "array",
+    //   uniqueItems: true,
+    //   items: {
+    //     type: "string",
+    //   },
+    // },
   },
   required: ["name", "parentGroup"],
 }

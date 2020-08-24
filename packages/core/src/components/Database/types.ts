@@ -120,11 +120,13 @@ export type GroupDocType = {
    * Id of the group this group belongs to
    *
    * Used for nesting groups
-   *
-   * @todo handle top-level groups that aren't a part of any group
-   *
    */
   parentGroup: string | null
+  /**
+   * Ordered array of child group IDs
+   */
+  childGroups: string[]
+  // childDocuments: string[]
 }
 
 export type GroupDocMethods = {}
