@@ -14,7 +14,7 @@ const SNIPPET_LENGTH = 340
 
 export const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
-  groupId?: string
+  groupId?: string | null
 }> = ({ document, groupId }) => {
   const {
     openMenu,

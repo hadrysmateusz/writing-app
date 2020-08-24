@@ -10,5 +10,7 @@ export const AllDocumentsList: React.FC<{}> = () => {
   // TODO: probably should replace with a paged query to the database
   const { documents } = useMainState()
 
-  return <DocumentsList title="All Documents" documents={documents} />
+  return (
+    <DocumentsList title="All Documents" documents={documents} groupId={null} />
+  )
 }

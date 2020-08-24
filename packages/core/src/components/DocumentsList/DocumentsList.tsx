@@ -11,7 +11,7 @@ import { SectionHeader } from "./SectionHeader"
 export const DocumentsList: React.FC<{
   title: string
   documents: DocumentDoc[]
-  groupId?: string
+  groupId?: string | null
 }> = ({ title, documents, groupId }) => {
   return (
     <>
@@ -22,7 +22,7 @@ export const DocumentsList: React.FC<{
 }
 
 export const DocumentsListWithoutHeader: React.FC<{
-  groupId?: string
+  groupId?: string | null
   documents: DocumentDoc[]
 }> = ({ groupId, documents }) => {
   return documents.length === 0 ? (
