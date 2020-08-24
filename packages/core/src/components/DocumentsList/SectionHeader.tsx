@@ -1,16 +1,24 @@
-import React from "react"
+import React, { useMemo } from "react"
 import styled from "styled-components/macro"
 
-import { useDocumentsAPI } from "../MainProvider"
+import { useDocumentsAPI, useMainState } from "../MainProvider"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
+import Icon from "../Icon"
+import { ANIMATION_FADEIN, ellipsis } from "../../style-utils"
 
-export const SectionHeader: React.FC<{ groupId?: string }> = ({
+export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
   groupId,
   children,
 }) => {
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-
+  const { changeSorting, sorting } = useMainState()
   const { createDocument } = useDocumentsAPI()
+
+  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const {
+    openMenu: openSortingMenu,
+    isMenuOpen: isSortingMenuOpen,
+    ContextMenu: SortingContextMenu,
+  } = useContextMenu()
 
   const handleNewDocument = () => {
     if (groupId !== undefined) {
@@ -25,10 +33,27 @@ export const SectionHeader: React.FC<{ groupId?: string }> = ({
     openMenu(e)
   }
 
+  // TODO: consider making sorting a per-group setting
+  const handleChangeSorting = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    openSortingMenu(e)
+  }
+
+  const sortByText = useMemo(() => {
+    return { modifiedAt: "Modified Date", title: "Title" }[sorting.index]
+  }, [sorting.index])
+
   return (
     <>
-      <SectionHeaderContainer onContextMenu={handleContextMenu}>
-        {children}
+      <SectionHeaderContainer isSortingMenuOpen={isSortingMenuOpen}>
+        {/* TODO: fix the context menu */}
+        <div className="SectionHeader_Name" onContextMenu={handleContextMenu}>
+          {children}
+        </div>
+        <div className="SectionHeader_SortBy" onClick={handleChangeSorting}>
+          {/* TODO: consider replacing this index-based text with a simple "Sort By" and mark the current one as active in the dropdown */}
+          <div>{sortByText}</div> <Icon icon="chevronDown" />
+        </div>
       </SectionHeaderContainer>
       {isMenuOpen && (
         <ContextMenu>
@@ -37,11 +62,24 @@ export const SectionHeader: React.FC<{ groupId?: string }> = ({
           </ContextMenuItem>
         </ContextMenu>
       )}
+      {isSortingMenuOpen && (
+        <SortingContextMenu>
+          <ContextMenuItem onClick={() => changeSorting("title", "asc")}>
+            Title
+          </ContextMenuItem>{" "}
+          <ContextMenuItem onClick={() => changeSorting("modifiedAt", "desc")}>
+            Modified Date
+          </ContextMenuItem>
+        </SortingContextMenu>
+      )}
     </>
   )
 }
 
-const SectionHeaderContainer = styled.div`
+const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
+  --padding-x: 20px;
+  --padding-y: 8px;
+
   font-family: Poppins;
   font-weight: bold;
   font-size: 10px;
@@ -49,9 +87,40 @@ const SectionHeaderContainer = styled.div`
 
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  padding: 8px 20px;
   border-bottom: 1px solid;
   border-color: #383838;
   color: #a3a3a3;
   background: #1c1c1c;
+
+  display: flex;
+
+  .SectionHeader_Name {
+    padding: var(--padding-y);
+    padding-left: var(--padding-x);
+
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    ${ellipsis}
+  }
+
+  .SectionHeader_SortBy {
+    padding: var(--padding-y);
+    padding-right: calc(var(--padding-x) - 3px);
+
+    display: ${(p) => (p.isSortingMenuOpen ? "flex" : "none")};
+    cursor: pointer;
+    white-space: nowrap;
+    padding-left: 6px;
+
+    > :first-child {
+      margin-right: 3px;
+    }
+
+    animation: 200ms ease-out both ${ANIMATION_FADEIN};
+  }
+
+  :hover .SectionHeader_SortBy {
+    display: flex;
+  }
 `

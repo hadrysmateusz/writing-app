@@ -97,7 +97,10 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
 
   // State of the sorting options for the documents list
   // TODO: persist this locally
-  const [sorting, setSorting] = useState<Sorting>()
+  const [sorting, setSorting] = useState<Sorting>({
+    index: "modifiedAt",
+    direction: "desc",
+  })
 
   // The document deletion confirmation modal
   const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<{
