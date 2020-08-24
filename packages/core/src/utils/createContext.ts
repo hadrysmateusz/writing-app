@@ -12,7 +12,7 @@ type ContextHook<ContextType> = () => ContextType
 
 type ContextProvider<ContextType> = React.Provider<ContextType | undefined>
 
-function createContext<ContextType>(): Readonly<
+export function createContext<ContextType>(): Readonly<
   [
     ContextHook<ContextType>,
     ContextProvider<ContextType>,
