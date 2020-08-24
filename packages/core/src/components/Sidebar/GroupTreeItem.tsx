@@ -151,18 +151,18 @@ const GroupTreeItem: React.FC<{
       </Draggable>
       {isMenuOpen && (
         <ContextMenu>
-          <ContextMenuItem onClick={handleRenameDocument}>
-            Rename
-          </ContextMenuItem>
-          {/* TODO: add danger style option to ContextMenuItem */}
-          <ContextMenuItem onClick={handleDeleteGroup}>Delete</ContextMenuItem>
-          <ContextMenuSeparator />
           <ContextMenuItem onClick={handleNewDocument}>
             New Document
           </ContextMenuItem>
           <ContextMenuItem onClick={handleNewGroup}>
             New Collection
           </ContextMenuItem>
+          <ContextMenuSeparator />
+          <ContextMenuItem onClick={handleRenameDocument}>
+            Rename
+          </ContextMenuItem>
+          {/* TODO: add danger style option to ContextMenuItem */}
+          <ContextMenuItem onClick={handleDeleteGroup}>Delete</ContextMenuItem>
         </ContextMenu>
       )}
     </>
