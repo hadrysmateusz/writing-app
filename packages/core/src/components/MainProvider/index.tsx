@@ -81,6 +81,8 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
 
+  // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
+
   // Current editor - the id of the current document
   // TODO: when tabs are implemented this should reflect the currently open tab
   const [currentEditor, setCurrentEditor] = useState<string | null>(() => {
