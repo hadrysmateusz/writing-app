@@ -32,6 +32,8 @@ import {
   BsLayoutSidebarReverse,
 } from "react-icons/bs"
 
+import { CgMoreAlt } from "react-icons/cg"
+
 import { FiDownload, FiPlus } from "react-icons/fi"
 
 import { MdStar } from "react-icons/md"
@@ -82,6 +84,7 @@ const iconLibrary = {
   folderClosed: AiFillFolder,
   folderEmpty: AiOutlineFolder,
   ellipsisVertical: FaEllipsisV,
+  ellipsisHorizontal: CgMoreAlt,
   inbox: FaInbox,
   user: FaUser,
   spinner: FaSpinner,

@@ -19,6 +19,7 @@ export interface ToggleableHooks extends SimplifiedToggleableHooks {
   onAfterClose?: () => void
 }
 
+// TODO: add a loading state - trigger it when running onBeforeOpen and open after it's done
 export const useToggleable = (
   initialState: boolean,
   {

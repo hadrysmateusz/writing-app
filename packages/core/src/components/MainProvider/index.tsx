@@ -232,7 +232,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   /**
    * Handles changing all of the state and side-effects of switching editors
    *
-   * TODO: this needs a significant rework for readability and reliablility
+   * TODO: this needs a significant rework for readability and reliability
    */
   useEffect(() => {
     setIsModified(false) // TODO: this will have to change when/if multi-tab is implemented
