@@ -76,6 +76,8 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   //   return document.id === currentDocument.id
   // }, [currentDocument, document.id])
 
+  // TODO: add item for exporting
+
   const DocumentContextMenu: React.FC<{}> = () => {
     return (
       <ContextMenu>
