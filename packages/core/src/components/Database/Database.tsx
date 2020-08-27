@@ -11,6 +11,8 @@ import {
   MyDatabase,
   DocumentDoc,
   DocumentCollection,
+  GroupCollection,
+  GroupDoc,
 } from "./types"
 import { config } from "../../dev-tools"
 import {
@@ -18,6 +20,7 @@ import {
   remoteDbPort,
   usernameStartWord,
   dbNameBase,
+  ROOT_GROUP_ID,
 } from "./constants"
 import { encodeDbName, getUserRemoteDbName } from "./helpers"
 
@@ -63,7 +66,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
         name: encodeDbName(`${dbNameBase}${usernameStartWord}${username}`),
         adapter: "idb",
         pouchSettings: {
-          // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
+          // This doesn't seem to work as expected and should probably be replaced with manually checks and simply not calling the create functions if they fail
           skip_setup: true,
         },
         ignoreDuplicate: true, // TODO: this flag is set to address the issue with the auth provider remounting the component after logging in to the same account twice but it probably will have some unintended consequences so try to find a better solution
@@ -84,15 +87,15 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
           schema: documentSchema,
           sync: true,
           statics: {
-            findNotRemoved: function (this: DocumentCollection) {
+            findNotRemoved(this: DocumentCollection) {
               return this.find().where("isDeleted").eq(false)
             },
-            findOneNotRemoved: function (this: DocumentCollection) {
+            findOneNotRemoved(this: DocumentCollection) {
               return this.findOne().where("isDeleted").eq(false)
             },
           },
           methods: {
-            softRemove: function (this: DocumentDoc) {
+            softRemove(this: DocumentDoc) {
               return this.update({
                 $set: {
                   isDeleted: true,
@@ -115,12 +118,43 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
           name: "groups",
           schema: groupSchema,
           sync: true,
+          statics: {
+            createRootGroup: async function (
+              this: GroupCollection,
+              retryCount: number = 3
+            ) {
+              let attempt = 1
+              let group: GroupDoc | null = null
+
+              while (group === null && attempt < retryCount) {
+                group = await this.insert({
+                  id: ROOT_GROUP_ID,
+                  name: "ROOT",
+                  parentGroup: null,
+                  childGroups: [],
+                })
+                attempt++
+              }
+
+              if (group === null) {
+                throw new Error("Couldn't create the root group")
+              }
+
+              return group
+            },
+          },
           // I was changing indexes, that's why these migration strats are so weird.
           migrationStrategies: {
             1: (oldDoc) => oldDoc,
             2: (oldDoc) => {
               oldDoc.childGroups = []
               return oldDoc
+            },
+            3: (old: GroupDoc) => {
+              if (old.parentGroup === null && old.id !== ROOT_GROUP_ID) {
+                old.parentGroup = ROOT_GROUP_ID
+              }
+              return old
             },
           },
           pouchSettings: {
@@ -178,6 +212,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
 
       // Update the modifiedAt field on every update
       db.documents.preSave(async (data, doc) => {
+        // TODO: check for changes, if there aren't any, don't update the modifiedAt date
         data.modifiedAt = Date.now()
       }, false)
 

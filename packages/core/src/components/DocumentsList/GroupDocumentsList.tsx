@@ -23,7 +23,7 @@ export const GroupDocumentsList: React.FC<{
   groupId: string
 }> = ({ groupId }) => {
   const db = useDatabase()
-  const { groups } = useMainState()
+  const { groups, rootGroup } = useMainState()
   const { primarySidebar } = useViewState()
 
   const [documents, setDocuments] = useState<DocumentDoc[] | null>(null)
@@ -37,40 +37,41 @@ export const GroupDocumentsList: React.FC<{
     let documentsSub: Subscription | undefined
 
     const setup = async () => {
-      // TODO: in-memory caching for better performnce when frequently switching between groups in one session
+      // TODO: in-memory caching for better performance when frequently switching between groups in one session
       // TODO: better decide when I should query the database directly and when to use (and where to store) the local documents list
+      if (rootGroup) {
+        try {
+          const groupTree = createGroupTree(rootGroup, groups)
+          const foundGroup = findInTree(groupTree.children, groupId)
+          if (foundGroup === null) {
+            primarySidebar.switchView(VIEWS.ALL)
+            setGroup(null)
+            setIsLoading(false)
+            return
+          }
+          setGroup(foundGroup)
 
-      try {
-        const groupTree = createGroupTree(groups)
-        const foundGroup = findInTree(groupTree.children, groupId)
-        if (foundGroup === null) {
-          primarySidebar.switchView(VIEWS.ALL)
-          setGroup(null)
-          setIsLoading(false)
-          return
-        }
-        setGroup(foundGroup)
+          const childGroups = findChildGroups(foundGroup)
+          const childGroupIds = childGroups.map((group) => group.id)
+          const groupIds = [...childGroupIds, groupId]
 
-        const childGroups = findChildGroups(foundGroup)
-        const childGroupIds = childGroups.map((group) => group.id)
-        const groupIds = [...childGroupIds, groupId]
+          const documentsQuery = db.documents
+            .findNotRemoved()
+            .where("parentGroup")
+            .in(groupIds)
 
-        const documentsQuery = db.documents
-          .findNotRemoved()
-          .where("parentGroup")
-          .in(groupIds)
-
-        const newDocuments = await documentsQuery.exec()
-        setDocuments(newDocuments)
-
-        documentsSub = documentsQuery.$.subscribe((newDocuments) => {
+          const newDocuments = await documentsQuery.exec()
           setDocuments(newDocuments)
-        })
-      } catch (error) {
-        // TODO: handle better in prod
-        throw error
-      } finally {
-        setIsLoading(false)
+
+          documentsSub = documentsQuery.$.subscribe((newDocuments) => {
+            setDocuments(newDocuments)
+          })
+        } catch (error) {
+          // TODO: handle better in prod
+          throw error
+        } finally {
+          setIsLoading(false)
+        }
       }
     }
 
@@ -81,7 +82,7 @@ export const GroupDocumentsList: React.FC<{
         documentsSub.unsubscribe()
       }
     }
-  }, [db.documents, db.groups, groupId, groups, primarySidebar])
+  }, [db.documents, db.groups, groupId, groups, primarySidebar, rootGroup])
 
   const { rootDocs, subGroups } = useMemo<{
     rootDocs: DocumentDoc[]

@@ -1,20 +1,14 @@
-import React, { useState, useCallback, useEffect } from "react"
+import React, { useState, useCallback, useEffect, useMemo } from "react"
 import { useEditor } from "slate-react"
 import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
-import { RxQuery } from "rxdb"
 
 import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
 import { deserialize, serialize } from "../Editor/serialization"
 import { VIEWS } from "../Sidebar/types"
 import { useViewState } from "../View"
 import { useModal } from "../Modal"
-import {
-  useDatabase,
-  DocumentDoc,
-  GroupDoc,
-  DocumentDocType,
-} from "../Database"
+import { useDatabase, DocumentDoc, GroupDoc, GroupDocType } from "../Database"
 
 import { listenForIpcEvent, createContext } from "../../utils"
 
@@ -43,7 +37,9 @@ import {
   Sorting,
   FindGroupByIdFn,
   UpdateGroupFn,
+  MoveGroupFn,
 } from "./types"
+import { ROOT_GROUP_ID } from "../Database/constants"
 
 export const [
   useDocumentsAPI,
@@ -65,6 +61,18 @@ export const [
 
 const CURRENT_EDITOR_STORAGE_KEY = "currentEditorId"
 
+// TODO: make methods using IDs to find documents/groups/etc. accept the actual RxDB document object instead to skip the query
+
+const cancelSubscription = (sub: Subscription | undefined) => {
+  if (sub) {
+    sub.unsubscribe()
+  }
+}
+
+const cancelSubscriptions = (...subs: (Subscription | undefined)[]) => {
+  subs.forEach((sub) => cancelSubscription(sub))
+}
+
 export const MainProvider: React.FC<{}> = ({ children }) => {
   const db = useDatabase()
   const editor = useEditor()
@@ -80,6 +88,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   const [groups, setGroups] = useState<GroupDoc[]>([])
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
+  const [rootGroup, setRootGroup] = useState<GroupDocType>()
 
   // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
 
@@ -109,6 +118,60 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<{
     documentId?: string
   }>(false)
+
+  const index = sorting?.index ?? "modifiedAt"
+  const direction = sorting?.direction ?? "desc"
+
+  // Queries
+
+  const groupsQuery = useMemo(() => {
+    return db.groups.find()
+  }, [db.groups])
+
+  const rootGroupQuery = useMemo(() => {
+    return db.groups.findOne().where("id").eq(ROOT_GROUP_ID)
+  }, [db.groups])
+
+  const documentsQuery = useMemo(() => {
+    return db.documents.findNotRemoved().sort({ [index]: direction })
+  }, [db.documents, direction, index])
+
+  const favoritesQuery = useMemo(() => {
+    return db.documents
+      .findNotRemoved()
+      .where("isFavorite")
+      .eq(true)
+      .sort({ [index]: direction })
+  }, [db.documents, direction, index])
+
+  /**
+   * Finds a single group by id.
+   *
+   * Throws if the group can't be found.
+   *
+   * If can't find root group, it will attempt to create it.
+   *
+   * TODO: if soft-deleting groups is implemented, add an option and handling for removed groups like in findDocumentById
+   *
+   * TODO: if soft-deleting groups is implemented, consider creating a more generic function for both groups and documents
+   */
+  const findGroupById: FindGroupByIdFn = useCallback(
+    async (id) => {
+      let foundGroup = await db.groups.findOne().where("id").eq(id).exec()
+
+      // If was trying to find root group and failed, attempt to create it
+      if (foundGroup === null && id === ROOT_GROUP_ID) {
+        foundGroup = await db.groups.createRootGroup()
+      }
+
+      if (foundGroup === null) {
+        throw new Error(`No group found matching this ID: ${id})`)
+      }
+
+      return foundGroup
+    },
+    [db.groups]
+  )
 
   const updateDocumentsList = useCallback((documents: DocumentDoc[]) => {
     try {
@@ -141,7 +204,58 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   }, [])
 
   /**
-   * Handles setting up subscriptions and initial fetching of documents, groups etc.
+   * Gets all things required for the app to run
+   */
+  useEffect(() => {
+    if (isInitialLoad) {
+      const performInitialSetup = async () => {
+        const groupsPromise = groupsQuery.exec()
+        const documentsPromise = documentsQuery.exec()
+        // TODO: favorites can probably be moved into a separate hook as they are not needed for first load
+        const favoritesPromise = favoritesQuery.exec()
+        const rootGroupPromise = findGroupById(ROOT_GROUP_ID)
+
+        // TODO: this can fail if root group can't be found / created - handle this properly
+        const [
+          newGroups,
+          newDocuments,
+          newFavorites,
+          newRootGroup,
+        ] = await Promise.all([
+          groupsPromise,
+          documentsPromise,
+          favoritesPromise,
+          rootGroupPromise,
+        ])
+
+        // if current editor is set to null and there are new documents, switch to the first one
+        // TODO: I should probably rethink my approach to this empty state
+        if (newDocuments && newDocuments[0] && currentEditor === null) {
+          switchDocument(newDocuments[0].id)
+        }
+
+        setIsInitialLoad(false)
+        setRootGroup(newRootGroup.toJSON())
+        setGroups(newGroups)
+        updateDocumentsList(newDocuments)
+        setFavorites(newFavorites)
+        setIsLoading(false)
+      }
+      performInitialSetup()
+    }
+  }, [
+    currentEditor,
+    documentsQuery,
+    favoritesQuery,
+    findGroupById,
+    groupsQuery,
+    isInitialLoad,
+    switchDocument,
+    updateDocumentsList,
+  ])
+
+  /**
+   * Handles setting up critical subscriptions
    *
    * TODO: needs a significant rewrite
    */
@@ -149,83 +263,41 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     let documentsSub: Subscription | undefined
     let groupsSub: Subscription | undefined
     let favoritesSub: Subscription | undefined
-    let documentsQuery: RxQuery<DocumentDocType, DocumentDoc[]> | undefined
-    let favoritesQuery: RxQuery<DocumentDocType, DocumentDoc[]> | undefined
-    const index = sorting?.index ?? "modifiedAt"
-    const direction = sorting?.direction ?? "desc"
+    let rootGroupSub: Subscription | undefined
 
-    const setup = async () => {
-      documentsQuery = db.documents
-        .findNotRemoved()
-        .sort({ [index]: direction })
-
-      favoritesQuery = db.documents
-        .findNotRemoved()
-        .where("isFavorite")
-        .eq(true)
-        .sort({ [index]: direction })
-
-      const groupsQuery = db.groups.find()
-
-      // perform first-time setup
-      if (isInitialLoad) {
-        const groupsPromise = groupsQuery.exec()
-        const documentsPromise = documentsQuery.exec()
-        // TODO: favorites can probably be moved into a separate hook as they are not needed for first load
-        const favoritesPromise = favoritesQuery.exec()
-
-        const [newGroups, newDocuments, newFavorites] = await Promise.all([
-          groupsPromise,
-          documentsPromise,
-          favoritesPromise,
-        ])
-
-        if (newDocuments && newDocuments[0] && currentEditor === null) {
-          switchDocument(newDocuments[0].id)
-        }
-
-        setIsInitialLoad(false)
-        setGroups(newGroups)
-        setFavorites(newFavorites)
-        updateDocumentsList(newDocuments)
-        setIsLoading(false)
+    rootGroupSub = rootGroupQuery.$.subscribe((newRootGroup) => {
+      console.log("change", newRootGroup)
+      if (!newRootGroup) {
+        // TODO: consider trying to create it (make sure to handle the in-between state when there is no root group)
+        throw new Error(`Root group not found`)
       }
 
-      // set up subscriptions
-
-      documentsSub = documentsQuery.$.subscribe((newDocuments) => {
-        updateDocumentsList(newDocuments)
+      setRootGroup(() => {
+        console.log("setting")
+        return newRootGroup.toJSON()
       })
+    })
 
-      groupsSub = groupsQuery.$.subscribe((newGroups) => {
-        setGroups(newGroups)
-      })
+    documentsSub = documentsQuery.$.subscribe((newDocuments) => {
+      updateDocumentsList(newDocuments)
+    })
 
-      favoritesSub = favoritesQuery.$.subscribe((newFavorites) => {
-        setFavorites(newFavorites)
-      })
-    }
+    groupsSub = groupsQuery.$.subscribe((newGroups) => {
+      setGroups(newGroups)
+    })
 
-    setup()
+    favoritesSub = favoritesQuery.$.subscribe((newFavorites) => {
+      setFavorites(newFavorites)
+    })
 
     return () => {
-      if (documentsSub) {
-        documentsSub.unsubscribe()
-      }
-      if (groupsSub) {
-        groupsSub.unsubscribe()
-      }
-      if (favoritesSub) {
-        favoritesSub.unsubscribe()
-      }
+      cancelSubscriptions(documentsSub, groupsSub, favoritesSub, rootGroupSub)
     }
   }, [
-    currentEditor,
-    db.documents,
-    db.groups,
-    isInitialLoad,
-    sorting,
-    switchDocument,
+    documentsQuery.$,
+    favoritesQuery.$,
+    groupsQuery.$,
+    rootGroupQuery.$,
     updateDocumentsList,
   ])
 
@@ -300,6 +372,11 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
 
       const groupId = uuidv4()
 
+      // If the parentGroup parameter is null, create the group at the root of the tree
+      if (parentGroup === null) {
+        parentGroup = ROOT_GROUP_ID
+      }
+
       const newGroup = await db.groups.insert({
         id: groupId,
         name: "",
@@ -322,26 +399,11 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     [db.groups, primarySidebar]
   )
 
-  /**
-   * Finds a single group by id
-   *
-   * TODO: if soft-deleting groups is implemented, add an option and handling for removed groups like in findDocumentById
-   * TODO: if soft-deleting groups is implemented, consider creating a more generic function for both groups and documents
-   */
-  const findGroupById: FindGroupByIdFn = useCallback(
-    async (id) => {
-      return await db.groups.findOne().where("id").eq(id).exec()
-    },
-    [db.groups]
-  )
-
   // TODO: special handling and protection for the root group
   const updateGroup: UpdateGroupFn = useCallback(
     async (id, updater) => {
       const original = await findGroupById(id)
-      if (original === null) {
-        throw new Error(`no group found matching this id (${id})`)
-      }
+
       // TODO: this can be extracted for use with other collections
       // TODO: handle errors (especially the ones thrown in pre-middleware because they mean the operation wasn't applied) (maybe handle them in more specialized functions like rename and save)
       const updatedGroup: GroupDoc = await original.update(
@@ -372,14 +434,56 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
       // TODO: consider creating findById static methods on all collections that will abstract this query
       const original = await findGroupById(groupId)
 
-      if (original === null) {
-        throw new Error(`no group found matching this id (${groupId})`)
-      }
-
       // TODO: figure out what the returned boolean means
       return original.remove()
     },
     [findGroupById]
+  )
+
+  const moveGroup: MoveGroupFn = useCallback(
+    async (subjectId, index, targetId) => {
+      // TODO: consider replacing this with a method on the GroupDoc objects (with this becoming a wrapper that first fetches the group object from db by ID)
+
+      const subjectGroup = await findGroupById(subjectId)
+      const targetGroup = await findGroupById(targetId)
+
+      console.log("subjectGroup", subjectGroup)
+      console.log("targetGroup", targetGroup)
+
+      if (subjectGroup.parentGroup === targetId) {
+        // The parent doesn't change - only the order
+
+        // create the new childGroups array
+        const newTargetChildGroups = [...targetGroup.childGroups]
+
+        // find the current index of the subject group
+        const oldIndexOfSubject = newTargetChildGroups.findIndex(
+          (id) => id === subjectId
+        )
+
+        if (oldIndexOfSubject === -1) {
+          // TODO: find a way to handle this gracefully
+          throw new Error("Subject not found in parent")
+        }
+
+        console.log("oldIndex", oldIndexOfSubject)
+
+        // TODO: depending on how the dnd library handles the new index, this might need changes when moving to a location after the old location
+
+        // remove the subjectId from the array
+        newTargetChildGroups.splice(oldIndexOfSubject, 1)
+
+        // insert the subjectId at new index
+        newTargetChildGroups.splice(index, 0, subjectId)
+
+        console.log(targetGroup.childGroups, newTargetChildGroups)
+
+        updateGroup(targetId, { childGroups: newTargetChildGroups })
+      }
+
+      // return updateGroup(subjectId, { parentGroup: targetId })
+    },
+    [findGroupById, updateGroup]
   )
 
   //#endregion
@@ -683,6 +787,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
         documents,
         isLoading,
         sorting,
+        rootGroup,
         switchDocument,
         saveDocument,
         updateCurrentDocument,
@@ -705,6 +810,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
       >
         <GroupsAPIProvider
           value={{
+            moveGroup,
             removeGroup,
             renameGroup,
             createGroup,

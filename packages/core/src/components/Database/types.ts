@@ -133,7 +133,12 @@ export type GroupDocMethods = {}
 
 export type GroupDoc = RxDocument<GroupDocType, GroupDocMethods>
 
-export type GroupCollectionMethods = {}
+export type GroupCollectionMethods = {
+  /**
+   * Attempts to create a new root group n times (n = retryCount)
+   */
+  createRootGroup: (retryCount?: number) => Promise<GroupDoc>
+}
 
 export type GroupCollection = RxCollection<
   GroupDocType,

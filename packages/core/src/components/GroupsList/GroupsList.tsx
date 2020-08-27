@@ -8,8 +8,7 @@ import { TreeItem } from "../TreeItem"
 import Ellipsis from "../Ellipsis"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useGroupsAPI } from "../MainProvider"
-
-const GROUP_TREE_ROOT = "group_tree_root"
+import { ROOT_GROUP_ID } from "../Database/constants"
 
 export const GroupsList: FC<{
   group: GroupTreeBranch
@@ -18,7 +17,7 @@ export const GroupsList: FC<{
   setIsCreatingGroup: (newValue: boolean) => void
 }> = ({ group, depth, isCreatingGroup, setIsCreatingGroup }) => {
   const isEmpty = group.children.length === 0
-  const isRoot = group.id === null
+  const isRoot = group.id === ROOT_GROUP_ID
   const { createGroup } = useGroupsAPI()
 
   const {
@@ -44,7 +43,7 @@ export const GroupsList: FC<{
   }, [isCreatingGroup, isNamingNew, startNamingNew, stopNamingNew])
 
   return (
-    <Droppable droppableId={isRoot ? GROUP_TREE_ROOT : group.id}>
+    <Droppable droppableId={isRoot ? ROOT_GROUP_ID : group.id}>
       {({ innerRef, droppableProps, placeholder }) => (
         <Container ref={innerRef} {...droppableProps}>
           {isEmpty && !isCreatingGroup ? (

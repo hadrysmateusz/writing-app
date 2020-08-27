@@ -51,7 +51,7 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
 export const groupSchema: RxJsonSchema<GroupDocType> = {
   title: "group schema",
   description: "describes a group",
-  version: 2,
+  version: 3,
   type: "object",
   properties: {
     id: {

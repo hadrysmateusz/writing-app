@@ -1,8 +1,8 @@
-import { RxDocument } from "rxdb"
-import { GroupDoc, GroupDocType, GroupDocMethods } from "../../Database"
+import { GroupDoc, GroupDocType } from "../../Database"
 import { Updater } from "./Misc"
 
 export type GroupsAPI = {
+  moveGroup: MoveGroupFn
   createGroup: CreateGroupFn
   renameGroup: RenameGroupFn
   removeGroup: RemoveGroupFn
@@ -18,9 +18,14 @@ export type CreateGroupFn = (
   }
 ) => Promise<GroupDoc>
 
-export type FindGroupByIdFn = (
-  id: string
-) => Promise<RxDocument<GroupDocType, GroupDocMethods> | null>
+export type FindGroupByIdFn = (id: string) => Promise<GroupDoc>
+
+// TODO: figure out proper return value
+export type MoveGroupFn = (
+  subjectId: string,
+  index: number,
+  targetId: string
+) => Promise<void>
 
 export type RemoveGroupFn = (groupId: string) => Promise<boolean>
 
