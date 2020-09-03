@@ -6,6 +6,8 @@ import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import Icon from "../Icon"
 import { ANIMATION_FADEIN, ellipsis } from "../../style-utils"
 
+const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
+
 export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
   groupId,
   children,
@@ -40,7 +42,7 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
   }
 
   const sortByText = useMemo(() => {
-    return { modifiedAt: "Modified Date", title: "Title" }[sorting.index]
+    return SORT_METHODS[sorting.index]
   }, [sorting.index])
 
   return (
@@ -50,7 +52,11 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
         <div className="SectionHeader_Name" onContextMenu={handleContextMenu}>
           {children}
         </div>
-        <div className="SectionHeader_SortBy" onClick={handleChangeSorting}>
+        <div
+          className="SectionHeader_SortBy"
+          onClick={handleChangeSorting}
+          title="Change sorting method"
+        >
           {/* TODO: consider replacing this index-based text with a simple "Sort By" and mark the current one as active in the dropdown */}
           <div>{sortByText}</div> <Icon icon="chevronDown" />
         </div>
@@ -65,10 +71,10 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
       {isSortingMenuOpen && (
         <SortingContextMenu>
           <ContextMenuItem onClick={() => changeSorting("title", "asc")}>
-            Title
-          </ContextMenuItem>{" "}
+            {SORT_METHODS.title}
+          </ContextMenuItem>
           <ContextMenuItem onClick={() => changeSorting("modifiedAt", "desc")}>
-            Modified Date
+            {SORT_METHODS.modifiedAt}
           </ContextMenuItem>
         </SortingContextMenu>
       )}
