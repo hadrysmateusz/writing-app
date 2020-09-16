@@ -114,31 +114,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
           name: "groups",
           schema: groupSchema,
           sync: true,
-          statics: {
-            createRootGroup: async function (
-              this: GroupCollection,
-              retryCount: number = 3
-            ) {
-              let attempt = 1
-              let group: GroupDoc | null = null
-
-              while (group === null && attempt < retryCount) {
-                group = await this.insert({
-                  id: ROOT_GROUP_ID,
-                  name: "ROOT",
-                  parentGroup: null,
-                  childGroups: [],
-                })
-                attempt++
-              }
-
-              if (group === null) {
-                throw new Error("Couldn't create the root group")
-              }
-
-              return group
-            },
-          },
+          statics: {},
           // I was changing indexes, that's why these migration strats are so weird.
           migrationStrategies: {},
           pouchSettings: {
