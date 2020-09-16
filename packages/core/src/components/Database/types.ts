@@ -123,22 +123,16 @@ export type GroupDocType = {
    */
   parentGroup: string | null
   /**
-   * Ordered array of child group IDs
+   * Position among other groups in the same parent group
    */
-  childGroups: string[]
-  // childDocuments: string[]
+  position: string
 }
 
 export type GroupDocMethods = {}
 
 export type GroupDoc = RxDocument<GroupDocType, GroupDocMethods>
 
-export type GroupCollectionMethods = {
-  /**
-   * Attempts to create a new root group n times (n = retryCount)
-   */
-  createRootGroup: (retryCount?: number) => Promise<GroupDoc>
-}
+export type GroupCollectionMethods = {}
 
 export type GroupCollection = RxCollection<
   GroupDocType,

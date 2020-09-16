@@ -11,7 +11,7 @@ export type GroupsAPI = {
 }
 
 export type CreateGroupFn = (
-  parentGroup: string | null,
+  parentGroupId: string | null,
   values?: Partial<GroupDoc>,
   options?: {
     switchTo?: boolean
@@ -24,8 +24,8 @@ export type FindGroupByIdFn = (id: string) => Promise<GroupDoc>
 export type MoveGroupFn = (
   subjectId: string,
   index: number,
-  targetId: string
-) => Promise<void>
+  targetId: string | null
+) => Promise<boolean>
 
 export type RemoveGroupFn = (groupId: string) => Promise<boolean>
 

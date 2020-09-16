@@ -12,6 +12,7 @@ import { AccountModalContent } from "../AccountModal"
 import { SidebarImportButton } from "../Importer"
 import { FavoritesSection } from "./FavoritesSection"
 import { GroupsSection } from "./GroupsSection"
+import { SectionContainer } from "./Common"
 
 export const NavigatorSidebar: React.FC = React.memo(() => {
   const { createDocument } = useDocumentsAPI()
@@ -112,11 +113,10 @@ export const NavigatorSidebar: React.FC = React.memo(() => {
 
 const InnerContainer = styled.div``
 
-const SectionContainer = styled.div`
-  padding-top: 20px;
-`
-
 const OuterContainer = styled.div`
+  --navigator-sidebar-spacing: 20px;
+
+  padding-top: var(--navigator-sidebar-spacing);
   font-size: 12px;
   border-right: 1px solid;
   border-color: #383838;

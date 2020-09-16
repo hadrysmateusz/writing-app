@@ -8,6 +8,8 @@ import Main from "../components/Main"
 import { ImageModalProvider } from "../components/ImageModal"
 import { LinkModalProvider } from "../components/LinkPrompt"
 import { UserdataProvider } from "../components/Userdata"
+import { DndProvider } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
 
 const EditorPage = () => (
   <DatabaseProvider>
@@ -15,11 +17,13 @@ const EditorPage = () => (
       <EditorStateProvider>
         <ViewStateProvider>
           <MainProvider>
-            <ImageModalProvider>
-              <LinkModalProvider>
-                <Main />
-              </LinkModalProvider>
-            </ImageModalProvider>
+            <DndProvider backend={HTML5Backend}>
+              <ImageModalProvider>
+                <LinkModalProvider>
+                  <Main />
+                </LinkModalProvider>
+              </ImageModalProvider>
+            </DndProvider>
           </MainProvider>
         </ViewStateProvider>
       </EditorStateProvider>

@@ -2,13 +2,14 @@ import React, { useState, useCallback, useEffect, useMemo } from "react"
 import { useEditor } from "slate-react"
 import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
+import mudder from "mudder"
 
 import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
 import { deserialize, serialize } from "../Editor/serialization"
 import { VIEWS } from "../Sidebar/types"
 import { useViewState } from "../View"
 import { useModal } from "../Modal"
-import { useDatabase, DocumentDoc, GroupDoc, GroupDocType } from "../Database"
+import { useDatabase, DocumentDoc, GroupDoc } from "../Database"
 
 import { listenForIpcEvent, createContext } from "../../utils"
 
@@ -39,7 +40,9 @@ import {
   UpdateGroupFn,
   MoveGroupFn,
 } from "./types"
-import { ROOT_GROUP_ID } from "../Database/constants"
+import { GROUP_TREE_ROOT } from "../../constants"
+
+const m = mudder.base62
 
 export const [
   useDocumentsAPI,
@@ -88,7 +91,6 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   const [groups, setGroups] = useState<GroupDoc[]>([])
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
-  const [rootGroup, setRootGroup] = useState<GroupDocType>()
 
   // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
 
@@ -125,11 +127,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   // Queries
 
   const groupsQuery = useMemo(() => {
-    return db.groups.find()
-  }, [db.groups])
-
-  const rootGroupQuery = useMemo(() => {
-    return db.groups.findOne().where("id").eq(ROOT_GROUP_ID)
+    return db.groups.find().sort({ position: "desc" })
   }, [db.groups])
 
   const documentsQuery = useMemo(() => {
@@ -159,10 +157,10 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     async (id) => {
       let foundGroup = await db.groups.findOne().where("id").eq(id).exec()
 
-      // If was trying to find root group and failed, attempt to create it
-      if (foundGroup === null && id === ROOT_GROUP_ID) {
-        foundGroup = await db.groups.createRootGroup()
-      }
+      // // If was trying to find root group and failed, attempt to create it
+      // if (foundGroup === null && id === ROOT_GROUP_ID) {
+      //   foundGroup = await db.groups.createRootGroup()
+      // }
 
       if (foundGroup === null) {
         throw new Error(`No group found matching this ID: ${id})`)
@@ -213,19 +211,12 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
         const documentsPromise = documentsQuery.exec()
         // TODO: favorites can probably be moved into a separate hook as they are not needed for first load
         const favoritesPromise = favoritesQuery.exec()
-        const rootGroupPromise = findGroupById(ROOT_GROUP_ID)
 
         // TODO: this can fail if root group can't be found / created - handle this properly
-        const [
-          newGroups,
-          newDocuments,
-          newFavorites,
-          newRootGroup,
-        ] = await Promise.all([
+        const [newGroups, newDocuments, newFavorites] = await Promise.all([
           groupsPromise,
           documentsPromise,
           favoritesPromise,
-          rootGroupPromise,
         ])
 
         // if current editor is set to null and there are new documents, switch to the first one
@@ -235,7 +226,6 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
         }
 
         setIsInitialLoad(false)
-        setRootGroup(newRootGroup.toJSON())
         setGroups(newGroups)
         updateDocumentsList(newDocuments)
         setFavorites(newFavorites)
@@ -263,20 +253,6 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     let documentsSub: Subscription | undefined
     let groupsSub: Subscription | undefined
     let favoritesSub: Subscription | undefined
-    let rootGroupSub: Subscription | undefined
-
-    rootGroupSub = rootGroupQuery.$.subscribe((newRootGroup) => {
-      console.log("change", newRootGroup)
-      if (!newRootGroup) {
-        // TODO: consider trying to create it (make sure to handle the in-between state when there is no root group)
-        throw new Error(`Root group not found`)
-      }
-
-      setRootGroup(() => {
-        console.log("setting")
-        return newRootGroup.toJSON()
-      })
-    })
 
     documentsSub = documentsQuery.$.subscribe((newDocuments) => {
       updateDocumentsList(newDocuments)
@@ -291,15 +267,9 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     })
 
     return () => {
-      cancelSubscriptions(documentsSub, groupsSub, favoritesSub, rootGroupSub)
+      cancelSubscriptions(documentsSub, groupsSub, favoritesSub)
     }
-  }, [
-    documentsQuery.$,
-    favoritesQuery.$,
-    groupsQuery.$,
-    rootGroupQuery.$,
-    updateDocumentsList,
-  ])
+  }, [documentsQuery.$, favoritesQuery.$, groupsQuery.$, updateDocumentsList])
 
   /**
    * Handles changing all of the state and side-effects of switching editors
@@ -367,30 +337,47 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
    * Creates a new group under the provided parent group
    */
   const createGroup: CreateGroupFn = useCallback(
-    async (parentGroup, values, options = {}) => {
+    async (parentGroupId, values, options = {}) => {
       const { switchTo = true } = options
 
-      const groupId = uuidv4()
+      // TODO: create a slug from the name and append uuid or shortid to make debugging easier
+      const newGroupId = uuidv4()
 
-      // If the parentGroup parameter is null, create the group at the root of the tree
-      if (parentGroup === null) {
-        parentGroup = ROOT_GROUP_ID
+      const lastSibling = await db.groups
+        .findOne()
+        .where("parentGroup")
+        .eq(parentGroupId)
+        .sort({ position: "desc" })
+        .exec()
+
+      const prevPosition = lastSibling?.position
+      let newPosition = (prevPosition
+        ? m.mudder(prevPosition, "Z", 1)
+        : m.mudder(1))[0]
+
+      console.log(lastSibling, newPosition)
+
+      let newGroup: GroupDoc | undefined
+
+      try {
+        newGroup = await db.groups.insert({
+          id: newGroupId,
+          name: "",
+          parentGroup: parentGroupId,
+          position: newPosition,
+          ...values,
+        })
+      } catch (error) {
+        console.error("Failed to create the new group object")
+        throw error
       }
-
-      const newGroup = await db.groups.insert({
-        id: groupId,
-        name: "",
-        parentGroup: parentGroup,
-        childGroups: [],
-        ...values,
-      })
 
       if (switchTo) {
         // this timeout is needed because of the way the sidebar looks for groups - it fetches them once and does a search on the array
         // TODO: that behavior should probably be replaced by a normal query for the group id (maybe with an additional cache layer) and this should eliminate the need for this timeout
         // TODO: to make it even smoother I could make it so that the switch is instant (even before the collection is created) and the sidebar waits for it to be created, this would require the sidebar to not default to all documents view on an unfound group id and for groups to be soft deleted so that if it's deleted it can go to the all documents view and maybe show a notification saying that the group you were looking for was deleted (or simply an empty state saying the same requiring the user to take another action) and if it wasn't deleted but isn't found to simply wait for it to be created (there should be a timeout of course if something went wrong and maybe even internal state that could show an error/empty state if there was an issue with creating the group)
         setTimeout(() => {
-          primarySidebar.switchView(groupId)
+          primarySidebar.switchView(newGroupId)
         }, 100)
       }
 
@@ -441,49 +428,156 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   )
 
   const moveGroup: MoveGroupFn = useCallback(
-    async (subjectId, index, targetId) => {
-      // TODO: consider replacing this with a method on the GroupDoc objects (with this becoming a wrapper that first fetches the group object from db by ID)
+    async (
+      /**
+       * Id of group that will be moved
+       */
+      subjectId,
+      /**
+       * New position of the group
+       *
+       * The provided 0-based index will be translated into a proper "position"
+       */
+      index,
+      /**
+       * Id of the group that will be the new parent of the group
+       */
+      targetId
+    ) => {
+      try {
+        // debugger
 
-      const subjectGroup = await findGroupById(subjectId)
-      const targetGroup = await findGroupById(targetId)
-
-      console.log("subjectGroup", subjectGroup)
-      console.log("targetGroup", targetGroup)
-
-      if (subjectGroup.parentGroup === targetId) {
-        // The parent doesn't change - only the order
-
-        // create the new childGroups array
-        const newTargetChildGroups = [...targetGroup.childGroups]
-
-        // find the current index of the subject group
-        const oldIndexOfSubject = newTargetChildGroups.findIndex(
-          (id) => id === subjectId
-        )
-
-        if (oldIndexOfSubject === -1) {
-          // TODO: find a way to handle this gracefully
-          throw new Error("Subject not found in parent")
+        if (targetId === GROUP_TREE_ROOT) {
+          targetId = null
         }
 
-        console.log("oldIndex", oldIndexOfSubject)
+        // Make sure that the group is not being moved inside one of its descendants (or itself)
+        let descendantId = targetId
+        while (descendantId !== null) {
+          if (descendantId === subjectId) {
+            console.info("can't move group inside one of its descendants")
+            return false
+          }
+          const group = await findGroupById(descendantId)
+          descendantId = group.parentGroup
+        }
 
-        // TODO: depending on how the dnd library handles the new index, this might need changes when moving to a location after the old location
+        const siblings = await db.groups
+          .find()
+          .where("parentGroup")
+          .eq(targetId)
+          .sort({ position: "asc" })
+          .exec()
 
-        // remove the subjectId from the array
-        newTargetChildGroups.splice(oldIndexOfSubject, 1)
+        // const oldIndex = siblings.findIndex((g) => g.id === subjectId)
 
-        // insert the subjectId at new index
-        newTargetChildGroups.splice(index, 0, subjectId)
+        // const isMovingBefore = oldIndex > index
 
-        console.log(targetGroup.childGroups, newTargetChildGroups)
+        // const prevIndex = isMovingBefore ? index - 1 : index
+        // const nextIndex = isMovingBefore ? index : index + 1
 
-        updateGroup(targetId, { childGroups: newTargetChildGroups })
+        const prevIndex = index
+        const nextIndex = index + 1
+
+        const prevPosition = siblings[prevIndex]?.position ?? "0"
+        const nextPosition = siblings[nextIndex]?.position ?? "Z"
+
+        const newPosition = m.mudder(prevPosition, nextPosition, 1)[0]
+
+        try {
+          await updateGroup(subjectId, {
+            parentGroup: targetId,
+            position: newPosition,
+          })
+          return true
+        } catch (error) {
+          console.error(error) // TODO: better error handling
+          return false
+        }
+
+        // TODO: consider replacing this with a method on the GroupDoc objects (with this becoming a wrapper that first fetches the group object from db by ID)
+        // const subjectGroup = await findGroupById(subjectId)
+        // const targetGroup = await findGroupById(targetId)
+        // console.log("subjectGroup", subjectGroup)
+        // console.log("targetGroup", targetGroup)
+        // if (subjectGroup.parentGroup === null) {
+        //   throw new Error("can't move root group")
+        // }
+        // // The parent doesn't change - only the order
+        // if (subjectGroup.parentGroup === targetId) {
+        //   // create the new childGroups array
+        //   const newTargetChildGroups = [...targetGroup.childGroups]
+        //   // find the current index of the subject group
+        //   const oldIndexOfSubject = newTargetChildGroups.findIndex(
+        //     (id) => id === subjectId
+        //   )
+        //   if (oldIndexOfSubject === -1) {
+        //     // TODO: find a way to handle this gracefully
+        //     throw new Error("Subject not found in parent")
+        //   }
+        //   console.log("oldIndex", oldIndexOfSubject)
+        //   // TODO: depending on how the dnd library handles the new index, this might need changes when moving to a location after the old location
+        //   // remove the subjectId from the array
+        //   newTargetChildGroups.splice(oldIndexOfSubject, 1)
+        //   // insert the subjectId at new index
+        //   newTargetChildGroups.splice(index, 0, subjectId)
+        //   console.log(targetGroup.childGroups, newTargetChildGroups)
+        //   try {
+        //     await updateGroup(targetId, { childGroups: newTargetChildGroups })
+        //     return true
+        //   } catch (error) {
+        //     console.error(error) // TODO: better error handling
+        //     return false
+        //   }
+        // } else {
+        //   const oldParentGroupId = subjectGroup.parentGroup
+        //   const oldParentGroup = await findGroupById(oldParentGroupId)
+        //   const oldParentChildGroups = [...oldParentGroup.childGroups]
+        //   const oldIndexOfSubject = oldParentChildGroups.findIndex(
+        //     (id) => id === subjectId
+        //   )
+        //   if (oldIndexOfSubject === -1) {
+        //     throw new Error("Subject not found in parent") // TODO: find a way to handle this gracefully
+        //   }
+        //   const newParentChildGroups = oldParentChildGroups.splice(
+        //     oldIndexOfSubject,
+        //     1
+        //   )
+        //   const newTargetChildGroups = [...targetGroup.childGroups].splice(
+        //     index,
+        //     0,
+        //     subjectId
+        //   )
+        //   // remove the subject id from old parent group's childGroups list
+        //   const updateParentPromise = updateGroup(oldParentGroupId, {
+        //     childGroups: newParentChildGroups,
+        //   })
+        //   // add the subject id to new parent group's childGroups list
+        //   const updateTargetPromise = updateGroup(targetId, {
+        //     childGroups: newTargetChildGroups,
+        //   })
+        //   // change the parentGroup id on the subject group
+        //   const updateSubjectPromise = updateGroup(subjectId, {
+        //     parentGroup: targetId,
+        //   })
+        //   try {
+        //     await Promise.all([
+        //       updateParentPromise,
+        //       updateTargetPromise,
+        //       updateSubjectPromise,
+        //     ])
+        //     return true
+        //   } catch (error) {
+        //     console.error(error) // TODO: better error handling
+        //     return false
+        //   }
+        // }
+      } catch (error) {
+        console.error(error) // TODO: better error handling
+        return false
       }
-
-      // return updateGroup(subjectId, { parentGroup: targetId })
     },
-    [findGroupById, updateGroup]
+    [db.groups, findGroupById, updateGroup]
   )
 
   //#endregion
@@ -787,7 +881,6 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
         documents,
         isLoading,
         sorting,
-        rootGroup,
         switchDocument,
         saveDocument,
         updateCurrentDocument,

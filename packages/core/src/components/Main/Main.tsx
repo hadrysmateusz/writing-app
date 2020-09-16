@@ -2,14 +2,13 @@ import React, { useMemo, useCallback } from "react"
 import styled from "styled-components/macro"
 import { useEditor } from "slate-react"
 import SplitPane from "react-split-pane"
-import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd"
 
 import { PrimarySidebar, SecondarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
 
 import { useViewState } from "../View/ViewStateProvider"
 import { useEditorState } from "../EditorStateProvider"
-import { useMainState, useGroupsAPI } from "../MainProvider"
+import { useMainState } from "../MainProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { Topbar } from "../Topbar"
 import { getDefaultSize, setDefaultSize } from "./helpers"
@@ -122,45 +121,17 @@ const InnermostRenderer: React.FC = () => {
 const Main = () => {
   const { editorValue } = useEditorState()
   const { isLoading } = useMainState()
-  const { moveGroup } = useGroupsAPI()
   const editor = useEditor()
 
   useDevUtils({ value: editorValue, editor })
 
-  // TODO: implement moving between groups
-  const onDragEnd: OnDragEndResponder = useCallback(
-    (result) => {
-      const { destination, source, draggableId } = result
-
-      if (!destination) {
-        return
-      }
-
-      if (
-        destination.droppableId === source.droppableId &&
-        destination.index === source.index
-      ) {
-        return
-      }
-
-      console.log(`should move group ${draggableId} 
-from group ${source.droppableId} (index ${source.index})
-to group ${destination.droppableId} (index ${destination.index})`)
-
-      moveGroup(draggableId, destination.index, destination.droppableId)
-    },
-    [moveGroup]
-  )
-
   const error = null // TODO: actual error handling
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <OuterContainer>
-        {/* TODO: loading state handling */}
-        {isLoading ? null : error ? error : <OuterRenderer />}
-      </OuterContainer>
-    </DragDropContext>
+    <OuterContainer>
+      {/* TODO: loading state handling */}
+      {isLoading ? null : error ? error : <OuterRenderer />}
+    </OuterContainer>
   )
 }
 

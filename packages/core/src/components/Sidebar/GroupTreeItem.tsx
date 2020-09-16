@@ -1,7 +1,12 @@
-import React, { useMemo, useCallback, useState, useEffect } from "react"
-import styled from "styled-components/macro"
-import { Draggable } from "react-beautiful-dnd"
-import { Subscription } from "rxjs"
+import React, { useMemo, useCallback, useState, useRef } from "react"
+import styled, { css } from "styled-components/macro"
+import { throttle } from "lodash"
+import {
+  DragObjectWithType,
+  DropTargetMonitor,
+  useDrag,
+  useDrop,
+} from "react-dnd"
 
 import { StatelessExpandableTreeItem, AddButton } from "../TreeItem"
 import {
@@ -13,9 +18,21 @@ import { useViewState } from "../View/ViewStateProvider"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { GroupsList } from "../GroupsList"
+import {
+  HoverState,
+  GroupHoverItem,
+  GroupDropResult,
+  GroupDragCollectedProps,
+} from "./types"
 
 import { formatOptional } from "../../utils"
+import { DND_TYPES } from "../../constants"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
+
+// ============== DRAG'N'DROP IMPROVEMENTS ===============
+// TODO: when dropping in the same place (on the same item), don't show the hover indicator
+// TODO: make it clear when a drop will be dropped at a different depth
+// TODO: make it possible to drop on the "Add Collection" button and the section header to drop as the last and first item respectively
 
 const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
@@ -23,57 +40,19 @@ const GroupTreeItem: React.FC<{
   depth?: number
 }> = ({ group, depth, index }) => {
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const { createDocument, findDocuments } = useDocumentsAPI()
-  const { renameGroup, removeGroup } = useGroupsAPI()
+  const { createDocument } = useDocumentsAPI()
+  const { renameGroup, removeGroup, moveGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isEmpty, setIsEmpty] = useState(true)
+  const [hoverState, setHoverState] = useState<HoverState>(HoverState.outside)
+  const droppableRef = useRef<HTMLDivElement>(null)
 
-  const updateIsEmpty = useCallback((documents) => {
-    setIsEmpty(documents.length === 0)
-  }, [])
+  const isEmpty = useMemo(() => {
+    return group.children.length === 0
+  }, [group.children.length])
 
-  // TODO: this might be unnecessary and could possibly increase costs and/or impact performance
-  useEffect(() => {
-    if (group.children.length > 0) {
-      setIsEmpty(false)
-      return
-    }
-
-    let documentsSub: Subscription | undefined
-
-    const setup = async () => {
-      try {
-        const documentsQuery = await findDocuments()
-          .where("parentGroup")
-          .eq(group.id)
-
-        const newDocuments = await documentsQuery.exec()
-        updateIsEmpty(newDocuments)
-        documentsSub = documentsQuery.$.subscribe(updateIsEmpty)
-      } catch (error) {
-        // TODO: handle better in prod
-        throw error
-      }
-    }
-
-    setup()
-
-    return () => {
-      if (documentsSub) {
-        documentsSub.unsubscribe()
-      }
-    }
-  }, [
-    findDocuments,
-    group.children.length,
-    group.id,
-    primarySidebar,
-    updateIsEmpty,
-  ])
-
-  const { startRenaming, getProps } = useEditableText(
+  const { startRenaming, getProps, isRenaming } = useEditableText(
     formatOptional(group.name, ""),
     (value: string) => {
       renameGroup(group.id, value)
@@ -114,15 +93,124 @@ const GroupTreeItem: React.FC<{
     ? "folderEmpty"
     : "folderClosed"
 
+  const getHoverState = (
+    target: DOMRect | undefined,
+    monitor: DropTargetMonitor
+  ) => {
+    if (!monitor.isOver()) {
+      return HoverState.outside
+    }
+
+    const pointer = monitor.getClientOffset()
+
+    if (target && pointer) {
+      const offset = 8
+
+      const position = pointer.y
+
+      const top = target.y
+      const topInner = top + offset
+      const bottom = target.y + target.height
+      const bottomInner = bottom - offset
+
+      if (position >= top && position <= topInner) {
+        return HoverState.above
+      } else if (position <= bottom && position >= bottomInner) {
+        return HoverState.below
+      } else if (position >= topInner && position <= bottomInner) {
+        return HoverState.inside
+      }
+    }
+
+    return HoverState.outside
+  }
+
+  const [{ isDragging }, drag] = useDrag<
+    GroupHoverItem,
+    GroupDropResult,
+    GroupDragCollectedProps
+  >({
+    item: { type: DND_TYPES.GROUP, id: group.id, parentId: group.parentGroup },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+    end: async (item, monitor) => {
+      const results = monitor.getDropResult()
+
+      if (!results) {
+        console.info("no results, drag was probably cancelled")
+        return
+      }
+
+      const { destinationId, destinationIndex } = results
+
+      if (!item) {
+        console.info("no item")
+        return
+      }
+
+      console.info(`should move group ${item.id}
+from group ${item.parentId} (index ${index})
+to group ${destinationId} (index ${destinationIndex})`)
+
+      await moveGroup(item.id, destinationIndex, destinationId)
+    },
+  })
+
+  const onHover = useMemo(() => {
+    return throttle((_item: DragObjectWithType, monitor: DropTargetMonitor) => {
+      const target = droppableRef.current?.getBoundingClientRect()
+      const newHoverState = getHoverState(target, monitor)
+      setHoverState(newHoverState)
+    }, 20)
+  }, [])
+
+  const [{ isOverCurrent }, drop] = useDrop({
+    accept: DND_TYPES.GROUP,
+    drop: (_item: GroupHoverItem, monitor): GroupDropResult | undefined => {
+      if (monitor.didDrop()) return
+
+      const target = droppableRef.current?.getBoundingClientRect()
+
+      const hoverState = getHoverState(target, monitor)
+
+      switch (hoverState) {
+        case HoverState.above:
+          return {
+            destinationId: group.parentGroup,
+            destinationIndex: index - 1,
+          }
+        case HoverState.below:
+          return {
+            destinationId: group.parentGroup,
+            destinationIndex: index,
+          }
+        case HoverState.inside:
+          return {
+            destinationId: group.id,
+            destinationIndex: Math.min(group.children.length - 1, 0),
+          }
+        default:
+          return undefined
+      }
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+      isOverCurrent: !!monitor.isOver({ shallow: true }),
+    }),
+    hover: onHover,
+  })
+
   return (
     <>
-      <Draggable draggableId={group.id} index={index}>
-        {(provided) => {
-          return (
-            <DraggableWrapper
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              ref={provided.innerRef}
+      <div style={{ position: "relative" }}>
+        <div ref={droppableRef}>
+          <div ref={drop}>
+            <div
+              ref={drag}
+              style={{
+                opacity: isDragging ? "0.2" : "1",
+              }}
             >
               <StatelessExpandableTreeItem
                 key={group.id}
@@ -143,12 +231,18 @@ const GroupTreeItem: React.FC<{
                 )}
               >
                 <EditableText {...getProps()}>{groupName}</EditableText>
-                <AddButton groupId={group.id} />
+                {!isRenaming && <AddButton groupId={group.id} />}
               </StatelessExpandableTreeItem>
-            </DraggableWrapper>
-          )
-        }}
-      </Draggable>
+            </div>
+          </div>
+        </div>
+
+        <DropIndicator
+          state={hoverState}
+          visible={hoverState !== HoverState.outside && isOverCurrent}
+        />
+      </div>
+
       {isMenuOpen && (
         <ContextMenu>
           <ContextMenuItem onClick={handleNewDocument}>
@@ -169,6 +263,42 @@ const GroupTreeItem: React.FC<{
   )
 }
 
-export default GroupTreeItem
+const DropIndicator = styled.div<{ state: HoverState; visible: boolean }>`
+  left: 0;
+  right: 0;
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 200ms ease-out;
+  opacity: ${(p) => (p.visible ? "1" : "0")};
 
-const DraggableWrapper = styled.div``
+  ${(p) => {
+    if (p.state === HoverState.above) {
+      return css`
+        top: -2px;
+        height: 4px;
+        background: rgba(40, 147, 235, 0.5);
+      `
+    } else if (p.state === HoverState.below) {
+      return css`
+        bottom: -2px;
+        height: 4px;
+        background: rgba(40, 147, 235, 0.5);
+      `
+      // This condition is required to avoid visual issues with rendering the "inside" styles when state is "outside" but the visibility isn't reset yet
+    } else if (p.state === HoverState.inside) {
+      return css`
+        top: 0;
+        background: rgba(40, 147, 235, 0.25);
+        height: 100%;
+      `
+    } else {
+      return css`
+        background: none;
+      `
+    }
+  }};
+`
+
+export default GroupTreeItem

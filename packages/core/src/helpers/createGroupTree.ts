@@ -12,17 +12,9 @@
 //   { id: "Intermediate", parentGroup: "Javascript" },
 // ]
 
-import { GroupDoc } from "../components/Database"
+import { GroupDoc, GroupDocType } from "../components/Database"
 
-export type Group = {
-  id: string
-  name: string
-  parentGroup: string | null
-} | null
-
-export interface GroupTreeBranch {
-  id: string
-  name: string
+export interface GroupTreeBranch extends GroupDocType {
   children: GroupTreeBranch[]
 }
 
@@ -37,6 +29,7 @@ export const findInTree = (
       return node
     }
   }
+
   /* 
   Run the function recursively for all of the child nodes - if it is found in one of them, return it
 
@@ -73,8 +66,8 @@ export const findChildGroups = (node: GroupTreeBranch): GroupTreeBranch[] => {
 
 // TODO: improve type-related stuff
 export const createBranch = (
-  group: Group | null,
-  allGroups: Group[]
+  group: GroupDocType | null,
+  allGroups: (GroupDocType | null)[]
 ): GroupTreeBranch => {
   const id = group === null ? null : group.id
 
@@ -103,15 +96,14 @@ export const createBranch = (
     id: group ? group.id : null,
     name: group ? group.name : "All Collections",
     children,
+    // TODO: having both id and parentGroup set to null (for root group) sounds like a recipe for disaster so I might have to bring back a unique string id for the root group
+    parentGroup: group ? group.parentGroup : null,
   } as GroupTreeBranch
 }
 
-const createGroupTree = (
-  rootGroup: GroupDoc | null,
-  allGroups: GroupDoc[]
-): GroupTreeBranch => {
+const createGroupTree = (allGroups: GroupDoc[]): GroupTreeBranch => {
   const plainGroups = allGroups.map((group) => group.toJSON())
-  const groupTree = createBranch(rootGroup, plainGroups)
+  const groupTree = createBranch(null, plainGroups)
   return groupTree
 }
 

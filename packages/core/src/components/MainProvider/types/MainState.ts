@@ -8,7 +8,6 @@ export type MainState = {
   documents: DocumentDoc[]
   favorites: DocumentDoc[]
   currentDocument: DocumentDoc | null
-  rootGroup: GroupDoc | undefined
   sorting: Sorting
   changeSorting: ChangeSortingFn
   saveDocument: SaveDocumentFn

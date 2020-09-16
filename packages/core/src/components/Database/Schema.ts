@@ -65,22 +65,12 @@ export const groupSchema: RxJsonSchema<GroupDocType> = {
     parentGroup: {
       type: ["string", "null"],
     },
-    childGroups: {
-      type: "array",
-      uniqueItems: true,
-      items: {
-        type: "string",
-      },
+    position: {
+      type: "string",
     },
-    // childDocuments: {
-    //   type: "array",
-    //   uniqueItems: true,
-    //   items: {
-    //     type: "string",
-    //   },
-    // },
   },
-  required: ["name", "parentGroup"],
+  required: ["name", "parentGroup", "position"],
+  indexes: ["position", "name"],
 }
 
 export const userdataSchema: RxJsonSchema<UserdataDocType> = {
