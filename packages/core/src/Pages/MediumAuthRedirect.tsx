@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 
-import { MESSAGE_TYPES } from "@writing-tool/core"
+import { MESSAGE_TYPES } from "@writing-tool/shared"
 
 /**
  * this is the redirect page for the Medium OAuth popup,

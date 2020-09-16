@@ -105,6 +105,8 @@ export const UserdataProvider: React.FC = ({ children }) => {
       /*
         TODO: better error handling
 
+        TODO: consider splitting sensitive userdata from non-sensitive userdata - this would make it possible to only allow the server to modify the sensitive stuff and prevent issues where code for changing settings can be used to modify subscription status etc. - This data could even be stored in a simpler database like dynamoDb and shouldn't be replicated (although that might cause issues with offline capabilities)
+
         Consider doing the following:
 
         If the userdataDoc is null use the defaultUserdata object, apply the 

@@ -2,19 +2,22 @@ import React, { useRef, useEffect, useState } from "react"
 
 import {
   ROUTES,
-  openPopupWindow,
   API_ROUTES,
-  HOSTING_URL,
-  MEDIUM_API_AUTH_URL,
-  API_BASE_URL,
   MESSAGE_TYPES,
-} from "@writing-tool/core"
+  MEDIUM_API_AUTH_URL,
+  API_BASE_URL_DEV,
+  FRONTEND_BASE_URL_PROD,
+} from "@writing-tool/shared"
+
+import { openPopupWindow } from "../utils"
+
+// TODO: better handle different urls and config in dev and prod
 
 export const ConnectWithMedium = () => {
   const popupWindow = useRef(null)
   const [oAuthState] = useState("asdf") // TODO: generate proper state string
   const redirect_uri = encodeURIComponent(
-    HOSTING_URL + ROUTES.MEDIUM_AUTH_CALLBACK
+    FRONTEND_BASE_URL_PROD + ROUTES.MEDIUM_AUTH_CALLBACK
   )
   const [error, setError] = useState(null)
 
@@ -38,18 +41,21 @@ export const ConnectWithMedium = () => {
     async function fetchMediumAccessToken(code) {
       console.log("Fetching medium access token...")
 
-      const apiRes = await fetch(API_BASE_URL + API_ROUTES.MEDIUM_AUTHORIZE, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Accept-Charset": "utf-8",
-        },
-        body: {
-          code,
-          redirect_uri,
-        },
-      })
+      const apiRes = await fetch(
+        API_BASE_URL_DEV + API_ROUTES.MEDIUM_AUTHORIZE,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Accept-Charset": "utf-8",
+          },
+          body: {
+            code,
+            redirect_uri,
+          },
+        }
+      )
 
       const data = await apiRes.json()
       console.log(data)
@@ -59,7 +65,7 @@ export const ConnectWithMedium = () => {
       const { data } = event
       // TODO: add all other valid origins
       // verify that the message comes from a valid origin
-      if (![HOSTING_URL].includes(event.origin)) {
+      if (![FRONTEND_BASE_URL_PROD].includes(event.origin)) {
         throw new Error("Message comes from invalid origin: " + event.origin)
       }
       // if there was an error, re-throw it
