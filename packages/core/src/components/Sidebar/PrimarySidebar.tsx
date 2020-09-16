@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 
 import { useViewState } from "../View/ViewStateProvider"
 
-import { VIEWS } from "./types"
+import { VIEWS } from "../../constants"
 import {
   AllDocumentsView,
   InboxView,

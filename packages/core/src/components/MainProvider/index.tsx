@@ -6,11 +6,11 @@ import mudder from "mudder"
 
 import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
 import { deserialize, serialize } from "../Editor/serialization"
-import { VIEWS } from "../Sidebar/types"
 import { useViewState } from "../View"
 import { useModal } from "../Modal"
 import { useDatabase, DocumentDoc, GroupDoc } from "../Database"
 
+import { VIEWS } from "../../constants"
 import { listenForIpcEvent, createContext } from "../../utils"
 
 import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"

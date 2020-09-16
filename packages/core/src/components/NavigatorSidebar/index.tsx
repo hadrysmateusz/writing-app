@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import styled from "styled-components/macro"
 
-import { VIEWS } from "../Sidebar/types"
+import { VIEWS } from "../../constants"
 import { TreeItem, AddButton } from "../TreeItem"
 import { useContextMenu, ContextMenuItem } from "../ContextMenu"
 import { useViewState } from "../View/ViewStateProvider"

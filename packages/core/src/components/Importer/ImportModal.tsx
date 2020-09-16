@@ -6,7 +6,7 @@ import { useDocumentsAPI } from "../MainProvider"
 import { deserializeMarkdown } from "../../slate-helpers/deserialize"
 import { useViewState } from "../View"
 import { useMainState } from "../MainProvider"
-import { VIEWS } from "../Sidebar/types"
+import { VIEWS } from "../../constants"
 
 const ModalContainer = styled.div`
   background: #252525;

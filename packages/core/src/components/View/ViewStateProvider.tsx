@@ -1,7 +1,7 @@
 import React, { createContext, useState } from "react"
 import { useToggleable, Toggleable } from "../../hooks"
 import { useRequiredContext } from "../../hooks/useRequiredContext"
-import { VIEWS, SECONDARY_VIEWS } from "../Sidebar/types"
+import { VIEWS, SECONDARY_VIEWS } from "../../constants"
 
 export type SwitchViewFn = (view: string | null) => void
 

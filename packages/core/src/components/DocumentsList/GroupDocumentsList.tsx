@@ -11,7 +11,7 @@ import createGroupTree, {
 import { getGroupName } from "../../helpers/getGroupName"
 import { formatOptional } from "../../utils"
 import { useViewState } from "../View/ViewStateProvider"
-import { VIEWS } from "../Sidebar/types"
+import { VIEWS } from "../../constants"
 import { DocumentsList } from "./DocumentsList"
 
 type DocumentsSubGroup = { [key: string]: DocumentDoc[] }

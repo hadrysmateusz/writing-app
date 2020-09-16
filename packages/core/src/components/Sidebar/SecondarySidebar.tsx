@@ -3,10 +3,11 @@ import styled from "styled-components/macro"
 
 import { useViewState } from "../View/ViewStateProvider"
 
-import { SECONDARY_VIEWS } from "./types"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import { useDatabase } from "../Database"
 import { useMainState } from "../MainProvider"
+
+import { SECONDARY_VIEWS } from "../../constants"
 
 export const SecondarySidebar: React.FC<{}> = () => {
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
