@@ -55,7 +55,11 @@ export const ImportModalContent: React.FC<{
 
       const documentPromises = parsed.map(({ title, content }) => {
         // If I switch to using the first heading as title, then inferring the title might not be necessary (although if there is no first heading then I should probably use the file name)
-        return createDocument(null, { title, content }, { switchTo: false })
+        return createDocument(
+          null,
+          { title, content },
+          { switchToDocument: false }
+        )
       })
 
       const documents = await Promise.all(documentPromises)
