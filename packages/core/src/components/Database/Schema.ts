@@ -1,6 +1,11 @@
 import { RxJsonSchema } from "rxdb"
 
-import { DocumentDocType, GroupDocType, UserdataDocType } from "./types"
+import {
+  DocumentDocType,
+  GroupDocType,
+  LocalSettingsDocType,
+  UserdataDocType,
+} from "./types"
 
 export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
@@ -80,7 +85,6 @@ export const userdataSchema: RxJsonSchema<UserdataDocType> = {
   type: "object",
   properties: {
     // The userId is set as the primaryKey but that is only for the local database, in the remote it is still saved under the key _id, and there will be no userId key in the couchdb document (so when creating this document from a server, use the cognito user id in the request parameter as the {docid} but don't include a `userId` in the json object)
-    // TODO: create the userdata document for the user in the postConfirmation hook
     userId: {
       type: "string",
       primary: true,
@@ -88,6 +92,22 @@ export const userdataSchema: RxJsonSchema<UserdataDocType> = {
     },
     isSpellCheckEnabled: {
       type: "boolean",
+    },
+  },
+}
+
+export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
+  title: "local settings schema",
+  description: "describes a set of local settings",
+  version: 0,
+  type: "object",
+  properties: {
+    expandedKeys: {
+      type: "array",
+      uniqueItems: true,
+      items: {
+        type: "string",
+      },
     },
   },
 }
