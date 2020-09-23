@@ -1,43 +1,34 @@
-import React, { useState, useContext, createContext, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { addRxPlugin, createRxDatabase, RxCollectionCreator } from "rxdb"
 import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import PouchDB from "pouchdb-core"
 import { fetch } from "pouchdb-fetch" // TODO: create declaration file
-import { Auth } from "aws-amplify"
-import { documentSchema, groupSchema, userdataSchema } from "./Schema"
+
+import { config } from "../../dev-tools"
+
+import { remoteDbDomain, remoteDbPort } from "./constants"
+import {
+  generateLocalDbName,
+  getUsername,
+  getRemoteDatabaseName,
+} from "./helpers"
+import {
+  documentSchema,
+  groupSchema,
+  localSettingsSchema,
+  userdataSchema,
+} from "./Schema"
 import {
   MyDatabaseCollections,
   MyDatabase,
   DocumentDoc,
   DocumentCollection,
-  GroupCollection,
-  GroupDoc,
 } from "./types"
-import { config } from "../../dev-tools"
-import {
-  remoteDbDomain,
-  remoteDbPort,
-  usernameStartWord,
-  dbNameBase,
-  ROOT_GROUP_ID,
-} from "./constants"
-import { encodeDbName, getUserRemoteDbName } from "./helpers"
+import { DatabaseContext } from "./context"
 
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
-
-// TODO: replace with custom createContext
-const DatabaseContext = createContext<MyDatabase | null>(null)
-export const useDatabase = () => {
-  const database = useContext(DatabaseContext)
-
-  if (database === null) {
-    throw new Error("Database is null")
-  }
-
-  return database
-}
 
 // TODO: figure out the cause of the "invalid adapter: http" error and if it can impact the production environment
 // TODO: make sure that the user is online and the database server is responding and all remote databases have been created and configured properly before creating local databases - throw an error otherwise because the frontend is unable to create databases with proper permissions and this will lead to many issues. Instead, if the user is online call a special api endpoint that will attempt to fix the remote database setup and if successful, the frontend should continue creating local databases and starting the app
@@ -52,27 +43,20 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
   useEffect(() => {
     // TODO: (presumably because auth is in the web package - or just because the auth provider is above it) when logging-in to the same account after logging-out in one session this component gets remounted and the hook is run again causing the database to be created twice and an error is thrown
     const createDatabase = async () => {
-      // TODO: probably extract this logic and expose these values in some higher context state to reduce redundancy
-      const currentUser = await Auth.currentAuthenticatedUser()
-      const username = currentUser?.username
+      const username = await getUsername()
 
-      // TODO: better handling (although it might not be necessary because I think that almost nothing is loaded in the app until there is an authenticated user)
-      if (!username) {
-        throw new Error("No user found for database setup")
-      }
-
-      // create database
+      // Create RxDB database
       const db = await createRxDatabase<MyDatabaseCollections>({
-        name: encodeDbName(`${dbNameBase}${usernameStartWord}${username}`),
+        name: generateLocalDbName(username),
         adapter: "idb",
         pouchSettings: {
-          // This doesn't seem to work as expected and should probably be replaced with manually checks and simply not calling the create functions if they fail
+          // This doesn't seem to work as expected and should probably be replaced with manual checks and simply not calling the create functions if they fail
           skip_setup: true,
         },
         ignoreDuplicate: true, // TODO: this flag is set to address the issue with the auth provider remounting the component after logging in to the same account twice but it probably will have some unintended consequences so try to find a better solution
       })
 
-      // write to window for debugging
+      // Write the database object to window for debugging
       // TODO: disable in prod
       window["db"] = db
 
@@ -103,7 +87,6 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
               })
             },
           },
-          // I was changing indexes, that's why these migration strats are so weird.
           migrationStrategies: {},
           pouchSettings: {
             // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
@@ -115,7 +98,6 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
           schema: groupSchema,
           sync: true,
           statics: {},
-          // I was changing indexes, that's why these migration strats are so weird.
           migrationStrategies: {},
           pouchSettings: {
             // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
@@ -126,6 +108,15 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
           name: "userdata",
           schema: userdataSchema,
           sync: true,
+          pouchSettings: {
+            // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
+            skip_setup: true,
+          },
+        },
+        {
+          name: "local_settings",
+          schema: localSettingsSchema,
+          sync: false,
           pouchSettings: {
             // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
             skip_setup: true,
@@ -170,13 +161,13 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
         await Promise.all(groups.map((doc) => doc.remove()))
       }, false)
 
-      // Update the modifiedAt field on every update
+      // Hook to update the modifiedAt field on every update
       db.documents.preSave(async (data, doc) => {
         // TODO: check for changes, if there aren't any, don't update the modifiedAt date
         data.modifiedAt = Date.now()
       }, false)
 
-      // sync
+      // Set up cloud sync
       if (config.dbSync) {
         // TODO: check if sync returns a promise to be resolved
 
@@ -185,7 +176,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
           .map((col) => col.name)
           .forEach((colName) => {
             // get the remote database(/table) name with the proper username prefix
-            const dbName = getUserRemoteDbName(username, colName)
+            const dbName = getRemoteDatabaseName(username, colName)
 
             db[colName].sync({
               remote: new PouchDB(
