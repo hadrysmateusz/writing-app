@@ -116,6 +116,15 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
         type: "string",
       },
     },
+    currentEditor: {
+      type: ["string", "null"],
+    },
+    primarySidebarCurrentView: {
+      type: "string",
+    },
+    secondarySidebarCurrentView: {
+      type: "string",
+    },
   },
   required: ["userId"],
 }

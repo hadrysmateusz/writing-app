@@ -1,7 +1,8 @@
-import React, { createContext, useState } from "react"
+import React, { createContext } from "react"
 import { useToggleable, Toggleable } from "../../hooks"
 import { useRequiredContext } from "../../hooks/useRequiredContext"
-import { VIEWS, SECONDARY_VIEWS } from "../../constants"
+import { useLocalSettings } from "../LocalSettings"
+import defaultLocalSettings from "../LocalSettings/default"
 
 export type SwitchViewFn = (view: string | null) => void
 
@@ -30,28 +31,14 @@ export const useViewState = () => {
 // const PRIMARY_SIDEBAR_IS_OPEN_KEY = "PRIMARY_SIDEBAR_IS_OPEN"
 // const SECONDARY_SIDEBAR_IS_OPEN_KEY = "SECONDARY_SIDEBAR_IS_OPEN"
 
-const PRIMARY_SIDEBAR_CURRENT_VIEW_KEY = "PRIMARY_SIDEBAR_CURRENT_VIEW"
-const SECONDARY_SIDEBAR_CURRENT_VIEW_KEY = "SECONDARY_SIDEBAR_CURRENT_VIEW"
-
-const PRIMARY_SIDEBAR_DEFAULT_VIEW = VIEWS.ALL
-const SECONDARY_SIDEBAR_DEFAULT_VIEW = SECONDARY_VIEWS.SNIPPETS
-
 const usePrimarySidebar = (initialState: boolean) => {
   const primarySidebar = useToggleable(initialState)
-  // TODO: consider moving this state up and generalizing it
-  // TODO: store the currentView state between restarts
-  const [currentView, setCurrentView] = useState<string>(() => {
-    return (
-      localStorage.getItem(PRIMARY_SIDEBAR_CURRENT_VIEW_KEY) ??
-      PRIMARY_SIDEBAR_DEFAULT_VIEW
-    )
-  })
+  const { updateLocalSetting, primarySidebarCurrentView } = useLocalSettings()
 
   const switchView: SwitchViewFn = (view) => {
-    const newView = view || PRIMARY_SIDEBAR_DEFAULT_VIEW
+    const newView = view || defaultLocalSettings.primarySidebarCurrentView
 
-    setCurrentView(newView)
-    localStorage.setItem(PRIMARY_SIDEBAR_CURRENT_VIEW_KEY, newView)
+    updateLocalSetting("primarySidebarCurrentView", newView)
 
     if (!primarySidebar.isOpen) {
       primarySidebar.open()
@@ -60,28 +47,19 @@ const usePrimarySidebar = (initialState: boolean) => {
 
   return {
     ...primarySidebar,
-    currentView,
+    currentView: primarySidebarCurrentView,
     switchView,
   }
 }
 
 const useSecondarySidebar = (initialState: boolean) => {
   const secondarySidebar = useToggleable(initialState)
-
-  // TODO: consider moving this state up and generalizing it
-  // TODO: store the currentView state between restarts
-  const [currentView, setCurrentView] = useState<string>(() => {
-    return (
-      localStorage.getItem(SECONDARY_SIDEBAR_CURRENT_VIEW_KEY) ??
-      SECONDARY_SIDEBAR_DEFAULT_VIEW
-    )
-  })
+  const { updateLocalSetting, secondarySidebarCurrentView } = useLocalSettings()
 
   const switchView: SwitchViewFn = (view) => {
-    const newView = view || SECONDARY_SIDEBAR_DEFAULT_VIEW
+    const newView = view || defaultLocalSettings.secondarySidebarCurrentView
 
-    setCurrentView(newView)
-    localStorage.setItem(SECONDARY_SIDEBAR_CURRENT_VIEW_KEY, newView)
+    updateLocalSetting("secondarySidebarCurrentView", newView)
 
     if (!secondarySidebar.isOpen) {
       secondarySidebar.open()
@@ -90,7 +68,7 @@ const useSecondarySidebar = (initialState: boolean) => {
 
   return {
     ...secondarySidebar,
-    currentView,
+    currentView: secondarySidebarCurrentView,
     switchView,
   }
 }

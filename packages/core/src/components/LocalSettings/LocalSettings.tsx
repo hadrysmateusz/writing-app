@@ -15,6 +15,7 @@ export const [useLocalSettings, _, LocalSettingsContext] = createContext<
   LocalSettingsState
 >()
 
+// TODO: consider integrating it with the MainProvider
 // TODO: it might actually be better to replace the RxDB collection with something else (maybe not localStorage because I would probably have to handle encoding and decoding myself but maybe some localStorage abstraction hook with support for more data types or a simpler IndexedDB wrapper. But I should keep bundle size in mind)
 export const LocalSettingsProvider: React.FC = ({ children }) => {
   const db = useDatabase()
@@ -31,18 +32,30 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
     setLocalSettingsDoc,
   ] = useState<LocalSettingsDoc | null>(null)
 
+  const query = useMemo(() => db.local_settings.findOne(currentUser.username), [
+    currentUser.username,
+    db.local_settings,
+  ])
+
   //#region values of the actual local settings - separated to optimize rerendering
 
   const [expandedKeys, setIsSpellCheckEnabled] = useState<
     LocalSettings["expandedKeys"]
   >(defaultLocalSettings.expandedKeys)
+  const [primarySidebarCurrentView, setPrimarySidebarCurrentView] = useState<
+    LocalSettings["primarySidebarCurrentView"]
+  >(defaultLocalSettings.primarySidebarCurrentView)
+  const [
+    secondarySidebarCurrentView,
+    setSecondarySidebarCurrentView,
+  ] = useState<LocalSettings["secondarySidebarCurrentView"]>(
+    defaultLocalSettings.secondarySidebarCurrentView
+  )
+  const [currentEditor, setCurrentEditor] = useState<
+    LocalSettings["currentEditor"]
+  >(defaultLocalSettings.currentEditor)
 
   //#endregion
-
-  const query = useMemo(() => db.local_settings.findOne(currentUser.username), [
-    currentUser.username,
-    db.local_settings,
-  ])
 
   const updateInternalState = useCallback(
     (newLocalSettingsDoc: LocalSettingsDoc | null) => {
@@ -62,6 +75,15 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
       //#region update all the values of settings in state
 
       conditionallyUpdate("expandedKeys", setIsSpellCheckEnabled)
+      conditionallyUpdate(
+        "primarySidebarCurrentView",
+        setPrimarySidebarCurrentView
+      )
+      conditionallyUpdate(
+        "secondarySidebarCurrentView",
+        setSecondarySidebarCurrentView
+      )
+      conditionallyUpdate("currentEditor", setCurrentEditor)
 
       //#endregion
     },
@@ -129,7 +151,15 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
   }
 
   return (
-    <LocalSettingsContext.Provider value={{ expandedKeys, updateLocalSetting }}>
+    <LocalSettingsContext.Provider
+      value={{
+        updateLocalSetting,
+        expandedKeys,
+        primarySidebarCurrentView,
+        secondarySidebarCurrentView,
+        currentEditor,
+      }}
+    >
       {isInitialLoad ? null : children}
     </LocalSettingsContext.Provider>
   )

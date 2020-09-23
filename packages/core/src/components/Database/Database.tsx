@@ -116,6 +116,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
           name: "local_settings",
           schema: localSettingsSchema,
           sync: false,
+          migrationStrategies: {},
           pouchSettings: {
             // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
             skip_setup: true,

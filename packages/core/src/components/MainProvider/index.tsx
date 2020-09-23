@@ -41,6 +41,7 @@ import {
   MoveGroupFn,
 } from "./types"
 import { GROUP_TREE_ROOT } from "../../constants"
+import { useLocalSettings } from "../LocalSettings"
 
 const m = mudder.base62
 
@@ -61,8 +62,6 @@ export const [
   MainStateProvider,
   MainStateContext,
 ] = createContext<MainState>()
-
-const CURRENT_EDITOR_STORAGE_KEY = "currentEditorId"
 
 // TODO: make methods using IDs to find documents/groups/etc. accept the actual RxDB document object instead to skip the query
 
@@ -91,14 +90,9 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   const [groups, setGroups] = useState<GroupDoc[]>([])
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
+  const { currentEditor, updateLocalSetting } = useLocalSettings()
 
   // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
-
-  // Current editor - the id of the current document
-  // TODO: when tabs are implemented this should reflect the currently open tab
-  const [currentEditor, setCurrentEditor] = useState<string | null>(() => {
-    return localStorage.getItem(CURRENT_EDITOR_STORAGE_KEY)
-  })
 
   // Current document - the actual document object of the current document
   // TODO: when tabs are implemented this should probably be handled by individual tabs and shared through context
@@ -142,6 +136,13 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
       .sort({ [index]: direction })
   }, [db.documents, direction, index])
 
+  const setCurrentEditor = useCallback(
+    (value: string | null) => {
+      updateLocalSetting("currentEditor", value)
+    },
+    [updateLocalSetting]
+  )
+
   /**
    * Finds a single group by id.
    *
@@ -171,35 +172,36 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
     [db.groups]
   )
 
-  const updateDocumentsList = useCallback((documents: DocumentDoc[]) => {
-    try {
-      if (!documents) {
-        throw new Error("Couldn't fetch documents")
-      }
-      // If there are no documents, throw an error - it will be caught and the currentEditor will be set to null
-      if (documents.length === 0) {
-        throw new Error("Empty")
-      }
-      setDocuments(documents)
-    } catch (error) {
-      console.error(error)
-      /* TODO: This is to handle any errors gracefully in production, but a
+  const updateDocumentsList = useCallback(
+    (documents: DocumentDoc[]) => {
+      try {
+        if (!documents) {
+          throw new Error("Couldn't fetch documents")
+        }
+        // If there are no documents, throw an error - it will be caught and the currentEditor will be set to null
+        if (documents.length === 0) {
+          throw new Error("Empty")
+        }
+        setDocuments(documents)
+      } catch (error) {
+        console.error(error)
+        /* TODO: This is to handle any errors gracefully in production, but a
       better system should be in place to handle any unexpected errors */
-      setCurrentEditor(null)
-    }
-  }, [])
+        setCurrentEditor(null)
+      }
+    },
+    [setCurrentEditor]
+  )
 
   /**
    * Switches the currently open document
    */
-  const switchDocument: SwitchDocumentFn = useCallback((id) => {
-    setCurrentEditor(id)
-    if (typeof id === "string") {
-      localStorage.setItem(CURRENT_EDITOR_STORAGE_KEY, id)
-    } else {
-      localStorage.removeItem(CURRENT_EDITOR_STORAGE_KEY)
-    }
-  }, [])
+  const switchDocument: SwitchDocumentFn = useCallback(
+    (id) => {
+      setCurrentEditor(id)
+    },
+    [setCurrentEditor]
+  )
 
   /**
    * Gets all things required for the app to run

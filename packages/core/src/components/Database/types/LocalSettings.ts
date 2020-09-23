@@ -8,6 +8,18 @@ export type LocalSettings = {
    * Array of IDs for tree items that should be expanded (mostly corresponding to group IDs)
    */
   expandedKeys: string[]
+  /**
+   * Current editor (most likely corresponding to document id)
+   */
+  currentEditor: string | null
+  /**
+   * Current view for the primary sidebar
+   */
+  primarySidebarCurrentView: string
+  /**
+   * Current view for the secondary sidebar
+   */
+  secondarySidebarCurrentView: string
 }
 
 export type LocalSettingsDocType = LocalSettings & {
