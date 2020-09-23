@@ -16,5 +16,6 @@ module.exports.main = handler(async (event, context) => {
   await createDatabaseWithSecurity(userName, "groups")
   await createDatabaseWithSecurity(userName, "userdata")
 
+  // TODO: add a userdata document
   // TODO: add an entry to a user database (which should have some per-document security - probably done with design documents, maybe use the _users database if it won't conflict with jwt authentication)
 })

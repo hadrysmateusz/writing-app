@@ -10,24 +10,27 @@ import { LinkModalProvider } from "../components/LinkPrompt"
 import { UserdataProvider } from "../components/Userdata"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
+import { LocalSettingsProvider } from "../components/LocalSettings"
 
 const EditorPage = () => (
   <DatabaseProvider>
-    <UserdataProvider>
-      <EditorStateProvider>
-        <ViewStateProvider>
-          <MainProvider>
-            <DndProvider backend={HTML5Backend}>
-              <ImageModalProvider>
-                <LinkModalProvider>
-                  <Main />
-                </LinkModalProvider>
-              </ImageModalProvider>
-            </DndProvider>
-          </MainProvider>
-        </ViewStateProvider>
-      </EditorStateProvider>
-    </UserdataProvider>
+    <LocalSettingsProvider>
+      <UserdataProvider>
+        <EditorStateProvider>
+          <ViewStateProvider>
+            <MainProvider>
+              <DndProvider backend={HTML5Backend}>
+                <ImageModalProvider>
+                  <LinkModalProvider>
+                    <Main />
+                  </LinkModalProvider>
+                </ImageModalProvider>
+              </DndProvider>
+            </MainProvider>
+          </ViewStateProvider>
+        </EditorStateProvider>
+      </UserdataProvider>
+    </LocalSettingsProvider>
   </DatabaseProvider>
 )
 

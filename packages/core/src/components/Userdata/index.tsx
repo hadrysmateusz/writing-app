@@ -24,12 +24,6 @@ export const UserdataProvider: React.FC = ({ children }) => {
    * RxDB document containing the userdata
    */
   const [userdataDoc, setUserdataDoc] = useState<UserdataDoc | null>(null)
-  // /**
-  //  * Only the actual userdata doc content
-  //  */
-  // const [userdata, setUserdata] = useState<RxDocumentTypeWithRev<
-  //   UserdataDocType
-  // > | null>()
 
   //#region values of the actual userdata - separated to optimize rerendering
 
@@ -72,6 +66,10 @@ export const UserdataProvider: React.FC = ({ children }) => {
   useEffect(() => {
     if (isInitialLoad) {
       query.exec().then((newUserdataDoc) => {
+        if (!newUserdataDoc) {
+          throw new Error("The userdataDoc object is missing")
+        }
+
         updateInternalState(newUserdataDoc)
         setIsInitialLoad(false)
       })
