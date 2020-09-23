@@ -1,3 +1,5 @@
+// TODO: this might not be necessary anymore as I'm using another version of this algorithm
+
 // https://github.com/truongkhanhduy95/Lexorank/blob/master/LICENSE
 class Lexorank {
   MIN_CHAR: number = this.byte("0")
