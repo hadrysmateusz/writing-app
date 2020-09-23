@@ -59,16 +59,3 @@ export const decodeLocalDbName = (name: string): string => {
 export const generateLocalDbName = (username: string) => {
   return encodeLocalDbName(`${dbNameBase}${usernameStartWord}${username}`)
 }
-
-// TODO: probably extract this logic and expose these values in some higher context state to reduce redundancy
-export const getUsername = async () => {
-  const currentUser = await Auth.currentAuthenticatedUser()
-  const username = currentUser?.username
-
-  // TODO: better handling (although it might not be necessary because I think that almost nothing is loaded in the app until there is an authenticated user)
-  if (!username) {
-    throw new Error("No user found for database setup")
-  }
-
-  return username
-}

@@ -8,11 +8,7 @@ import { fetch } from "pouchdb-fetch" // TODO: create declaration file
 import { config } from "../../dev-tools"
 
 import { remoteDbDomain, remoteDbPort } from "./constants"
-import {
-  generateLocalDbName,
-  getUsername,
-  getRemoteDatabaseName,
-} from "./helpers"
+import { generateLocalDbName, getRemoteDatabaseName } from "./helpers"
 import {
   documentSchema,
   groupSchema,
@@ -26,6 +22,7 @@ import {
   DocumentCollection,
 } from "./types"
 import { DatabaseContext } from "./context"
+import { useCurrentUser } from "../Auth"
 
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
@@ -39,11 +36,13 @@ addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
 export const DatabaseProvider: React.FC<{}> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [database, setDatabase] = useState<MyDatabase | null>(null)
+  const currentUser = useCurrentUser()
 
   useEffect(() => {
-    // TODO: (presumably because auth is in the web package - or just because the auth provider is above it) when logging-in to the same account after logging-out in one session this component gets remounted and the hook is run again causing the database to be created twice and an error is thrown
+    // TODO: make sure that a new database is created when a different user logs in (this will probably crash the app right now because of how RxDB works)
+    // TODO: re-running this might crash the app (make sure there are no unnecessary rerenders of this component and figure out a way to handle this error)
     const createDatabase = async () => {
-      const username = await getUsername()
+      const username = currentUser.username
 
       // Create RxDB database
       const db = await createRxDatabase<MyDatabaseCollections>({
@@ -224,7 +223,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
     }
 
     createDatabase()
-  }, [])
+  }, [currentUser.username])
 
   // TODO: better loading and error states
   return (

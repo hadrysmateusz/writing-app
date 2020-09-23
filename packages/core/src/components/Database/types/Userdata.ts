@@ -14,10 +14,11 @@ export type UserSettings = {
  * - onboarding status (which features has the user interacted with already)
  *
  * Sensitive data, like subscription status etc. shouldn't be stored here,
- * but in a separate, cloud only database that can only be interacted with
+ * but in a separate, cloud-only database that can only be interacted with
  * through a secure API.
  *
- * @todo consider moving all preferences to a separate object
+ * Local preferences that shouldn't be synced with the cloud shouldn't be stored here,
+ * but in a separate, local-only RxDB database
  */
 export type UserdataDocType = UserSettings & {
   /**
