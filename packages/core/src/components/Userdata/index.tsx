@@ -67,6 +67,7 @@ export const UserdataProvider: React.FC = ({ children }) => {
     if (isInitialLoad) {
       query.exec().then((newUserdataDoc) => {
         if (!newUserdataDoc) {
+          // TODO: this always fails on first launch, before collections are synced (handle this scenario better)
           throw new Error("The userdataDoc object is missing")
         }
 

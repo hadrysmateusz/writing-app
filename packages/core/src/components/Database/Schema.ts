@@ -7,6 +7,8 @@ import {
   UserdataDocType,
 } from "./types"
 
+// TODO: move each schema to separate file
+
 export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
   description: "describes a document",
@@ -108,6 +110,7 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
     },
     expandedKeys: {
       type: "array",
+      // TODO: consider removing the uniqueItems constraint as it shouldn't be a problem and it might cause the app to crash on an improper update
       uniqueItems: true,
       items: {
         type: "string",

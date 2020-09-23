@@ -28,6 +28,8 @@ import {
 import { formatOptional } from "../../utils"
 import { DND_TYPES } from "../../constants"
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
+import { useLocalSettings } from "../LocalSettings"
+import { LocalSettings } from "../Database"
 
 // ============== DRAG'N'DROP IMPROVEMENTS ===============
 // TODO: when dropping in the same place (on the same item), don't show the hover indicator
@@ -44,9 +46,33 @@ const GroupTreeItem: React.FC<{
   const { renameGroup, removeGroup, moveGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
-  const [isExpanded, setIsExpanded] = useState(false)
   const [hoverState, setHoverState] = useState<HoverState>(HoverState.outside)
   const droppableRef = useRef<HTMLDivElement>(null)
+  const { expandedKeys, updateLocalSetting } = useLocalSettings()
+
+  const isExpanded = useMemo(() => {
+    return expandedKeys.includes(group.id)
+  }, [expandedKeys, group.id])
+
+  const setIsExpanded = useCallback(
+    (value: boolean) => {
+      let newExpandedKeys: LocalSettings["expandedKeys"]
+
+      if (value === true) {
+        // This check is to ensure that there are no duplicated keys
+        if (isExpanded) {
+          newExpandedKeys = expandedKeys
+        } else {
+          newExpandedKeys = [...expandedKeys, group.id]
+        }
+      } else {
+        newExpandedKeys = expandedKeys.filter((id) => id !== group.id)
+      }
+
+      updateLocalSetting("expandedKeys", newExpandedKeys)
+    },
+    [expandedKeys, group.id, isExpanded, updateLocalSetting]
+  )
 
   const isEmpty = useMemo(() => {
     return group.children.length === 0
@@ -67,7 +93,7 @@ const GroupTreeItem: React.FC<{
   const handleNewGroup = useCallback(() => {
     setIsCreatingGroup(true)
     setIsExpanded(true)
-  }, [])
+  }, [setIsExpanded])
 
   const handleNewDocument = useCallback(() => {
     createDocument(group.id)

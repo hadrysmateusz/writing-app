@@ -5,7 +5,7 @@ import { useCurrentUser } from "../Auth"
 import defaultLocalSettings from "./default"
 
 export type LocalSettingsState = LocalSettings & {
-  updateSetting: <K extends keyof LocalSettings>(
+  updateLocalSetting: <K extends keyof LocalSettings>(
     key: K,
     value: LocalSettings[K]
   ) => Promise<LocalSettingsDoc>
@@ -72,15 +72,29 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
   useEffect(() => {
     if (isInitialLoad) {
       query.exec().then((newLocalSettingsDoc) => {
+        if (!newLocalSettingsDoc) {
+          db.local_settings.insert({
+            ...defaultLocalSettings,
+            userId: currentUser.username,
+          })
+        }
+
         updateInternalState(newLocalSettingsDoc)
         setIsInitialLoad(false)
       })
     }
-  }, [isInitialLoad, query, updateInternalState])
+  }, [
+    currentUser.username,
+    db.local_settings,
+    isInitialLoad,
+    query,
+    updateInternalState,
+  ])
 
   // set up local settings subscription
   useEffect(() => {
     const subscription = query.$.subscribe((newLocalSettingsDoc) => {
+      console.log(newLocalSettingsDoc)
       updateInternalState(newLocalSettingsDoc)
     })
 
@@ -97,7 +111,7 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
    *
    * @todo this typing doesn't support nested properties
    */
-  const updateSetting = async <K extends keyof LocalSettings>(
+  const updateLocalSetting = async <K extends keyof LocalSettings>(
     key: K,
     value: LocalSettings[K]
   ) => {
@@ -115,7 +129,7 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
   }
 
   return (
-    <LocalSettingsContext.Provider value={{ expandedKeys, updateSetting }}>
+    <LocalSettingsContext.Provider value={{ expandedKeys, updateLocalSetting }}>
       {isInitialLoad ? null : children}
     </LocalSettingsContext.Provider>
   )
