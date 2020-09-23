@@ -6,6 +6,9 @@ const defaultLocalSettings: LocalSettings = {
   currentEditor: null,
   primarySidebarCurrentView: VIEWS.ALL,
   secondarySidebarCurrentView: SECONDARY_VIEWS.SNIPPETS,
+  primarySidebarIsOpen: true,
+  secondarySidebarIsOpen: true,
+  navigatorSidebarIsOpen: false,
 }
 
 export default defaultLocalSettings

@@ -125,6 +125,15 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
     secondarySidebarCurrentView: {
       type: "string",
     },
+    primarySidebarIsOpen: {
+      type: "boolean",
+    },
+    secondarySidebarIsOpen: {
+      type: "boolean",
+    },
+    navigatorSidebarIsOpen: {
+      type: "boolean",
+    },
   },
   required: ["userId"],
 }

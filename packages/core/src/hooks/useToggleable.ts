@@ -66,7 +66,7 @@ export const useToggleable = (
 }
 
 /**
- * useToggleable that doesn't handle its state, and only returns methods to change it + handles hooks
+ * useToggleable that doesn't handle its own state, and only returns methods to change it + handles hooks
  */
 export const useStatelessToggleable = (
   value: boolean,

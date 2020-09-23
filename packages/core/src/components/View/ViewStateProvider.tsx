@@ -1,5 +1,5 @@
-import React, { createContext } from "react"
-import { useToggleable, Toggleable } from "../../hooks"
+import React, { createContext, useCallback } from "react"
+import { useStatelessToggleable, Toggleable } from "../../hooks"
 import { useRequiredContext } from "../../hooks/useRequiredContext"
 import { useLocalSettings } from "../LocalSettings"
 import defaultLocalSettings from "../LocalSettings/default"
@@ -11,10 +11,12 @@ export type MultiViewSidebar = Toggleable & {
   switchView: SwitchViewFn
 }
 
+export type SingleViewSidebar = Toggleable & {}
+
 export type ViewState = {
   primarySidebar: MultiViewSidebar
   secondarySidebar: MultiViewSidebar
-  navigatorSidebar: Toggleable
+  navigatorSidebar: SingleViewSidebar
 }
 
 const ViewStateContext = createContext<ViewState | null>(null)
@@ -26,58 +28,105 @@ export const useViewState = () => {
   )
 }
 
-// TODO: save open state of sidebars
-// const NAVIGATOR_SIDEBAR_IS_OPEN_KEY = "NAVIGATOR_SIDEBAR_IS_OPEN"
-// const PRIMARY_SIDEBAR_IS_OPEN_KEY = "PRIMARY_SIDEBAR_IS_OPEN"
-// const SECONDARY_SIDEBAR_IS_OPEN_KEY = "SECONDARY_SIDEBAR_IS_OPEN"
+const usePrimarySidebar = () => {
+  const {
+    updateLocalSetting,
+    primarySidebarCurrentView,
+    primarySidebarIsOpen,
+  } = useLocalSettings()
 
-const usePrimarySidebar = (initialState: boolean) => {
-  const primarySidebar = useToggleable(initialState)
-  const { updateLocalSetting, primarySidebarCurrentView } = useLocalSettings()
+  const onChange = useCallback(
+    (value: boolean) => {
+      updateLocalSetting("primarySidebarIsOpen", value)
+    },
+    [updateLocalSetting]
+  )
+
+  const primarySidebar = useStatelessToggleable(primarySidebarIsOpen, onChange)
 
   const switchView: SwitchViewFn = (view) => {
     const newView = view || defaultLocalSettings.primarySidebarCurrentView
 
     updateLocalSetting("primarySidebarCurrentView", newView)
 
-    if (!primarySidebar.isOpen) {
+    if (!primarySidebarIsOpen) {
       primarySidebar.open()
     }
   }
 
   return {
     ...primarySidebar,
+    isOpen: primarySidebarIsOpen,
     currentView: primarySidebarCurrentView,
     switchView,
   }
 }
 
-const useSecondarySidebar = (initialState: boolean) => {
-  const secondarySidebar = useToggleable(initialState)
-  const { updateLocalSetting, secondarySidebarCurrentView } = useLocalSettings()
+const useSecondarySidebar = () => {
+  const {
+    updateLocalSetting,
+    secondarySidebarCurrentView,
+    secondarySidebarIsOpen,
+  } = useLocalSettings()
+
+  const onChange = useCallback(
+    (value: boolean) => {
+      updateLocalSetting("secondarySidebarIsOpen", value)
+    },
+    [updateLocalSetting]
+  )
+
+  const secondarySidebar = useStatelessToggleable(
+    secondarySidebarIsOpen,
+    onChange
+  )
 
   const switchView: SwitchViewFn = (view) => {
     const newView = view || defaultLocalSettings.secondarySidebarCurrentView
 
     updateLocalSetting("secondarySidebarCurrentView", newView)
 
-    if (!secondarySidebar.isOpen) {
+    if (!secondarySidebarIsOpen) {
       secondarySidebar.open()
     }
   }
 
   return {
     ...secondarySidebar,
+    isOpen: secondarySidebarIsOpen,
     currentView: secondarySidebarCurrentView,
     switchView,
   }
 }
 
+const useNavigatorSidebar = () => {
+  const { updateLocalSetting, navigatorSidebarIsOpen } = useLocalSettings()
+
+  const onChange = useCallback(
+    (value: boolean) => {
+      updateLocalSetting("navigatorSidebarIsOpen", value)
+    },
+    [updateLocalSetting]
+  )
+
+  const navigatorSidebar = useStatelessToggleable(
+    navigatorSidebarIsOpen,
+    onChange
+  )
+
+  return { ...navigatorSidebar, isOpen: navigatorSidebarIsOpen }
+}
+
 export const ViewStateProvider: React.FC<{}> = ({ children }) => {
-  // TODO: store the toggled state between restarts
-  const primarySidebar = usePrimarySidebar(true)
-  const secondarySidebar = useSecondarySidebar(false)
-  const navigatorSidebar = useToggleable(true)
+  const primarySidebar = usePrimarySidebar()
+  const secondarySidebar = useSecondarySidebar()
+  const navigatorSidebar = useNavigatorSidebar()
+
+  console.log({
+    primarySidebar,
+    navigatorSidebar,
+    secondarySidebar,
+  })
 
   return (
     <ViewStateContext.Provider

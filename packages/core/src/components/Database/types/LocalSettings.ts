@@ -20,6 +20,18 @@ export type LocalSettings = {
    * Current view for the secondary sidebar
    */
   secondarySidebarCurrentView: string
+  /**
+   * Is primary sidebar open
+   */
+  primarySidebarIsOpen: boolean
+  /**
+   * Is secondary sidebar open
+   */
+  secondarySidebarIsOpen: boolean
+  /**
+   * Is navigator sidebar open
+   */
+  navigatorSidebarIsOpen: boolean
 }
 
 export type LocalSettingsDocType = LocalSettings & {
