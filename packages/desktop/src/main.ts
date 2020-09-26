@@ -33,8 +33,8 @@ const filters = {
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1850,
-    height: 1150,
+    width: 1900,
+    height: 1020,
     minWidth: 980,
     title: APP_NAME,
     // devTools: false, TODO: consider setting this in prod to prevent opening the devtools
