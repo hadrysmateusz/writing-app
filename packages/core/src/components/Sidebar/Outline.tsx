@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import styled from "styled-components/macro"
-import { Node } from "slate"
+
+import { useEditorState } from "../EditorStateProvider"
 
 const OUTLINE_HEADING_MAX_LENGTH = 40 // TODO: this might need to change to fit a resized sidebar
 
@@ -11,9 +12,9 @@ type Outline = {
 
 type OutlineItem = { level: number; textContent: string }
 
-export const Outline: React.FC<{ editorContent: Node[] }> = ({
-  editorContent,
-}) => {
+export const Outline: React.FC = () => {
+  const { editorValue: editorContent } = useEditorState()
+
   const [outline, setOutline] = useState<Outline>({
     baseLevel: 3,
     tree: [],

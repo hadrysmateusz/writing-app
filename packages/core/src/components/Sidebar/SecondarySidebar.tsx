@@ -4,56 +4,57 @@ import styled from "styled-components/macro"
 import { useViewState } from "../View/ViewStateProvider"
 
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
-import { useDatabase } from "../Database"
-import { useMainState } from "../MainProvider"
+// import { useDatabase } from "../Database"
+// import { useMainState } from "../MainProvider"
 
 import { SECONDARY_VIEWS } from "../../constants"
+import { Outline } from "./Outline"
 
 export const SecondarySidebar: React.FC<{}> = () => {
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const { currentDocument } = useMainState()
+  // const { currentDocument } = useMainState()
   const { secondarySidebar } = useViewState()
-  const db = useDatabase()
-  const [revs, setRevs] = useState<any[]>()
+  // const db = useDatabase()
+  // const [revs, setRevs] = useState<any[]>()
 
-  const currentDocId = currentDocument?.id
+  // const currentDocId = currentDocument?.id
 
-  useEffect(() => {
-    const fn = async () => {
-      if (currentDocId) {
-        // TODO: it should be possible to create a view/index to fetch modified dates along with these revs + pagination to save data
-        const getRevs = async (docId: string) => {
-          const doc = await db.documents.pouch.get(docId, {
-            revs_info: true,
-          })
-          // TODO: error handling and validation
-          return doc?._revs_info
-        }
+  // useEffect(() => {
+  //   const fn = async () => {
+  //     if (currentDocId) {
+  //       // TODO: it should be possible to create a view/index to fetch modified dates along with these revs + pagination to save data
+  //       const getRevs = async (docId: string) => {
+  //         const doc = await db.documents.pouch.get(docId, {
+  //           revs_info: true,
+  //         })
+  //         // TODO: error handling and validation
+  //         return doc?._revs_info
+  //       }
 
-        const revs = await getRevs(currentDocId)
+  //       const revs = await getRevs(currentDocId)
 
-        if (!revs) {
-          console.log("no revs")
-        }
+  //       if (!revs) {
+  //         console.log("no revs")
+  //       }
 
-        setRevs(revs)
-      }
-    }
+  //       setRevs(revs)
+  //     }
+  //   }
 
-    fn()
-  }, [currentDocId, currentDocument, db.documents.pouch])
+  //   fn()
+  // }, [currentDocId, currentDocument, db.documents.pouch])
 
-  const getRev = (rev: string) => {
-    if (currentDocId) {
-      db.documents.pouch
-        .get(currentDocId, {
-          rev: rev,
-        })
-        .then((doc) =>
-          console.log(new Date(doc?.modifiedAt).toLocaleString(), doc)
-        )
-    }
-  }
+  // const getRev = (rev: string) => {
+  //   if (currentDocId) {
+  //     db.documents.pouch
+  //       .get(currentDocId, {
+  //         rev: rev,
+  //       })
+  //       .then((doc) =>
+  //         console.log(new Date(doc?.modifiedAt).toLocaleString(), doc)
+  //       )
+  //   }
+  // }
 
   const handleNewSnippet = () => {
     console.warn("TODO")
@@ -65,7 +66,8 @@ export const SecondarySidebar: React.FC<{}> = () => {
         return (
           <Container>
             <InnerContainer onContextMenu={openMenu}>
-              {revs
+              <Outline />
+              {/* {revs
                 ? revs.map((rev) =>
                     rev.status === "available" ? (
                       <div
@@ -78,7 +80,7 @@ export const SecondarySidebar: React.FC<{}> = () => {
                       </div>
                     ) : null
                   )
-                : "No revs"}
+                : "No revs"} */}
             </InnerContainer>
 
             {isMenuOpen && (
@@ -103,7 +105,7 @@ export const SecondarySidebar: React.FC<{}> = () => {
 const OuterContainer = styled.div`
   min-height: 0;
   height: 100%;
-  border-right: 1px solid;
+  border-left: 1px solid;
   border-color: #363636;
   background-color: #1e1e1e;
   position: relative;
@@ -119,6 +121,7 @@ const Container = styled.div`
 
 const InnerContainer = styled.div`
   overflow-y: auto;
+  padding: 20px;
 `
 
 // const NewButton = styled.div`
