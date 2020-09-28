@@ -1,60 +1,18 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import styled from "styled-components/macro"
 
 import { useViewState } from "../View/ViewStateProvider"
 
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
-// import { useDatabase } from "../Database"
-// import { useMainState } from "../MainProvider"
 
 import { SECONDARY_VIEWS } from "../../constants"
 import { Outline } from "./Outline"
+import TextStats from "../TextStats"
+import { Section } from "./common"
 
 export const SecondarySidebar: React.FC<{}> = () => {
   const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  // const { currentDocument } = useMainState()
   const { secondarySidebar } = useViewState()
-  // const db = useDatabase()
-  // const [revs, setRevs] = useState<any[]>()
-
-  // const currentDocId = currentDocument?.id
-
-  // useEffect(() => {
-  //   const fn = async () => {
-  //     if (currentDocId) {
-  //       // TODO: it should be possible to create a view/index to fetch modified dates along with these revs + pagination to save data
-  //       const getRevs = async (docId: string) => {
-  //         const doc = await db.documents.pouch.get(docId, {
-  //           revs_info: true,
-  //         })
-  //         // TODO: error handling and validation
-  //         return doc?._revs_info
-  //       }
-
-  //       const revs = await getRevs(currentDocId)
-
-  //       if (!revs) {
-  //         console.log("no revs")
-  //       }
-
-  //       setRevs(revs)
-  //     }
-  //   }
-
-  //   fn()
-  // }, [currentDocId, currentDocument, db.documents.pouch])
-
-  // const getRev = (rev: string) => {
-  //   if (currentDocId) {
-  //     db.documents.pouch
-  //       .get(currentDocId, {
-  //         rev: rev,
-  //       })
-  //       .then((doc) =>
-  //         console.log(new Date(doc?.modifiedAt).toLocaleString(), doc)
-  //       )
-  //   }
-  // }
 
   const handleNewSnippet = () => {
     console.warn("TODO")
@@ -66,21 +24,21 @@ export const SecondarySidebar: React.FC<{}> = () => {
         return (
           <Container>
             <InnerContainer onContextMenu={openMenu}>
-              <Outline />
-              {/* {revs
-                ? revs.map((rev) =>
-                    rev.status === "available" ? (
-                      <div
-                        key={rev.rev}
-                        onClick={() => {
-                          getRev(rev.rev)
-                        }}
-                      >
-                        {rev.rev}
-                      </div>
-                    ) : null
-                  )
-                : "No revs"} */}
+              <Section title="Progress">
+                <div>
+                  <TextStats />
+                </div>
+              </Section>
+
+              <Section title="Keywords">
+                <div></div>
+              </Section>
+
+              <Section title="Outline">
+                <div>
+                  <Outline />
+                </div>
+              </Section>
             </InnerContainer>
 
             {isMenuOpen && (
@@ -121,7 +79,6 @@ const Container = styled.div`
 
 const InnerContainer = styled.div`
   overflow-y: auto;
-  padding: 20px;
 `
 
 // const NewButton = styled.div`
