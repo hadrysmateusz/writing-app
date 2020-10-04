@@ -1,9 +1,8 @@
-import React, { useCallback } from "react"
+import React from "react"
 import styled from "styled-components/macro"
 
 import { VIEWS } from "../../constants"
 import { TreeItem, AddButton } from "../TreeItem"
-import { useContextMenu } from "../ContextMenu"
 import { useViewState } from "../View/ViewStateProvider"
 
 import { useModal } from "../Modal"
@@ -15,26 +14,16 @@ import { SectionContainer } from "./Common"
 
 export const NavigatorSidebar: React.FC = React.memo(() => {
   const { primarySidebar } = useViewState()
-  const { openMenu } = useContextMenu()
   const {
     open: openAccountModal,
     close: closeAccountModal,
     Modal: AccountModal,
   } = useModal(false)
 
-  const handleContextMenu = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (event.target === event.currentTarget) {
-        openMenu(event)
-      }
-    },
-    [openMenu]
-  )
-
   const { currentView } = primarySidebar
 
   return (
-    <OuterContainer onContextMenu={handleContextMenu}>
+    <OuterContainer>
       <InnerContainer>
         <SectionContainer>
           <TreeItem
