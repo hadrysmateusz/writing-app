@@ -9,7 +9,7 @@ export type EditableTextProps = {
   className?: string
   value: string
   isEditing: boolean
-  inputRef: React.MutableRefObject<HTMLTextAreaElement | undefined>
+  inputRef: React.MutableRefObject<HTMLTextAreaElement | null>
   disabled?: boolean
   style?: React.CSSProperties | undefined
   onApply: (value: string) => void
@@ -32,7 +32,7 @@ export const useEditableText = (
 ) => {
   const [isRenaming, setIsRenaming] = useState(false)
   const [value, setValue] = useState(outsideValue)
-  const inputRef = useRef<HTMLTextAreaElement>()
+  const inputRef = useRef<HTMLTextAreaElement | null>(null)
 
   const startRenaming = () => {
     setValue(outsideValue)

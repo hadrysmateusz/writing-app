@@ -36,7 +36,7 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
   // TODO: capture focus inside the context menu and restore it when it closes
   // TODO: maybe - replace the usePortal hook for more control (try using a single designated root DOM node instead of creating millions of empty divs)
   const { openPortal, closePortal, isOpen, Portal } = usePortal()
-  const containerRef = useRef<HTMLDivElement>()
+  const containerRef = useRef<HTMLDivElement | null>(null)
   const [eventX, setEventX] = useState(0)
   const [eventY, setEventY] = useState(0)
 
@@ -157,10 +157,10 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
     )
   }
 
-  const withConditionalRender = (C: React.FC): React.ReactNode => {
+  const withConditionalRender = (C: React.FC): React.FC => {
     return isOpen || renderWhenClosed
       ? (props: React.PropsWithChildren<{}>) => <C {...props} />
-      : (props: React.PropsWithChildren<{}>) => null
+      : (_props: React.PropsWithChildren<{}>) => null
   }
 
   return {
@@ -247,7 +247,6 @@ const menuContainerCommon = css`
 const MenuContainer = styled.div<{
   xPos: number
   yPos: number
-  inverse: boolean
 }>`
   /* Base function styles */
   position: absolute;

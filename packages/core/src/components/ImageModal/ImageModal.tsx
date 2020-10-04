@@ -59,7 +59,7 @@ const ImageModalContent: React.FC<{
   /* The way selection is handled here (through a prop) is extremely hacky and should be replaced with a more robust and universal solution for reapplying selection */
   selection,
 }) => {
-  const urlInputRef = useRef<HTMLInputElement>()
+  const urlInputRef = useRef<HTMLInputElement | null>(null)
   const editor = useSlate()
   const [url, setUrl] = useState<string>("")
   const { close } = useImageModal()

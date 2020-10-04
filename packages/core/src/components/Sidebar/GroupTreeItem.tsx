@@ -47,7 +47,7 @@ const GroupTreeItem: React.FC<{
   const { primarySidebar } = useViewState()
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
   const [hoverState, setHoverState] = useState<HoverState>(HoverState.outside)
-  const droppableRef = useRef<HTMLDivElement>(null)
+  const droppableRef = useRef<HTMLDivElement | null>(null)
   const { expandedKeys, updateLocalSetting } = useLocalSettings()
 
   const isExpanded = useMemo(() => {

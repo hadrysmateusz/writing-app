@@ -10,13 +10,20 @@ import {
  * @param {boolean} isActive whether scroll should be locked, setting this to a fixed true value will disable scrolling whenever the component is rendered
  */
 export const useBodyScrollLock = (isActive: boolean) => {
-  const scrollableRef = useRef<HTMLDivElement>()
+  const scrollableRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
+    const current = scrollableRef?.current
+
+    if (!current) {
+      console.warn("scrollableRef is null")
+      return
+    }
+
     if (isActive) {
-      disableBodyScroll(scrollableRef.current)
+      disableBodyScroll(current)
     } else {
-      enableBodyScroll(scrollableRef.current)
+      enableBodyScroll(current)
     }
 
     return clearAllBodyScrollLocks
