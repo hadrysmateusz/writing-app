@@ -3,10 +3,9 @@ import styled from "styled-components/macro"
 
 import { VIEWS } from "../../constants"
 import { TreeItem, AddButton } from "../TreeItem"
-import { useContextMenu, ContextMenuItem } from "../ContextMenu"
+import { useContextMenu } from "../ContextMenu"
 import { useViewState } from "../View/ViewStateProvider"
 
-import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { useModal } from "../Modal"
 import { AccountModalContent } from "../AccountModal"
 import { SidebarImportButton } from "../Importer"
@@ -15,23 +14,13 @@ import { GroupsSection } from "./GroupsSection"
 import { SectionContainer } from "./Common"
 
 export const NavigatorSidebar: React.FC = React.memo(() => {
-  const { createDocument } = useDocumentsAPI()
-  const { createGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
-  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { openMenu } = useContextMenu()
   const {
     open: openAccountModal,
     close: closeAccountModal,
     Modal: AccountModal,
   } = useModal(false)
-
-  const handleNewDocument = useCallback(() => {
-    createDocument(null)
-  }, [createDocument])
-
-  const handleNewGroup = useCallback(() => {
-    createGroup(null)
-  }, [createGroup])
 
   const handleContextMenu = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -62,6 +51,7 @@ export const NavigatorSidebar: React.FC = React.memo(() => {
             icon="inbox"
             onClick={() => primarySidebar.switchView(VIEWS.INBOX)}
             depth={0}
+            isActive={currentView === VIEWS.INBOX}
           >
             <div style={{ width: "100%" }}>Inbox</div>
             <AddButton groupId={null} />
@@ -87,22 +77,12 @@ export const NavigatorSidebar: React.FC = React.memo(() => {
             icon="trash"
             onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
             depth={0}
+            isActive={currentView === VIEWS.TRASH}
           >
             Trash
           </TreeItem>
         </SectionContainer>
       </InnerContainer>
-
-      {isMenuOpen && (
-        <ContextMenu>
-          <ContextMenuItem onClick={handleNewDocument}>
-            New Document
-          </ContextMenuItem>
-          <ContextMenuItem onClick={handleNewGroup}>
-            New Collection
-          </ContextMenuItem>
-        </ContextMenu>
-      )}
 
       <AccountModal>
         <AccountModalContent close={closeAccountModal} />
