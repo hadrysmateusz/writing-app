@@ -29,7 +29,7 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
   nodeRef,
   slateNode,
 }) => {
-  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { openMenu, ContextMenu } = useContextMenu()
   const editor = useEditor()
   const isFocused = useFocused()
   const isSelected = useSelected()
