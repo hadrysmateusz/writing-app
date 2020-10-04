@@ -11,7 +11,7 @@ import TextStats from "../TextStats"
 import { Section } from "./common"
 
 export const SecondarySidebar: React.FC<{}> = () => {
-  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { openMenu, ContextMenu } = useContextMenu()
   const { secondarySidebar } = useViewState()
 
   const handleNewSnippet = () => {
@@ -41,13 +41,11 @@ export const SecondarySidebar: React.FC<{}> = () => {
               </Section>
             </InnerContainer>
 
-            {isMenuOpen && (
-              <ContextMenu>
-                <ContextMenuItem onClick={handleNewSnippet}>
-                  New Snippet
-                </ContextMenuItem>
-              </ContextMenu>
-            )}
+            <ContextMenu>
+              <ContextMenuItem onClick={handleNewSnippet}>
+                New Snippet
+              </ContextMenuItem>
+            </ContextMenu>
           </Container>
         )
       }

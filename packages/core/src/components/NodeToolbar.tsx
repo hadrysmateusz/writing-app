@@ -70,52 +70,51 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
       >
         <FaEllipsisV />
       </SideToolbarContainer>
-      {isMenuOpen && (
-        <ContextMenu>
-          <ContextMenuItem
-            onMouseDown={() => {
-              console.warn("TODO: implement")
-            }}
-          >
-            Delete
+
+      <ContextMenu>
+        <ContextMenuItem
+          onMouseDown={() => {
+            console.warn("TODO: implement")
+          }}
+        >
+          Delete
+        </ContextMenuItem>
+
+        <ContextMenuItem
+          onMouseDown={() => {
+            console.warn("TODO: implement")
+          }}
+        >
+          Duplicate
+        </ContextMenuItem>
+
+        <ContextSubmenu text="Turn into">
+          <TurnIntoContextMenuContent editor={editor} nodeRef={nodeRef} />
+        </ContextSubmenu>
+
+        <ContextMenuSeparator />
+
+        <ContextMenuItem
+          onMouseDown={() => {
+            console.warn("TODO: implement")
+          }}
+        >
+          Comment
+        </ContextMenuItem>
+
+        <ContextMenuSeparator />
+
+        <ContextSubmenu text="Insert">
+          <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
+            Horizontal Rule
+            {/* TODO: research and change the name if needed */}
           </ContextMenuItem>
-
-          <ContextMenuItem
-            onMouseDown={() => {
-              console.warn("TODO: implement")
-            }}
-          >
-            Duplicate
+          <ContextMenuItem onMouseDown={handleInsertImage}>
+            Image
+            {/* TODO: research and change the name if needed */}
           </ContextMenuItem>
-
-          <ContextSubmenu text="Turn into">
-            <TurnIntoContextMenuContent editor={editor} nodeRef={nodeRef} />
-          </ContextSubmenu>
-
-          <ContextMenuSeparator />
-
-          <ContextMenuItem
-            onMouseDown={() => {
-              console.warn("TODO: implement")
-            }}
-          >
-            Comment
-          </ContextMenuItem>
-
-          <ContextMenuSeparator />
-
-          <ContextSubmenu text="Insert">
-            <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
-              Horizontal Rule
-              {/* TODO: research and change the name if needed */}
-            </ContextMenuItem>
-            <ContextMenuItem onMouseDown={handleInsertImage}>
-              Image
-              {/* TODO: research and change the name if needed */}
-            </ContextMenuItem>
-          </ContextSubmenu>
-        </ContextMenu>
-      )}
+        </ContextSubmenu>
+      </ContextMenu>
     </>
   ) : null
 }

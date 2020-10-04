@@ -12,16 +12,27 @@ import { useOnClickOutside } from "../hooks/useOnClickOutside"
 import { BsCaretRightFill } from "react-icons/bs"
 import { ToggleableHooks } from "../hooks"
 
+type ContextMenuHookOptions = ToggleableHooks & {
+  renderWhenClosed?: boolean
+  toggleOnNestedDOMNodes?: boolean
+  stopPropagation?: boolean
+}
+
 // TODO: unify how context menus are opened, because some are opened on mousedown and some on click, which leads to very different behaviors, especially when opening a menu with another already open
 // TODO: prevent submenus from going-offscreen. Probably by positioning them with js like regular menus. Prevent the main menu from being closed when a submenu is open.
 // TODO: look into replacing some of the code and types with the useToggleable logic - probably will require removing the react-useportal dependency first to have full control over the portal state
 // TODO: use ellipsis to hide overflow without hiding submenus (possible solutions include: portals, wrapper component for the static text)
-export const useContextMenu = ({
-  onBeforeOpen,
-  onAfterOpen,
-  onBeforeClose,
-  onAfterClose,
-}: ToggleableHooks = {}) => {
+export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
+  const {
+    onBeforeOpen,
+    onAfterOpen,
+    onBeforeClose,
+    onAfterClose,
+    renderWhenClosed = false,
+    toggleOnNestedDOMNodes = true,
+    stopPropagation = true,
+  } = options
+
   // TODO: capture focus inside the context menu and restore it when it closes
   // TODO: maybe - replace the usePortal hook for more control (try using a single designated root DOM node instead of creating millions of empty divs)
   const { openPortal, closePortal, isOpen, Portal } = usePortal()
@@ -31,6 +42,14 @@ export const useContextMenu = ({
 
   const openMenu = useCallback(
     (event: React.MouseEvent) => {
+      if (!toggleOnNestedDOMNodes && event.target !== event.currentTarget) {
+        return
+      }
+
+      if (stopPropagation) {
+        event.stopPropagation()
+      }
+
       onBeforeOpen && onBeforeOpen()
 
       try {
@@ -45,7 +64,13 @@ export const useContextMenu = ({
 
       onAfterOpen && onAfterOpen()
     },
-    [onAfterOpen, onBeforeOpen, openPortal]
+    [
+      onAfterOpen,
+      onBeforeOpen,
+      openPortal,
+      stopPropagation,
+      toggleOnNestedDOMNodes,
+    ]
   )
 
   const closeMenu = () => {
@@ -96,7 +121,7 @@ export const useContextMenu = ({
 
       const menuEl = containerRef?.current
 
-      if (menuEl === undefined) {
+      if (!menuEl) {
         console.log("element unavailable")
         return
       }
@@ -118,7 +143,7 @@ export const useContextMenu = ({
       }
     }, [x, y])
 
-    return (
+    return isOpen || renderWhenClosed ? (
       <Portal>
         <MenuContainer
           xPos={x}
@@ -129,7 +154,7 @@ export const useContextMenu = ({
           {children}
         </MenuContainer>
       </Portal>
-    )
+    ) : null
   }
 
   return { openMenu, closeMenu, isMenuOpen: isOpen, ContextMenu }

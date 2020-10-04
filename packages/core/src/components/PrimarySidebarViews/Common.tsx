@@ -25,7 +25,9 @@ export const InnerContainer: React.FC<{
   groupId: string | null | undefined
 }> = ({ groupId, children }) => {
   const { createDocument } = useDocumentsAPI()
-  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { openMenu, ContextMenu } = useContextMenu({
+    toggleOnNestedDOMNodes: false,
+  })
 
   const handleNewDocument = useCallback(() => {
     if (groupId === undefined) {
@@ -37,10 +39,7 @@ export const InnerContainer: React.FC<{
 
   const handleContextMenu = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
-      if (event.target !== event.currentTarget) return
-
       if (groupId === undefined) return
-
       openMenu(event)
     },
     [groupId, openMenu]
@@ -50,13 +49,11 @@ export const InnerContainer: React.FC<{
     <InnerContainerSC onContextMenu={handleContextMenu}>
       {children}
 
-      {isMenuOpen && (
-        <ContextMenu>
-          <ContextMenuItem onClick={handleNewDocument}>
-            New Document
-          </ContextMenuItem>
-        </ContextMenu>
-      )}
+      <ContextMenu>
+        <ContextMenuItem onClick={handleNewDocument}>
+          New Document
+        </ContextMenuItem>
+      </ContextMenu>
     </InnerContainerSC>
   )
 }

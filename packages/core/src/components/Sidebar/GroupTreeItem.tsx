@@ -41,7 +41,7 @@ const GroupTreeItem: React.FC<{
   index: number
   depth?: number
 }> = ({ group, depth, index }) => {
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { openMenu, closeMenu, ContextMenu } = useContextMenu()
   const { createDocument } = useDocumentsAPI()
   const { renameGroup, removeGroup, moveGroup } = useGroupsAPI()
   const { primarySidebar } = useViewState()
@@ -269,22 +269,18 @@ to group ${destinationId} (index ${destinationIndex})`)
         />
       </div>
 
-      {isMenuOpen && (
-        <ContextMenu>
-          <ContextMenuItem onClick={handleNewDocument}>
-            New Document
-          </ContextMenuItem>
-          <ContextMenuItem onClick={handleNewGroup}>
-            New Collection
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem onClick={handleRenameDocument}>
-            Rename
-          </ContextMenuItem>
-          {/* TODO: add danger style option to ContextMenuItem */}
-          <ContextMenuItem onClick={handleDeleteGroup}>Delete</ContextMenuItem>
-        </ContextMenu>
-      )}
+      <ContextMenu>
+        <ContextMenuItem onClick={handleNewDocument}>
+          New Document
+        </ContextMenuItem>
+        <ContextMenuItem onClick={handleNewGroup}>
+          New Collection
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem onClick={handleRenameDocument}>Rename</ContextMenuItem>
+        {/* TODO: add danger style option to ContextMenuItem */}
+        <ContextMenuItem onClick={handleDeleteGroup}>Delete</ContextMenuItem>
+      </ContextMenu>
     </>
   )
 }

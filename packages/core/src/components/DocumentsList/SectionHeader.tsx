@@ -15,7 +15,7 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
   const { changeSorting, sorting } = useMainState()
   const { createDocument } = useDocumentsAPI()
 
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { openMenu, closeMenu, ContextMenu } = useContextMenu()
   const {
     openMenu: openSortingMenu,
     isMenuOpen: isSortingMenuOpen,
@@ -35,9 +35,8 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
     openMenu(e)
   }
 
-  // TODO: consider making sorting a per-group setting
+  // TODO: make sorting a per-group setting
   const handleChangeSorting = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation()
     openSortingMenu(e)
   }
 
@@ -61,23 +60,21 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
           <div>{sortByText}</div> <Icon icon="chevronDown" />
         </div>
       </SectionHeaderContainer>
-      {isMenuOpen && (
-        <ContextMenu>
-          <ContextMenuItem onClick={handleNewDocument}>
-            New Document
-          </ContextMenuItem>
-        </ContextMenu>
-      )}
-      {isSortingMenuOpen && (
-        <SortingContextMenu>
-          <ContextMenuItem onClick={() => changeSorting("title", "asc")}>
-            {SORT_METHODS.title}
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => changeSorting("modifiedAt", "desc")}>
-            {SORT_METHODS.modifiedAt}
-          </ContextMenuItem>
-        </SortingContextMenu>
-      )}
+
+      <ContextMenu>
+        <ContextMenuItem onClick={handleNewDocument}>
+          New Document
+        </ContextMenuItem>
+      </ContextMenu>
+
+      <SortingContextMenu>
+        <ContextMenuItem onClick={() => changeSorting("title", "asc")}>
+          {SORT_METHODS.title}
+        </ContextMenuItem>
+        <ContextMenuItem onClick={() => changeSorting("modifiedAt", "desc")}>
+          {SORT_METHODS.modifiedAt}
+        </ContextMenuItem>
+      </SortingContextMenu>
     </>
   )
 }
