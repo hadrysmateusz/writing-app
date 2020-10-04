@@ -13,7 +13,7 @@
     "deploy": "netlify deploy --prod",
     "eject": "react-app-rewired eject",
     "generate-models": "amplify codegen models",
-    "lint": ""
+    "lint": "eslint ."
   },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",

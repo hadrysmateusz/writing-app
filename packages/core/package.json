@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "link-models": "echo Check README.md for linking instructions",
-    "unlink-models": "echo Check README.md for unlinking instructions"
+    "unlink-models": "echo Check README.md for unlinking instructions",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.3.5",

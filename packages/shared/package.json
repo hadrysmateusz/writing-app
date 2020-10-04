@@ -5,5 +5,8 @@
   "main": "src/index.ts",
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "scripts": {
+    "lint": "echo \"No lint script for package 'shared'\" && exit 0"
   }
 }
