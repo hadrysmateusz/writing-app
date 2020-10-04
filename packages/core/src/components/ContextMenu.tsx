@@ -143,7 +143,7 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
       }
     }, [x, y])
 
-    return isOpen || renderWhenClosed ? (
+    return (
       <Portal>
         <MenuContainer
           xPos={x}
@@ -154,10 +154,21 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
           {children}
         </MenuContainer>
       </Portal>
-    ) : null
+    )
   }
 
-  return { openMenu, closeMenu, isMenuOpen: isOpen, ContextMenu }
+  const withConditionalRender = (C: React.FC): React.ReactNode => {
+    return isOpen || renderWhenClosed
+      ? (props: React.PropsWithChildren<{}>) => <C {...props} />
+      : (props: React.PropsWithChildren<{}>) => null
+  }
+
+  return {
+    openMenu,
+    closeMenu,
+    isMenuOpen: isOpen,
+    ContextMenu: withConditionalRender(ContextMenu),
+  }
 }
 
 export const ContextSubmenu: React.FC<{ text: string }> = ({
