@@ -22,7 +22,7 @@ export const SidebarDocumentItem: React.FC<{
     DocumentContextMenu,
     getEditableProps,
   } = useDocumentContextMenu(document)
-  const { groups, currentDocument, switchDocument } = useMainState()
+  const { groups, currentEditor, switchDocument } = useMainState()
 
   // TODO: optimize this
   const isInCurrentGroup = useMemo(() => {
@@ -30,10 +30,9 @@ export const SidebarDocumentItem: React.FC<{
   }, [document.parentGroup, groupId])
 
   const isCurrent = useMemo(() => {
-    // TODO: something doesn't work here
-    if (currentDocument === null) return false
-    return document.id === currentDocument.id
-  }, [currentDocument, document.id])
+    if (currentEditor === null) return false
+    return document.id === currentEditor
+  }, [currentEditor, document.id])
 
   const title = useMemo(() => formatOptional(document.title, "Untitled"), [
     document.title,
