@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 
 // TODO: probably needs many improvements and optimizations (might be able to use Suspense)
-export const useDelayRender = (
-  render: React.ReactNode,
-  alt: React.ReactNode,
-  delay: number
-) => {
+export const withDelayRender = (
+  delay: number,
+  CAlt: React.FC | null = null
+) => (C: React.FC): React.FC => (props) => {
   const [isDone, setIsDone] = useState(delay === 0)
 
   useEffect(() => {
@@ -14,7 +13,7 @@ export const useDelayRender = (
 
     const timeoutId = setTimeout(() => setIsDone(true), delay)
     return () => clearTimeout(timeoutId)
-  }, [delay])
+  }, [])
 
-  return isDone ? render : alt
+  return isDone ? <C {...props} /> : CAlt === null ? null : <CAlt {...props} />
 }
