@@ -688,8 +688,12 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
       }
 
       if (switchToGroup) {
-        // TODO: consider not switching to inbox if current view is all documents
-        primarySidebar.switchView(parentGroup ?? VIEWS.INBOX)
+        // If current view is all documents and the document is created at the root, don't switch
+        if (
+          !(primarySidebar.currentView === VIEWS.ALL && parentGroup === null)
+        ) {
+          primarySidebar.switchView(parentGroup ?? VIEWS.INBOX)
+        }
       }
 
       return newDocument
