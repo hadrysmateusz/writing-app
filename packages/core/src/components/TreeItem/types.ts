@@ -32,7 +32,9 @@ export type StatefulExpandableTreeItemProps = ExpandableTreeItemProps & {
 
 export type StatelessExpandableTreeItemProps = ExpandableTreeItemProps & {
   isExpanded: boolean
-  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>
+  setIsExpanded:
+    | React.Dispatch<React.SetStateAction<boolean>>
+    | ((value: boolean) => void)
 }
 
 export type StaticTreeItemProps = CoreTreeItemProps & {}
