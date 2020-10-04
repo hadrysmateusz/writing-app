@@ -187,13 +187,13 @@ const MainContainer = styled.div<{ isCurrent: boolean }>`
   border-color: #363636;
   cursor: pointer;
 
-  animation: background-color 200ms ease;
-
-  ${(p) => p.isCurrent && "background-color: #252525;"}
+  transition: background-color 200ms ease;
 
   :hover {
     background-color: #252525;
   }
+
+  ${(p) => p.isCurrent && "background-color: #252525;"}
 `
 
 export default SidebarDocumentItem
