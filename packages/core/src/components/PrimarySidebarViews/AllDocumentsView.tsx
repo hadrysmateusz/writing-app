@@ -6,7 +6,7 @@ import { AllDocumentsList } from "../DocumentsList"
 export const AllDocumentsView: React.FC = () => {
   return (
     <Container>
-      <InnerContainer>
+      <InnerContainer groupId={null}>
         <AllDocumentsList />
       </InnerContainer>
       <NewButton groupId={null} />

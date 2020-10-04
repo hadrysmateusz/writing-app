@@ -9,7 +9,7 @@ export const GroupView: React.FC = () => {
 
   return (
     <Container>
-      <InnerContainer>
+      <InnerContainer groupId={primarySidebar.currentView}>
         <GroupDocumentsList groupId={primarySidebar.currentView} />
       </InnerContainer>
       <NewButton groupId={primarySidebar.currentView} />

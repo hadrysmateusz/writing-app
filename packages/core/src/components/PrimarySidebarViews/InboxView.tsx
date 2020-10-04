@@ -6,7 +6,7 @@ import { InboxDocumentsList } from "../DocumentsList"
 export const InboxView: React.FC = () => {
   return (
     <Container>
-      <InnerContainer>
+      <InnerContainer groupId={null}>
         <InboxDocumentsList />
       </InnerContainer>
       <NewButton groupId={null} />

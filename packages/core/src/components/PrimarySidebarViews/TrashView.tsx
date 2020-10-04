@@ -6,7 +6,7 @@ import { TrashDocumentsList } from "../DocumentsList"
 export const TrashView: React.FC = () => {
   return (
     <Container>
-      <InnerContainer>
+      <InnerContainer groupId={undefined}>
         <TrashDocumentsList />
       </InnerContainer>
     </Container>

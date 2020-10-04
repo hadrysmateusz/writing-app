@@ -244,8 +244,8 @@ to group ${destinationId} (index ${destinationIndex})`)
                 onContextMenu={openMenu}
                 onClick={handleClick}
                 isExpanded={isExpanded}
-                isActive={isActive}
                 setIsExpanded={setIsExpanded}
+                isActive={isActive}
                 icon={icon}
                 nested={(depth) => (
                   <GroupsList

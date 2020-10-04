@@ -1,7 +1,69 @@
 import React, { useCallback } from "react"
 import styled from "styled-components/macro"
+import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 
 import { useDocumentsAPI } from "../MainProvider"
+
+export const NewButton: React.FC<{ groupId: string | null }> = ({
+  groupId = null,
+}) => {
+  const { createDocument } = useDocumentsAPI()
+
+  const handleNew = useCallback(() => {
+    createDocument(groupId)
+  }, [createDocument, groupId])
+
+  return <NewButtonSC onClick={handleNew}>+ Create New</NewButtonSC>
+}
+
+export const InnerContainer: React.FC<{
+  /**
+   * Used for creating new documents
+   *
+   * If you don't want to create new documents from this view, use undefined
+   */
+  groupId: string | null | undefined
+}> = ({ groupId, children }) => {
+  const { createDocument } = useDocumentsAPI()
+  const { openMenu, isMenuOpen, ContextMenu } = useContextMenu()
+
+  const handleNewDocument = useCallback(() => {
+    if (groupId === undefined) {
+      console.error("undefined groupId")
+      return
+    }
+    createDocument(groupId)
+  }, [createDocument, groupId])
+
+  const handleContextMenu = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (event.target !== event.currentTarget) return
+
+      if (groupId === undefined) return
+
+      openMenu(event)
+    },
+    [groupId, openMenu]
+  )
+
+  return (
+    <InnerContainerSC onContextMenu={handleContextMenu}>
+      {children}
+
+      {isMenuOpen && (
+        <ContextMenu>
+          <ContextMenuItem onClick={handleNewDocument}>
+            New Document
+          </ContextMenuItem>
+        </ContextMenu>
+      )}
+    </InnerContainerSC>
+  )
+}
+
+const InnerContainerSC = styled.div`
+  overflow-y: auto;
+`
 
 export const Container = styled.div`
   min-height: 0;
@@ -11,11 +73,7 @@ export const Container = styled.div`
   grid-template-rows: 1fr min-content;
 `
 
-export const InnerContainer = styled.div`
-  overflow-y: auto;
-`
-
-const NewButtonStyled = styled.div`
+const NewButtonSC = styled.div`
   font-family: poppins;
   font-weight: 500;
   font-size: 13px;
@@ -31,15 +89,3 @@ const NewButtonStyled = styled.div`
     color: white;
   }
 `
-
-export const NewButton: React.FC<{ groupId: string | null }> = ({
-  groupId = null,
-}) => {
-  const { createDocument } = useDocumentsAPI()
-
-  const handleNew = useCallback(() => {
-    createDocument(groupId)
-  }, [createDocument, groupId])
-
-  return <NewButtonStyled onClick={handleNew}>+ Create New</NewButtonStyled>
-}
