@@ -8,6 +8,9 @@ import { serializeText } from "../../slate-helpers"
 import { useEditorState } from "../EditorStateProvider"
 import styled from "styled-components"
 
+// TODO: add option to customise WPM reading speed
+const WPM = 275
+
 const TextStats: React.FC = () => {
   const { editorValue: editorContent } = useEditorState()
 
@@ -21,20 +24,10 @@ const TextStats: React.FC = () => {
 
     var tree = unified().use(latin).parse(vfile(text))
 
-    // console.log(text)
-    // console.log(tree)
-    // console.log("characters", text.length)
-    // console.log("words")
-    // console.log("sentences", size(tree, "SentenceNode"))
-    // console.log(
-    //   "reading time",
-    //   `~${Math.max(1, Math.round(size(tree, "WordNode") / 275))}min`
-    // )
-
-    const _chars = text.length // TODO: filter newlines (probably will need os-specific code)
+    const _chars = text.length // TODO: filter newlines (will need to account for different line endings)
     const _words = size(tree, "WordNode")
     const _sentences = size(tree, "SentenceNode")
-    const _readingTime = Math.max(1, Math.round(size(tree, "WordNode") / 275)) // TODO: a lot of improvements
+    const _readingTime = Math.round(size(tree, "WordNode") / (WPM / 60)) // In seconds
 
     setChars(_chars)
     setWords(_words)
@@ -42,23 +35,33 @@ const TextStats: React.FC = () => {
     setReadingTime(_readingTime)
   }, [editorContent])
 
+  const readingTimeMin = Math.floor(readingTime / 60)
+  const readingTimeSec = readingTime - readingTimeMin * 60
+
   return (
-    <div>
+    <Container>
       <Row>
         <div>Characters</div> <Value>{chars}</Value>
       </Row>
       <Row>
         <div>Words</div> <Value>{words}</Value>
       </Row>
-      <Row>
+      {/* <Row>
         <div>Sentences</div> <Value>{sentences}</Value>
-      </Row>
+      </Row> */}
       <Row>
-        <div>Reading Time</div> <Value>~{readingTime} min</Value>
+        <div>Reading Time</div>{" "}
+        <Value>
+          {readingTimeMin} min {readingTimeSec} s
+        </Value>
       </Row>
-    </div>
+    </Container>
   )
 }
+
+const Container = styled.div`
+  font-size: 12px;
+`
 
 const Row = styled.div`
   display: flex;
