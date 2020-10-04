@@ -75,7 +75,7 @@ const cancelSubscriptions = (...subs: (Subscription | undefined)[]) => {
   subs.forEach((sub) => cancelSubscription(sub))
 }
 
-export const MainProvider: React.FC<{}> = ({ children }) => {
+export const MainProvider: React.FC = ({ children }) => {
   const db = useDatabase()
   const editor = useEditor()
   const { primarySidebar } = useViewState()
@@ -881,6 +881,7 @@ export const MainProvider: React.FC<{}> = ({ children }) => {
   return (
     <MainStateProvider
       value={{
+        currentEditor,
         currentDocument,
         groups,
         favorites,

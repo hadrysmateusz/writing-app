@@ -8,6 +8,7 @@ export type MainState = {
   documents: DocumentDoc[]
   favorites: DocumentDoc[]
   currentDocument: DocumentDoc | null
+  currentEditor: string | null
   sorting: Sorting
   changeSorting: ChangeSortingFn
   saveDocument: SaveDocumentFn
