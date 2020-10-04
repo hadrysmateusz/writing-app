@@ -4,6 +4,7 @@ import { Sorting, SortingIndex, Direction, Updater } from "./Misc"
 
 export type MainState = {
   isLoading: boolean
+  isDocumentLoading: boolean
   groups: GroupDoc[]
   documents: DocumentDoc[]
   favorites: DocumentDoc[]

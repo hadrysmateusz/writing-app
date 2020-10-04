@@ -78,6 +78,7 @@ const cancelSubscriptions = (...subs: (Subscription | undefined)[]) => {
 export const MainProvider: React.FC = ({ children }) => {
   const db = useDatabase()
   const editor = useEditor()
+  const { currentEditor, updateLocalSetting } = useLocalSettings()
   const { primarySidebar } = useViewState()
   const {
     editorValue,
@@ -90,7 +91,7 @@ export const MainProvider: React.FC = ({ children }) => {
   const [groups, setGroups] = useState<GroupDoc[]>([])
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
-  const { currentEditor, updateLocalSetting } = useLocalSettings()
+  const [isDocumentLoading, setIsDocumentLoading] = useState<boolean>(true)
 
   // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
 
@@ -859,8 +860,10 @@ export const MainProvider: React.FC = ({ children }) => {
         setCurrentDocument(null)
         return
       }
+      setIsDocumentLoading(true)
       const documentDoc = await findDocumentById(currentEditor, true)
       setCurrentDocument(documentDoc)
+      setIsDocumentLoading(false)
     }
     fn()
   }, [currentEditor, findDocumentById])
@@ -883,6 +886,7 @@ export const MainProvider: React.FC = ({ children }) => {
       value={{
         currentEditor,
         currentDocument,
+        isDocumentLoading,
         groups,
         favorites,
         documents,

@@ -13,25 +13,30 @@ import { NavigatorSidebar } from "../NavigatorSidebar"
 import { Topbar } from "../Topbar"
 import { getDefaultSize, setDefaultSize } from "./helpers"
 import { useDevUtils } from "../../dev-tools"
+import { withDelayRender } from "../../withDelayRender"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
-
 // TODO: consider adding an onChange to split panes that will close them when they get below a certain size
+
+const LoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
 /**
  * Renders the editor if there is a document selected
  */
 const EditorRenderer: React.FC = () => {
-  const { currentDocument } = useMainState()
+  const { currentDocument, isDocumentLoading } = useMainState()
 
-  return currentDocument ? (
+  return isDocumentLoading ? (
+    <LoadingState />
+  ) : currentDocument ? (
     <EditorComponent
       key={currentDocument.id} // Necessary to reload the component on id change
       currentDocument={currentDocument}
     />
   ) : (
     // This div is here to prevent issues with split pane rendering
-    <div />
+    // TODO: add proper empty state
+    <div>No document selected</div>
   )
 }
 
