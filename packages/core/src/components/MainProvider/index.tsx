@@ -211,10 +211,12 @@ export const MainProvider: React.FC = memo(({ children }) => {
    */
   const switchDocument: SwitchDocumentFn = useCallback(
     async (id) => {
+      if (currentEditor === id) return
+
       setCurrentEditor(id)
       return fetchDocument(id)
     },
-    [fetchDocument, setCurrentEditor]
+    [currentEditor, fetchDocument, setCurrentEditor]
   )
 
   const updateDocumentsList = useCallback(
