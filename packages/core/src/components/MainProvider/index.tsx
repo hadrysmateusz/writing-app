@@ -4,8 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 
 import mudder from "mudder"
 
-import { DEFAULT_EDITOR_VALUE, useEditorState } from "../EditorStateProvider"
-import { deserialize } from "../Editor/serialization"
+import { DEFAULT_EDITOR_VALUE } from "../Main"
 import { useViewState } from "../View"
 import { useModal } from "../Modal"
 import { useDatabase, DocumentDoc, GroupDoc } from "../Database"
@@ -70,8 +69,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
   const db = useDatabase()
   const { currentEditor, updateLocalSetting } = useLocalSettings()
   const { primarySidebar } = useViewState()
-
-  const { resetEditor, setEditorValue } = useEditorState()
 
   const [isLoading, setIsLoading] = useState(true)
   const [groups, setGroups] = useState<GroupDoc[]>([])
@@ -192,7 +189,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
    */
   const fetchDocument = useCallback(
     async (id: string | null) => {
-      resetEditor()
+      // resetEditor()
 
       if (id === null) {
         setCurrentDocument(null)
@@ -203,16 +200,10 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
       const documentDoc = await findDocumentById(id, true)
 
-      // TODO: replace defaultEditorValue with null
-      const content = documentDoc?.content
-        ? deserialize(documentDoc.content)
-        : DEFAULT_EDITOR_VALUE
-
-      setEditorValue(content)
-      setCurrentDocument(documentDoc)
       setIsDocumentLoading(false)
+      setCurrentDocument(documentDoc)
     },
-    [findDocumentById, resetEditor, setEditorValue]
+    [findDocumentById]
   )
 
   /**

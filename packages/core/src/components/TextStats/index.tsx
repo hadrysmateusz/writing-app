@@ -5,7 +5,7 @@ import size from "unist-util-size"
 import vfile from "vfile"
 
 import { serializeText } from "../../slate-helpers"
-import { useEditorState } from "../EditorStateProvider"
+import { useEditorState } from "../Main"
 import styled from "styled-components"
 
 // TODO: add option to customise WPM reading speed
@@ -27,7 +27,8 @@ const TextStats: React.FC = () => {
     const _chars = text.length // TODO: filter newlines (will need to account for different line endings)
     const _words = size(tree, "WordNode")
     const _sentences = size(tree, "SentenceNode")
-    const _readingTime = Math.round(size(tree, "WordNode") / (WPM / 60)) // In seconds
+    // This uses words as defined by 5 characters instead of actual space-separated words TODO: make sure this is a good approach
+    const _readingTime = Math.round(_chars / 5 / (WPM / 60)) // In seconds
 
     setChars(_chars)
     setWords(_words)
