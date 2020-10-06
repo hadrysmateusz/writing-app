@@ -61,8 +61,8 @@ export const SecondarySidebar: React.FC<{}> = () => {
 const OuterContainer = styled.div`
   min-height: 0;
   height: 100%;
-  border-left: 1px solid;
-  border-color: #363636;
+  /* border-left: 1px solid;
+  border-color: #363636; */
   background-color: #1e1e1e;
   position: relative;
 `

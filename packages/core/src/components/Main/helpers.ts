@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { useCallback, useState } from "react"
 
 // TODO: replace local storage with something more performant - e.g. a local preferences rxdb database
 export const getDefaultSize = (key: string, fallback: number): number => {
@@ -9,12 +9,17 @@ export const setDefaultSize = (key: string, size: number): void => {
 }
 
 export const useSplitPane = (storageKey: string) => {
-  const defaultSize = useMemo(() => getDefaultSize(storageKey, 200), [
-    storageKey,
-  ])
-  const handleChange = useCallback((s) => setDefaultSize(storageKey, s), [
-    storageKey,
-  ])
+  const [size, setSize] = useState<number>(() =>
+    getDefaultSize(storageKey, 200)
+  )
+  // TODO: debounce
+  const handleChange = useCallback(
+    (s) => {
+      setSize(s)
+      setDefaultSize(storageKey, s)
+    },
+    [storageKey]
+  )
 
-  return { defaultSize, handleChange }
+  return { defaultSize: size, handleChange }
 }

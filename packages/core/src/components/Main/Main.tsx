@@ -1,6 +1,7 @@
-import React, { useCallback, memo, useEffect, useState } from "react"
+import React, { useCallback, memo, useEffect, useState, useRef } from "react"
 import styled from "styled-components/macro"
 import SplitPane from "react-split-pane"
+import Split from "react-split-grid"
 
 import { PrimarySidebar, SecondarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
@@ -27,8 +28,16 @@ import { ImageModalProvider } from "../ImageModal"
 import { LinkModalProvider } from "../LinkPrompt"
 import { EditorState } from "./types"
 
+/* TODO: consider adding an onChange to split panes that will close them when they get below a certain size
+
+- It would be nice for UX
+- It would allow me to simplify code because I wouldn't just set the sidebar pane width to 0 and stop rendering the sidebar and I wouldn't have to stop rendering the split panes component
+
+It will probably require a library switch because the current one doesn't allow changing the pane with programmatically
+
+*/
+
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
-// TODO: consider adding an onChange to split panes that will close them when they get below a certain size
 
 export const [useEditorState, _, EditorStateContext] = createContext<
   EditorState
@@ -48,15 +57,27 @@ const EditorRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   saveDocument,
 }) => {
   const { currentDocument, isDocumentLoading } = useMainState()
+  const { secondarySidebar } = useViewState()
+  const { isModified } = useEditorState()
 
   return isDocumentLoading ? (
     <LoadingState />
   ) : currentDocument ? (
-    <EditorComponent
-      key={currentDocument.id} // Necessary to reload the component on id change
-      currentDocument={currentDocument}
-      saveDocument={saveDocument}
-    />
+    <>
+      <button
+        onClick={() => {
+          secondarySidebar.toggle()
+        }}
+      >
+        sidebar
+      </button>
+      <div>{isModified ? "MODIFIED" : "SAVED & UNREPLICATED"}</div>
+      <EditorComponent
+        key={currentDocument.id} // Necessary to reload the component on id change
+        currentDocument={currentDocument}
+        saveDocument={saveDocument}
+      />
+    </>
   ) : (
     // This div is here to prevent issues with split pane rendering
     // TODO: add proper empty state
@@ -64,28 +85,106 @@ const EditorRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   )
 }
 
+/**
+ * Renders the editor and secondary sidebar in split panes
+ */
 const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   saveDocument,
 }) => {
   const { secondarySidebar } = useViewState()
   const { defaultSize, handleChange } = useSplitPane("splitPosSecondary")
+  const [sidebarWidth, setSidebarWidth] = useState<number>(defaultSize)
+  const [isDragging, setIsDragging] = useState<boolean>(false)
 
-  return secondarySidebar.isOpen ? (
-    <SplitPane
-      split="vertical"
-      primary="second"
-      minSize={200}
-      maxSize={800}
-      defaultSize={defaultSize}
-      onChange={handleChange}
-    >
-      <EditorRenderer saveDocument={saveDocument} />
-      <SecondarySidebar />
-    </SplitPane>
-  ) : (
-    <EditorRenderer saveDocument={saveDocument} />
+  const sidebarRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (isDragging) return
+    if (secondarySidebar.isOpen && sidebarWidth === 0) {
+      setSidebarWidth(Math.max(200, defaultSize))
+    }
+  }, [defaultSize, isDragging, secondarySidebar.isOpen, sidebarWidth])
+
+  useEffect(() => {
+    if (isDragging) return
+    if (!secondarySidebar.isOpen) {
+      setSidebarWidth(0)
+    }
+  }, [isDragging, secondarySidebar.isOpen])
+
+  const handleDrag = useCallback(
+    (_direction, _track, style) => {
+      const widthWithUnit = style.split(" ")[2]
+      const width = widthWithUnit.slice(0, -2)
+      setSidebarWidth(width)
+      handleChange(width)
+    },
+    [handleChange]
+  )
+
+  return (
+    <Split
+      minSize={0}
+      snapOffset={180}
+      gridTemplateColumns={`1fr auto ${sidebarWidth}px`}
+      onDragEnd={() => {
+        const newSidebarWidth = sidebarRef?.current?.getBoundingClientRect()
+          .width
+
+        if (newSidebarWidth === 0) {
+          secondarySidebar.close()
+        }
+
+        if (newSidebarWidth !== undefined) {
+          setSidebarWidth(newSidebarWidth)
+        }
+
+        setIsDragging(false)
+      }}
+      onDragStart={() => {
+        setIsDragging(true)
+        secondarySidebar.open()
+      }}
+      onDrag={handleDrag}
+      direction="horizontal"
+      cursor="col-resize"
+      render={({ getGridProps, getGutterProps }) => (
+        <Grid sidebarWidth={sidebarWidth} {...getGridProps()}>
+          <div>
+            <EditorRenderer saveDocument={saveDocument} />
+          </div>
+          <Gutter {...getGutterProps("column", 1)} />
+          <div ref={sidebarRef}>
+            {secondarySidebar.isOpen ? <SecondarySidebar /> : null}
+          </div>
+        </Grid>
+      )}
+    />
   )
 }
+
+const Grid = styled.div`
+  display: grid;
+`
+
+const Gutter = styled.div`
+  width: 11px;
+  margin: 0 -5px;
+  border-left: 5px solid rgba(0, 0, 0, 0);
+  border-right: 5px solid rgba(0, 0, 0, 0);
+  cursor: col-resize;
+  background: #363636;
+  z-index: 1;
+  box-sizing: border-box;
+  background-clip: padding-box;
+
+  transition: border-color 1s ease;
+
+  :hover {
+    border-left: 5px solid rgba(0, 0, 0, 0.15);
+    border-right: 5px solid rgba(0, 0, 0, 0.15);
+  }
+`
 
 /**
  * State provider for editor and secondary sidebar
@@ -197,9 +296,12 @@ const InnerSidebarsAndEditor: React.FC = () => {
             maxSize={800}
             defaultSize={defaultSize}
             onChange={handleChange}
+            style={{ height: "100%" }}
           >
             <PrimarySidebar />
-            <EditorStateProvider />
+            <EditorStateProviderContainer>
+              <EditorStateProvider />
+            </EditorStateProviderContainer>
           </SplitPane>
         ) : (
           <EditorStateProvider />
@@ -270,6 +372,13 @@ const InnerContainer = styled.div`
   min-height: 0;
   height: 100%;
   position: relative;
+`
+
+const EditorStateProviderContainer = styled.div`
+  height: 100%;
+  > * {
+    height: 100%;
+  }
 `
 
 export default Main
