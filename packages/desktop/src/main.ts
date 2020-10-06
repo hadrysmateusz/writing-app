@@ -30,7 +30,13 @@ const filters = {
   html: { name: "HTML", extensions: ["html", "htm"] },
 }
 
-function createWindow() {
+async function createWindow() {
+  // TODO: only add extensions in dev
+  // TODO: switch to the new way of loading extensions https://www.electronjs.org/docs/api/extensions
+  BrowserWindow.addDevToolsExtension(
+    "C:\\Users\\ja\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.8.2_0"
+  )
+
   // Create the browser window.
   const win = new BrowserWindow({
     width: 1900,
