@@ -11,7 +11,7 @@ export const useDevUtils = ({
   editor,
 }: {
   value: Node[]
-  editor: Editor
+  editor: Editor | null
 }) => {
   useEffect(() => {
     if (config.logValue) {
@@ -25,6 +25,10 @@ export const useDevUtils = ({
 
   useEffect(() => {
     const logEditor = () => {
+      if (!editor) {
+        console.warn("no editor object")
+        return
+      }
       console.dir(cloneDeep(editor))
     }
     // TODO: this is potentially a memory leak (fix the handler remover)
