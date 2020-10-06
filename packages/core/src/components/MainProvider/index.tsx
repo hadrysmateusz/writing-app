@@ -99,8 +99,9 @@ export const MainProvider: React.FC = ({ children }) => {
 
   // State of the sorting options for the documents list
   // TODO: persist this locally
+  // TODO: make this not take uppercase/lowercase into consideration (probably by having a separate 'slugTitle' field)
   const [sorting, setSorting] = useState<Sorting>({
-    index: "modifiedAt",
+    index: "title",
     direction: "desc",
   })
 
@@ -109,8 +110,8 @@ export const MainProvider: React.FC = ({ children }) => {
     documentId?: string
   }>(false)
 
-  const index = sorting?.index ?? "modifiedAt"
-  const direction = sorting?.direction ?? "desc"
+  const index = sorting.index
+  const direction = sorting.direction
 
   //#region queries
 
