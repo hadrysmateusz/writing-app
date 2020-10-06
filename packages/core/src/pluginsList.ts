@@ -1,4 +1,5 @@
 import { withHistory } from "slate-history"
+import { withReact } from "slate-react"
 import {
   LoggerPlugin,
   InlineCodePlugin,
@@ -24,6 +25,7 @@ import {
 import { ListType } from "./slateTypes"
 
 const HistoryPlugin = () => ({ editorOverrides: withHistory })
+const ReactPlugin = () => ({ editorOverrides: withReact })
 
 export const plugins = [
   HistoryPlugin(),
@@ -52,4 +54,5 @@ export const plugins = [
     exclude: [...Object.values(HeadingType)],
   }),
   ParagraphPlugin(),
+  ReactPlugin(),
 ]

@@ -1,18 +1,15 @@
 import React, { useMemo, useCallback } from "react"
 import styled from "styled-components/macro"
-import { useEditor } from "slate-react"
 import SplitPane from "react-split-pane"
 
 import { PrimarySidebar, SecondarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
 
 import { useViewState } from "../View/ViewStateProvider"
-import { useEditorState } from "../EditorStateProvider"
 import { useMainState } from "../MainProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { Topbar } from "../Topbar"
 import { getDefaultSize, setDefaultSize } from "./helpers"
-import { useDevUtils } from "../../dev-tools"
 import { withDelayRender } from "../../withDelayRender"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
@@ -124,11 +121,7 @@ const InnermostRenderer: React.FC = () => {
 }
 
 const Main = () => {
-  const { editorValue } = useEditorState()
   const { isLoading } = useMainState()
-  const editor = useEditor()
-
-  useDevUtils({ value: editorValue, editor })
 
   const error = null // TODO: actual error handling
 

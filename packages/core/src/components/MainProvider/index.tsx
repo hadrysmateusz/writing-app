@@ -1,19 +1,19 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react"
-import { useEditor } from "slate-react"
 import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
+
 import mudder from "mudder"
 
-import { useEditorState, defaultEditorValue } from "../EditorStateProvider"
+import { DEFAULT_EDITOR_VALUE, useEditorState } from "../EditorStateProvider"
 import { deserialize, serialize } from "../Editor/serialization"
 import { useViewState } from "../View"
 import { useModal } from "../Modal"
 import { useDatabase, DocumentDoc, GroupDoc } from "../Database"
+import { useLocalSettings } from "../LocalSettings"
 
-import { VIEWS } from "../../constants"
+import { VIEWS, GROUP_TREE_ROOT } from "../../constants"
 import { listenForIpcEvent, createContext } from "../../utils"
 
-import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
 import {
   DocumentsAPI,
   GroupsAPI,
@@ -40,8 +40,8 @@ import {
   UpdateGroupFn,
   MoveGroupFn,
 } from "./types"
-import { GROUP_TREE_ROOT } from "../../constants"
-import { useLocalSettings } from "../LocalSettings"
+import { cancelSubscriptions } from "./helpers"
+import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
 
 const m = mudder.base62
 
@@ -65,24 +65,17 @@ export const [
 
 // TODO: make methods using IDs to find documents/groups/etc. accept the actual RxDB document object instead to skip the query
 
-const cancelSubscription = (sub: Subscription | undefined) => {
-  if (sub) {
-    sub.unsubscribe()
-  }
-}
-
-const cancelSubscriptions = (...subs: (Subscription | undefined)[]) => {
-  subs.forEach((sub) => cancelSubscription(sub))
-}
-
 export const MainProvider: React.FC = ({ children }) => {
+  console.info("rendering mainprovider")
+
   const db = useDatabase()
-  const editor = useEditor()
   const { currentEditor, updateLocalSetting } = useLocalSettings()
   const { primarySidebar } = useViewState()
+
   const {
     editorValue,
     isModified,
+    resetEditor,
     setEditorValue,
     setIsModified,
   } = useEditorState()
@@ -119,7 +112,7 @@ export const MainProvider: React.FC = ({ children }) => {
   const index = sorting?.index ?? "modifiedAt"
   const direction = sorting?.direction ?? "desc"
 
-  // Queries
+  //#region queries
 
   const groupsQuery = useMemo(() => {
     return db.groups.find().sort({ position: "desc" })
@@ -137,11 +130,31 @@ export const MainProvider: React.FC = ({ children }) => {
       .sort({ [index]: direction })
   }, [db.documents, direction, index])
 
-  const setCurrentEditor = useCallback(
-    (value: string | null) => {
-      updateLocalSetting("currentEditor", value)
+  //#endregion
+
+  /**
+   * Finds a single document by id
+   *
+   * TODO: figure out better naming to separate this from findDocuments
+   */
+  const findDocumentById: FindDocumentByIdFn = useCallback(
+    async (
+      /**
+       * Id of the document
+       */
+      id: string,
+      /**
+       * Whether the query should consider removed documents
+       */
+      includeRemoved: boolean = false
+    ) => {
+      if (includeRemoved) {
+        return await db.documents.findOne().where("id").eq(id).exec()
+      } else {
+        return await db.documents.findOneNotRemoved().where("id").eq(id).exec()
+      }
     },
-    [updateLocalSetting]
+    [db.documents]
   )
 
   /**
@@ -173,6 +186,52 @@ export const MainProvider: React.FC = ({ children }) => {
     [db.groups]
   )
 
+  const setCurrentEditor = useCallback(
+    (value: string | null) => {
+      updateLocalSetting("currentEditor", value)
+    },
+    [updateLocalSetting]
+  )
+
+  /**
+   * This function uses an id argument instead of 'currentEditor' because it's supposed to be called from switchDocument before the 'currentEditor' value is updated
+   */
+  const fetchDocument = useCallback(
+    async (id: string | null) => {
+      resetEditor()
+
+      if (id === null) {
+        setCurrentDocument(null)
+        return
+      }
+
+      setIsDocumentLoading(true)
+
+      const documentDoc = await findDocumentById(id, true)
+
+      // TODO: replace defaultEditorValue with null
+      const content = documentDoc?.content
+        ? deserialize(documentDoc.content)
+        : DEFAULT_EDITOR_VALUE
+
+      setEditorValue(content)
+      setCurrentDocument(documentDoc)
+      setIsDocumentLoading(false)
+    },
+    [findDocumentById, resetEditor, setEditorValue]
+  )
+
+  /**
+   * Switches the currently open document
+   */
+  const switchDocument: SwitchDocumentFn = useCallback(
+    async (id) => {
+      setCurrentEditor(id)
+      return fetchDocument(id)
+    },
+    [fetchDocument, setCurrentEditor]
+  )
+
   const updateDocumentsList = useCallback(
     (documents: DocumentDoc[]) => {
       try {
@@ -195,21 +254,11 @@ export const MainProvider: React.FC = ({ children }) => {
   )
 
   /**
-   * Switches the currently open document
-   */
-  const switchDocument: SwitchDocumentFn = useCallback(
-    (id) => {
-      setCurrentEditor(id)
-    },
-    [setCurrentEditor]
-  )
-
-  /**
-   * Gets all things required for the app to run
+   * Fetches all things required for the app to run
    */
   useEffect(() => {
     if (isInitialLoad) {
-      const performInitialSetup = async () => {
+      ;(async () => {
         const groupsPromise = groupsQuery.exec()
         const documentsPromise = documentsQuery.exec()
         // TODO: favorites can probably be moved into a separate hook as they are not needed for first load
@@ -222,6 +271,8 @@ export const MainProvider: React.FC = ({ children }) => {
           favoritesPromise,
         ])
 
+        fetchDocument(currentEditor)
+
         // if current editor is set to null and there are new documents, switch to the first one
         // TODO: I should probably rethink my approach to this empty state
         if (newDocuments && newDocuments[0] && currentEditor === null) {
@@ -233,16 +284,16 @@ export const MainProvider: React.FC = ({ children }) => {
         updateDocumentsList(newDocuments)
         setFavorites(newFavorites)
         setIsLoading(false)
-      }
-      performInitialSetup()
+      })()
     }
   }, [
     currentEditor,
+    isInitialLoad,
     documentsQuery,
     favoritesQuery,
-    findGroupById,
     groupsQuery,
-    isInitialLoad,
+    fetchDocument,
+    findGroupById,
     switchDocument,
     updateDocumentsList,
   ])
@@ -275,66 +326,11 @@ export const MainProvider: React.FC = ({ children }) => {
   }, [documentsQuery.$, favoritesQuery.$, groupsQuery.$, updateDocumentsList])
 
   /**
-   * Handles changing all of the state and side-effects of switching editors
-   *
-   * TODO: this needs a significant rework for readability and reliability
-   */
-  useEffect(() => {
-    setIsModified(false) // TODO: this will have to change when/if multi-tab is implemented
-
-    // Reset any properties on the editor objects that shouldn't be shared between documents
-    // TODO; eventually I should save and restore these per documentID
-    const resetEditor = () => {
-      editor.history = { undos: [], redos: [] }
-      editor.selection = {
-        anchor: { path: [0, 0], offset: 0 },
-        focus: { path: [0, 0], offset: 0 },
-      }
-    }
-
-    const setEditorContent = async () => {
-      // TODO: better handle empty states
-      console.log("current editor is:", currentEditor)
-      if (currentEditor === null) {
-        setEditorValue(defaultEditorValue)
-        return
-      }
-
-      // We include removed documents to make it possible to preview documents in trash
-      const documentDoc = await findDocumentById(currentEditor, true)
-
-      // TODO: empty states need better handling because this will lead to issues
-      if (documentDoc === null) {
-        console.warn(
-          `Document with id: ${currentEditor} was not found - empty state was used. THIS IS A TEMPORARY SOLUTION - IT NEEDS TO CHANGE.`
-        )
-        setEditorValue(defaultEditorValue)
-        return
-      }
-
-      const content = documentDoc.content
-        ? deserialize(documentDoc.content)
-        : defaultEditorValue
-      setEditorValue(content)
-    }
-
-    ;(async () => {
-      resetEditor()
-      await setEditorContent()
-    })()
-
-    // OTHER DEPENDENCIES ARE PURPOSEFULLY IGNORED - THIS MIGHT NEED A BETTER SOLUTION
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentEditor])
-
-  /**
    * Changes the sorting options for the documents list
    */
   const changeSorting: ChangeSortingFn = useCallback((index, direction) => {
     setSorting({ index, direction })
   }, [])
-
-  //#region Groups
 
   /**
    * Creates a new group under the provided parent group
@@ -583,35 +579,6 @@ export const MainProvider: React.FC = ({ children }) => {
     [db.groups, findGroupById, updateGroup]
   )
 
-  //#endregion
-
-  //#region Documents
-
-  /**
-   * Finds a single document by id
-   *
-   * TODO: figure out better naming to separate this from findDocuments
-   */
-  const findDocumentById: FindDocumentByIdFn = useCallback(
-    async (
-      /**
-       * Id of the document
-       */
-      id: string,
-      /**
-       * Whether the query should consider removed documents
-       */
-      includeRemoved: boolean = false
-    ) => {
-      if (includeRemoved) {
-        return await db.documents.findOne().where("id").eq(id).exec()
-      } else {
-        return await db.documents.findOneNotRemoved().where("id").eq(id).exec()
-      }
-    },
-    [db.documents]
-  )
-
   /**
    * Constructs a basic query for finding documents
    *
@@ -648,14 +615,43 @@ export const MainProvider: React.FC = ({ children }) => {
       }
       // TODO: this can be extracted for use with other collections
       // TODO: handle errors (especially the ones thrown in pre-middleware because they mean the operation wasn't applied) (maybe handle them in more specialized functions like rename and save)
+      console.log("saving")
       const updatedDocument: DocumentDoc = await original.update(
         typeof updater === "function"
           ? { $set: updater(original) }
           : { $set: updater }
       )
+      console.log("saved")
       return updatedDocument
     },
     [findDocumentById]
+  )
+
+  /**
+   * Update current document
+   */
+  const updateCurrentDocument: UpdateCurrentDocumentFn = useCallback(
+    async (updater) => {
+      try {
+        if (currentEditor === null) {
+          throw new Error("no document is currently selected")
+        }
+        const updatedDocument = await updateDocument(
+          currentEditor,
+          updater,
+          true
+        )
+        return updatedDocument
+      } catch (error) {
+        // TODO: better error handling
+        throw error
+        // const msgBase = "Can't update the current document"
+        // console.error(`${msgBase}: ${error.message}`)
+        // setError(msgBase)
+        // return null
+      }
+    },
+    [currentEditor, updateDocument]
   )
 
   /**
@@ -664,7 +660,7 @@ export const MainProvider: React.FC = ({ children }) => {
   const createDocument: CreateDocumentFn = useCallback(
     async (parentGroup, values = {}, options = {}) => {
       const { switchToDocument = true, switchToGroup = true } = options
-      const { title = "", content = defaultEditorValue } = values
+      const { title = "", content = DEFAULT_EDITOR_VALUE } = values
 
       // TODO: consider using null value for content for empty documents
 
@@ -808,33 +804,6 @@ export const MainProvider: React.FC = ({ children }) => {
   )
 
   /**
-   * Update current document
-   */
-  const updateCurrentDocument: UpdateCurrentDocumentFn = useCallback(
-    async (updater) => {
-      try {
-        if (currentEditor === null) {
-          throw new Error("no document is currently selected")
-        }
-        const updatedDocument = await updateDocument(
-          currentEditor,
-          updater,
-          true
-        )
-        return updatedDocument
-      } catch (error) {
-        // TODO: better error handling
-        throw error
-        // const msgBase = "Can't update the current document"
-        // console.error(`${msgBase}: ${error.message}`)
-        // setError(msgBase)
-        // return null
-      }
-    },
-    [currentEditor, updateDocument]
-  )
-
-  /**
    * Save document
    *
    * Works on the current document
@@ -850,23 +819,6 @@ export const MainProvider: React.FC = ({ children }) => {
     }
     return null
   }, [editorValue, isModified, setIsModified, updateCurrentDocument])
-
-  //#endregion
-
-  // TODO: figure out a way to reduce duplication of these queries
-  useEffect(() => {
-    const fn = async () => {
-      if (currentEditor === null) {
-        setCurrentDocument(null)
-        return
-      }
-      setIsDocumentLoading(true)
-      const documentDoc = await findDocumentById(currentEditor, true)
-      setCurrentDocument(documentDoc)
-      setIsDocumentLoading(false)
-    }
-    fn()
-  }, [currentEditor, findDocumentById])
 
   useEffect(
     () =>
@@ -925,6 +877,7 @@ export const MainProvider: React.FC = ({ children }) => {
           <ConfirmDeleteModal
             render={(props) => <ConfirmDeleteModalContent {...props} />}
           />
+
           {children}
         </GroupsAPIProvider>
       </DocumentsAPIProvider>

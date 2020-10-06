@@ -36,7 +36,7 @@ const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
   currentDocument: DocumentDoc
 }> = ({ currentDocument }) => {
-  const { saveDocument } = useMainState()
+  const { saveDocument, isDocumentLoading, currentEditor } = useMainState()
   const { renameDocument } = useDocumentsAPI()
 
   const [title, setTitle] = useState<string>(currentDocument.title)
@@ -266,33 +266,37 @@ const EditorComponent: React.FC<{
       )}
       <OuterContainer>
         <InnerContainer>
-          {/* <HoveringToolbar /> */}
-          {/* <Toolbar /> */}
-          <StyledNamingInput
-            ref={titleRef}
-            value={title}
-            onChange={handleTitleChange}
-            onKeyDown={handleTitleKeydown}
-            onRename={handleRename}
-          />
-          <ListContextProvider value={{ listLevel: 0 }}>
-            <ListItemContextProvider value={{ listItemDirectNode: null }}>
-              <EditableContainer
-                onBlur={handleContentBlur}
-                onMouseDown={handleEditorMouseDown}
-              >
-                <Editable
-                  plugins={plugins}
-                  placeholder="Start writing"
-                  onKeyDown={[handleSaveDocument, handleFixSelection]}
-                  spellCheck={isSpellCheckEnabled}
-                />
-                <InsertBlockField onMouseDown={handleInsertEmptyBlock} />
+          {currentDocument && !isDocumentLoading && currentEditor && (
+            <>
+              {/* <HoveringToolbar /> */}
+              {/* <Toolbar /> */}
+              <StyledNamingInput
+                ref={titleRef}
+                value={title}
+                onChange={handleTitleChange}
+                onKeyDown={handleTitleKeydown}
+                onRename={handleRename}
+              />
+              <ListContextProvider value={{ listLevel: 0 }}>
+                <ListItemContextProvider value={{ listItemDirectNode: null }}>
+                  <EditableContainer
+                    onBlur={handleContentBlur}
+                    onMouseDown={handleEditorMouseDown}
+                  >
+                    <Editable
+                      plugins={plugins}
+                      placeholder="Start writing"
+                      onKeyDown={[handleSaveDocument, handleFixSelection]}
+                      spellCheck={isSpellCheckEnabled}
+                    />
+                    <InsertBlockField onMouseDown={handleInsertEmptyBlock} />
 
-                {isMenuOpen && renderContextMenu()}
-              </EditableContainer>
-            </ListItemContextProvider>
-          </ListContextProvider>
+                    {isMenuOpen && renderContextMenu()}
+                  </EditableContainer>
+                </ListItemContextProvider>
+              </ListContextProvider>
+            </>
+          )}
         </InnerContainer>
       </OuterContainer>
     </OutermostContainer>
