@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react"
-import { addRxPlugin, createRxDatabase, RxCollectionCreator } from "rxdb"
+import {
+  addRxPlugin,
+  createRxDatabase,
+  RxCollectionCreator,
+  RxReplicationState,
+} from "rxdb"
 import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import PouchDB from "pouchdb-core"
@@ -20,9 +25,11 @@ import {
   MyDatabase,
   DocumentDoc,
   DocumentCollection,
+  CollectionNames,
 } from "./types"
 import { DatabaseContext } from "./context"
 import { useCurrentUser } from "../Auth"
+import { cloneDeep } from "lodash"
 
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
@@ -59,16 +66,22 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       // TODO: disable in prod
       window["db"] = db
 
+      // TODO: skip_setup doesn't seem to work as expected and should probably be replaced with manual checks and simply not calling the create functions if they fail
       const collections: (RxCollectionCreator & {
+        name: CollectionNames
         /**
-         * Custom property, indicates if the collection should be automatically synced with remote db
+         * Custom properties
          */
-        sync: boolean
+        options: {
+          /**
+           * Indicates if the collection should be automatically synced with remote db
+           */
+          sync: boolean
+        }
       })[] = [
         {
-          name: "documents",
+          name: CollectionNames.documents,
           schema: documentSchema,
-          sync: true,
           statics: {
             findNotRemoved(this: DocumentCollection) {
               return this.find().where("isDeleted").eq(false)
@@ -88,44 +101,51 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
           },
           migrationStrategies: {},
           pouchSettings: {
-            // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
             skip_setup: true,
+          },
+          options: {
+            sync: true,
           },
         },
         {
-          name: "groups",
+          name: CollectionNames.groups,
           schema: groupSchema,
-          sync: true,
           statics: {},
           migrationStrategies: {},
           pouchSettings: {
-            // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
             skip_setup: true,
+          },
+          options: {
+            sync: true,
           },
         },
         {
-          name: "userdata",
+          name: CollectionNames.userdata,
           schema: userdataSchema,
-          sync: true,
           pouchSettings: {
-            // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
             skip_setup: true,
+          },
+          options: {
+            sync: true,
           },
         },
         {
-          name: "local_settings",
+          name: CollectionNames.local_settings,
           schema: localSettingsSchema,
-          sync: false,
           migrationStrategies: {},
           pouchSettings: {
-            // This doesn't seem to work as expected and should probably be replaced with manualy checks and simply not calling the create functions if they fail
             skip_setup: true,
+          },
+          options: {
+            sync: false,
           },
         },
       ]
 
       // create collections
       await Promise.all(collections.map((colData) => db.collection(colData)))
+
+      //#region Set up hooks
 
       // Hook to remove nested groups and documents when a group is removed
       db.groups.preRemove(async (groupData) => {
@@ -167,18 +187,24 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
         data.modifiedAt = Date.now()
       }, false)
 
+      //#endregion
+
+      // An object that will hold replication state for each collection
+      const replicationState: Partial<Record<
+        CollectionNames,
+        RxReplicationState
+      >> = {}
+
       // Set up cloud sync
       if (config.dbSync) {
-        // TODO: check if sync returns a promise to be resolved
-
         collections
-          .filter((col) => col.sync)
-          .map((col) => col.name)
-          .forEach((colName) => {
+          .filter((col) => col.options.sync)
+          .forEach((col) => {
             // get the remote database(/table) name with the proper username prefix
-            const dbName = getRemoteDatabaseName(username, colName)
+            // TODO: consider making this a static method of collections
+            const dbName = getRemoteDatabaseName(username, col.name)
 
-            db[colName].sync({
+            const state = db[col.name].sync({
               remote: new PouchDB(
                 // TODO: when jwt auth is fixed, remove the admin credentials from this url and add the proper headers
                 `http://admin:kurczok99@${remoteDbDomain}:${remoteDbPort}/${dbName}/`,
@@ -210,10 +236,44 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
                 retry: true,
               },
             })
+
+            replicationState[col.name] = state
           })
       } else {
         console.warn("Sync disabled: Check the Database.tsx file")
       }
+
+      // TODO: these listeners are only temporary & for testing, figure out how to use them
+
+      console.log(replicationState)
+
+      replicationState?.documents?.change$.subscribe((...args) => {
+        console.log("change", cloneDeep(args), args)
+      })
+
+      replicationState.documents?.active$.subscribe((...args) => {
+        console.log("active", ...args)
+      })
+
+      // replicationState.documents?.complete$.subscribe((...args) => {
+      //   console.log("complete", ...args)
+      // })
+
+      replicationState.documents?.alive$.subscribe((...args) => {
+        console.log("alive", ...args)
+      })
+
+      replicationState.documents?.denied$.subscribe((...args) => {
+        console.log("denied", ...args)
+      })
+
+      replicationState.documents?.docs$.subscribe((...args) => {
+        console.log("docs", ...args)
+      })
+
+      replicationState.documents?.error$.subscribe((...args) => {
+        console.log("error", ...args)
+      })
 
       db.waitForLeadership().then(() => {
         console.log("Long lives the king!") // <- runs when db becomes leader

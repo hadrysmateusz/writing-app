@@ -11,4 +11,11 @@ export type MyDatabaseCollections = {
   local_settings: LocalSettingsCollection
 }
 
+export enum CollectionNames {
+  documents = "documents",
+  groups = "groups",
+  userdata = "userdata",
+  local_settings = "local_settings",
+}
+
 export type MyDatabase = RxDatabase<MyDatabaseCollections>
