@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useMemo } from "react"
-import { useSlate } from "slate-react"
+import React, { useCallback, useMemo } from "react"
+import { useEditor } from "slate-react"
 import styled from "styled-components/macro"
 
 import {
@@ -27,7 +27,7 @@ const Section = styled.div`
 `
 
 export const Toolbar = () => {
-  const editor = useSlate()
+  const editor = useEditor()
   const { open: openImageModal } = useImageModal()
 
   const onInsertHorizontalRule = useCallback(

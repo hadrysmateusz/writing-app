@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import { Range, Transforms } from "slate"
-import { useSlate, ReactEditor } from "slate-react"
+import { useEditor, ReactEditor } from "slate-react"
 import styled from "styled-components/macro"
 
 import { useModal } from "../Modal"
@@ -21,7 +21,7 @@ const [useImageModal, _, ImageModalContext] = createContext<Toggleable>()
 export { useImageModal, ImageModalContext }
 
 export const ImageModalProvider: React.FC = ({ children }) => {
-  const editor = useSlate()
+  const editor = useEditor()
   const [selection, setSelection] = useState<Range | null>(null)
 
   const onBeforeOpen = useCallback(() => {
@@ -60,7 +60,7 @@ const ImageModalContent: React.FC<{
   selection,
 }) => {
   const urlInputRef = useRef<HTMLInputElement | null>(null)
-  const editor = useSlate()
+  const editor = useEditor()
   const [url, setUrl] = useState<string>("")
   const { close } = useImageModal()
 

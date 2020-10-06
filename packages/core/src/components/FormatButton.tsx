@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { useSlate } from "slate-react"
+import { useEditor } from "slate-react"
 import styled from "styled-components/macro"
 
 import Icon from "./Icon"
@@ -22,7 +22,7 @@ const FormatButton = ({
   text?: string
   onMouseDown?: (event: React.MouseEvent) => void
 }) => {
-  const editor = useSlate()
+  const editor = useEditor()
   const isActive = isFormatActive(editor, format)
 
   const defaultOnMouseDown = useCallback(
