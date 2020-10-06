@@ -31,11 +31,12 @@ const filters = {
 }
 
 async function createWindow() {
-  // TODO: only add extensions in dev
-  // TODO: switch to the new way of loading extensions https://www.electronjs.org/docs/api/extensions
-  BrowserWindow.addDevToolsExtension(
-    "C:\\Users\\ja\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.8.2_0"
-  )
+  if (IS_DEV) {
+    // TODO: switch to the new way of loading extensions https://www.electronjs.org/docs/api/extensions
+    BrowserWindow.addDevToolsExtension(
+      "C:\\Users\\ja\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.8.2_0"
+    )
+  }
 
   // Create the browser window.
   const win = new BrowserWindow({
