@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, memo, useEffect, useState } from "react"
+import React, { useCallback, memo, useEffect, useState } from "react"
 import styled from "styled-components/macro"
 import SplitPane from "react-split-pane"
 
@@ -9,7 +9,7 @@ import { useViewState } from "../View/ViewStateProvider"
 import { SaveDocumentFn, useMainState } from "../MainProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { Topbar } from "../Topbar"
-import { getDefaultSize, setDefaultSize } from "./helpers"
+import { useSplitPane } from "./helpers"
 import { withDelayRender } from "../../withDelayRender"
 import { serialize } from "../Editor/serialization"
 
@@ -71,68 +71,11 @@ const EditorRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   )
 }
 
-/**
- * Renders the navigator sidebar and the rest of the editor in split panes
- */
-const OuterRenderer: React.FC = () => {
-  const { navigatorSidebar } = useViewState()
-  const storageKey = "splitPosNavigator"
-  const defaultSize = useMemo(() => getDefaultSize(storageKey, 200), [])
-  const handleChange = useCallback((s) => setDefaultSize(storageKey, s), [])
-
-  return navigatorSidebar.isOpen ? (
-    <SplitPane
-      split="vertical"
-      minSize={170}
-      maxSize={400}
-      defaultSize={defaultSize}
-      onChange={handleChange}
-    >
-      <NavigatorSidebar />
-      <InnerRenderer />
-    </SplitPane>
-  ) : (
-    <InnerRenderer />
-  )
-}
-
-/**
- * Renders the topbar, primary sidebar and the rest of the editor in split panes
- */
-const InnerRenderer: React.FC = () => {
-  const { primarySidebar } = useViewState()
-  const storageKey = "splitPosPrimary"
-  const defaultSize = useMemo(() => getDefaultSize(storageKey, 280), [])
-  const handleChange = useCallback((s) => setDefaultSize(storageKey, s), [])
-
-  return (
-    <InnerContainerWrapper>
-      {/* <Topbar /> */}
-      <InnerContainer>
-        {primarySidebar.isOpen ? (
-          <SplitPane
-            split="vertical"
-            minSize={200}
-            maxSize={800}
-            defaultSize={defaultSize}
-            onChange={handleChange}
-          >
-            <PrimarySidebar />
-            <InnermostRenderer />
-          </SplitPane>
-        ) : (
-          <InnermostRenderer />
-        )}
-      </InnerContainer>
-    </InnerContainerWrapper>
-  )
-}
-
-const InnermosterRenderer: React.FC = ({ saveDocument }) => {
+const InnermosterRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
+  saveDocument,
+}) => {
   const { secondarySidebar } = useViewState()
-  const storageKey = "splitPosSecondary"
-  const defaultSize = useMemo(() => getDefaultSize(storageKey, 280), [])
-  const handleChange = useCallback((s) => setDefaultSize(storageKey, s), [])
+  const { defaultSize, handleChange } = useSplitPane("splitPosSecondary")
 
   return secondarySidebar.isOpen ? (
     <SplitPane
@@ -158,10 +101,7 @@ const InnermostRenderer: React.FC = () => {
   const { currentDocument } = useMainState()
 
   const [editorValue, setEditorValue] = useState<Node[]>(DEFAULT_EDITOR_VALUE)
-
   const [isModified, setIsModified] = useState(false)
-
-  // useDevUtils({ value: editorValue, editor })
 
   useEffect(() => {
     // TODO: replace defaultEditorValue with null
@@ -176,10 +116,7 @@ const InnermostRenderer: React.FC = () => {
   const [editor, setEditor] = useState<ReactEditor | null>(null)
 
   const createEditorObject = useCallback(() => {
-    console.log("creating new editor")
     let editor = applyPlugins(createEditor(), plugins) as ReactEditor
-    console.log("created new editor", editor)
-
     setEditor(editor)
   }, [])
 
@@ -195,8 +132,6 @@ const InnermostRenderer: React.FC = () => {
    */
   const onChange = useCallback(
     (value: Node[]) => {
-      // console.log("setting editor value to", value)
-
       // TODO: I could debounced-save in here
       setEditorValue(value)
 
@@ -227,6 +162,8 @@ const InnermostRenderer: React.FC = () => {
     return null
   }, [currentDocument, editorValue, isModified, setIsModified])
 
+  useDevUtils({ value: editorValue, editor })
+
   return editor ? (
     <Slate editor={editor} value={editorValue} onChange={onChange}>
       <EditorStateContext.Provider
@@ -248,15 +185,68 @@ const InnermostRenderer: React.FC = () => {
   ) : null
 }
 
+/**
+ * Renders the topbar, primary sidebar and the rest of the editor in split panes
+ */
+const InnerRenderer: React.FC = () => {
+  const { primarySidebar } = useViewState()
+
+  const { defaultSize, handleChange } = useSplitPane("splitPosPrimary")
+
+  return (
+    <InnerContainerWrapper>
+      {/* <Topbar /> */}
+      <InnerContainer>
+        {primarySidebar.isOpen ? (
+          <SplitPane
+            split="vertical"
+            minSize={200}
+            maxSize={800}
+            defaultSize={defaultSize}
+            onChange={handleChange}
+          >
+            <PrimarySidebar />
+            <InnermostRenderer />
+          </SplitPane>
+        ) : (
+          <InnermostRenderer />
+        )}
+      </InnerContainer>
+    </InnerContainerWrapper>
+  )
+}
+
+/**
+ * Renders the navigator sidebar and the rest of the editor in split panes
+ */
+
 const Main = memo(() => {
   const { isLoading } = useMainState()
+  const { navigatorSidebar } = useViewState()
+
+  const { defaultSize, handleChange } = useSplitPane("splitPosNavigator")
 
   const error = null // TODO: actual error handling
 
   return (
     <OuterContainer>
       {/* TODO: loading state handling */}
-      {isLoading ? null : error ? error : <OuterRenderer />}
+      {isLoading ? null : error ? (
+        error
+      ) : navigatorSidebar.isOpen ? (
+        <SplitPane
+          split="vertical"
+          minSize={170}
+          maxSize={400}
+          defaultSize={defaultSize}
+          onChange={handleChange}
+        >
+          <NavigatorSidebar />
+          <InnerRenderer />
+        </SplitPane>
+      ) : (
+        <InnerRenderer />
+      )}
     </OuterContainer>
   )
 })
