@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react"
+import React, { useState, useCallback, useEffect, useMemo, memo } from "react"
 import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 
 import mudder from "mudder"
 
 import { DEFAULT_EDITOR_VALUE, useEditorState } from "../EditorStateProvider"
-import { deserialize, serialize } from "../Editor/serialization"
+import { deserialize } from "../Editor/serialization"
 import { useViewState } from "../View"
 import { useModal } from "../Modal"
 import { useDatabase, DocumentDoc, GroupDoc } from "../Database"
@@ -30,7 +30,6 @@ import {
   RenameGroupFn,
   RemoveGroupFn,
   PermanentlyRemoveDocumentFn,
-  SaveDocumentFn,
   UpdateCurrentDocumentFn,
   SwitchDocumentFn,
   MainState,
@@ -65,20 +64,14 @@ export const [
 
 // TODO: make methods using IDs to find documents/groups/etc. accept the actual RxDB document object instead to skip the query
 
-export const MainProvider: React.FC = ({ children }) => {
+export const MainProvider: React.FC = memo(({ children }) => {
   console.info("rendering mainprovider")
 
   const db = useDatabase()
   const { currentEditor, updateLocalSetting } = useLocalSettings()
   const { primarySidebar } = useViewState()
 
-  const {
-    editorValue,
-    isModified,
-    resetEditor,
-    setEditorValue,
-    setIsModified,
-  } = useEditorState()
+  const { resetEditor, setEditorValue } = useEditorState()
 
   const [isLoading, setIsLoading] = useState(true)
   const [groups, setGroups] = useState<GroupDoc[]>([])
@@ -804,35 +797,16 @@ export const MainProvider: React.FC = ({ children }) => {
     [db.groups, findDocumentById, updateDocument]
   )
 
-  /**
-   * Save document
-   *
-   * Works on the current document
-   */
-  const saveDocument: SaveDocumentFn = useCallback(async () => {
-    if (isModified) {
-      const serializedContent = serialize(editorValue)
-      const updatedDocument = await updateCurrentDocument({
-        content: serializedContent,
-      })
-      setIsModified(false)
-      return updatedDocument
-    }
-    return null
-  }, [editorValue, isModified, setIsModified, updateCurrentDocument])
-
-  useEffect(
-    () =>
-      // Handle "new-document" messages from the main process
-      listenForIpcEvent("new-cloud-document", () => {
-        // Remove domSelection to prevent errors
-        window.getSelection()?.removeAllRanges()
-        // Create the new document
-        // TODO: maybe infer the collection somehow from the current document or something else
-        createDocument(null)
-      }),
-    [createDocument]
-  )
+  useEffect(() => {
+    // Handle "new-document" messages from the main process
+    return listenForIpcEvent("new-cloud-document", () => {
+      // Remove domSelection to prevent errors
+      window.getSelection()?.removeAllRanges()
+      // Create the new document
+      // TODO: maybe infer the collection somehow from the current document or something else
+      createDocument(null)
+    })
+  }, [createDocument])
 
   return (
     <MainStateProvider
@@ -846,7 +820,6 @@ export const MainProvider: React.FC = ({ children }) => {
         isLoading,
         sorting,
         switchDocument,
-        saveDocument,
         updateCurrentDocument,
         changeSorting,
       }}
@@ -884,6 +857,6 @@ export const MainProvider: React.FC = ({ children }) => {
       </DocumentsAPIProvider>
     </MainStateProvider>
   )
-}
+})
 
 export * from "./types"

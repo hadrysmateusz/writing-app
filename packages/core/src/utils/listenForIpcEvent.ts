@@ -1,6 +1,11 @@
 import { IpcRendererEvent } from "electron"
 import isElectron from "is-electron"
 
+/**
+ * Sets up ipc listener
+ *
+ * @returns a function that removes the listener
+ */
 export const listenForIpcEvent = (
   topic: string,
   handler: (_event: IpcRendererEvent, args: any[]) => void
@@ -11,5 +16,5 @@ export const listenForIpcEvent = (
       window.ipcRenderer.removeListener(topic, handler)
     }
   }
-  return
+  return () => {}
 }

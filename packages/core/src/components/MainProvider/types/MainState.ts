@@ -12,7 +12,6 @@ export type MainState = {
   currentEditor: string | null
   sorting: Sorting
   changeSorting: ChangeSortingFn
-  saveDocument: SaveDocumentFn
   switchDocument: SwitchDocumentFn
   updateCurrentDocument: UpdateCurrentDocumentFn
 }
@@ -22,7 +21,7 @@ export type ChangeSortingFn = (
   direction: Direction
 ) => void
 
-export type SaveDocumentFn = () => Promise<DocumentDocType | null>
+export type SaveDocumentFn = () => Promise<DocumentDocType | null> // TODO: move
 
 export type SwitchDocumentFn = (documentId: string | null) => void
 

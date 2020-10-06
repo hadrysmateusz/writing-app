@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState, useRef } from "react"
+import React, { useMemo, useCallback, useState, useRef, memo } from "react"
 import styled, { css } from "styled-components/macro"
 import { throttle } from "lodash"
 import {
@@ -40,7 +40,7 @@ const GroupTreeItem: React.FC<{
   group: GroupTreeBranch
   index: number
   depth?: number
-}> = ({ group, depth, index }) => {
+}> = memo(({ group, depth, index }) => {
   const { openMenu, closeMenu, ContextMenu } = useContextMenu()
   const { createDocument } = useDocumentsAPI()
   const { renameGroup, removeGroup, moveGroup } = useGroupsAPI()
@@ -283,7 +283,7 @@ to group ${destinationId} (index ${destinationIndex})`)
       </ContextMenu>
     </>
   )
-}
+})
 
 const DropIndicator = styled.div<{ state: HoverState; visible: boolean }>`
   left: 0;

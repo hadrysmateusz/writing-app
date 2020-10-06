@@ -13,7 +13,7 @@ import isHotkey from "is-hotkey"
 // import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
 import { DocumentDoc } from "../Database"
-import { useMainState } from "../MainProvider"
+import { SaveDocumentFn, useMainState } from "../MainProvider"
 import {
   EditableContainer,
   OuterContainer,
@@ -35,8 +35,9 @@ import { useUserdata } from "../Userdata"
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
   currentDocument: DocumentDoc
-}> = ({ currentDocument }) => {
-  const { saveDocument, isDocumentLoading, currentEditor } = useMainState()
+  saveDocument: SaveDocumentFn
+}> = ({ currentDocument, saveDocument }) => {
+  const { isDocumentLoading, currentEditor } = useMainState()
   const { renameDocument } = useDocumentsAPI()
 
   const [title, setTitle] = useState<string>(currentDocument.title)

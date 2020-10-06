@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react"
+import React, { useMemo, useCallback, memo } from "react"
 import styled from "styled-components/macro"
 import SplitPane from "react-split-pane"
 
@@ -6,11 +6,13 @@ import { PrimarySidebar, SecondarySidebar } from "../Sidebar"
 import { EditorComponent } from "../Editor"
 
 import { useViewState } from "../View/ViewStateProvider"
-import { useMainState } from "../MainProvider"
+import { SaveDocumentFn, useMainState } from "../MainProvider"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { Topbar } from "../Topbar"
 import { getDefaultSize, setDefaultSize } from "./helpers"
 import { withDelayRender } from "../../withDelayRender"
+import { useEditorState } from "../EditorStateProvider"
+import { serialize } from "../Editor/serialization"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 // TODO: consider adding an onChange to split panes that will close them when they get below a certain size
@@ -20,8 +22,28 @@ const LoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 /**
  * Renders the editor if there is a document selected
  */
-const EditorRenderer: React.FC = () => {
+const EditorRenderer: React.FC = memo(() => {
   const { currentDocument, isDocumentLoading } = useMainState()
+  const { editorValue, isModified, setIsModified } = useEditorState()
+
+  /**
+   * Save document
+   *
+   * Works on the current document
+   */
+  const saveDocument: SaveDocumentFn = useCallback(async () => {
+    if (isModified) {
+      const updatedDocument =
+        (await currentDocument?.atomicUpdate((doc) => {
+          doc.content = serialize(editorValue)
+          return doc
+        })) || null
+
+      setIsModified(false)
+      return updatedDocument
+    }
+    return null
+  }, [currentDocument, editorValue, isModified, setIsModified])
 
   return isDocumentLoading ? (
     <LoadingState />
@@ -29,13 +51,14 @@ const EditorRenderer: React.FC = () => {
     <EditorComponent
       key={currentDocument.id} // Necessary to reload the component on id change
       currentDocument={currentDocument}
+      saveDocument={saveDocument}
     />
   ) : (
     // This div is here to prevent issues with split pane rendering
     // TODO: add proper empty state
     <div>No document selected</div>
   )
-}
+})
 
 /**
  * Renders the navigator sidebar and the rest of the editor in split panes
@@ -120,7 +143,7 @@ const InnermostRenderer: React.FC = () => {
   )
 }
 
-const Main = () => {
+const Main = memo(() => {
   const { isLoading } = useMainState()
 
   const error = null // TODO: actual error handling
@@ -131,7 +154,7 @@ const Main = () => {
       {isLoading ? null : error ? error : <OuterRenderer />}
     </OuterContainer>
   )
-}
+})
 
 const OuterContainer = styled.div`
   background-color: #1e1e1e;

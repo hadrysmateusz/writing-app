@@ -53,19 +53,22 @@ export const EditorStateProvider: React.FC<{}> = ({ children }) => {
   /**
    * onChange event handler for the Slate component
    */
-  const onChange = (value: Node[]) => {
-    console.log("setting editor value to", value)
+  const onChange = useCallback(
+    (value: Node[]) => {
+      // console.log("setting editor value to", value)
 
-    // TODO: I could debounced-save in here
-    setEditorValue(value)
+      // TODO: I could debounced-save in here
+      setEditorValue(value)
 
-    // if the content has changed, set the modified flag (skip the expensive check if it's already true)
-    if (!isModified) {
-      setIsModified(!isEqual(editorValue, value))
-    }
-  }
+      // if the content has changed, set the modified flag (skip the expensive check if it's already true)
+      if (!isModified) {
+        setIsModified(!isEqual(editorValue, value))
+      }
+    },
+    [editorValue, isModified]
+  )
 
-  useDevUtils({ value: editorValue, editor })
+  // useDevUtils({ value: editorValue, editor })
 
   return (
     editor && (
