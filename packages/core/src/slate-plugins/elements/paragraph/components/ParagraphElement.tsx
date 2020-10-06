@@ -1,4 +1,4 @@
-import React from "react"
+import React, { memo } from "react"
 import { RenderElementProps } from "slate-react"
 import styled from "styled-components/macro"
 
@@ -23,15 +23,18 @@ const StyledParagraph = styled.div`
     padding: 4px;`}
 `
 
-export const ParagraphElement = ({
-  attributes,
-  children,
-  element,
-}: RenderElementProps) => {
-  return (
-    <StyledParagraph {...attributes} data-slate-type={PARAGRAPH}>
-      <Toolbar nodeRef={attributes.ref} slateNode={element} />
-      {children}
-    </StyledParagraph>
-  )
-}
+export const ParagraphElement = memo(
+  (props: RenderElementProps) => {
+    const { attributes, children, element } = props
+    return (
+      <StyledParagraph {...attributes} data-slate-type={PARAGRAPH}>
+        <Toolbar nodeRef={attributes.ref} slateNode={element} />
+        {children}
+      </StyledParagraph>
+    )
+  },
+  (prevProps, nextProps) => {
+    // TODO: this is potentially a very dangerous optimisation because the comparison is so basic
+    return prevProps.element === nextProps.element
+  }
+)
