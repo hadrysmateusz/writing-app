@@ -25,19 +25,10 @@ import { History } from "slate-history"
 import { deserialize } from "../Editor/serialization"
 import { ImageModalProvider } from "../ImageModal"
 import { LinkModalProvider } from "../LinkPrompt"
-
-export type EditorState = {
-  editorValue: Node[]
-  isModified: boolean
-  resetEditor: () => void
-  setEditorValue: React.Dispatch<React.SetStateAction<Node[]>>
-  setIsModified: React.Dispatch<React.SetStateAction<boolean>>
-}
+import { EditorState } from "./types"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 // TODO: consider adding an onChange to split panes that will close them when they get below a certain size
-
-const LoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
 export const [useEditorState, _, EditorStateContext] = createContext<
   EditorState
@@ -47,6 +38,8 @@ export const DEFAULT_EDITOR_VALUE: Node[] = [
   { type: "paragraph", children: [{ text: "" }] },
 ]
 export const DEFAULT_EDITOR_HISTORY: History = { undos: [], redos: [] }
+
+const LoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
 /**
  * Renders the editor if there is a document selected
@@ -71,7 +64,7 @@ const EditorRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   )
 }
 
-const InnermosterRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
+const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   saveDocument,
 }) => {
   const { secondarySidebar } = useViewState()
@@ -95,9 +88,9 @@ const InnermosterRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
 }
 
 /**
- * Renders the editor and right-side drawer in split panes
+ * State provider for editor and secondary sidebar
  */
-const InnermostRenderer: React.FC = () => {
+const EditorStateProvider: React.FC = () => {
   const { currentDocument } = useMainState()
 
   const [editorValue, setEditorValue] = useState<Node[]>(DEFAULT_EDITOR_VALUE)
@@ -177,7 +170,7 @@ const InnermostRenderer: React.FC = () => {
       >
         <ImageModalProvider>
           <LinkModalProvider>
-            <InnermosterRenderer saveDocument={saveDocument} />
+            <EditorAndSecondarySidebar saveDocument={saveDocument} />
           </LinkModalProvider>
         </ImageModalProvider>
       </EditorStateContext.Provider>
@@ -188,7 +181,7 @@ const InnermostRenderer: React.FC = () => {
 /**
  * Renders the topbar, primary sidebar and the rest of the editor in split panes
  */
-const InnerRenderer: React.FC = () => {
+const InnerSidebarsAndEditor: React.FC = () => {
   const { primarySidebar } = useViewState()
 
   const { defaultSize, handleChange } = useSplitPane("splitPosPrimary")
@@ -206,10 +199,10 @@ const InnerRenderer: React.FC = () => {
             onChange={handleChange}
           >
             <PrimarySidebar />
-            <InnermostRenderer />
+            <EditorStateProvider />
           </SplitPane>
         ) : (
-          <InnermostRenderer />
+          <EditorStateProvider />
         )}
       </InnerContainer>
     </InnerContainerWrapper>
@@ -242,10 +235,10 @@ const Main = memo(() => {
           onChange={handleChange}
         >
           <NavigatorSidebar />
-          <InnerRenderer />
+          <InnerSidebarsAndEditor />
         </SplitPane>
       ) : (
-        <InnerRenderer />
+        <InnerSidebarsAndEditor />
       )}
     </OuterContainer>
   )
