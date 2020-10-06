@@ -1,3 +1,5 @@
+import { Node } from "slate"
+
 export type EditorState = {
   editorValue: Node[]
   isModified: boolean
