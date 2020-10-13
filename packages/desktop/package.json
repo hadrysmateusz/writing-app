@@ -9,7 +9,7 @@
     "build:web:post": "shx cp -Rf ../web/build dist/web",
     "clean": "shx rm -f *.tsbuildinfo && shx rm -rf build &&shx rm -rf dist && mkdirp dist",
     "start": "nodemon --watch dist --watch assets --exec \"electron .\"",
-    "compile": "tsc -b --incremental",
+    "compile": "tsc -b",
     "lint": "echo \"No lint script for package 'desktop'\" && exit 0"
   },
   "build": {

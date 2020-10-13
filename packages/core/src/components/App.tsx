@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
 import { Amplify } from "aws-amplify"
 
 import { AuthContextProvider, AuthenticatedRoute } from "./Auth"
@@ -68,6 +68,10 @@ export const App = () => {
 
             <Route>
               <h2>Page not found!</h2>
+
+              <Link to="/login">Login</Link>
+
+              <Link to="/signup">Signup</Link>
             </Route>
           </Switch>
         </Router>

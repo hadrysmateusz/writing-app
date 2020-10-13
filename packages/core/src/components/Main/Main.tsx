@@ -274,7 +274,9 @@ const EditorStateProvider: React.FC = () => {
         </ImageModalProvider>
       </EditorStateContext.Provider>
     </Slate>
-  ) : null
+  ) : (
+    "No editor object"
+  )
 }
 
 /**
@@ -326,8 +328,10 @@ const Main = memo(() => {
   return (
     <OuterContainer>
       {/* TODO: loading state handling */}
-      {isLoading ? null : error ? (
-        error
+      {isLoading ? (
+        "Loading"
+      ) : error ? (
+        error || "Error"
       ) : navigatorSidebar.isOpen ? (
         <SplitPane
           split="vertical"
@@ -353,7 +357,7 @@ const OuterContainer = styled.div`
 
   display: flex;
   min-height: 0;
-  height: 100%;
+  height: 100vh;
   width: 100vw;
 
   --topbar-height: 56px;

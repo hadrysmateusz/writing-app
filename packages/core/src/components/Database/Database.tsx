@@ -9,6 +9,7 @@ import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import PouchDB from "pouchdb-core"
 import { fetch } from "pouchdb-fetch" // TODO: create declaration file
+import { RxDBReplicationPlugin } from "rxdb/plugins/replication"
 
 import { config } from "../../dev-tools"
 
@@ -29,8 +30,9 @@ import {
 } from "./types"
 import { DatabaseContext } from "./context"
 import { useCurrentUser } from "../Auth"
-import { cloneDeep } from "lodash"
+// import { cloneDeep } from "lodash"
 
+addRxPlugin(RxDBReplicationPlugin)
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
 
@@ -196,88 +198,84 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
       >> = {}
 
       // Set up cloud sync
-      if (config.dbSync) {
-        collections
-          .filter((col) => col.options.sync)
-          .forEach((col) => {
-            // get the remote database(/table) name with the proper username prefix
-            // TODO: consider making this a static method of collections
-            const dbName = getRemoteDatabaseName(username, col.name)
+      try {
+        if (config.dbSync) {
+          collections
+            .filter((col) => col.options.sync)
+            .forEach((col) => {
+              // get the remote database(/table) name with the proper username prefix
+              // TODO: consider making this a static method of collections
+              const dbName = getRemoteDatabaseName(username, col.name)
 
-            const state = db[col.name].sync({
-              remote: new PouchDB(
-                // TODO: when jwt auth is fixed, remove the admin credentials from this url and add the proper headers
-                `http://admin:kurczok99@${remoteDbDomain}:${remoteDbPort}/${dbName}/`,
-                {
-                  fetch: (url, opts) => {
-                    opts = {
-                      ...opts,
-                      credentials: "include", // TODO: investigate the necessity of this option for jwt auth
-                    }
+              const state = db[col.name].sync({
+                remote: new PouchDB(
+                  // TODO: when jwt auth is fixed, remove the admin credentials from this url and add the proper headers
+                  `http://admin:kurczok99@${remoteDbDomain}:${remoteDbPort}/${dbName}/`,
+                  {
+                    fetch: (url, opts) => {
+                      // TODO: set the Authorization header to "Bearer {CognitoJWT}" for jwt auth or use the headers below for proxy auth
+                      opts = {
+                        ...opts,
+                        credentials: "include", // TODO: investigate the necessity of this option for jwt auth
+                      }
 
-                    // TODO: set the Authorization header to "Bearer {CognitoJWT}" for jwt auth or use the headers below for proxy auth
+                      return fetch(url, opts)
+                    },
+                    skip_setup: true,
+                  }
+                ),
+                waitForLeadership: true,
+                options: {
+                  live: true,
+                  retry: true,
+                },
+              })
 
-                    // opts.headers = [["X-Auth-CouchDB-UserName", "test"]]
-
-                    // opts.headers["X-Auth-CouchDB-UserName"] = "test"
-                    // opts.headers["X-Auth-CouchDB-Token"] = "token"
-                    // opts.headers["X-Auth-CouchDB-Roles"] = "couchroles"
-
-                    // opts?.headers?.set("X-test", "test123")
-
-                    return fetch(url, opts)
-                  },
-                  skip_setup: true,
-                }
-              ),
-              waitForLeadership: true,
-              options: {
-                live: true,
-                retry: true,
-              },
+              replicationState[col.name] = state
             })
-
-            replicationState[col.name] = state
-          })
-      } else {
-        console.warn("Sync disabled: Check the Database.tsx file")
+        } else {
+          console.warn("Sync disabled: Check the Database.tsx file")
+        }
+      } catch (error) {
+        console.error("Failed to set up remote sync")
+        console.error(error)
       }
 
       // TODO: these listeners are only temporary & for testing, figure out how to use them
 
-      console.log(replicationState)
+      // console.log(replicationState)
 
-      replicationState?.documents?.change$.subscribe((...args) => {
-        console.log("change", cloneDeep(args), args)
-      })
-
-      replicationState.documents?.active$.subscribe((...args) => {
-        console.log("active", ...args)
-      })
-
-      // replicationState.documents?.complete$.subscribe((...args) => {
-      //   console.log("complete", ...args)
+      // replicationState?.documents?.change$.subscribe((...args) => {
+      //   console.log("change", cloneDeep(args), args)
       // })
 
-      replicationState.documents?.alive$.subscribe((...args) => {
-        console.log("alive", ...args)
-      })
+      // replicationState.documents?.active$.subscribe((...args) => {
+      //   console.log("active", ...args)
+      // })
 
-      replicationState.documents?.denied$.subscribe((...args) => {
-        console.log("denied", ...args)
-      })
+      // // replicationState.documents?.complete$.subscribe((...args) => {
+      // //   console.log("complete", ...args)
+      // // })
 
-      replicationState.documents?.docs$.subscribe((...args) => {
-        console.log("docs", ...args)
-      })
+      // replicationState.documents?.alive$.subscribe((...args) => {
+      //   console.log("alive", ...args)
+      // })
 
-      replicationState.documents?.error$.subscribe((...args) => {
-        console.log("error", ...args)
-      })
+      // replicationState.documents?.denied$.subscribe((...args) => {
+      //   console.log("denied", ...args)
+      // })
 
-      db.waitForLeadership().then(() => {
-        console.log("Long lives the king!") // <- runs when db becomes leader
-      })
+      // replicationState.documents?.docs$.subscribe((...args) => {
+      //   console.log("docs", ...args)
+      // })
+
+      // replicationState.documents?.error$.subscribe((...args) => {
+      //   console.log("error", ...args)
+      // })
+
+      // db.waitForLeadership().then(() => {
+      //   console.log("Long lives the king!") // <- runs when db becomes leader
+      // })
 
       setDatabase(db) // TODO: check if a ref (or a simple global singleton) wouldn't be more appropriate
       setIsLoading(false)

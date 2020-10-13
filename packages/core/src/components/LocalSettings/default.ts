@@ -8,7 +8,7 @@ const defaultLocalSettings: LocalSettings = {
   secondarySidebarCurrentView: SECONDARY_VIEWS.SNIPPETS,
   primarySidebarIsOpen: true,
   secondarySidebarIsOpen: true,
-  navigatorSidebarIsOpen: false,
+  navigatorSidebarIsOpen: true,
 }
 
 export default defaultLocalSettings

@@ -221,20 +221,15 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
   const updateDocumentsList = useCallback(
     (documents: DocumentDoc[]) => {
-      try {
-        if (!documents) {
-          throw new Error("Couldn't fetch documents")
-        }
-        // If there are no documents, throw an error - it will be caught and the currentEditor will be set to null
-        if (documents.length === 0) {
-          throw new Error("Empty")
-        }
-        setDocuments(documents)
-      } catch (error) {
-        console.error(error)
-        /* TODO: This is to handle any errors gracefully in production, but a
-      better system should be in place to handle any unexpected errors */
+      if (!documents) {
+        throw new Error("Couldn't fetch documents")
+      }
+      // If there are no documents, throw an error - it will be caught and the currentEditor will be set to null
+      if (documents.length === 0) {
+        setDocuments([])
         setCurrentEditor(null)
+      } else {
+        setDocuments(documents)
       }
     },
     [setCurrentEditor]

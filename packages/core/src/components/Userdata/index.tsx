@@ -40,7 +40,12 @@ export const UserdataProvider: React.FC = ({ children }) => {
 
   const updateInternalState = useCallback(
     (newUserdataDoc: UserdataDoc | null) => {
-      const data = newUserdataDoc?.toJSON()
+      // If there is no userdata doc, placeholder values will be used
+      // TODO: figure out a better way to handle this
+      const data = newUserdataDoc?.toJSON() || {
+        userId: "test_user",
+        isSpellCheckEnabled: true,
+      }
 
       const conditionallyUpdate = <K extends keyof UserSettings>(
         key: K,
@@ -68,10 +73,10 @@ export const UserdataProvider: React.FC = ({ children }) => {
       query.exec().then((newUserdataDoc) => {
         if (!newUserdataDoc) {
           // TODO: this always fails on first launch, before collections are synced (handle this scenario better)
-          throw new Error("The userdataDoc object is missing")
+          console.warn("The userdataDoc object is missing")
         }
 
-        updateInternalState(newUserdataDoc)
+        updateInternalState(newUserdataDoc ? newUserdataDoc : null)
         setIsInitialLoad(false)
       })
     }
