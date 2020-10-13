@@ -5,7 +5,8 @@ import "typeface-ibm-plex-mono"
 import "typeface-open-sans"
 import "typeface-poppins"
 
-import { loadDevTools, loadConfig, App } from "@writing-tool/core"
+import { loadDevTools, loadConfig } from "./dev-tools"
+import { App } from "./components"
 
 import "./index.css"
 import * as serviceWorker from "./serviceWorker"
