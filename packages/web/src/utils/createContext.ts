@@ -2,22 +2,16 @@ import React from "react"
 
 /**
  * This functions is a replacement for react's default createContext
- * It creates a context provider and useContext hook that guarantees
+ * It creates a context useContext hook that guarantees
  * that the value is not undefined to help with typescript's type-checking
  */
 
-// TODO: remove the provider, it only complicates creating the component that will actually manage the state and logic for this context and it can be easily retrieved from the Context itself
+//  TODO: rename to createRequiredContext or something like that
 
 type ContextHook<ContextType> = () => ContextType
 
-type ContextProvider<ContextType> = React.Provider<ContextType | undefined>
-
 export function createContext<ContextType>(): Readonly<
-  [
-    ContextHook<ContextType>,
-    ContextProvider<ContextType>,
-    React.Context<ContextType | undefined>
-  ]
+  [React.Context<ContextType | undefined>, ContextHook<ContextType>]
 > {
   const ctx = React.createContext<ContextType | undefined>(undefined)
   function useContext() {
@@ -28,7 +22,7 @@ export function createContext<ContextType>(): Readonly<
       )
     return c
   }
-  return [useContext, ctx.Provider, ctx] as const
+  return [ctx, useContext] as const
 }
 
 export default createContext

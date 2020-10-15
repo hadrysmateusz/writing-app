@@ -11,9 +11,7 @@ export type AuthState = {
   login: (email: string, password: string) => Promise<boolean>
 }
 
-export const [useAuthContext, _AuthProvider, AuthContext] = createContext<
-  AuthState
->()
+export const [AuthContext, useAuthContext] = createContext<AuthState>()
 
 export const AuthContextProvider: React.FC = ({ children }) => {
   /**

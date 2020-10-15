@@ -27,20 +27,9 @@ import { ImageModalProvider } from "../ImageModal"
 import { LinkModalProvider } from "../LinkPrompt"
 import { EditorState } from "./types"
 
-/* TODO: consider adding an onChange to split panes that will close them when they get below a certain size
-
-- It would be nice for UX
-- It would allow me to simplify code because I wouldn't just set the sidebar pane width to 0 and stop rendering the sidebar and I wouldn't have to stop rendering the split panes component
-
-It will probably require a library switch because the current one doesn't allow changing the pane with programmatically
-
-*/
-
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
-export const [useEditorState, _, EditorStateContext] = createContext<
-  EditorState
->()
+export const [EditorStateContext, useEditorState] = createContext<EditorState>()
 
 export const DEFAULT_EDITOR_VALUE: Node[] = [
   { type: "paragraph", children: [{ text: "" }] },

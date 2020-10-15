@@ -28,8 +28,8 @@ import { plugins } from "../../pluginsList"
 import { Editable, OnKeyDown } from "../../slate-plugin-system"
 import { createEmptyNode } from "../../helpers/createEmptyNode"
 import useEditorContextMenu from "./useEditorContextMenu"
-import { ListContextProvider } from "../../slate-plugins"
-import { ListItemContextProvider } from "../../slate-plugins/elements/list/ListItemContext"
+import { ListContext } from "../../slate-plugins"
+import { ListItemContext } from "../../slate-plugins/elements/list/ListItemContext"
 import { useUserdata } from "../Userdata"
 
 const EditorComponent: React.FC<{
@@ -278,8 +278,8 @@ const EditorComponent: React.FC<{
                 onKeyDown={handleTitleKeydown}
                 onRename={handleRename}
               />
-              <ListContextProvider value={{ listLevel: 0 }}>
-                <ListItemContextProvider value={{ listItemDirectNode: null }}>
+              <ListContext.Provider value={{ listLevel: 0 }}>
+                <ListItemContext.Provider value={{ listItemDirectNode: null }}>
                   <EditableContainer
                     onBlur={handleContentBlur}
                     onMouseDown={handleEditorMouseDown}
@@ -294,8 +294,8 @@ const EditorComponent: React.FC<{
 
                     {isMenuOpen && renderContextMenu()}
                   </EditableContainer>
-                </ListItemContextProvider>
-              </ListContextProvider>
+                </ListItemContext.Provider>
+              </ListContext.Provider>
             </>
           )}
         </InnerContainer>

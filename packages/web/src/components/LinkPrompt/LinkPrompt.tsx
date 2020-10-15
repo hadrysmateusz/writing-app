@@ -16,9 +16,7 @@ const ModalContainer = styled.div`
   color: white;
 `
 
-const [useLinkModal, _, LinkModalContext] = createContext<Toggleable>()
-
-export { useLinkModal, LinkModalContext }
+export const [LinkModalContext, useLinkModal] = createContext<Toggleable>()
 
 // TODO: remove duplication with ImageModal code
 // TODO: support other link operations, like changing url or text

@@ -11,7 +11,7 @@ export type UserdataState = UserSettings & {
   ) => Promise<UserdataDoc>
 }
 
-export const [useUserdata, _, UserdataContext] = createContext<UserdataState>()
+export const [UserdataContext, useUserdata] = createContext<UserdataState>()
 
 export const UserdataProvider: React.FC = ({ children }) => {
   const db = useDatabase()

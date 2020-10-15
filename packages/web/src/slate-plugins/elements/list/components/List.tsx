@@ -7,8 +7,8 @@ import {
   ELEMENT_PARAGRAPH,
   ELEMENT_OL_LIST,
 } from "../../../../slateTypes"
-import { useListContext, ListContextProvider } from "../ListContext"
-import { ListItemContextProvider } from "../ListItemContext"
+import { useListContext, ListContext } from "../ListContext"
+import { ListItemContext } from "../ListItemContext"
 import { config } from "../../../../dev-tools"
 
 // TODO: make ordered and unordered lists have the same effective indentation (Might require custom counters, and 3 digits is probably max)
@@ -97,9 +97,9 @@ export const OL = ({ attributes, children }: RenderElementProps) => {
       debugStyles={!!config.debugStyles}
       noIndent={!!(listLevel === 0)}
     >
-      <ListContextProvider value={{ listLevel: listLevel + 1 }}>
+      <ListContext.Provider value={{ listLevel: listLevel + 1 }}>
         {children}
-      </ListContextProvider>
+      </ListContext.Provider>
     </StyledOL>
   )
 }
@@ -112,9 +112,9 @@ export const UL = ({ attributes, children }: RenderElementProps) => {
       data-slate-type={ListType.UL_LIST}
       debugStyles={config.debugStyles}
     >
-      <ListContextProvider value={{ listLevel: listLevel + 1 }}>
+      <ListContext.Provider value={{ listLevel: listLevel + 1 }}>
         {children}
-      </ListContextProvider>
+      </ListContext.Provider>
     </StyledUL>
   )
 }
@@ -126,11 +126,11 @@ export const LI = ({ attributes, children, element }: RenderElementProps) => {
       data-slate-type={ListType.LIST_ITEM}
       debugStyles={config.debugStyles}
     >
-      <ListItemContextProvider
+      <ListItemContext.Provider
         value={{ listItemDirectNode: element.children[0] }}
       >
         {children}
-      </ListItemContextProvider>
+      </ListItemContext.Provider>
     </StyledLI>
   )
 }

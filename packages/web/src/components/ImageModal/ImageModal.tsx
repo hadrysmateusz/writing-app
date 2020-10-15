@@ -16,9 +16,7 @@ const ModalContainer = styled.div`
   color: white;
 `
 
-const [useImageModal, _, ImageModalContext] = createContext<Toggleable>()
-
-export { useImageModal, ImageModalContext }
+export const [ImageModalContext, useImageModal] = createContext<Toggleable>()
 
 export const ImageModalProvider: React.FC = ({ children }) => {
   const editor = useEditor()

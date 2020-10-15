@@ -1,6 +1,6 @@
-import React, { createContext, useCallback } from "react"
+import React, { useCallback } from "react"
 import { useStatelessToggleable, Toggleable } from "../../hooks"
-import { useRequiredContext } from "../../hooks/useRequiredContext"
+import { createContext } from "../../utils"
 import { useLocalSettings } from "../LocalSettings"
 import defaultLocalSettings from "../LocalSettings/default"
 
@@ -19,14 +19,7 @@ export type ViewState = {
   navigatorSidebar: SingleViewSidebar
 }
 
-const ViewStateContext = createContext<ViewState | null>(null)
-
-export const useViewState = () => {
-  return useRequiredContext<ViewState>(
-    ViewStateContext,
-    "ViewState context is null"
-  )
-}
+export const [ViewStateContext, useViewState] = createContext<ViewState>()
 
 const usePrimarySidebar = () => {
   const {

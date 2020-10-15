@@ -11,7 +11,7 @@ export type LocalSettingsState = LocalSettings & {
   ) => Promise<LocalSettingsDoc>
 }
 
-export const [useLocalSettings, _, LocalSettingsContext] = createContext<
+export const [LocalSettingsContext, useLocalSettings] = createContext<
   LocalSettingsState
 >()
 

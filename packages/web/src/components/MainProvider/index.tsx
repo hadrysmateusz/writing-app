@@ -48,23 +48,11 @@ const defaultSorting: Sorting = {
   direction: "desc",
 }
 
-export const [
-  useDocumentsAPI,
-  DocumentsAPIProvider,
-  DocumentsAPIContext,
-] = createContext<DocumentsAPI>()
-
-export const [
-  useGroupsAPI,
-  GroupsAPIProvider,
-  GroupsAPIContext,
-] = createContext<GroupsAPI>()
-
-export const [
-  useMainState,
-  MainStateProvider,
-  MainStateContext,
-] = createContext<MainState>()
+export const [MainStateContext, useMainState] = createContext<MainState>()
+export const [GroupsAPIContext, useGroupsAPI] = createContext<GroupsAPI>()
+export const [DocumentsAPIContext, useDocumentsAPI] = createContext<
+  DocumentsAPI
+>()
 
 // TODO: make methods using IDs to find documents/groups/etc accept the actual RxDB document object instead to skip the query
 // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
@@ -838,7 +826,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
   }, [createDocument])
 
   return (
-    <MainStateProvider
+    <MainStateContext.Provider
       value={{
         currentEditor,
         currentDocument,
@@ -854,7 +842,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
         changeSorting,
       }}
     >
-      <DocumentsAPIProvider
+      <DocumentsAPIContext.Provider
         value={{
           toggleDocumentFavorite,
           createDocument,
@@ -868,7 +856,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
           findDocuments,
         }}
       >
-        <GroupsAPIProvider
+        <GroupsAPIContext.Provider
           value={{
             moveGroup,
             removeGroup,
@@ -883,9 +871,9 @@ export const MainProvider: React.FC = memo(({ children }) => {
           />
 
           {children}
-        </GroupsAPIProvider>
-      </DocumentsAPIProvider>
-    </MainStateProvider>
+        </GroupsAPIContext.Provider>
+      </DocumentsAPIContext.Provider>
+    </MainStateContext.Provider>
   )
 })
 

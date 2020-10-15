@@ -12,7 +12,7 @@ const isCurrentUser = (value: any): value is CurrentUser => {
 /*
 useCurrentUser always returns the current user object. Only available within authenticated routes
 */
-const [useCurrentUser, _, CurrentUserContext] = createContext<CurrentUser>()
+const [CurrentUserContext, useCurrentUser] = createContext<CurrentUser>()
 
 const CurrentUserProvider: React.FC = ({ children }) => {
   const { currentUser } = useAuthContext()
