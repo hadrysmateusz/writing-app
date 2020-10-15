@@ -7,7 +7,7 @@ import mudder from "mudder"
 import { DEFAULT_EDITOR_VALUE } from "../Main"
 import { useViewState } from "../View"
 import { useModal } from "../Modal"
-import { useDatabase, DocumentDoc, GroupDoc } from "../Database"
+import { useDatabase, DocumentDoc, GroupDoc, useSyncState } from "../Database"
 import { useLocalSettings } from "../LocalSettings"
 
 import { VIEWS, GROUP_TREE_ROOT } from "../../constants"
@@ -43,6 +43,11 @@ import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
 
 const m = mudder.base62
 
+const defaultSorting: Sorting = {
+  index: "title",
+  direction: "desc",
+}
+
 export const [
   useDocumentsAPI,
   DocumentsAPIProvider,
@@ -61,47 +66,38 @@ export const [
   MainStateContext,
 ] = createContext<MainState>()
 
-// TODO: make methods using IDs to find documents/groups/etc. accept the actual RxDB document object instead to skip the query
+// TODO: make methods using IDs to find documents/groups/etc accept the actual RxDB document object instead to skip the query
+// TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
 
 export const MainProvider: React.FC = memo(({ children }) => {
-  console.info("rendering mainprovider")
-
   const db = useDatabase()
-  const { currentEditor, updateLocalSetting } = useLocalSettings()
+  const { currentEditor, unsyncedDocs, updateLocalSetting } = useLocalSettings()
   const { primarySidebar } = useViewState()
+  const syncState = useSyncState()
 
   const [isLoading, setIsLoading] = useState(true)
   const [groups, setGroups] = useState<GroupDoc[]>([])
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
   const [isDocumentLoading, setIsDocumentLoading] = useState<boolean>(true)
-
-  // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
-
   // Current document - the actual document object of the current document
   // TODO: when tabs are implemented this should probably be handled by individual tabs and shared through context
   const [currentDocument, setCurrentDocument] = useState<DocumentDoc | null>(
     null
   )
-
   // Flag to manage whether this is the first time documents are loaded
   const [isInitialLoad, setIsInitialLoad] = useState(() => true)
-
   // State of the sorting options for the documents list
   // TODO: persist this locally
-  // TODO: make this not take uppercase/lowercase into consideration (probably by having a separate 'slugTitle' field)
-  const [sorting, setSorting] = useState<Sorting>({
-    index: "title",
-    direction: "desc",
-  })
-
+  // TODO: make this a per-collection setting
+  // TODO: make sorting not take uppercase/lowercase into consideration (probably by having a separate 'slugTitle' field)
+  const [sorting, setSorting] = useState<Sorting>(defaultSorting)
   // The document deletion confirmation modal
   const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<{
     documentId?: string
   }>(false)
 
-  const index = sorting.index
-  const direction = sorting.direction
+  const { index, direction } = sorting
 
   //#region queries
 
@@ -122,6 +118,51 @@ export const MainProvider: React.FC = memo(({ children }) => {
   }, [db.documents, direction, index])
 
   //#endregion
+
+  // Handles removing documents from unsynced array when they get replicated
+  useEffect(() => {
+    const sub = syncState.documents.replicationState.change$.subscribe(
+      (observer) => {
+        if (observer.direction === "push") {
+          const syncedDocs = observer.change.docs.map((doc) => doc._id)
+
+          const tempUnsyncedDocs = unsyncedDocs.filter(
+            (doc) => !syncedDocs.includes(doc)
+          )
+
+          updateLocalSetting("unsyncedDocs", tempUnsyncedDocs)
+        }
+      }
+    )
+
+    return () => sub.unsubscribe()
+  }, [
+    syncState.documents.replicationState.change$,
+    unsyncedDocs,
+    updateLocalSetting,
+  ])
+
+  // Handles marking documents as unsynced when they are created, updated or deleted
+  useEffect(() => {
+    // Subscribes to changes on the documents collection
+    const sub = db.documents.$.subscribe((event) => {
+      console.log(event)
+
+      const { rxDocument } = event
+
+      if (rxDocument.isLocal) {
+        console.log(`Skipping. Document ${rxDocument.id} is local.`)
+        return
+      }
+
+      // Add document id to unsynced docs list, if it's not already in it
+      if (!unsyncedDocs.includes(rxDocument.id)) {
+        updateLocalSetting("unsyncedDocs", [...unsyncedDocs, rxDocument.id])
+      }
+    })
+
+    return () => sub.unsubscribe()
+  }, [db.documents.$, unsyncedDocs, updateLocalSetting])
 
   /**
    * Finds a single document by id
@@ -807,6 +848,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
         documents,
         isLoading,
         sorting,
+        unsyncedDocs,
         switchDocument,
         updateCurrentDocument,
         changeSorting,

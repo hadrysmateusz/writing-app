@@ -16,6 +16,7 @@ export const [useLocalSettings, _, LocalSettingsContext] = createContext<
 >()
 
 // TODO: consider integrating it with the MainProvider
+// TODO: better handle loading states, make sure the defaults aren't used until they're necessary
 
 export const LocalSettingsProvider: React.FC = ({ children }) => {
   const db = useDatabase()
@@ -72,11 +73,15 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
     LocalSettings["navigatorSidebarIsOpen"]
   >(defaults.navigatorSidebarIsOpen)
 
+  const [unsyncedDocs, setUnsyncedDocs] = useState<
+    LocalSettings["unsyncedDocs"]
+  >(defaults.unsyncedDocs)
+
   //#endregion
 
   // Get the local settings for the first time
   useEffect(() => {
-    console.log(isInitialLoad, currentUser.username)
+    // console.log(isInitialLoad, currentUser.username)
 
     if (isInitialLoad) {
       db.local_settings
@@ -113,6 +118,7 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
           //#region update all the values of settings in state
 
           update("expandedKeys", setExpandedKeys)
+          update("unsyncedDocs", setUnsyncedDocs)
           update("primarySidebarCurrentView", setPrimarySidebarCurrentView)
           update("secondarySidebarCurrentView", setSecondarySidebarCurrentView)
           update("currentEditor", setCurrentEditor)
@@ -153,6 +159,9 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
       switch (key) {
         case "expandedKeys":
           setExpandedKeys(value)
+          break
+        case "unsyncedDocs":
+          setUnsyncedDocs(value)
           break
         case "primarySidebarCurrentView":
           setPrimarySidebarCurrentView(value)
@@ -197,6 +206,7 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
       value={{
         updateLocalSetting,
         expandedKeys,
+        unsyncedDocs,
         primarySidebarCurrentView,
         secondarySidebarCurrentView,
         currentEditor,

@@ -9,6 +9,10 @@ export type LocalSettings = {
    */
   expandedKeys: string[]
   /**
+   * Array of IDs for documents that have unsynced changes
+   */
+  unsyncedDocs: string[]
+  /**
    * Current editor (most likely corresponding to document id)
    */
   currentEditor: string | null

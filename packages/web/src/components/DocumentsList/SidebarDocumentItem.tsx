@@ -23,6 +23,9 @@ export const SidebarDocumentItem: React.FC<{
     getEditableProps,
   } = useDocumentContextMenu(document)
   const { groups, currentEditor, switchDocument } = useMainState()
+  const { unsyncedDocs } = useMainState()
+
+  const isUnsynced = unsyncedDocs.includes(document.id)
 
   // TODO: optimize this
   const isInCurrentGroup = useMemo(() => {
@@ -93,7 +96,7 @@ export const SidebarDocumentItem: React.FC<{
     >
       <MainContainer onClick={handleClick} isCurrent={isCurrent}>
         {!isInCurrentGroup && <Group>{groupName}</Group>}
-        <Title>
+        <Title isUnsynced={isUnsynced}>
           <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>
         {snippet.trim().length > 0 && <Snippet>{snippet}</Snippet>}
@@ -137,7 +140,7 @@ const Group = styled.div`
   margin-bottom: 2px;
 `
 
-const Title = styled.div`
+const Title = styled.div<{ isUnsynced: boolean }>`
   width: 100%;
   color: #e4e4e4;
   font-family: Poppins;
@@ -147,6 +150,8 @@ const Title = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  ${(p) => p.isUnsynced && "color: red;"}
 
   .EditableText_editable {
     padding: 1px 2px 0;

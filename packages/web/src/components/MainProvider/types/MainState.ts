@@ -11,6 +11,7 @@ export type MainState = {
   currentDocument: DocumentDoc | null
   currentEditor: string | null
   sorting: Sorting
+  unsyncedDocs: string[]
   changeSorting: ChangeSortingFn
   switchDocument: SwitchDocumentFn
   updateCurrentDocument: UpdateCurrentDocumentFn

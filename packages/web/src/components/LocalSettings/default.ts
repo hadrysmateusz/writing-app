@@ -3,6 +3,7 @@ import { LocalSettings } from "../Database"
 
 const defaultLocalSettings: LocalSettings = {
   expandedKeys: [],
+  unsyncedDocs: [],
   currentEditor: null,
   primarySidebarCurrentView: VIEWS.ALL,
   secondarySidebarCurrentView: SECONDARY_VIEWS.SNIPPETS,
