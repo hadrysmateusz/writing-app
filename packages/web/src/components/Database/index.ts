@@ -1,4 +1,4 @@
 export * from "./Database"
-export * from "./Schema"
+export * from "./schemas"
 export * from "./context"
 export * from "./types"

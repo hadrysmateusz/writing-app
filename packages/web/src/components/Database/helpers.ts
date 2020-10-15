@@ -12,7 +12,7 @@ import {
   initialSyncState,
 } from "./constants"
 import {
-  MyCollectionCreator,
+  MyModel,
   MyDatabase,
   MyDatabaseCollections,
   SyncState,
@@ -144,7 +144,7 @@ export const setUpSync = (
   /**
    * TODO: see if I can override the DB type to include options on collections, this way I will be able to use db.collections here instead of an argument
    */
-  collections: MyCollectionCreator[],
+  collections: MyModel[],
   username: string,
   /**
    * Function to update state with the syncState value
@@ -179,7 +179,7 @@ export const setUpSync = (
 
 export const createCollections = async (
   db: MyDatabase,
-  collections: MyCollectionCreator[]
+  collections: MyModel[]
 ) => {
   return await Promise.all(collections.map((colData) => db.collection(colData)))
 }

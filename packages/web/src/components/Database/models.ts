@@ -3,18 +3,17 @@ import {
   DocumentCollection,
   DocumentDoc,
   LocalSettings,
-  MyCollectionCreator,
+  MyModel,
 } from "./types"
 import {
   documentSchema,
   groupSchema,
   localSettingsSchema,
   userdataSchema,
-} from "./Schema"
+} from "./schemas"
 
 // TODO: skip_setup doesn't seem to work as expected and should probably be replaced with manual checks and simply not calling the create functions if they fail
-// TODO: rename to models
-export const collections: MyCollectionCreator[] = [
+export const models: MyModel[] = [
   {
     name: CollectionNames.documents,
     schema: documentSchema,
@@ -47,6 +46,7 @@ export const collections: MyCollectionCreator[] = [
     name: CollectionNames.groups,
     schema: groupSchema,
     statics: {},
+    methods: {},
     migrationStrategies: {},
     pouchSettings: {
       skip_setup: true,
@@ -58,6 +58,9 @@ export const collections: MyCollectionCreator[] = [
   {
     name: CollectionNames.userdata,
     schema: userdataSchema,
+    statics: {},
+    methods: {},
+    migrationStrategies: {},
     pouchSettings: {
       skip_setup: true,
     },
@@ -68,6 +71,8 @@ export const collections: MyCollectionCreator[] = [
   {
     name: CollectionNames.local_settings,
     schema: localSettingsSchema,
+    statics: {},
+    methods: {},
     migrationStrategies: {
       1: (doc: LocalSettings) => {
         doc.unsyncedDocs = []
@@ -83,4 +88,4 @@ export const collections: MyCollectionCreator[] = [
   },
 ]
 
-export default collections
+export default models

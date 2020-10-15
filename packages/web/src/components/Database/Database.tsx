@@ -9,7 +9,7 @@ import { MyDatabase, SyncStates } from "./types"
 import { createCollections, createLocalDB, setUpSync } from "./helpers"
 import { DatabaseContext, SyncStateContext } from "./context"
 import { initialSyncState } from "./constants"
-import collections from "./collections"
+import models from "./models"
 
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
@@ -37,10 +37,8 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
 
       const db = await createLocalDB(username)
 
-      console.log(db)
-
-      await createCollections(db, collections)
-      setUpSync(db, collections, username, (val) => setSyncState(val))
+      await createCollections(db, models)
+      setUpSync(db, models, username, (val) => setSyncState(val))
 
       // Hook to remove nested groups and documents when a group is removed
       db.groups.preRemove(async (groupData) => {
