@@ -2,7 +2,8 @@ import React from "react"
 import { useHistory } from "react-router-dom"
 
 import { useAuthContext } from "./Auth"
-import { Button } from "./Button"
+
+import { Button } from "../Button"
 
 export const LogoutButton: React.FC<{
   onBeforeLogout?: () => void

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import styled from "styled-components/macro"
 
-import { LogoutButton } from "../LogoutButton"
+import { LogoutButton } from "../Auth"
 import { useUserdata } from "../Userdata"
 
 const ModalContainer = styled.div`
