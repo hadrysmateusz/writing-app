@@ -162,29 +162,6 @@ const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   )
 }
 
-const Grid = styled.div`
-  display: grid;
-`
-
-const Gutter = styled.div`
-  width: 11px;
-  margin: 0 -5px;
-  border-left: 5px solid rgba(0, 0, 0, 0);
-  border-right: 5px solid rgba(0, 0, 0, 0);
-  cursor: col-resize;
-  background: #363636;
-  z-index: 1;
-  box-sizing: border-box;
-  background-clip: padding-box;
-
-  transition: border-color 1s ease;
-
-  :hover {
-    border-left: 5px solid rgba(0, 0, 0, 0.15);
-    border-right: 5px solid rgba(0, 0, 0, 0.15);
-  }
-`
-
 /**
  * State provider for editor and secondary sidebar
  */
@@ -348,6 +325,29 @@ const Main = memo(() => {
     </OuterContainer>
   )
 })
+
+const Grid = styled.div`
+  display: grid;
+`
+
+const Gutter = styled.div`
+  width: 11px;
+  margin: 0 -5px;
+  border-left: 5px solid rgba(0, 0, 0, 0);
+  border-right: 5px solid rgba(0, 0, 0, 0);
+  cursor: col-resize;
+  background: #363636;
+  z-index: 1;
+  box-sizing: border-box;
+  background-clip: padding-box;
+
+  transition: border-color 1s ease;
+
+  :hover {
+    border-left: 5px solid rgba(0, 0, 0, 0.15);
+    border-right: 5px solid rgba(0, 0, 0, 0.15);
+  }
+`
 
 const OuterContainer = styled.div`
   background-color: #1e1e1e;
