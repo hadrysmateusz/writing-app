@@ -1,5 +1,7 @@
 import styled from "styled-components/macro"
 
+// TODO: merge with SidebarCommon
+
 export const SectionContainer = styled.div`
   :not(:first-child) {
     margin-top: var(--navigator-sidebar-spacing);

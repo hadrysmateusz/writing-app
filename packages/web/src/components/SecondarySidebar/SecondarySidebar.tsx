@@ -1,14 +1,14 @@
 import React from "react"
 import styled from "styled-components/macro"
 
-import { useViewState } from "../View/ViewStateProvider"
-
-import { ContextMenuItem, useContextMenu } from "../ContextMenu"
-
 import { SECONDARY_VIEWS } from "../../constants"
-import { Outline } from "./Outline"
+
+import { useViewState } from "../View/ViewStateProvider"
+import { ContextMenuItem, useContextMenu } from "../ContextMenu"
+import { Section } from "../SidebarCommon"
 import TextStats from "../TextStats"
-import { Section } from "./common"
+
+import { Outline } from "./Outline"
 
 export const SecondarySidebar: React.FC<{}> = () => {
   const { openMenu, ContextMenu } = useContextMenu()

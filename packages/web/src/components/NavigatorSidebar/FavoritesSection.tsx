@@ -1,7 +1,7 @@
 import React from "react"
 
 import { SectionHeader, SectionContainer } from "./Common"
-import DocumentTreeItem from "../Sidebar/DocumentTreeItem"
+import DocumentTreeItem from "./DocumentTreeItem"
 import { useMainState } from "../MainProvider"
 import { useToggleable } from "../../hooks"
 import { TreeItem } from "../TreeItem"

@@ -1,5 +1,5 @@
 export * from "./Editor"
-export * from "./Sidebar"
+export * from "./SidebarCommon"
 export { ConnectWithMedium } from "./ConnectWithMedium"
 export * from "./Main"
 export * from "./Auth"

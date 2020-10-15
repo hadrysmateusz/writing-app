@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from "react"
 
 import { GroupTreeBranch } from "../../helpers/createGroupTree"
-import GroupTreeItem from "../Sidebar/GroupTreeItem"
+import GroupTreeItem from "./GroupTreeItem"
 import { TreeItem } from "../TreeItem"
 import Ellipsis from "../Ellipsis"
 import { useEditableText, EditableText } from "../RenamingInput"

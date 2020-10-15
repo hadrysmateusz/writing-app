@@ -1,7 +1,7 @@
 import React from "react"
 
 import { Container, InnerContainer } from "./Common"
-import { TrashDocumentsList } from "../DocumentsList"
+import { TrashDocumentsList } from "../../DocumentsList"
 
 export const TrashView: React.FC = () => {
   return (

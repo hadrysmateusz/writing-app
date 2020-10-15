@@ -1,7 +1,7 @@
 import React from "react"
 
 import { Container, InnerContainer, NewButton } from "./Common"
-import { InboxDocumentsList } from "../DocumentsList"
+import { InboxDocumentsList } from "../../DocumentsList"
 
 export const InboxView: React.FC = () => {
   return (

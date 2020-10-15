@@ -1,8 +1,8 @@
 import React, { useCallback } from "react"
 import styled from "styled-components/macro"
-import { ContextMenuItem, useContextMenu } from "../ContextMenu"
+import { ContextMenuItem, useContextMenu } from "../../ContextMenu"
 
-import { useDocumentsAPI } from "../MainProvider"
+import { useDocumentsAPI } from "../../MainProvider"
 
 export const NewButton: React.FC<{ groupId: string | null }> = ({
   groupId = null,

@@ -2,29 +2,27 @@ import React, { useCallback, memo, useEffect, useState, useRef } from "react"
 import styled from "styled-components/macro"
 import SplitPane from "react-split-pane"
 import Split from "react-split-grid"
-
-import { PrimarySidebar, SecondarySidebar } from "../Sidebar"
-import { EditorComponent } from "../Editor"
-
-import { useViewState } from "../View/ViewStateProvider"
-import { SaveDocumentFn, useMainState } from "../MainProvider"
-import { NavigatorSidebar } from "../NavigatorSidebar"
-import { useSplitPane } from "./helpers"
-import { withDelayRender } from "../../withDelayRender"
-import { serialize } from "../Editor/serialization"
-
 import { isEqual } from "lodash"
 import { createEditor, Node } from "slate"
 import { ReactEditor, Slate } from "slate-react"
-
-import { plugins } from "../../pluginsList"
-import { applyPlugins } from "../../slate-plugin-system"
-import { createContext } from "../../utils"
-import { useDevUtils } from "../../dev-tools"
 import { History } from "slate-history"
-import { deserialize } from "../Editor/serialization"
+
+import { SecondarySidebar } from "../SecondarySidebar"
+import { NavigatorSidebar } from "../NavigatorSidebar"
+import { PrimarySidebar } from "../PrimarySidebar"
+import { EditorComponent, deserialize, serialize } from "../Editor"
+import { useViewState } from "../View/ViewStateProvider"
+import { SaveDocumentFn, useMainState } from "../MainProvider"
 import { ImageModalProvider } from "../ImageModal"
 import { LinkModalProvider } from "../LinkPrompt"
+
+import { withDelayRender } from "../../withDelayRender"
+import { applyPlugins } from "../../slate-plugin-system"
+import { plugins } from "../../pluginsList"
+import { createContext } from "../../utils"
+import { useDevUtils } from "../../dev-tools"
+
+import { useSplitPane } from "./helpers"
 import { EditorState } from "./types"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection

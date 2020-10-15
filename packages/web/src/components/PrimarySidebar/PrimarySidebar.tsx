@@ -2,15 +2,11 @@ import React from "react"
 import styled from "styled-components/macro"
 
 import { useViewState } from "../View/ViewStateProvider"
+import { Switch, Case } from "../Conditional"
 
 import { VIEWS } from "../../constants"
-import {
-  AllDocumentsView,
-  InboxView,
-  TrashView,
-  GroupView,
-} from "../PrimarySidebarViews"
-import { Switch, Case } from "../Conditional"
+
+import { AllDocumentsView, InboxView, TrashView, GroupView } from "./views"
 
 export const PrimarySidebar: React.FC<{}> = () => {
   const { primarySidebar } = useViewState()
