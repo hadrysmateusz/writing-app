@@ -1,6 +1,3 @@
 export * from "./DocumentsList"
-export * from "./AllDocumentsList"
-export * from "./GroupDocumentsList"
-export * from "./InboxDocumentsList"
 export * from "./SidebarDocumentItem"
-export * from "./TrashDocumentsList"
+export * from "./variants"

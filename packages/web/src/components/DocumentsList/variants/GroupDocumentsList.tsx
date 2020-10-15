@@ -1,18 +1,20 @@
 import React, { useEffect, useState, useMemo } from "react"
 import { Subscription } from "rxjs"
 
-import { useMainState } from "../MainProvider"
-import { useDatabase, DocumentDoc } from "../Database"
 import createGroupTree, {
   findInTree,
   findChildGroups,
   GroupTreeBranch,
-} from "../../helpers/createGroupTree"
-import { getGroupName } from "../../helpers/getGroupName"
-import { formatOptional } from "../../utils"
-import { useViewState } from "../View/ViewStateProvider"
-import { VIEWS } from "../../constants"
-import { DocumentsList } from "./DocumentsList"
+} from "../../../helpers/createGroupTree"
+import { getGroupName } from "../../../helpers/getGroupName"
+import { formatOptional } from "../../../utils"
+import { VIEWS } from "../../../constants"
+
+import { useMainState } from "../../MainProvider"
+import { useDatabase, DocumentDoc } from "../../Database"
+import { useViewState } from "../../View/ViewStateProvider"
+
+import { DocumentsList } from "../DocumentsList"
 
 type DocumentsSubGroup = { [key: string]: DocumentDoc[] }
 

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { Subscription } from "rxjs"
 
-import { DocumentDoc } from "../Database"
-import { useDocumentsAPI } from "../MainProvider"
-import { DocumentsList } from "./DocumentsList"
+import { DocumentDoc } from "../../Database"
+import { useDocumentsAPI } from "../../MainProvider"
+
+import { DocumentsList } from "../DocumentsList"
 
 /**
  * Container for displaying documents in the inbox (root)

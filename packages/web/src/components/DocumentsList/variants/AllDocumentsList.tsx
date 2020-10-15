@@ -1,7 +1,8 @@
 import React from "react"
 
-import { useMainState } from "../MainProvider"
-import { DocumentsList } from "./DocumentsList"
+import { useMainState } from "../../MainProvider"
+
+import { DocumentsList } from "../DocumentsList"
 
 /**
  * Container displaying all documents

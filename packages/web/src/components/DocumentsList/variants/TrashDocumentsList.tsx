@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react"
 import { Subscription } from "rxjs"
 
-import { useDatabase, DocumentDoc } from "../Database"
-import { DocumentsList } from "./DocumentsList"
+import { useDatabase, DocumentDoc } from "../../Database"
+
+import { DocumentsList } from "../DocumentsList"
 
 /**
  * Container displaying documents belonging to a specific group

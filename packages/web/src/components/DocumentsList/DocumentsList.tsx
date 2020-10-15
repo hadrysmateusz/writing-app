@@ -5,9 +5,6 @@ import SidebarDocumentItem from "./SidebarDocumentItem"
 import { DocumentDoc } from "../Database"
 import { SectionHeader } from "./SectionHeader"
 
-/**
- * Base presentational component
- */
 export const DocumentsList: React.FC<{
   title: string
   documents: DocumentDoc[]
