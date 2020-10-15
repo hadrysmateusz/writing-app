@@ -12,7 +12,7 @@ import { VIEWS } from "../../../constants"
 
 import { useMainState } from "../../MainProvider"
 import { useDatabase, DocumentDoc } from "../../Database"
-import { useViewState } from "../../View/ViewStateProvider"
+import { useViewState } from "../../ViewState"
 
 import { DocumentsList } from "../DocumentsList"
 

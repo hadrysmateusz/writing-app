@@ -14,7 +14,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "../ContextMenu"
-import { useViewState } from "../View/ViewStateProvider"
+import { useViewState } from "../ViewState"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { GroupsList } from "../GroupsList"

@@ -1,12 +1,12 @@
 import React from "react"
+import { DndProvider } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
 
 import { DatabaseProvider } from "../components/Database"
-import { ViewStateProvider } from "../components/View/ViewStateProvider"
+import { ViewStateProvider } from "../components/ViewState"
 import { MainProvider } from "../components/MainProvider"
 import Main from "../components/Main"
 import { UserdataProvider } from "../components/Userdata"
-import { DndProvider } from "react-dnd"
-import { HTML5Backend } from "react-dnd-html5-backend"
 import { LocalSettingsProvider } from "../components/LocalSettings"
 
 const EditorPage = () => (

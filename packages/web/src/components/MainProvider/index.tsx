@@ -1,11 +1,10 @@
 import React, { useState, useCallback, useEffect, useMemo, memo } from "react"
 import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
-
 import mudder from "mudder"
 
 import { DEFAULT_EDITOR_VALUE } from "../Main"
-import { useViewState } from "../View"
+import { useViewState } from "../ViewState"
 import { useModal } from "../Modal"
 import { useDatabase, DocumentDoc, GroupDoc, useSyncState } from "../Database"
 import { useLocalSettings } from "../LocalSettings"

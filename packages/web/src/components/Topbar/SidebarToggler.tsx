@@ -2,7 +2,7 @@ import React from "react"
 import styled from "styled-components/macro"
 
 import Icon from "../Icon"
-import { useViewState } from "../View/ViewStateProvider"
+import { useViewState } from "../ViewState"
 
 export const SidebarToggler: React.FC<{ which: "primary" | "secondary" }> = ({
   which,

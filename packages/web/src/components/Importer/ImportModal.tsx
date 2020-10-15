@@ -4,7 +4,7 @@ import styled from "styled-components/macro"
 import { Button } from "../Button"
 import { useDocumentsAPI } from "../MainProvider"
 import { deserializeMarkdown } from "../../slate-helpers/deserialize"
-import { useViewState } from "../View"
+import { useViewState } from "../ViewState"
 import { useMainState } from "../MainProvider"
 import { VIEWS } from "../../constants"
 

@@ -2,7 +2,7 @@ import React from "react"
 
 import { Container, InnerContainer, NewButton } from "./Common"
 import { GroupDocumentsList } from "../../DocumentsList"
-import { useViewState } from "../../View"
+import { useViewState } from "../../ViewState"
 
 export const GroupView: React.FC = () => {
   const { primarySidebar } = useViewState()

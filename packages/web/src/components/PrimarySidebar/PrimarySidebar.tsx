@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "styled-components/macro"
 
-import { useViewState } from "../View/ViewStateProvider"
+import { useViewState } from "../ViewState"
 import { Switch, Case } from "../Conditional"
 
 import { VIEWS } from "../../constants"

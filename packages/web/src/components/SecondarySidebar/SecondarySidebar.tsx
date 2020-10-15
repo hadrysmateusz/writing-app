@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 
 import { SECONDARY_VIEWS } from "../../constants"
 
-import { useViewState } from "../View/ViewStateProvider"
+import { useViewState } from "../ViewState"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import { Section } from "../SidebarCommon"
 import TextStats from "../TextStats"

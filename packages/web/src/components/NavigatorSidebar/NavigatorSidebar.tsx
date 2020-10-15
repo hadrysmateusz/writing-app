@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 
 import { VIEWS } from "../../constants"
 import { TreeItem, AddButton } from "../TreeItem"
-import { useViewState } from "../View/ViewStateProvider"
+import { useViewState } from "../ViewState"
 
 import { useModal } from "../Modal"
 import { AccountModalContent } from "../AccountModal"
