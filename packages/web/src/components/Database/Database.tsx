@@ -6,7 +6,7 @@ import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import { useCurrentUser } from "../Auth"
 
 import { MyDatabase, SyncStates } from "./types"
-import { createCollections, createLocalDB, setUpSync } from "./helpers"
+import { createCollections, createLocalDB, initializeSync } from "./helpers"
 import { DatabaseContext, SyncStateContext } from "./context"
 import { initialSyncState } from "./constants"
 import models from "./models"
@@ -29,16 +29,16 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
   const [syncState, setSyncState] = useState<SyncStates>(initialSyncState)
   const currentUser = useCurrentUser()
 
+  // TODO: make sure that a new database is created when a different user logs in (this will probably crash the app right now because of how RxDB works)
+  // TODO: re-running this might crash the app (make sure there are no unnecessary rerenders of this component and figure out a way to handle this error)
   useEffect(() => {
-    // TODO: make sure that a new database is created when a different user logs in (this will probably crash the app right now because of how RxDB works)
-    // TODO: re-running this might crash the app (make sure there are no unnecessary rerenders of this component and figure out a way to handle this error)
-    const initialize = async () => {
+    ;(async () => {
       const username = currentUser.username
 
       const db = await createLocalDB(username)
 
       await createCollections(db, models)
-      setUpSync(db, models, username, (val) => setSyncState(val))
+      initializeSync(db, models, username, (val) => setSyncState(val))
 
       // Hook to remove nested groups and documents when a group is removed
       db.groups.preRemove(async (groupData) => {
@@ -89,9 +89,7 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
 
       setDatabase(db)
       setIsLoading(false)
-    }
-
-    initialize()
+    })()
   }, [currentUser.username])
 
   return (
