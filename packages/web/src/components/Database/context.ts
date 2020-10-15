@@ -1,14 +1,13 @@
-import { useContext, createContext } from "react"
-import { MyDatabase } from "./types"
+import { MyDatabase, SyncStates } from "./types"
 
-// TODO: replace with custom createContext
-export const DatabaseContext = createContext<MyDatabase | null>(null)
-export const useDatabase = () => {
-  const database = useContext(DatabaseContext)
+import { createContext } from "../../utils"
 
-  if (database === null) {
-    throw new Error("Database is null")
-  }
+export const [useDatabase, _DatabaseProvider, DatabaseContext] = createContext<
+  MyDatabase
+>()
 
-  return database
-}
+export const [
+  useSyncState,
+  _SyncStateProvider,
+  SyncStateContext,
+] = createContext<SyncStates>()
