@@ -9,7 +9,6 @@ import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import PouchDB from "pouchdb-core"
 import { fetch } from "pouchdb-fetch" // TODO: create declaration file
-import { RxDBReplicationPlugin } from "rxdb/plugins/replication"
 
 import { config } from "../../dev-tools"
 
@@ -32,7 +31,6 @@ import { DatabaseContext } from "./context"
 import { useCurrentUser } from "../Auth"
 // import { cloneDeep } from "lodash"
 
-addRxPlugin(RxDBReplicationPlugin)
 addRxPlugin(PouchDbAdapterIdb)
 addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
 
