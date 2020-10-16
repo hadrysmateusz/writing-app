@@ -100,4 +100,6 @@ export const renderElementHeading = ({
         {children}
       </H6>
     )
+
+  return undefined
 }

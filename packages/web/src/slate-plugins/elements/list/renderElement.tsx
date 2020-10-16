@@ -25,6 +25,6 @@ export const renderElementList = ({
     case ListType.LIST_ITEM:
       return <LI {...props} />
     default:
-      break
+      return undefined
   }
 }

@@ -1,12 +1,20 @@
 let config: any
 const key = "config"
 
+export type AppConfig = {
+  logOperations: boolean
+  logSelection: boolean
+  logValue: boolean
+  dbSync: boolean
+  debugStyles: boolean
+}
+
 /**
  * Load the application configuration by merging the passed-in app defaults with values stored in localStorage
  * @param {Object} appDefaults config object to act as defaults for the app
  * @param {Function} callback function to be called when the config is loaded
  */
-const loadConfig = (appDefaults, callback) => {
+const loadConfig = (appDefaults: AppConfig, callback: () => void) => {
   try {
     console.groupCollapsed("LOADING CONFIG")
     const localConfig = loadFromStorage()
@@ -19,9 +27,8 @@ const loadConfig = (appDefaults, callback) => {
   } catch (error) {
     console.warn("There was an issue with loading app configuration.")
     console.error(error)
-    config = {}
+    config = appDefaults
   } finally {
-    // call the callback function ()
     callback()
   }
 }
@@ -31,7 +38,13 @@ const loadConfig = (appDefaults, callback) => {
  */
 const loadFromStorage = () => {
   try {
-    return JSON.parse(window.localStorage.getItem(key))
+    const value = window.localStorage.getItem(key)
+
+    if (value === null) {
+      return {}
+    } else {
+      return JSON.parse(value)
+    }
   } catch (error) {
     window.localStorage.removeItem(key)
     return {}
@@ -46,18 +59,16 @@ const persist = () => window.localStorage.setItem(key, JSON.stringify(config))
 /**
  * Enable a feature locally
  */
-function enable(name) {
+function enable(name: string) {
   config[name] = true
-  // console.log(`CONFIG: Enabled ${name}`, config)
   persist()
 }
 
 /**
  * Disable a feature locally
  */
-function disable(name) {
+function disable(name: string) {
   config[name] = false
-  // console.log(`CONFIG: Disabled ${name}`, config)
   persist()
 }
 

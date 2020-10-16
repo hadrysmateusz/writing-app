@@ -112,11 +112,9 @@ export const withBlockShortcuts = ({
   return editor
 }
 
-export const withInlineShortcuts = ({}: MarkdownShortcutsPluginOptions) => <
-  T extends Editor
->(
-  editor: T
-) => {
+export const withInlineShortcuts = (
+  _options: MarkdownShortcutsPluginOptions
+) => <T extends Editor>(editor: T) => {
   const { normalizeNode } = editor
 
   const matchers = {
@@ -184,5 +182,5 @@ export const withInlineShortcuts = ({}: MarkdownShortcutsPluginOptions) => <
   return editor
 }
 
-export const withShortcuts = (options: MarkdownShortcutsPluginOptions) =>
+export const withShortcuts = (options: MarkdownShortcutsPluginOptions = {}) =>
   composeOverrides([withBlockShortcuts(options), withInlineShortcuts(options)])

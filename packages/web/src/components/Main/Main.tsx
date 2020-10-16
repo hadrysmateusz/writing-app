@@ -42,7 +42,7 @@ const LoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 const EditorRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   saveDocument,
 }) => {
-  const { currentDocument, isDocumentLoading } = useMainState()
+  const { currentDocument, isDocumentLoading, unsyncedDocs } = useMainState()
   const { secondarySidebar } = useViewState()
   const { isModified } = useEditorState()
 
@@ -57,7 +57,15 @@ const EditorRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
       >
         sidebar
       </button>
-      <div>{isModified ? "MODIFIED" : "SAVED & UNREPLICATED"}</div>
+
+      <div>
+        {isModified
+          ? "MODIFIED"
+          : unsyncedDocs.includes(currentDocument.id)
+          ? "SAVED & UNREPLICATED"
+          : "SYNCED"}
+      </div>
+
       <EditorComponent
         key={currentDocument.id} // Necessary to reload the component on id change
         currentDocument={currentDocument}

@@ -108,7 +108,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
   // Handles removing documents from unsynced array when they get replicated
   useEffect(() => {
-    const sub = syncState.documents.replicationState.change$.subscribe(
+    const sub = syncState.documents?.replicationState.change$.subscribe(
       (observer) => {
         if (observer.direction === "push") {
           const syncedDocs = observer.change.docs.map((doc) => doc._id)
@@ -122,12 +122,8 @@ export const MainProvider: React.FC = memo(({ children }) => {
       }
     )
 
-    return () => sub.unsubscribe()
-  }, [
-    syncState.documents.replicationState.change$,
-    unsyncedDocs,
-    updateLocalSetting,
-  ])
+    return () => sub && sub.unsubscribe()
+  }, [syncState.documents, unsyncedDocs, updateLocalSetting])
 
   // Handles marking documents as unsynced when they are created, updated or deleted
   useEffect(() => {

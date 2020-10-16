@@ -8,10 +8,19 @@ export const onKeyDownMoveNode = () => <T extends Editor>(
 ) => {
   if (e.altKey && ["ArrowUp", "ArrowDown"].includes(e.key)) {
     e.preventDefault()
+
     if (!editor.selection || !Range.isCollapsed(editor.selection)) return
-    const [, path] = Editor.above(editor, {
+
+    const node = Editor.above(editor, {
       match: (n) => Element.isElement(n) && !editor.isInline(n),
     })
+
+    if (node === undefined) {
+      console.log("Can't move node. No ancestor node found.")
+      return
+    }
+
+    const [, path] = node
 
     switch (e.key) {
       case "ArrowUp":

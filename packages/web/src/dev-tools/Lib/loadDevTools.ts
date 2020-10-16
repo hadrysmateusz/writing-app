@@ -1,4 +1,4 @@
-export function loadDevTools(callback) {
+export function loadDevTools(callback: () => void) {
   // this allows you to explicitly disable it in development for example
   const explicitlyDisabled =
     window.location.search.includes("dev-tools=false") ||

@@ -18,7 +18,11 @@ export const withMoveNodes = (): EditorOverrides => (editor) => {
       })
 
       if (isSelectionMultiLine(editor)) {
-        const { nodes } = getSelectedNodes(editor)
+        const selectedNodes = getSelectedNodes(editor)
+
+        if (selectedNodes === null) return
+
+        const { nodes } = selectedNodes
 
         nodes.forEach((node) => {
           const DOMNode = ReactEditor.toDOMNode(editor as ReactEditor, node)

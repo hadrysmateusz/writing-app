@@ -46,7 +46,7 @@ const listCommon = css<{ noIndent: boolean; debugStyles: boolean }>`
     `}
 `
 
-const StyledUL = styled.ul<{ debugStyles: boolean }>`
+const StyledUL = styled.ul<{ noIndent: boolean; debugStyles: boolean }>`
   list-style-type: none;
   li {
     position: relative;
@@ -111,6 +111,7 @@ export const UL = ({ attributes, children }: RenderElementProps) => {
       {...attributes}
       data-slate-type={ListType.UL_LIST}
       debugStyles={config.debugStyles}
+      noIndent={false}
     >
       <ListContext.Provider value={{ listLevel: listLevel + 1 }}>
         {children}

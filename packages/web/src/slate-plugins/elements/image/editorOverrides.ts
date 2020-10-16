@@ -10,9 +10,9 @@ import { IMAGE } from "./types"
 import { Range, Node, Path, Transforms } from "slate"
 import { ReactEditor } from "slate-react"
 
-export const withImage = (_options: any): EditorOverrides => (
-  editor: ReactEditor
-) => {
+export const withImage = (
+  _options: any
+): EditorOverrides<ReactEditor, ReactEditor> => (editor: ReactEditor) => {
   const { insertData, isVoid, deleteBackward, deleteForward } = editor
 
   // TODO: consider preventing removing image nodes when they are not selected (this requires checking if the cursor is at the first/last position)

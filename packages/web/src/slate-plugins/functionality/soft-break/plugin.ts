@@ -1,11 +1,11 @@
 import { SlatePlugin } from "@slate-plugin-system/core"
-import { SoftBreakPluginOptions } from "./types"
+import { SoftBreakPluginOptions, SoftBreakEditor } from "./types"
 import { onKeyDownSoftBreak } from "./onKeyDown"
 import { withSoftBreak } from "./editorOverrides"
 
 export const SoftBreakPlugin = (
   options?: SoftBreakPluginOptions
-): SlatePlugin => ({
+): SlatePlugin<SoftBreakEditor, SoftBreakEditor> => ({
   onKeyDown: onKeyDownSoftBreak(options) as any,
   editorOverrides: withSoftBreak(options),
 })

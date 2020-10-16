@@ -7,10 +7,11 @@ import {
   InlineCodePluginOptions,
   CODE_INLINE,
 } from "."
+import { ReactEditor } from "slate-react"
 
 export const InlineCodePlugin = ({
   hotkey = "mod+e",
-}: InlineCodePluginOptions = {}): SlatePlugin => ({
+}: InlineCodePluginOptions = {}): SlatePlugin<ReactEditor, ReactEditor> => ({
   renderLeaf: renderLeafInlineCode(),
   onKeyDown: onKeyDownMark({ mark: CODE_INLINE, hotkey }),
   editorOverrides: withInlineCode,

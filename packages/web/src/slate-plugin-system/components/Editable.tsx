@@ -12,7 +12,6 @@ import {
   OnKeyDown,
   RenderElement,
   RenderLeaf,
-  SlatePlugin,
 } from "../types"
 
 interface Props {
@@ -21,7 +20,7 @@ interface Props {
   readOnly?: boolean
   role?: string
   style?: React.CSSProperties
-  plugins?: SlatePlugin[]
+  plugins?: any[]
   decorate?: Decorate[]
   onDOMBeforeInput?: OnDOMBeforeInput[]
   renderElement?: RenderElement[]

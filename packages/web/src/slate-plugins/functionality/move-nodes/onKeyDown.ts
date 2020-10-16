@@ -48,7 +48,15 @@ export const onKeyDownMoveNodes = () => (e: KeyboardEvent, editor: Editor) => {
     if (!editor.selection) return
 
     // This gets the common paths at the shallowest possible depth
-    const { fullPaths } = getSelectedNodes(editor, "asc")
+
+    const selectedNodes = getSelectedNodes(editor, "asc")
+
+    if (selectedNodes === null) {
+      console.warn("Can't move nodes. No nodes selected.")
+      return
+    }
+
+    const { fullPaths } = selectedNodes
 
     const firstPath = fullPaths[0]
     const lastPath = fullPaths[fullPaths.length - 1]

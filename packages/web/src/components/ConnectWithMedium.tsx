@@ -19,7 +19,7 @@ export const ConnectWithMedium = () => {
   const redirect_uri = encodeURIComponent(
     FRONTEND_BASE_URL_PROD + ROUTES.MEDIUM_AUTH_CALLBACK
   )
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     function shouldIgnore(event) {

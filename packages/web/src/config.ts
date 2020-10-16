@@ -1,4 +1,6 @@
-const config = {
+import { AppConfig } from "./dev-tools"
+
+const config: AppConfig = {
   logOperations: true,
   logSelection: false,
   logValue: false,

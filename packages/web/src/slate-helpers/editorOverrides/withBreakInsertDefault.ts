@@ -32,6 +32,11 @@ export const withBreakInsertDefault = ({
     const oldSelection = editor.selection
     insertBreak()
 
+    if (oldSelection === null) {
+      console.warn("Can't insert default. Selection is null.")
+      return
+    }
+
     try {
       const pathToFirstNode = Editor.first(editor, oldSelection)[1]
       const firstBlock = Editor.parent(editor, pathToFirstNode)[0]

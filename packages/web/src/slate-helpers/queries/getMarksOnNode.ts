@@ -8,7 +8,7 @@ import { Text } from "slate"
  * @param node leaf node to get the marks from
  */
 export const getMarksOnNode = (node: Text) => {
-  const marks = Object.entries(node).reduce((acc, [key, val]) => {
+  const marks = Object.entries(node).reduce((acc: string[], [key, val]) => {
     if (key === "text") return acc
     if (val !== true) return acc
     return [...acc, key]

@@ -4,7 +4,7 @@ import { getLastPathIndex } from "./getLastPathIndex"
 
 // TODO: make sure there are no duplicates in the result
 export const getSelectedNodes = (
-  editor,
+  editor: Editor,
   direction: "asc" | "desc" = "asc"
 ): {
   parentPath: Path
@@ -12,7 +12,7 @@ export const getSelectedNodes = (
   fullPaths: Path[]
   nodes: Node[]
   parentNode: Node
-} => {
+} | null => {
   const [...originalNodes] = Editor.nodes(editor, {
     mode: "lowest",
     match: (n) =>
@@ -21,15 +21,17 @@ export const getSelectedNodes = (
 
   if (!editor.selection) {
     // TODO: better handle this scenario
-    return
+    return null
   }
 
-  const { parentPath, relativePaths, fullPaths } = getCommonPaths(
-    editor,
-    originalNodes,
-    [],
-    0
-  )
+  const res = getCommonPaths(editor, originalNodes, [], 0)
+
+  if (res === null) {
+    // TODO: better handle this scenario
+    return null
+  }
+
+  const { parentPath, relativePaths, fullPaths } = res
 
   const sortedFullPaths = sortPaths(fullPaths, direction)
   const sortedNodes = sortedFullPaths.map((path) => Node.get(editor, path))
@@ -52,15 +54,15 @@ export const getSelectedNodes = (
  * @param index current index to compare (necessary because of the recursive nature of this function)
  */
 const getCommonPaths = (
-  editor,
+  editor: Editor,
   nodeEntries: NodeEntry<Node>[],
   commonPath: Path,
   index: number
-): { parentPath: Path; relativePaths: Path[]; fullPaths: Path[] } => {
+): { parentPath: Path; relativePaths: Path[]; fullPaths: Path[] } | null => {
   // if there are no nodes there will be no commonPath paths
   if (nodeEntries.length === 0) {
     console.log("no node entries. returning empty...")
-    return { parentPath: null, relativePaths: null, fullPaths: [] }
+    return null
   }
 
   // if there is only one NodeEntry, there will only be one path

@@ -26,8 +26,13 @@ export const withInlineCode = <T extends ReactEditor>(editor: T) => {
             editor.removeMark(mark)
           }
         })
+
         // restore the selection to what it was originally
-        Transforms.select(editor, selectionBefore)
+        if (selectionBefore === null) {
+          Transforms.deselect(editor)
+        } else {
+          Transforms.select(editor, selectionBefore)
+        }
       }
     }
 
