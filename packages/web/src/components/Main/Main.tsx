@@ -88,11 +88,11 @@ const EditorRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
 }
 
 const getMaxSidebarWidth = () => {
-  return (window.innerWidth / 12) * 3
+  return 400
 }
 
 const getMaxNavigatorSidebarWidth = () => {
-  return (window.innerWidth / 12) * 2
+  return 250
 }
 
 /**
@@ -125,18 +125,19 @@ const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
 
   const handleDrag = useCallback(
     (_direction, _track, style) => {
+      if (!isDragging) return
       const widthWithUnit = style.split(" ")[2]
       const width = widthWithUnit.slice(0, -2)
       setSidebarWidth(Math.min(getMaxSidebarWidth(), width))
       handleChange(width)
     },
-    [handleChange]
+    [handleChange, isDragging]
   )
 
   return (
     <Split
-      minSize={0}
-      snapOffset={180}
+      minSize={180}
+      snapOffset={0}
       gridTemplateColumns={`1fr auto ${Math.min(
         getMaxSidebarWidth(),
         sidebarWidth
@@ -156,15 +157,15 @@ const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
         setIsDragging(false)
       }}
       onDragStart={() => {
+        if (!secondarySidebar.isOpen) return
         setIsDragging(true)
-        secondarySidebar.open()
       }}
       onDrag={handleDrag}
       direction="horizontal"
       cursor="col-resize"
       render={({ getGridProps, getGutterProps }) => (
         <Grid sidebarWidth={sidebarWidth} {...getGridProps()}>
-          <div style={{ minWidth: 0 }}>
+          <div style={{ minWidth: 0, height: "100%", minHeight: 0 }}>
             <EditorRenderer saveDocument={saveDocument} />
           </div>
 
@@ -302,18 +303,19 @@ const InnerSidebarsAndEditor: React.FC = () => {
 
   const handleDrag = useCallback(
     (_direction, _track, style) => {
+      if (!isDragging) return
       const widthWithUnit = style.split(" ")[0]
       const width = widthWithUnit.slice(0, -2)
       setSidebarWidth(Math.min(getMaxSidebarWidth(), width))
       handleChange(width)
     },
-    [handleChange]
+    [handleChange, isDragging]
   )
 
   return (
     <Split
-      minSize={0}
-      snapOffset={180}
+      minSize={180}
+      snapOffset={0}
       gridTemplateColumns={`${Math.min(
         getMaxSidebarWidth(),
         sidebarWidth
@@ -333,8 +335,9 @@ const InnerSidebarsAndEditor: React.FC = () => {
         setIsDragging(false)
       }}
       onDragStart={() => {
+        console.log("drag start", primarySidebar)
+        if (!primarySidebar.isOpen) return
         setIsDragging(true)
-        primarySidebar.open()
       }}
       onDrag={handleDrag}
       direction="horizontal"
@@ -419,8 +422,8 @@ const Main = memo(() => {
         error || "Error"
       ) : (
         <Split
-          minSize={0}
-          snapOffset={20}
+          minSize={150}
+          snapOffset={0}
           gridTemplateColumns={` ${Math.min(
             getMaxNavigatorSidebarWidth(),
             sidebarWidth
@@ -521,6 +524,7 @@ const Grid = styled.div`
 `
 
 const Gutter = styled.div`
+  height: 100%;
   width: 10px;
   margin: 0 -5px;
   border-left: 5px solid rgba(0, 0, 0, 0);

@@ -27,6 +27,7 @@ export const SecondarySidebar = memo(
             <SidebarTabsContainer>
               <SidebarTab />
             </SidebarTabsContainer>
+
             <Switch value={secondarySidebar.currentView}>
               <Case
                 value={SECONDARY_VIEWS.SNIPPETS}

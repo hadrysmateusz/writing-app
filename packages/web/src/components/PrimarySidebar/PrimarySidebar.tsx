@@ -27,6 +27,7 @@ export const PrimarySidebar = memo(
             <SidebarTabsContainer>
               <SidebarTab />
             </SidebarTabsContainer>
+
             <Switch value={primarySidebar.currentView}>
               <Case value={VIEWS.ALL} component={<AllDocumentsView />} />
               <Case value={VIEWS.INBOX} component={<InboxView />} />

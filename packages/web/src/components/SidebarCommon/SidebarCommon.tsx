@@ -3,6 +3,7 @@ import styled, { css } from "styled-components/macro"
 export const SidebarContainer = styled.div<{ collapsed: boolean }>`
   min-height: 0;
   height: 100%;
+  max-height: 100%;
   position: relative;
   background: var(--dark-300);
   display: grid;

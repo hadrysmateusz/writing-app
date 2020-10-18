@@ -28,7 +28,7 @@ const ToggleButton = styled.div<ToggleButtonProps>`
 
   height: var(--sidebar-toggle-size);
   width: var(--sidebar-toggle-size);
-    
+
   cursor: pointer;
 
   /* Positions the toggler next to the sidebar */
