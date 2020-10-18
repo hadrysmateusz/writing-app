@@ -1,11 +1,11 @@
 import React, { useCallback, memo, useEffect, useState, useRef } from "react"
-import styled from "styled-components/macro"
-import SplitPane from "react-split-pane"
+import styled, { keyframes } from "styled-components/macro"
 import Split from "react-split-grid"
 import { isEqual } from "lodash"
 import { createEditor, Node } from "slate"
 import { ReactEditor, Slate } from "slate-react"
 import { History } from "slate-history"
+import { useEvent } from "react-use"
 
 import { SecondarySidebar } from "../SecondarySidebar"
 import { NavigatorSidebar } from "../NavigatorSidebar"
@@ -34,7 +34,7 @@ export const DEFAULT_EDITOR_VALUE: Node[] = [
 ]
 export const DEFAULT_EDITOR_HISTORY: History = { undos: [], redos: [] }
 
-const LoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
+const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
 /**
  * Renders the editor if there is a document selected
@@ -46,37 +46,53 @@ const EditorRenderer: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   const { secondarySidebar } = useViewState()
   const { isModified } = useEditorState()
 
-  return isDocumentLoading ? (
-    <LoadingState />
-  ) : currentDocument ? (
-    <>
-      <button
-        onClick={() => {
-          secondarySidebar.toggle()
-        }}
-      >
-        sidebar
-      </button>
+  return (
+    <OuterContainer>
+      {isDocumentLoading ? (
+        <DocumentLoadingState />
+      ) : currentDocument ? (
+        <>
+          {/* <button
+            onClick={() => {
+              secondarySidebar.toggle()
+            }}
+          >
+            sidebar
+          </button>
 
-      <div>
-        {isModified
-          ? "MODIFIED"
-          : unsyncedDocs.includes(currentDocument.id)
-          ? "SAVED & UNREPLICATED"
-          : "SYNCED"}
-      </div>
+          <div>
+            {isModified
+              ? "MODIFIED"
+              : unsyncedDocs.includes(currentDocument.id)
+              ? "SAVED & UNREPLICATED"
+              : "SYNCED"}
+          </div> */}
 
-      <EditorComponent
-        key={currentDocument.id} // Necessary to reload the component on id change
-        currentDocument={currentDocument}
-        saveDocument={saveDocument}
-      />
-    </>
-  ) : (
-    // This div is here to prevent issues with split pane rendering
-    // TODO: add proper empty state
-    <div>No document selected</div>
+          <EditorTabsContainer>
+            <EditorTab />
+          </EditorTabsContainer>
+
+          <EditorComponent
+            key={currentDocument.id} // Necessary to reload the component on id change
+            currentDocument={currentDocument}
+            saveDocument={saveDocument}
+          />
+        </>
+      ) : (
+        // This div is here to prevent issues with split pane rendering
+        // TODO: add proper empty state
+        <div>No document selected</div>
+      )}
+    </OuterContainer>
   )
+}
+
+const getMaxSidebarWidth = () => {
+  return (window.innerWidth / 12) * 3
+}
+
+const getMaxNavigatorSidebarWidth = () => {
+  return (window.innerWidth / 12) * 2
 }
 
 /**
@@ -95,6 +111,7 @@ const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
   useEffect(() => {
     if (isDragging) return
     if (secondarySidebar.isOpen && sidebarWidth === 0) {
+      console.log("resetting")
       setSidebarWidth(Math.max(200, defaultSize))
     }
   }, [defaultSize, isDragging, secondarySidebar.isOpen, sidebarWidth])
@@ -110,7 +127,7 @@ const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
     (_direction, _track, style) => {
       const widthWithUnit = style.split(" ")[2]
       const width = widthWithUnit.slice(0, -2)
-      setSidebarWidth(width)
+      setSidebarWidth(Math.min(getMaxSidebarWidth(), width))
       handleChange(width)
     },
     [handleChange]
@@ -120,7 +137,10 @@ const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
     <Split
       minSize={0}
       snapOffset={180}
-      gridTemplateColumns={`1fr auto ${sidebarWidth}px`}
+      gridTemplateColumns={`1fr auto ${Math.min(
+        getMaxSidebarWidth(),
+        sidebarWidth
+      )}px`}
       onDragEnd={() => {
         const newSidebarWidth = sidebarRef?.current?.getBoundingClientRect()
           .width
@@ -130,7 +150,7 @@ const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
         }
 
         if (newSidebarWidth !== undefined) {
-          setSidebarWidth(newSidebarWidth)
+          setSidebarWidth(Math.min(getMaxSidebarWidth(), newSidebarWidth))
         }
 
         setIsDragging(false)
@@ -144,13 +164,13 @@ const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
       cursor="col-resize"
       render={({ getGridProps, getGutterProps }) => (
         <Grid sidebarWidth={sidebarWidth} {...getGridProps()}>
-          <div>
+          <div style={{ minWidth: 0 }}>
             <EditorRenderer saveDocument={saveDocument} />
           </div>
+
           <Gutter {...getGutterProps("column", 1)} />
-          <div ref={sidebarRef}>
-            {secondarySidebar.isOpen ? <SecondarySidebar /> : null}
-          </div>
+
+          <SecondarySidebar ref={sidebarRef} />
         </Grid>
       )}
     />
@@ -251,36 +271,88 @@ const EditorStateProvider: React.FC = () => {
 }
 
 /**
- * Renders the topbar, primary sidebar and the rest of the editor in split panes
+ * Renders the primary sidebar and the rest of the editor in split panes
  */
 const InnerSidebarsAndEditor: React.FC = () => {
   const { primarySidebar } = useViewState()
 
   const { defaultSize, handleChange } = useSplitPane("splitPosPrimary")
+  const [sidebarWidth, setSidebarWidth] = useState<number>(defaultSize)
+  const [isDragging, setIsDragging] = useState<boolean>(false)
+  const sidebarRef = useRef<HTMLDivElement | null>(null)
+
+  // useEffect(() => {
+  //   handleChange(300)
+  // }, [])
+
+  useEffect(() => {
+    if (isDragging) return
+    if (primarySidebar.isOpen && sidebarWidth === 0) {
+      console.log("resetting")
+      setSidebarWidth(Math.max(200, defaultSize))
+    }
+  }, [defaultSize, isDragging, primarySidebar.isOpen, sidebarWidth])
+
+  useEffect(() => {
+    if (isDragging) return
+    if (!primarySidebar.isOpen) {
+      setSidebarWidth(0)
+    }
+  }, [isDragging, primarySidebar.isOpen])
+
+  const handleDrag = useCallback(
+    (_direction, _track, style) => {
+      const widthWithUnit = style.split(" ")[0]
+      const width = widthWithUnit.slice(0, -2)
+      setSidebarWidth(Math.min(getMaxSidebarWidth(), width))
+      handleChange(width)
+    },
+    [handleChange]
+  )
 
   return (
-    <InnerContainerWrapper>
-      {/* <Topbar /> */}
-      <InnerContainer>
-        {primarySidebar.isOpen ? (
-          <SplitPane
-            split="vertical"
-            minSize={200}
-            maxSize={800}
-            defaultSize={defaultSize}
-            onChange={handleChange}
-            style={{ height: "100%" }}
-          >
-            <PrimarySidebar />
+    <Split
+      minSize={0}
+      snapOffset={180}
+      gridTemplateColumns={`${Math.min(
+        getMaxSidebarWidth(),
+        sidebarWidth
+      )}px auto 1fr`}
+      onDragEnd={() => {
+        const newSidebarWidth = sidebarRef?.current?.getBoundingClientRect()
+          .width
+
+        if (newSidebarWidth === 0) {
+          primarySidebar.close()
+        }
+
+        if (newSidebarWidth !== undefined) {
+          setSidebarWidth(Math.min(getMaxSidebarWidth(), newSidebarWidth))
+        }
+
+        setIsDragging(false)
+      }}
+      onDragStart={() => {
+        setIsDragging(true)
+        primarySidebar.open()
+      }}
+      onDrag={handleDrag}
+      direction="horizontal"
+      cursor="col-resize"
+      render={({ getGridProps, getGutterProps }) => (
+        <Grid sidebarWidth={sidebarWidth} {...getGridProps()}>
+          <PrimarySidebar ref={sidebarRef} />
+
+          <Gutter {...getGutterProps("column", 1)} />
+
+          <div style={{ minWidth: 0 }}>
             <EditorStateProviderContainer>
               <EditorStateProvider />
             </EditorStateProviderContainer>
-          </SplitPane>
-        ) : (
-          <EditorStateProvider />
-        )}
-      </InnerContainer>
-    </InnerContainerWrapper>
+          </div>
+        </Grid>
+      )}
+    />
   )
 }
 
@@ -294,44 +366,166 @@ const Main = memo(() => {
 
   const { defaultSize, handleChange } = useSplitPane("splitPosNavigator")
 
+  const [sidebarWidth, setSidebarWidth] = useState<number>(defaultSize)
+  const [isDragging, setIsDragging] = useState<boolean>(false)
+  const sidebarRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {}, [])
+
+  useEvent("resize", () => {
+    console.log("resize")
+  })
+
+  useEffect(() => {
+    handleChange(200)
+    navigatorSidebar.open()
+  }, [])
+
+  useEffect(() => {
+    if (isDragging) return
+    if (navigatorSidebar.isOpen && sidebarWidth === 0) {
+      console.log("resetting")
+      setSidebarWidth(Math.max(200, defaultSize))
+    }
+  }, [defaultSize, isDragging, navigatorSidebar.isOpen, sidebarWidth])
+
+  useEffect(() => {
+    if (isDragging) return
+    if (!navigatorSidebar.isOpen) {
+      setSidebarWidth(0)
+    }
+  }, [isDragging, navigatorSidebar.isOpen])
+
+  const handleDrag = useCallback(
+    (_direction, _track, style) => {
+      const widthWithUnit = style.split(" ")[0]
+      const width = widthWithUnit.slice(0, -2)
+      setSidebarWidth(Math.min(getMaxNavigatorSidebarWidth(), width))
+      handleChange(width)
+    },
+    [handleChange]
+  )
+
   const error = null // TODO: actual error handling
 
   return (
-    <OuterContainer>
+    <>
       {/* TODO: loading state handling */}
       {isLoading ? (
-        "Loading"
+        <AppLoadingContainer>
+          <AppLoadingIndicator />
+        </AppLoadingContainer>
       ) : error ? (
         error || "Error"
-      ) : navigatorSidebar.isOpen ? (
-        <SplitPane
-          split="vertical"
-          minSize={170}
-          maxSize={400}
-          defaultSize={defaultSize}
-          onChange={handleChange}
-        >
-          <NavigatorSidebar />
-          <InnerSidebarsAndEditor />
-        </SplitPane>
       ) : (
-        <InnerSidebarsAndEditor />
+        <Split
+          minSize={0}
+          snapOffset={20}
+          gridTemplateColumns={` ${Math.min(
+            getMaxNavigatorSidebarWidth(),
+            sidebarWidth
+          )}px auto 1fr`}
+          onDragEnd={() => {
+            const newSidebarWidth = sidebarRef?.current?.getBoundingClientRect()
+              .width
+
+            if (newSidebarWidth === 0) {
+              navigatorSidebar.close()
+            }
+
+            if (newSidebarWidth !== undefined) {
+              setSidebarWidth(
+                Math.min(getMaxNavigatorSidebarWidth(), newSidebarWidth)
+              )
+            }
+
+            setIsDragging(false)
+          }}
+          onDragStart={() => {
+            setIsDragging(true)
+            navigatorSidebar.open()
+          }}
+          onDrag={handleDrag}
+          direction="horizontal"
+          cursor="col-resize"
+          render={({ getGridProps, getGutterProps }) => (
+            <Grid sidebarWidth={sidebarWidth} {...getGridProps()}>
+              <NavigatorSidebar ref={sidebarRef} />
+
+              <Gutter {...getGutterProps("column", 1)} />
+
+              <div style={{ minWidth: 0 }}>
+                <InnerSidebarsAndEditor />
+              </div>
+            </Grid>
+          )}
+        />
       )}
-    </OuterContainer>
+    </>
   )
 })
 
+const OuterContainer = styled.div`
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: var(--tab-size) 1fr;
+`
+
+const breathingColor = keyframes`
+  from { color: #999999; }
+	to { color: #f6f6f6; }
+`
+
+const AppLoadingIndicator = withDelayRender(1000)(() => <div>Loading</div>)
+
+const AppLoadingContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  background: var(--bg-200);
+  text-transform: uppercase;
+  font: 500 40px Poppins;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: alternate 1.5s infinite ${breathingColor};
+`
+
+const EditorStateProviderContainer = styled.div`
+  height: 100%;
+  > * {
+    height: 100%;
+  }
+`
+
+const EditorTabsContainer = styled.div`
+  background: var(--bg-100);
+  height: var(--tab-size);
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: start;
+`
+
+const EditorTab = styled.div`
+  width: 150px;
+  height: var(--tab-size);
+  background: var(--bg-200);
+  border-radius: var(--tab-corner-radius) var(--tab-corner-radius) 0 0;
+`
+
 const Grid = styled.div`
   display: grid;
+  min-width: 0;
+  height: 100%;
 `
 
 const Gutter = styled.div`
-  width: 11px;
+  width: 10px;
   margin: 0 -5px;
   border-left: 5px solid rgba(0, 0, 0, 0);
   border-right: 5px solid rgba(0, 0, 0, 0);
   cursor: col-resize;
-  background: #363636;
   z-index: 1;
   box-sizing: border-box;
   background-clip: padding-box;
@@ -341,41 +535,6 @@ const Gutter = styled.div`
   :hover {
     border-left: 5px solid rgba(0, 0, 0, 0.15);
     border-right: 5px solid rgba(0, 0, 0, 0.15);
-  }
-`
-
-const OuterContainer = styled.div`
-  background-color: #1e1e1e;
-  color: white;
-  font-family: "Segoe UI", "Open sans", "sans-serif";
-
-  display: flex;
-  min-height: 0;
-  height: 100vh;
-  width: 100vw;
-
-  --topbar-height: 56px;
-`
-
-const InnerContainerWrapper = styled.div`
-  height: 100%;
-  width: 100%;
-  /* display: grid;
-  grid-template-rows: var(--topbar-height) calc(100vh - var(--topbar-height)); */
-  min-height: 0;
-  overflow: hidden;
-`
-
-const InnerContainer = styled.div`
-  min-height: 0;
-  height: 100%;
-  position: relative;
-`
-
-const EditorStateProviderContainer = styled.div`
-  height: 100%;
-  > * {
-    height: 100%;
   }
 `
 

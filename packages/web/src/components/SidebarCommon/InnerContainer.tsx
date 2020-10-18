@@ -1,20 +1,8 @@
 import React, { useCallback } from "react"
 import styled from "styled-components/macro"
-import { ContextMenuItem, useContextMenu } from "../../ContextMenu"
 
-import { useDocumentsAPI } from "../../MainProvider"
-
-export const NewButton: React.FC<{ groupId: string | null }> = ({
-  groupId = null,
-}) => {
-  const { createDocument } = useDocumentsAPI()
-
-  const handleNew = useCallback(() => {
-    createDocument(groupId)
-  }, [createDocument, groupId])
-
-  return <NewButtonSC onClick={handleNew}>+ Create New</NewButtonSC>
-}
+import { ContextMenuItem, useContextMenu } from "../ContextMenu"
+import { useDocumentsAPI } from "../MainProvider"
 
 export const InnerContainer: React.FC<{
   /**
@@ -60,29 +48,4 @@ export const InnerContainer: React.FC<{
 
 const InnerContainerSC = styled.div`
   overflow-y: auto;
-`
-
-export const Container = styled.div`
-  min-height: 0;
-  height: 100%;
-  width: 100%;
-  display: grid;
-  grid-template-rows: 1fr min-content;
-`
-
-const NewButtonSC = styled.div`
-  font-family: poppins;
-  font-weight: 500;
-  font-size: 13px;
-  color: #e4e4e4;
-  background: #1e1e1e;
-  user-select: none;
-  border-top: 1px solid #363636;
-  width: 100%;
-  padding: 12px 20px;
-  display: block;
-  cursor: pointer;
-  :hover {
-    color: white;
-  }
 `

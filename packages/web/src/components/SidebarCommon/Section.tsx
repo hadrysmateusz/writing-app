@@ -14,19 +14,14 @@ export const Section: React.FC<{ title: string }> = ({ children, title }) => {
           {/* TODO: add a slot for buttons here */}
         </SectionHeader>
         <SectionInnerContainer>{children}</SectionInnerContainer>
-        <SectionSeparator />
       </SectionContainer>
     </>
   )
 }
 
-const SectionSeparator = styled.div`
-  height: 1px;
-  background: #2c2c2c;
-`
-
 const SectionContainer = styled.div`
   padding: 0 20px;
+  min-height: 0;
 `
 
 const SectionInnerContainer = styled.div`

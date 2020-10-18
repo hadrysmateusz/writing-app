@@ -6,10 +6,18 @@ const GlobalStyles = createGlobalStyle`
   ${normalize()}
 
   :root {
-    /* --body-font-stack: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-      "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-    --header-font-stack: 'Saira Semi Condensed', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-      "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif; */
+    --dark-100: #131313;
+    --dark-200: #1B1B1B;
+    --dark-300: #1F1F1F;
+    --dark-400: #242424;
+
+    --bg-100: var(--dark-100);
+    --bg-200: var(--dark-200);
+    --bg-300: var(--dark-300);
+    --bg-highlight: var(--dark-400);
+
+    --tab-size: 34px;
+    --tab-corner-radius: 4px;
   }
 
   *,
@@ -23,24 +31,15 @@ const GlobalStyles = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     margin: 0;
-    background: #1e1e1e;
+    --bg-100: var(--dark-100);
     color: white;
+    font-family: "Segoe UI", "Open sans", "sans-serif";
   }
 
   *:focus {
     /* TODO: replace with visible, but more visually appealing styles */
     outline: none;
   }
-
-  /* h1,h2,h3,h4,h5,h6 {
-    font-family: var(--header-font-stack);
-  } */
-
-
-  /* a {
-    text-decoration: none;
-    color: inherit;
-  } */
 
   /* Split Pane Styles */
 
@@ -62,7 +61,7 @@ const GlobalStyles = createGlobalStyle`
   }
 
   .Resizer.horizontal {
-    height: 11px;
+    height: 10px;
     margin: -5px 0;
     border-top: 5px solid rgba(255, 255, 255, 0);
     border-bottom: 5px solid rgba(255, 255, 255, 0);
@@ -76,7 +75,7 @@ const GlobalStyles = createGlobalStyle`
   }
 
   .Resizer.vertical {
-    width: 11px;
+    width: 10px;
     margin: 0 -5px;
     border-left: 5px solid rgba(255, 255, 255, 0);
     border-right: 5px solid rgba(255, 255, 255, 0);

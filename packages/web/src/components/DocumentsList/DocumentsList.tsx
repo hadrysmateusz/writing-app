@@ -44,8 +44,4 @@ const Empty = styled.div`
   user-select: none;
   font-size: 11px;
   font-weight: 500;
-  :not(:last-child) {
-    border-bottom: 1px solid;
-    border-color: #383838;
-  }
 `

@@ -1,6 +1,10 @@
 import React from "react"
 
-import { Container, InnerContainer, NewButton } from "./Common"
+import {
+  PrimarySidebarViewContainer,
+  InnerContainer,
+  NewButton,
+} from "../../SidebarCommon"
 import { GroupDocumentsList } from "../../DocumentsList"
 import { useViewState } from "../../ViewState"
 
@@ -8,11 +12,11 @@ export const GroupView: React.FC = () => {
   const { primarySidebar } = useViewState()
 
   return (
-    <Container>
+    <PrimarySidebarViewContainer>
       <InnerContainer groupId={primarySidebar.currentView}>
         <GroupDocumentsList groupId={primarySidebar.currentView} />
       </InnerContainer>
       <NewButton groupId={primarySidebar.currentView} />
-    </Container>
+    </PrimarySidebarViewContainer>
   )
 }

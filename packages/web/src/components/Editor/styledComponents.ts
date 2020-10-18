@@ -5,6 +5,7 @@ export const OutermostContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--bg-200);
 `
 
 export const OuterContainer = styled.div`

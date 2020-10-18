@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react"
-import styled from "styled-components/macro"
+import styled, { css } from "styled-components/macro"
 import { Node } from "slate"
 import moment from "moment"
 
@@ -8,7 +8,7 @@ import { EditableText } from "../RenamingInput"
 import { useMainState } from "../MainProvider"
 import { formatOptional } from "../../utils"
 import { useDocumentContextMenu } from "../DocumentContextMenu"
-import { getGroupName } from "../../helpers/getGroupName"
+// import { getGroupName } from "../../helpers/getGroupName"
 
 const SNIPPET_LENGTH = 340
 
@@ -22,15 +22,15 @@ export const SidebarDocumentItem: React.FC<{
     DocumentContextMenu,
     getEditableProps,
   } = useDocumentContextMenu(document)
-  const { groups, currentEditor, switchDocument } = useMainState()
+  const { /*  groups, */ currentEditor, switchDocument } = useMainState()
   const { unsyncedDocs } = useMainState()
 
   const isUnsynced = unsyncedDocs.includes(document.id)
 
-  // TODO: optimize this
-  const isInCurrentGroup = useMemo(() => {
-    return groupId ? document.parentGroup === groupId : false
-  }, [document.parentGroup, groupId])
+  // // TODO: optimize this
+  // const isInCurrentGroup = useMemo(() => {
+  //   return groupId ? document.parentGroup === groupId : false
+  // }, [document.parentGroup, groupId])
 
   const isCurrent = useMemo(() => {
     if (currentEditor === null) return false
@@ -69,10 +69,10 @@ export const SidebarDocumentItem: React.FC<{
     return textContent.slice(0, SNIPPET_LENGTH)
   }, [document.content])
 
-  const groupName = useMemo(() => getGroupName(document.parentGroup, groups), [
-    document.parentGroup,
-    groups,
-  ])
+  // const groupName = useMemo(() => getGroupName(document.parentGroup, groups), [
+  //   document.parentGroup,
+  //   groups,
+  // ])
 
   const openDocument = useCallback(() => {
     switchDocument(document.id)
@@ -86,16 +86,18 @@ export const SidebarDocumentItem: React.FC<{
   const modifiedAt = moment(document.modifiedAt).format("LL")
 
   return (
-    <Container
-      onContextMenu={(e) => {
-        // this is to prevent opening the sidebar context menu underneath
-        // TODO: it might be better to implement a global provider for the context menu and only allow opening one and just change it's position and content
-        e.stopPropagation()
-        openMenu(e)
-      }}
-    >
-      <MainContainer onClick={handleClick} isCurrent={isCurrent}>
-        {!isInCurrentGroup && <Group>{groupName}</Group>}
+    <>
+      <MainContainer
+        onClick={handleClick}
+        onContextMenu={(e) => {
+          // this is to prevent opening the sidebar context menu underneath
+          // TODO: it might be better to implement a global provider for the context menu and only allow opening one and just change it's position and content
+          e.stopPropagation()
+          openMenu(e)
+        }}
+        isCurrent={isCurrent}
+      >
+        {/* {!isInCurrentGroup && <Group>{groupName}</Group>} */}
         <Title isUnsynced={isUnsynced}>
           <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>
@@ -104,7 +106,7 @@ export const SidebarDocumentItem: React.FC<{
         {/* TODO: add created at date */}
       </MainContainer>
       {isMenuOpen && <DocumentContextMenu />}
-    </Container>
+    </>
   )
 }
 
@@ -151,7 +153,7 @@ const Title = styled.div<{ isUnsynced: boolean }>`
   overflow: hidden;
   text-overflow: ellipsis;
 
-  ${(p) => p.isUnsynced && "color: red;"}
+  /* ${(p) => p.isUnsynced && "color: red;"} */
 
   .EditableText_editable {
     padding: 1px 2px 0;
@@ -174,31 +176,31 @@ const Snippet = styled.div`
   padding-top: 1px;
 `
 
-const Container = styled.div`
-  width: 100%;
-
-  :hover ${DeleteButton} {
-    opacity: 1;
-  }
-`
-
 const MainContainer = styled.div<{ isCurrent: boolean }>`
-  user-select: none;
+  width: 100%;
   max-width: 100%;
-  overflow: hidden;
   min-width: 0;
+  overflow: hidden;
+  user-select: none;
   padding: 10px 20px 12px;
-  border-bottom: 1px solid;
-  border-color: #363636;
+
   cursor: pointer;
 
   transition: background-color 200ms ease;
 
   :hover {
-    background-color: #252525;
+    background: var(--bg-highlight);
   }
 
-  ${(p) => p.isCurrent && "background-color: #252525;"}
+  :hover ${DeleteButton} {
+    opacity: 1;
+  }
+
+  ${(p) =>
+    p.isCurrent &&
+    css`
+      background: var(--bg-highlight);
+    `}
 `
 
 export default SidebarDocumentItem

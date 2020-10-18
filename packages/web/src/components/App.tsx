@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
+import styled from "styled-components/macro"
 import { Amplify } from "aws-amplify"
 
 import { AuthContextProvider, AuthenticatedRoute } from "./Auth"
@@ -47,35 +48,48 @@ export const App = () => {
     <>
       <GlobalStyles />
 
+      {/* <div style={{ height: "28px" }} /> */}
+
       <AuthContextProvider>
-        <Router>
-          <Switch>
-            <Route exact path="/login">
-              <LoginPage />
-            </Route>
+        <AppContainer>
+          <Router>
+            <Switch>
+              <Route exact path="/login">
+                <LoginPage />
+              </Route>
 
-            <Route exact path="/signup">
-              <SignupPage />
-            </Route>
+              <Route exact path="/signup">
+                <SignupPage />
+              </Route>
 
-            <Route path="/medium-auth-callback">
-              <MediumAuthRedirectPage />
-            </Route>
+              <Route path="/medium-auth-callback">
+                <MediumAuthRedirectPage />
+              </Route>
 
-            <AuthenticatedRoute path="/" exact>
-              <EditorPage />
-            </AuthenticatedRoute>
+              <AuthenticatedRoute path="/" exact>
+                <EditorPage />
+              </AuthenticatedRoute>
 
-            <Route>
-              <h2>Page not found!</h2>
+              <Route>
+                <h2>Page not found!</h2>
 
-              <Link to="/login">Login</Link>
+                <Link to="/login">Login</Link>
 
-              <Link to="/signup">Signup</Link>
-            </Route>
-          </Switch>
-        </Router>
+                <Link to="/signup">Signup</Link>
+              </Route>
+            </Switch>
+          </Router>
+        </AppContainer>
       </AuthContextProvider>
     </>
   )
 }
+
+const AppContainer = styled.div`
+  min-width: 0;
+  min-height: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+`

@@ -1,33 +1,35 @@
-import React from "react"
-import styled from "styled-components/macro"
-
-import { useViewState } from "../ViewState"
-import { Switch, Case } from "../Conditional"
+import React, { forwardRef } from "react"
 
 import { VIEWS } from "../../constants"
 
+import {
+  SidebarContainer,
+  SidebarTabsContainer,
+  SidebarTab,
+} from "../SidebarCommon"
+import { useViewState } from "../ViewState"
+import { Switch, Case } from "../Conditional"
+
 import { AllDocumentsView, InboxView, TrashView, GroupView } from "./views"
 
-export const PrimarySidebar: React.FC<{}> = () => {
+export const PrimarySidebar = forwardRef<HTMLDivElement, {}>((_props, ref) => {
   const { primarySidebar } = useViewState()
 
   return (
-    <OuterContainer>
-      <Switch value={primarySidebar.currentView}>
-        <Case value={VIEWS.ALL} component={<AllDocumentsView />} />
-        <Case value={VIEWS.INBOX} component={<InboxView />} />
-        <Case value={VIEWS.TRASH} component={<TrashView />} />
-        <Case default component={<GroupView />} />
-      </Switch>
-    </OuterContainer>
+    <SidebarContainer ref={ref} collapsed={!primarySidebar.isOpen}>
+      {primarySidebar.isOpen ? (
+        <>
+          <SidebarTabsContainer>
+            <SidebarTab />
+          </SidebarTabsContainer>
+          <Switch value={primarySidebar.currentView}>
+            <Case value={VIEWS.ALL} component={<AllDocumentsView />} />
+            <Case value={VIEWS.INBOX} component={<InboxView />} />
+            <Case value={VIEWS.TRASH} component={<TrashView />} />
+            <Case default component={<GroupView />} />
+          </Switch>
+        </>
+      ) : null}
+    </SidebarContainer>
   )
-}
-
-const OuterContainer = styled.div`
-  min-height: 0;
-  height: 100%;
-  border-right: 1px solid;
-  border-color: #363636;
-  background-color: #1e1e1e;
-  position: relative;
-`
+})

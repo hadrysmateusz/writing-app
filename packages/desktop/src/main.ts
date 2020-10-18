@@ -43,11 +43,12 @@ async function createWindow() {
     width: 1900,
     height: 1020,
     minWidth: 980,
+    minHeight: 600,
     title: APP_NAME,
     // devTools: false, TODO: consider setting this in prod to prevent opening the devtools
     // frame: false,
     acceptFirstMouse: true,
-    backgroundColor: "#1e1e1e",
+    backgroundColor: "#131313",
     webPreferences: {
       nodeIntegration: false,
       // TODO: this might not be needed - more research required
@@ -181,7 +182,7 @@ ipcMain.handle("read-file", async (_event, payload) => {
     return { status: DialogStatus.CANCELED, error: null, data: null }
   }
 
-  const files = []
+  const files: { fileName: string; content: string }[] = []
 
   for (const filePath of dialogRes.filePaths) {
     try {

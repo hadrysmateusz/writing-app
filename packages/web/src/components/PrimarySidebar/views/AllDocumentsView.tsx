@@ -1,15 +1,19 @@
 import React from "react"
 
-import { Container, InnerContainer, NewButton } from "./Common"
+import {
+  PrimarySidebarViewContainer,
+  InnerContainer,
+  NewButton,
+} from "../../SidebarCommon"
 import { AllDocumentsList } from "../../DocumentsList"
 
 export const AllDocumentsView: React.FC = () => {
   return (
-    <Container>
+    <PrimarySidebarViewContainer>
       <InnerContainer groupId={null}>
         <AllDocumentsList />
       </InnerContainer>
       <NewButton groupId={null} />
-    </Container>
+    </PrimarySidebarViewContainer>
   )
 }

@@ -83,19 +83,13 @@ const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
   --padding-x: 20px;
   --padding-y: 8px;
 
-  font-family: Poppins;
-  font-weight: bold;
-  font-size: 10px;
-  user-select: none;
-
+  font: bold 10px Poppins;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  border-bottom: 1px solid;
-  border-color: #383838;
-  color: #a3a3a3;
-  background: #1c1c1c;
 
   display: flex;
+  user-select: none;
+  color: #a3a3a3;
 
   .SectionHeader_Name {
     padding: var(--padding-y);
