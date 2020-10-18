@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react"
+import React, { forwardRef, memo } from "react"
 
 import { SECONDARY_VIEWS } from "../../constants"
 
@@ -6,14 +6,18 @@ import {
   SidebarContainer,
   SidebarTabsContainer,
   SidebarTab,
+  SidebarToggle,
 } from "../SidebarCommon"
 import { useViewState } from "../ViewState"
 import { Switch, Case } from "../Conditional"
 
 import { DashboardView } from "./views"
 
-export const SecondarySidebar = forwardRef<HTMLDivElement, {}>(
-  (_props, ref) => {
+/**
+ * memo is used to prevent huge amounts of rerenders when resizing the sidebar
+ */
+export const SecondarySidebar = memo(
+  forwardRef<HTMLDivElement, {}>((_props, ref) => {
     const { secondarySidebar } = useViewState()
 
     return (
@@ -28,12 +32,14 @@ export const SecondarySidebar = forwardRef<HTMLDivElement, {}>(
                 value={SECONDARY_VIEWS.SNIPPETS}
                 component={<DashboardView />}
               />
+              {/* TODO: better handle the default case */}
               <Case default component={<div />} />
-              {/* TODO: better handle this */}
             </Switch>
           </>
         ) : null}
+
+        <SidebarToggle sidebar={secondarySidebar} />
       </SidebarContainer>
     )
-  }
+  })
 )

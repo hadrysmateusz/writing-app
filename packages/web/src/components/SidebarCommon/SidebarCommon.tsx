@@ -13,7 +13,6 @@ export const SidebarContainer = styled.div<{ collapsed: boolean }>`
     css`
       width: 0;
       min-width: 0;
-      opacity: 0;
     `}
 `
 

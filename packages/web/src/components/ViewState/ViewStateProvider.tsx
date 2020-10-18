@@ -1,23 +1,14 @@
 import React, { useCallback } from "react"
-import { useStatelessToggleable, Toggleable } from "../../hooks"
+import { useStatelessToggleable } from "../../hooks"
 import { createContext } from "../../utils"
 import { useLocalSettings } from "../LocalSettings"
 import defaultLocalSettings from "../LocalSettings/default"
-
-export type SwitchViewFn = (view: string | null) => void
-
-export type MultiViewSidebar = Toggleable & {
-  currentView: string
-  switchView: SwitchViewFn
-}
-
-export type SingleViewSidebar = Toggleable & {}
-
-export type ViewState = {
-  primarySidebar: MultiViewSidebar
-  secondarySidebar: MultiViewSidebar
-  navigatorSidebar: SingleViewSidebar
-}
+import {
+  ViewState,
+  SwitchViewFn,
+  SingleViewSidebar,
+  MultiViewSidebar,
+} from "./types"
 
 export const [ViewStateContext, useViewState] = createContext<ViewState>()
 
@@ -51,8 +42,9 @@ const usePrimarySidebar = () => {
     ...primarySidebar,
     isOpen: primarySidebarIsOpen,
     currentView: primarySidebarCurrentView,
+    id: "primarySidebar",
     switchView,
-  }
+  } as MultiViewSidebar
 }
 
 const useSecondarySidebar = () => {
@@ -88,8 +80,9 @@ const useSecondarySidebar = () => {
     ...secondarySidebar,
     isOpen: secondarySidebarIsOpen,
     currentView: secondarySidebarCurrentView,
+    id: "secondarySidebar",
     switchView,
-  }
+  } as MultiViewSidebar
 }
 
 const useNavigatorSidebar = () => {
@@ -107,19 +100,17 @@ const useNavigatorSidebar = () => {
     onChange
   )
 
-  return { ...navigatorSidebar, isOpen: navigatorSidebarIsOpen }
+  return {
+    ...navigatorSidebar,
+    isOpen: navigatorSidebarIsOpen,
+    id: "secondarySidebar",
+  } as SingleViewSidebar
 }
 
 export const ViewStateProvider: React.FC<{}> = ({ children }) => {
   const primarySidebar = usePrimarySidebar()
   const secondarySidebar = useSecondarySidebar()
   const navigatorSidebar = useNavigatorSidebar()
-
-  console.log({
-    primarySidebar,
-    navigatorSidebar,
-    secondarySidebar,
-  })
 
   return (
     <ViewStateContext.Provider
