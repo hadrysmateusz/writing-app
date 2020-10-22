@@ -22,7 +22,7 @@ const sidebarSides = {
   [SidebarID.secondary]: Side.right,
 }
 
-const usePrimarySidebar = () => {
+const usePrimarySidebarProvider = () => {
   const id = "primarySidebar"
   const side = sidebarSides[id]
   const minWidth = 180
@@ -65,7 +65,7 @@ const usePrimarySidebar = () => {
   } as MultiViewSidebar
 }
 
-const useSecondarySidebar = () => {
+const useSecondarySidebarProvider = () => {
   const id = "secondarySidebar"
   const side = sidebarSides[id]
   const minWidth = 180
@@ -111,7 +111,7 @@ const useSecondarySidebar = () => {
   } as MultiViewSidebar
 }
 
-const useNavigatorSidebar = () => {
+const useNavigatorSidebarProvider = () => {
   const id = "navigatorSidebar"
   const side = sidebarSides[id]
   const minWidth = 150
@@ -142,9 +142,9 @@ const useNavigatorSidebar = () => {
 }
 
 export const ViewStateProvider: React.FC<{}> = ({ children }) => {
-  const primarySidebar = usePrimarySidebar()
-  const secondarySidebar = useSecondarySidebar()
-  const navigatorSidebar = useNavigatorSidebar()
+  const primarySidebar = usePrimarySidebarProvider()
+  const secondarySidebar = useSecondarySidebarProvider()
+  const navigatorSidebar = useNavigatorSidebarProvider()
 
   return (
     <ViewStateContext.Provider
