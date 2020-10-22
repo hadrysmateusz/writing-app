@@ -33,6 +33,8 @@ const sidebarWidthStorageKeys = {
   [SidebarID.secondary]: "splitPos_secondarySidebar",
 }
 
+//  TODO: refactor and remove unnecessary code - this is full of unnecessary checks etc.
+
 export const useSidebar = (sidebar: Sidebar) => {
   const { id, isOpen, minWidth, maxWidth, side, close } = sidebar
   const widthStorageKey = sidebarWidthStorageKeys[id]
