@@ -42,7 +42,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1900,
     height: 1020,
-    minWidth: 980,
+    minWidth: 300, // The minWidth shouldn't be too high because it would prevent multi-tasking on most screens
     minHeight: 600,
     title: APP_NAME,
     // devTools: false, TODO: consider setting this in prod to prevent opening the devtools
