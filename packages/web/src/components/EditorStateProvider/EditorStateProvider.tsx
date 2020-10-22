@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState, useMemo } from "react"
 import { isEqual } from "lodash"
 import { createEditor, Node } from "slate"
 import { ReactEditor, Slate } from "slate-react"
-import styled from "styled-components/macro"
 
 import { SaveDocumentFn, useMainState } from "../MainProvider"
 import { deserialize, serialize } from "../Editor"
@@ -102,27 +101,15 @@ export const EditorStateProvider: React.FC = ({ children }) => {
     [createEditorObject, editorValue, isModified, saveDocument]
   )
 
-  return (
-    <EditorStateProviderContainer>
-      {editor ? (
-        <Slate editor={editor} value={editorValue} onChange={onChange}>
-          <EditorStateContext.Provider value={editorState}>
-            <ImageModalProvider>
-              <LinkModalProvider>{children}</LinkModalProvider>
-            </ImageModalProvider>
-          </EditorStateContext.Provider>
-        </Slate>
-      ) : (
-        <NoEditorState />
-      )}
-    </EditorStateProviderContainer>
+  return editor ? (
+    <Slate editor={editor} value={editorValue} onChange={onChange}>
+      <EditorStateContext.Provider value={editorState}>
+        <ImageModalProvider>
+          <LinkModalProvider>{children}</LinkModalProvider>
+        </ImageModalProvider>
+      </EditorStateContext.Provider>
+    </Slate>
+  ) : (
+    <NoEditorState />
   )
 }
-
-// The purpose of this component is to
-const EditorStateProviderContainer = styled.div`
-  height: 100%;
-  > * {
-    height: 100%;
-  }
-`
