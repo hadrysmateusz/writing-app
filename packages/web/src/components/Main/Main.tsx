@@ -27,6 +27,8 @@ import { EditorState } from "./types"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
+// TODO: resizing navigator and primary sidebar can still move content off screen, this is probably because all sidebars are not on  the same grid, I should try moving them to the same grid, and any intermediate wrappers should be logic-only
+
 export const [EditorStateContext, useEditorState] = createContext<EditorState>()
 
 export const DEFAULT_EDITOR_VALUE: Node[] = [
@@ -136,11 +138,10 @@ const EditorAndSecondarySidebar: React.FC<{ saveDocument: SaveDocumentFn }> = ({
 
   return (
     <Split
-      minSize={180}
       snapOffset={0}
-      gridTemplateColumns={`1fr auto ${Math.min(
-        getMaxSidebarWidth(),
-        sidebarWidth
+      gridTemplateColumns={`1fr auto ${Math.max(
+        180,
+        Math.min(getMaxSidebarWidth(), sidebarWidth)
       )}px`}
       onDragEnd={() => {
         const newSidebarWidth = sidebarRef?.current?.getBoundingClientRect()
@@ -314,11 +315,10 @@ const InnerSidebarsAndEditor: React.FC = () => {
 
   return (
     <Split
-      minSize={180}
       snapOffset={0}
-      gridTemplateColumns={`${Math.min(
-        getMaxSidebarWidth(),
-        sidebarWidth
+      gridTemplateColumns={`${Math.max(
+        180,
+        Math.min(getMaxSidebarWidth(), sidebarWidth)
       )}px auto 1fr`}
       onDragEnd={() => {
         const newSidebarWidth = sidebarRef?.current?.getBoundingClientRect()
@@ -422,11 +422,10 @@ const Main = memo(() => {
         error || "Error"
       ) : (
         <Split
-          minSize={150}
           snapOffset={0}
-          gridTemplateColumns={` ${Math.min(
-            getMaxNavigatorSidebarWidth(),
-            sidebarWidth
+          gridTemplateColumns={`${Math.max(
+            150,
+            Math.min(getMaxNavigatorSidebarWidth(), sidebarWidth)
           )}px auto 1fr`}
           onDragEnd={() => {
             const newSidebarWidth = sidebarRef?.current?.getBoundingClientRect()
@@ -441,7 +440,6 @@ const Main = memo(() => {
                 Math.min(getMaxNavigatorSidebarWidth(), newSidebarWidth)
               )
             }
-
             setIsDragging(false)
           }}
           onDragStart={() => {
