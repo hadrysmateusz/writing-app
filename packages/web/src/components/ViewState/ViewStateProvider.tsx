@@ -8,11 +8,26 @@ import {
   SwitchViewFn,
   SingleViewSidebar,
   MultiViewSidebar,
+  SidebarID,
+  Side,
 } from "./types"
 
 export const [ViewStateContext, useViewState] = createContext<ViewState>()
 
+// TODO: put this metadata on sidebar object
+
+const sidebarSides = {
+  [SidebarID.navigator]: Side.left,
+  [SidebarID.primary]: Side.left,
+  [SidebarID.secondary]: Side.right,
+}
+
 const usePrimarySidebar = () => {
+  const id = "primarySidebar"
+  const side = sidebarSides[id]
+  const minWidth = 180
+  const maxWidth = 400
+
   const {
     updateLocalSetting,
     primarySidebarCurrentView,
@@ -42,12 +57,20 @@ const usePrimarySidebar = () => {
     ...primarySidebar,
     isOpen: primarySidebarIsOpen,
     currentView: primarySidebarCurrentView,
-    id: "primarySidebar",
+    id,
+    side,
+    minWidth,
+    maxWidth,
     switchView,
   } as MultiViewSidebar
 }
 
 const useSecondarySidebar = () => {
+  const id = "secondarySidebar"
+  const side = sidebarSides[id]
+  const minWidth = 180
+  const maxWidth = 400
+
   const {
     updateLocalSetting,
     secondarySidebarCurrentView,
@@ -80,12 +103,20 @@ const useSecondarySidebar = () => {
     ...secondarySidebar,
     isOpen: secondarySidebarIsOpen,
     currentView: secondarySidebarCurrentView,
-    id: "secondarySidebar",
+    id,
+    side,
+    minWidth,
+    maxWidth,
     switchView,
   } as MultiViewSidebar
 }
 
 const useNavigatorSidebar = () => {
+  const id = "navigatorSidebar"
+  const side = sidebarSides[id]
+  const minWidth = 150
+  const maxWidth = 300
+
   const { updateLocalSetting, navigatorSidebarIsOpen } = useLocalSettings()
 
   const onChange = useCallback(
@@ -103,7 +134,10 @@ const useNavigatorSidebar = () => {
   return {
     ...navigatorSidebar,
     isOpen: navigatorSidebarIsOpen,
-    id: "secondarySidebar",
+    id,
+    side,
+    minWidth,
+    maxWidth,
   } as SingleViewSidebar
 }
 
