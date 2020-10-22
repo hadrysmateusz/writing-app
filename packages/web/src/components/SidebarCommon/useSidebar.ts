@@ -90,7 +90,10 @@ export const useSidebar = (sidebar: Sidebar) => {
     setIsDragging(false)
   }, [close, maxWidth])
 
-  const clampedSidebarWidth = clamp(minWidth, sidebarWidth, maxWidth)
+  const clampedSidebarWidth = isOpen
+    ? clamp(minWidth, sidebarWidth, maxWidth)
+    : 0
+
   const gridTemplateColumns =
     sidebar.side === Side.right
       ? `1fr auto ${clampedSidebarWidth}px`
