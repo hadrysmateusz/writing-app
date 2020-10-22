@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react"
 import styled from "styled-components/macro"
 import { Node, Descendant } from "slate"
-
-import { useEditorState } from "../Main"
+import { useEditorState } from "../EditorStateProvider"
 
 const OUTLINE_HEADING_MAX_LENGTH = 40 // TODO: this might need to change to fit a resized sidebar
 

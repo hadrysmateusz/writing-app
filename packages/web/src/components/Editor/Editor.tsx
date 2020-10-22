@@ -14,6 +14,19 @@ import isHotkey from "is-hotkey"
 import { NamingInput } from "../RenamingInput"
 import { DocumentDoc } from "../Database"
 import { SaveDocumentFn, useMainState } from "../MainProvider"
+import TrashBanner from "../TrashBanner"
+import { useDocumentsAPI } from "../MainProvider"
+import { useUserdata } from "../Userdata"
+import { useViewState } from "../ViewState"
+import { useEditorState } from "../EditorStateProvider"
+
+import { plugins } from "../../pluginsList"
+import { Editable, OnKeyDown } from "../../slate-plugin-system"
+import { createEmptyNode } from "../../helpers/createEmptyNode"
+import { ListContext } from "../../slate-plugins"
+import { ListItemContext } from "../../slate-plugins/elements/list/ListItemContext"
+import { withDelayRender } from "../../withDelayRender"
+
 import {
   EditableContainer,
   OuterContainer,
@@ -21,16 +34,58 @@ import {
   InsertBlockField,
   InnerContainer,
 } from "./styledComponents"
-import { useDocumentsAPI } from "../MainProvider"
-import TrashBanner from "../TrashBanner"
-
-import { plugins } from "../../pluginsList"
-import { Editable, OnKeyDown } from "../../slate-plugin-system"
-import { createEmptyNode } from "../../helpers/createEmptyNode"
 import useEditorContextMenu from "./useEditorContextMenu"
-import { ListContext } from "../../slate-plugins"
-import { ListItemContext } from "../../slate-plugins/elements/list/ListItemContext"
-import { useUserdata } from "../Userdata"
+
+const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading</div>)
+
+/**
+ * Renders the editor if there is a document selected
+ */
+export const EditorRenderer: React.FC = () => {
+  const { currentDocument, isDocumentLoading, unsyncedDocs } = useMainState()
+  const { secondarySidebar } = useViewState()
+  const { isModified, saveDocument } = useEditorState()
+
+  return (
+    <OutermosterContainer>
+      {isDocumentLoading ? (
+        <DocumentLoadingState />
+      ) : currentDocument ? (
+        <>
+          {/* <button
+            onClick={() => {
+              secondarySidebar.toggle()
+            }}
+          >
+            sidebar
+          </button>
+
+          <div>
+            {isModified
+              ? "MODIFIED"
+              : unsyncedDocs.includes(currentDocument.id)
+              ? "SAVED & UNREPLICATED"
+              : "SYNCED"}
+          </div> */}
+
+          <EditorTabsContainer>
+            <EditorTab />
+          </EditorTabsContainer>
+
+          <EditorComponent
+            key={currentDocument.id} // Necessary to reload the component on id change
+            currentDocument={currentDocument}
+            saveDocument={saveDocument}
+          />
+        </>
+      ) : (
+        // This div is here to prevent issues with split pane rendering
+        // TODO: add proper empty state
+        <div>No document selected</div>
+      )}
+    </OutermosterContainer>
+  )
+}
 
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
@@ -313,6 +368,30 @@ const StyledNamingInput = styled(NamingInput)`
   font-size: 36px;
   line-height: 54px;
   color: #f8f8f8;
+`
+
+const EditorTabsContainer = styled.div`
+  background: var(--bg-100);
+  height: var(--tab-size);
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: start;
+`
+
+const EditorTab = styled.div`
+  width: 150px;
+  height: var(--tab-size);
+  background: var(--bg-200);
+  border-radius: var(--tab-corner-radius) var(--tab-corner-radius) 0 0;
+`
+
+const OutermosterContainer = styled.div`
+  min-width: 500px; // TODO: probably change this with media queries
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: var(--tab-size) 1fr;
 `
 
 export default EditorComponent

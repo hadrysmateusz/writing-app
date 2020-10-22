@@ -1,4 +1,5 @@
 import { Node } from "slate"
+import { SaveDocumentFn } from "../MainProvider"
 
 export type EditorState = {
   editorValue: Node[]
@@ -6,4 +7,5 @@ export type EditorState = {
   resetEditor: () => void
   setEditorValue: React.Dispatch<React.SetStateAction<Node[]>>
   setIsModified: React.Dispatch<React.SetStateAction<boolean>>
+  saveDocument: SaveDocumentFn
 }

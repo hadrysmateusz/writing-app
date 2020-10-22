@@ -5,8 +5,9 @@ import size from "unist-util-size"
 import vfile from "vfile"
 
 import { serializeText } from "../../slate-helpers"
-import { useEditorState } from "../Main"
+
 import styled from "styled-components"
+import { useEditorState } from "../EditorStateProvider"
 
 // TODO: add option to customise WPM reading speed
 const WPM = 275
