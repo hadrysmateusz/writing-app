@@ -46,7 +46,6 @@ export const useSidebar = (sidebar: Sidebar) => {
   useEffect(() => {
     if (isDragging) return
     if (isOpen && sidebarWidth === 0) {
-      console.log("resetting")
       setSidebarWidth(Math.max(minWidth, defaultSize))
     }
   }, [defaultSize, isDragging, minWidth, isOpen, sidebarWidth])

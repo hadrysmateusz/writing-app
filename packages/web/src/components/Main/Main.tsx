@@ -1,5 +1,5 @@
 import React, { memo } from "react"
-import styled, { keyframes } from "styled-components/macro"
+import styled, { keyframes, css } from "styled-components/macro"
 import Split from "react-split-grid"
 import { Node } from "slate"
 import { History } from "slate-history"
@@ -45,7 +45,10 @@ const EditorAndSecondarySidebar: React.FC = () => {
         render={({ getGridProps, getGutterProps }) => (
           <Grid sidebarWidth={width} {...getGridProps()}>
             <EditorRenderer />
-            <Gutter {...getGutterProps("column", 1)} />
+            <Gutter
+              {...getGutterProps("column", 1)}
+              isSidebarOpen={secondarySidebar.isOpen}
+            />
             <SecondarySidebar ref={ref} />
           </Grid>
         )}
@@ -67,7 +70,10 @@ const InnerSidebarsAndEditor: React.FC = () => {
       render={({ getGridProps, getGutterProps }) => (
         <Grid sidebarWidth={width} {...getGridProps()}>
           <PrimarySidebar ref={ref} />
-          <Gutter {...getGutterProps("column", 1)} />
+          <Gutter
+            {...getGutterProps("column", 1)}
+            isSidebarOpen={primarySidebar.isOpen}
+          />
           <EditorAndSecondarySidebar />
         </Grid>
       )}
@@ -88,7 +94,10 @@ const NavigatorSidebarAndRest: React.FC = () => {
       render={({ getGridProps, getGutterProps }) => (
         <Grid sidebarWidth={width} {...getGridProps()}>
           <NavigatorSidebar ref={ref} />
-          <Gutter {...getGutterProps("column", 1)} />
+          <Gutter
+            {...getGutterProps("column", 1)}
+            isSidebarOpen={navigatorSidebar.isOpen}
+          />
           <InnerSidebarsAndEditor />
         </Grid>
       )}
@@ -133,23 +142,33 @@ const Grid = styled.div`
   height: 100%;
 `
 
-const Gutter = styled.div`
+const Gutter = styled.div<{ isSidebarOpen: boolean }>`
   height: 100%;
-  width: 10px;
-  margin: 0 -5px;
-  border-left: 5px solid rgba(0, 0, 0, 0);
-  border-right: 5px solid rgba(0, 0, 0, 0);
-  cursor: col-resize;
+
+  transition: border-color 1s ease;
   z-index: 1;
   box-sizing: border-box;
   background-clip: padding-box;
 
-  transition: border-color 1s ease;
+  ${(p) => {
+    return p.isSidebarOpen
+      ? css`
+          width: 10px;
+          margin: 0 -5px;
+          cursor: col-resize;
+          border-left: 5px solid rgba(0, 0, 0, 0);
+          border-right: 5px solid rgba(0, 0, 0, 0);
 
-  :hover {
-    border-left: 5px solid rgba(0, 0, 0, 0.15);
-    border-right: 5px solid rgba(0, 0, 0, 0.15);
-  }
+          :hover {
+            border-left: 5px solid rgba(0, 0, 0, 0.15);
+            border-right: 5px solid rgba(0, 0, 0, 0.15);
+          }
+        `
+      : css`
+          width: 0;
+          visibility: hidden;
+        `
+  }}
 `
 
 export default Main
