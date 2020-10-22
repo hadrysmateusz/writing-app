@@ -98,6 +98,7 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
           <CaretContainer onClick={handleToggleClick} isExpanded={isExpanded}>
             <Icon icon={"caretRight"} />
           </CaretContainer>
+          {/* TODO: de-duplicated the icon code with the one in TreeItem */}
           {icon && (
             <IconContainer isRoot={isRoot}>
               <Icon icon={icon} />

@@ -25,6 +25,7 @@ export const TreeItem: React.FC<StaticTreeItemProps> = ({
       {...rest}
     >
       <MidContainer>
+        {/* TODO: de-duplicated the icon code with the one in StatelessExpandableTreeItem */}
         {icon && (
           <IconContainer isSpecial={isSpecial}>
             <Icon icon={icon} />
@@ -43,12 +44,14 @@ const MidContainer = styled.div`
   width: calc(100% - 20px); /* to respect right-side padding */
 `
 
-const OuterContainer = styled.div<{
+type OuterContainerProps = {
   depth: number
   disabled?: boolean
   isSpecial?: boolean
   isActive?: boolean
-}>`
+}
+
+const OuterContainer = styled.div<OuterContainerProps>`
   padding-left: ${(p) => (p.depth + 1) * 16}px;
   width: 100%;
   user-select: none;
@@ -94,6 +97,13 @@ const InnerContainer = styled.div<{ isSpecial: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
+
+  /* > * {
+    // TODO: this is intended to make text inside tree items use the ellipsis overflow method, but it needs work because it make the expandable tree carets invisible
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  } */
 `
 
 const IconContainer = styled.div<{ isSpecial: boolean }>`
