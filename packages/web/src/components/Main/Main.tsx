@@ -36,7 +36,7 @@ const AppLoadingState = () => (
  */
 const EditorAndSecondarySidebar: React.FC = () => {
   const { secondarySidebar } = useViewState()
-  const { getSplitProps, ref, width } = useSidebar(secondarySidebar)
+  const { getSplitProps, ref, width, isDragging } = useSidebar(secondarySidebar)
 
   return (
     <EditorStateProvider>
@@ -48,6 +48,7 @@ const EditorAndSecondarySidebar: React.FC = () => {
             <Gutter
               {...getGutterProps("column", 1)}
               isSidebarOpen={secondarySidebar.isOpen}
+              isDragging={isDragging}
             />
             <SecondarySidebar ref={ref} />
           </Grid>
@@ -62,7 +63,7 @@ const EditorAndSecondarySidebar: React.FC = () => {
  */
 const InnerSidebarsAndEditor: React.FC = () => {
   const { primarySidebar } = useViewState()
-  const { getSplitProps, ref, width } = useSidebar(primarySidebar)
+  const { getSplitProps, ref, width, isDragging } = useSidebar(primarySidebar)
 
   return (
     <Split
@@ -73,6 +74,7 @@ const InnerSidebarsAndEditor: React.FC = () => {
           <Gutter
             {...getGutterProps("column", 1)}
             isSidebarOpen={primarySidebar.isOpen}
+            isDragging={isDragging}
           />
           <EditorAndSecondarySidebar />
         </Grid>
@@ -86,7 +88,7 @@ const InnerSidebarsAndEditor: React.FC = () => {
  */
 const NavigatorSidebarAndRest: React.FC = () => {
   const { navigatorSidebar } = useViewState()
-  const { getSplitProps, ref, width } = useSidebar(navigatorSidebar)
+  const { getSplitProps, ref, width, isDragging } = useSidebar(navigatorSidebar)
 
   return (
     <Split
@@ -97,6 +99,7 @@ const NavigatorSidebarAndRest: React.FC = () => {
           <Gutter
             {...getGutterProps("column", 1)}
             isSidebarOpen={navigatorSidebar.isOpen}
+            isDragging={isDragging}
           />
           <InnerSidebarsAndEditor />
         </Grid>
@@ -142,33 +145,32 @@ const Grid = styled.div`
   height: 100%;
 `
 
-const Gutter = styled.div<{ isSidebarOpen: boolean }>`
+const Gutter = styled.div<{ isSidebarOpen: boolean; isDragging: boolean }>`
   height: 100%;
 
   transition: border-color 1s ease;
   z-index: 1;
   box-sizing: border-box;
   background-clip: padding-box;
+  width: 0;
 
-  ${(p) => {
-    return p.isSidebarOpen
-      ? css`
-          width: 10px;
-          margin: 0 -5px;
-          cursor: col-resize;
-          border-left: 5px solid rgba(0, 0, 0, 0);
-          border-right: 5px solid rgba(0, 0, 0, 0);
+  /* TODO: better hover / dragging styles */
+  ${(p) =>
+    p.isSidebarOpen &&
+    css`
+      width: 10px;
+      margin: 0 -5px;
+      cursor: col-resize;
+      border-left: 5px solid;
+      border-right: 5px solid;
+      border-color: ${p.isDragging
+        ? `rgba(0, 0, 0, 0.15)`
+        : `rgba(0, 0, 0, 0)`};
 
-          :hover {
-            border-left: 5px solid rgba(0, 0, 0, 0.15);
-            border-right: 5px solid rgba(0, 0, 0, 0.15);
-          }
-        `
-      : css`
-          width: 0;
-          visibility: hidden;
-        `
-  }}
+      :hover {
+        border-color: rgba(0, 0, 0, 0.15);
+      }
+    `}
 `
 
 export default Main

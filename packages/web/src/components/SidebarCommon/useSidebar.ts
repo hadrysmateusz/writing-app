@@ -116,6 +116,7 @@ export const useSidebar = (sidebar: Sidebar) => {
   return {
     ref: sidebarRef,
     width: clampedSidebarWidth,
+    isDragging,
     getSplitProps,
   }
 }
