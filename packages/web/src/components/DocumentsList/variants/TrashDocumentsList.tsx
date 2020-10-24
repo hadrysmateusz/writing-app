@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { Subscription } from "rxjs"
 
+import { cleanUpSubscriptions } from "../../../utils"
+
 import { useDatabase, DocumentDoc } from "../../Database"
 
 import { DocumentsList } from "../DocumentsList"
@@ -15,28 +17,23 @@ export const TrashDocumentsList: React.FC = () => {
 
   // TODO: extract most of this logic into a reusable hook
   useEffect(() => {
-    // let groupSub: Subscription | undefined
     let documentsSub: Subscription | undefined
 
     const setup = async () => {
-      // TODO: in-memory caching for better performnce when frequently switching between groups in one session
-      // TODO: better decide when I should query the database directly and when to use (and where to store) the local documents list
-
       setIsLoading(true)
 
       try {
-        // TODO: consider creating a findRemoved static method to abstract this
         const documentsQuery = db.documents.find().where("isDeleted").eq(true)
 
         const newDocuments = await documentsQuery.exec()
+
         setDocuments(newDocuments)
 
         documentsSub = documentsQuery.$.subscribe((newDocuments) => {
           setDocuments(newDocuments)
         })
       } catch (error) {
-        // TODO: handle better in prod
-        throw error
+        throw error // TODO: handle better in prod
       } finally {
         setIsLoading(false)
       }
@@ -44,12 +41,8 @@ export const TrashDocumentsList: React.FC = () => {
 
     setup()
 
-    return () => {
-      if (documentsSub) {
-        documentsSub.unsubscribe()
-      }
-    }
-  }, [db.documents, db.groups])
+    return () => cleanUpSubscriptions([documentsSub])
+  }, [db.documents])
 
   // TODO: better state handling
   return !documents || isLoading ? null : (

@@ -133,6 +133,14 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
       const { rxDocument } = event
 
+      // TODO: I think this might mark documents as changed even when the change is coming FROM the server, make sure that doesn't happen
+
+      // TODO: make sure that DELETE operations are handled properly, the code below is most likely not enough
+      if (!rxDocument) {
+        console.log("Skipping. No rxDocument in the event")
+        return
+      }
+
       if (rxDocument.isLocal) {
         console.log(`Skipping. Document ${rxDocument.id} is local.`)
         return

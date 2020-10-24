@@ -5,6 +5,7 @@ import { DocumentDoc } from "../../Database"
 import { useDocumentsAPI } from "../../MainProvider"
 
 import { DocumentsList } from "../DocumentsList"
+import { cleanUpSubscriptions } from "../../../utils"
 
 /**
  * Container for displaying documents in the inbox (root)
@@ -14,28 +15,35 @@ export const InboxDocumentsList: React.FC = () => {
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  // TODO: extract most of this logic into a reusable hook
   useEffect(() => {
     let documentsSub: Subscription | undefined
 
     const setup = async () => {
-      const documentsQuery = findDocuments().where("parentGroup").eq(null)
+      setIsLoading(true)
 
-      const newDocuments = await documentsQuery.exec()
-      setDocuments(newDocuments)
-      setIsLoading(false)
+      try {
+        const documentsQuery = findDocuments(false)
+          .where("parentGroup")
+          .eq(null)
 
-      documentsSub = documentsQuery.$.subscribe((newDocuments) => {
+        const newDocuments = await documentsQuery.exec()
+
         setDocuments(newDocuments)
-      })
+
+        documentsSub = documentsQuery.$.subscribe((newDocuments) => {
+          setDocuments(newDocuments)
+        })
+      } catch (error) {
+        throw error // TODO: handle better in prod
+      } finally {
+        setIsLoading(false)
+      }
     }
 
     setup()
 
-    return () => {
-      if (documentsSub) {
-        documentsSub.unsubscribe()
-      }
-    }
+    return () => cleanUpSubscriptions([documentsSub])
   }, [findDocuments])
 
   // TODO: better state handling
