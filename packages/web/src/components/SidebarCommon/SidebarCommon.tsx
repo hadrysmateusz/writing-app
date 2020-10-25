@@ -45,9 +45,17 @@ export const SidebarTabsContainer = styled.div`
   justify-content: start;
 `
 
-export const SidebarTab = styled.div`
+export const SidebarTab = styled.div<{ isActive: boolean }>`
   width: var(--tab-size);
   height: var(--tab-size);
   background: var(--bg-300);
   border-radius: var(--tab-corner-radius) var(--tab-corner-radius) 0 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: ${(p) => (p.isActive ? "#7D7D7D" : "#545454")};
+  background: ${(p) => (p.isActive ? "#1E1E1E" : "transparent")};
+  cursor: ${(p) => (p.isActive ? "default" : "pointer")};
 `

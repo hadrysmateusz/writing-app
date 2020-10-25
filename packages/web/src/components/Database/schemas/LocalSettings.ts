@@ -35,6 +35,14 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
     primarySidebarCurrentView: {
       type: "string",
     },
+    primarySidebarCurrentSubviews: {
+      type: "object",
+      properties: {
+        cloud: { type: "string" },
+        local: { type: "string" },
+        snippets: { type: "string" },
+      },
+    },
     secondarySidebarCurrentView: {
       type: "string",
     },

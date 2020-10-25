@@ -16,6 +16,7 @@ import {
   FaUser,
   FaSpinner,
   FaChevronDown,
+  FaClipboard,
 } from "react-icons/fa"
 import {
   AiFillCloud,
@@ -90,6 +91,7 @@ const iconLibrary = {
   spinner: FaSpinner,
   settings: IoMdSettings,
   import: FiDownload,
+  clipboard: FaClipboard,
 }
 
 export default iconLibrary

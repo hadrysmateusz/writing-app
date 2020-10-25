@@ -56,6 +56,6 @@ export const AllDocumentsList: React.FC = () => {
 
   // TODO: better state handling
   return !documents || isLoading ? null : (
-    <DocumentsList title="Inbox" documents={documents} />
+    <DocumentsList title="All Documents" documents={documents} />
   )
 }

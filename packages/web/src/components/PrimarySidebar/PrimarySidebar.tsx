@@ -1,17 +1,16 @@
 import React, { forwardRef, memo } from "react"
 
-import { VIEWS } from "../../constants"
-
 import {
   SidebarContainer,
   SidebarTabsContainer,
   SidebarTab,
   SidebarToggle,
 } from "../SidebarCommon"
-import { useViewState } from "../ViewState"
+import { useViewState, PrimarySidebarViews } from "../ViewState"
 import { Switch, Case } from "../Conditional"
 
-import { AllDocumentsView, InboxView, TrashView, GroupView } from "./views"
+import { Cloud } from "./Cloud"
+import Icon from "../Icon"
 
 /**
  * memo is used to prevent huge amounts of rerenders when resizing the sidebar
@@ -25,14 +24,40 @@ export const PrimarySidebar = memo(
         {primarySidebar.isOpen ? (
           <>
             <SidebarTabsContainer>
-              <SidebarTab />
+              <SidebarTab
+                isActive={
+                  primarySidebar.currentView === PrimarySidebarViews.cloud
+                }
+                onClick={() => {
+                  primarySidebar.switchView(PrimarySidebarViews.cloud)
+                }}
+              >
+                <Icon icon="cloud" />
+              </SidebarTab>
+              <SidebarTab
+                isActive={
+                  primarySidebar.currentView === PrimarySidebarViews.local
+                }
+                onClick={() => {
+                  primarySidebar.switchView(PrimarySidebarViews.local)
+                }}
+              >
+                <Icon icon="folderClosed" />
+              </SidebarTab>
+              <SidebarTab
+                isActive={
+                  primarySidebar.currentView === PrimarySidebarViews.snippets
+                }
+                onClick={() => {
+                  primarySidebar.switchView(PrimarySidebarViews.snippets)
+                }}
+              >
+                <Icon icon="clipboard" />
+              </SidebarTab>
             </SidebarTabsContainer>
 
             <Switch value={primarySidebar.currentView}>
-              <Case value={VIEWS.ALL} component={<AllDocumentsView />} />
-              <Case value={VIEWS.INBOX} component={<InboxView />} />
-              <Case value={VIEWS.TRASH} component={<TrashView />} />
-              <Case default component={<GroupView />} />
+              <Case value={PrimarySidebarViews.cloud} component={<Cloud />} />
             </Switch>
           </>
         ) : null}

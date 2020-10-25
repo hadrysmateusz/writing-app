@@ -1,156 +1,155 @@
-import React, { useCallback } from "react"
-import { useStatelessToggleable } from "../../hooks"
+import React, { useCallback, useState, useMemo } from "react"
+
+import { useStatelessToggleable, Toggleable } from "../../hooks"
 import { createContext } from "../../utils"
+
 import { useLocalSettings } from "../LocalSettings"
 import defaultLocalSettings from "../LocalSettings/default"
-import {
-  ViewState,
-  SwitchViewFn,
-  SingleViewSidebar,
-  MultiViewSidebar,
-  SidebarID,
-  Side,
-} from "./types"
+
+import { ViewState, SwitchViewFn, SidebarID, Side } from "./types"
 
 export const [ViewStateContext, useViewState] = createContext<ViewState>()
 
-// TODO: put this metadata on sidebar object
+// TODO: remove this, replace with custom methods for each sidebar
+const useSidebarView = (
+  settingName: "secondarySidebarCurrentView" | "primarySidebarCurrentView",
+  toggleable: Toggleable
+): [string, SwitchViewFn] => {
+  const { updateLocalSetting, ...localSettings } = useLocalSettings()
 
-const sidebarSides = {
-  [SidebarID.navigator]: Side.left,
-  [SidebarID.primary]: Side.left,
-  [SidebarID.secondary]: Side.right,
-}
-
-const usePrimarySidebarProvider = () => {
-  const id = "primarySidebar"
-  const side = sidebarSides[id]
-  const minWidth = 180
-  const maxWidth = 400
-
-  const {
-    updateLocalSetting,
-    primarySidebarCurrentView,
-    primarySidebarIsOpen,
-  } = useLocalSettings()
-
-  const onChange = useCallback(
-    (value: boolean) => {
-      updateLocalSetting("primarySidebarIsOpen", value)
-    },
-    [updateLocalSetting]
-  )
-
-  const primarySidebar = useStatelessToggleable(primarySidebarIsOpen, onChange)
-
-  const switchView: SwitchViewFn = (view) => {
-    const newView = view || defaultLocalSettings.primarySidebarCurrentView
-
-    updateLocalSetting("primarySidebarCurrentView", newView)
-
-    if (!primarySidebarIsOpen) {
-      primarySidebar.open()
-    }
-  }
-
-  return {
-    ...primarySidebar,
-    isOpen: primarySidebarIsOpen,
-    currentView: primarySidebarCurrentView,
-    id,
-    side,
-    minWidth,
-    maxWidth,
-    switchView,
-  } as MultiViewSidebar
-}
-
-const useSecondarySidebarProvider = () => {
-  const id = "secondarySidebar"
-  const side = sidebarSides[id]
-  const minWidth = 180
-  const maxWidth = 400
-
-  const {
-    updateLocalSetting,
-    secondarySidebarCurrentView,
-    secondarySidebarIsOpen,
-  } = useLocalSettings()
-
-  const onChange = useCallback(
-    (value: boolean) => {
-      updateLocalSetting("secondarySidebarIsOpen", value)
-    },
-    [updateLocalSetting]
-  )
-
-  const secondarySidebar = useStatelessToggleable(
-    secondarySidebarIsOpen,
-    onChange
-  )
+  const currentView = localSettings[settingName]
 
   const switchView: SwitchViewFn = (view) => {
     const newView = view || defaultLocalSettings.secondarySidebarCurrentView
 
     updateLocalSetting("secondarySidebarCurrentView", newView)
 
-    if (!secondarySidebarIsOpen) {
-      secondarySidebar.open()
+    if (!currentView) {
+      toggleable.open()
     }
   }
 
-  return {
-    ...secondarySidebar,
-    isOpen: secondarySidebarIsOpen,
-    currentView: secondarySidebarCurrentView,
-    id,
-    side,
-    minWidth,
-    maxWidth,
-    switchView,
-  } as MultiViewSidebar
+  return [currentView, switchView]
 }
 
-const useNavigatorSidebarProvider = () => {
-  const id = "navigatorSidebar"
-  const side = sidebarSides[id]
-  const minWidth = 150
-  const maxWidth = 300
+const useSidebarToggleable = (
+  settingName:
+    | "primarySidebarIsOpen"
+    | "secondarySidebarIsOpen"
+    | "navigatorSidebarIsOpen"
+) => {
+  const { updateLocalSetting, ...localSettings } = useLocalSettings()
 
-  const { updateLocalSetting, navigatorSidebarIsOpen } = useLocalSettings()
+  const isOpen = localSettings[settingName]
 
   const onChange = useCallback(
     (value: boolean) => {
-      updateLocalSetting("navigatorSidebarIsOpen", value)
+      updateLocalSetting(settingName, value)
     },
-    [updateLocalSetting]
+    [settingName, updateLocalSetting]
   )
 
-  const navigatorSidebar = useStatelessToggleable(
-    navigatorSidebarIsOpen,
-    onChange
-  )
+  const sidebarMethods = useStatelessToggleable(isOpen, onChange)
 
-  return {
-    ...navigatorSidebar,
-    isOpen: navigatorSidebarIsOpen,
-    id,
-    side,
-    minWidth,
-    maxWidth,
-  } as SingleViewSidebar
+  return { ...sidebarMethods, isOpen }
 }
 
 export const ViewStateProvider: React.FC<{}> = ({ children }) => {
-  const primarySidebar = usePrimarySidebarProvider()
-  const secondarySidebar = useSecondarySidebarProvider()
-  const navigatorSidebar = useNavigatorSidebarProvider()
+  const navigatorToggleable = useSidebarToggleable("navigatorSidebarIsOpen")
+  const primaryToggleable = useSidebarToggleable("primarySidebarIsOpen")
+  const secondaryToggleable = useSidebarToggleable("secondarySidebarIsOpen")
+
+  const {
+    updateLocalSetting,
+    primarySidebarCurrentSubviews,
+    primarySidebarCurrentView,
+  } = useLocalSettings()
+
+  const switchPrimaryView = useCallback(
+    (view: string) => {
+      const newView = view || defaultLocalSettings.primarySidebarCurrentView
+
+      updateLocalSetting("primarySidebarCurrentView", newView)
+
+      if (!primarySidebarCurrentView) {
+        primaryToggleable.open()
+      }
+    },
+    [primarySidebarCurrentView, primaryToggleable, updateLocalSetting]
+  )
+
+  const switchPrimarySubview = useCallback(
+    (view: string, subview: string) => {
+      updateLocalSetting("primarySidebarCurrentSubviews", {
+        ...primarySidebarCurrentSubviews,
+        [view]: subview,
+      })
+      switchPrimaryView(view)
+    },
+    [primarySidebarCurrentSubviews, switchPrimaryView, updateLocalSetting]
+  )
+
+  // TODO: create a view switch wrapper for primary sidebar that can handle both views, and subviews
+
+  const [
+    secondarySidebarCurrentView,
+    switchSecondarySidebarView,
+  ] = useSidebarView("secondarySidebarCurrentView", secondaryToggleable)
+
+  const primarySidebar = useMemo(
+    () => ({
+      ...primaryToggleable,
+      id: SidebarID.primary,
+      side: Side.left,
+      minWidth: 180,
+      maxWidth: 400,
+      currentView: primarySidebarCurrentView,
+      currentSubviews: primarySidebarCurrentSubviews,
+      switchView: switchPrimaryView,
+      switchSubview: switchPrimarySubview,
+    }),
+    [
+      primarySidebarCurrentSubviews,
+      primarySidebarCurrentView,
+      primaryToggleable,
+      switchPrimarySubview,
+      switchPrimaryView,
+    ]
+  )
+
+  const secondarySidebar = useMemo(
+    () => ({
+      ...secondaryToggleable,
+      id: SidebarID.secondary,
+      side: Side.right,
+      minWidth: 180,
+      maxWidth: 400,
+      currentView: secondarySidebarCurrentView,
+      switchView: switchSecondarySidebarView,
+    }),
+    [
+      secondarySidebarCurrentView,
+      secondaryToggleable,
+      switchSecondarySidebarView,
+    ]
+  )
+
+  const navigatorSidebar = useMemo(
+    () => ({
+      ...navigatorToggleable,
+      id: SidebarID.navigator,
+      side: Side.left,
+      minWidth: 150,
+      maxWidth: 300,
+    }),
+    [navigatorToggleable]
+  )
 
   return (
     <ViewStateContext.Provider
       value={{
-        primarySidebar,
         navigatorSidebar,
+        primarySidebar,
         secondarySidebar,
       }}
     >

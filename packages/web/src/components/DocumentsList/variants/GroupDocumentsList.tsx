@@ -8,11 +8,10 @@ import createGroupTree, {
 } from "../../../helpers/createGroupTree"
 import { getGroupName } from "../../../helpers/getGroupName"
 import { formatOptional } from "../../../utils"
-import { VIEWS } from "../../../constants"
 
 import { useMainState } from "../../MainProvider"
 import { useDatabase, DocumentDoc } from "../../Database"
-import { useViewState } from "../../ViewState"
+import { useViewState, PrimarySidebarViews, CloudViews } from "../../ViewState"
 
 import { DocumentsList } from "../DocumentsList"
 
@@ -46,7 +45,10 @@ export const GroupDocumentsList: React.FC<{
         const groupTree = createGroupTree(groups)
         const foundGroup = findInTree(groupTree.children, groupId)
         if (foundGroup === null) {
-          primarySidebar.switchView(VIEWS.ALL)
+          primarySidebar.switchSubview(
+            PrimarySidebarViews.cloud,
+            CloudViews.ALL
+          )
           setGroup(null)
           setIsLoading(false)
           return

@@ -21,6 +21,14 @@ export type LocalSettings = {
    */
   primarySidebarCurrentView: string
   /**
+   * Current subview for the primary sidebar
+   */
+  primarySidebarCurrentSubviews: {
+    cloud: string
+    local: string
+    snippets: string
+  }
+  /**
    * Current view for the secondary sidebar
    */
   secondarySidebarCurrentView: string

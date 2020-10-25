@@ -14,7 +14,7 @@ export const GroupView: React.FC = () => {
   return (
     <PrimarySidebarViewContainer>
       <InnerContainer groupId={primarySidebar.currentView}>
-        <GroupDocumentsList groupId={primarySidebar.currentView} />
+        <GroupDocumentsList groupId={primarySidebar.currentSubviews.cloud} />
       </InnerContainer>
       <NewButton groupId={primarySidebar.currentView} />
     </PrimarySidebarViewContainer>

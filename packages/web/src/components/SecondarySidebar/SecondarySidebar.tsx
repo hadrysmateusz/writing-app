@@ -5,7 +5,6 @@ import { SECONDARY_VIEWS } from "../../constants"
 import {
   SidebarContainer,
   SidebarTabsContainer,
-  SidebarTab,
   SidebarToggle,
 } from "../SidebarCommon"
 import { useViewState } from "../ViewState"
@@ -24,9 +23,7 @@ export const SecondarySidebar = memo(
       <SidebarContainer ref={ref} collapsed={!secondarySidebar.isOpen}>
         {secondarySidebar.isOpen ? (
           <>
-            <SidebarTabsContainer>
-              <SidebarTab />
-            </SidebarTabsContainer>
+            <SidebarTabsContainer>{/* <SidebarTab /> */}</SidebarTabsContainer>
 
             <Switch value={secondarySidebar.currentView}>
               <Case

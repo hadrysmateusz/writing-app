@@ -51,6 +51,13 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
   >(defaults.primarySidebarCurrentView)
 
   const [
+    primarySidebarCurrentSubviews,
+    setPrimarySidebarCurrentSubviews,
+  ] = useState<LocalSettings["primarySidebarCurrentSubviews"]>(
+    defaults.primarySidebarCurrentSubviews
+  )
+
+  const [
     secondarySidebarCurrentView,
     setSecondarySidebarCurrentView,
   ] = useState<LocalSettings["secondarySidebarCurrentView"]>(
@@ -120,6 +127,10 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
           update("expandedKeys", setExpandedKeys)
           update("unsyncedDocs", setUnsyncedDocs)
           update("primarySidebarCurrentView", setPrimarySidebarCurrentView)
+          update(
+            "primarySidebarCurrentSubviews",
+            setPrimarySidebarCurrentSubviews
+          )
           update("secondarySidebarCurrentView", setSecondarySidebarCurrentView)
           update("currentEditor", setCurrentEditor)
           update("primarySidebarIsOpen", setPrimarySidebarIsOpen)
@@ -166,6 +177,9 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
         case "primarySidebarCurrentView":
           setPrimarySidebarCurrentView(value)
           break
+        case "primarySidebarCurrentSubviews":
+          setPrimarySidebarCurrentSubviews(value)
+          break
         case "secondarySidebarCurrentView":
           setSecondarySidebarCurrentView(value)
           break
@@ -208,6 +222,7 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
         expandedKeys,
         unsyncedDocs,
         primarySidebarCurrentView,
+        primarySidebarCurrentSubviews,
         secondarySidebarCurrentView,
         currentEditor,
         primarySidebarIsOpen,

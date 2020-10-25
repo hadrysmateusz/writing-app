@@ -4,9 +4,8 @@ import styled from "styled-components/macro"
 import { Button } from "../Button"
 import { useDocumentsAPI } from "../MainProvider"
 import { deserializeMarkdown } from "../../slate-helpers/deserialize"
-import { useViewState } from "../ViewState"
+import { useViewState, PrimarySidebarViews, CloudViews } from "../ViewState"
 import { useMainState } from "../MainProvider"
-import { VIEWS } from "../../constants"
 
 const ModalContainer = styled.div`
   background: #252525;
@@ -77,7 +76,7 @@ export const ImportModalContent: React.FC<{
       switchDocument(docId)
 
       // TODO: when selecting target collection for imports is implemented this should be replaced with the groupId
-      primarySidebar.switchView(VIEWS.INBOX)
+      primarySidebar.switchSubview(PrimarySidebarViews.cloud, CloudViews.INBOX)
     },
     [createDocument, primarySidebar, switchDocument]
   )

@@ -14,7 +14,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "../ContextMenu"
-import { useViewState } from "../ViewState"
+import { useViewState, PrimarySidebarViews } from "../ViewState"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { GroupsList } from "../GroupsList"
@@ -104,7 +104,7 @@ const GroupTreeItem: React.FC<{
   }, [group.id, removeGroup])
 
   const handleClick = useCallback(() => {
-    primarySidebar.switchView(group.id)
+    primarySidebar.switchSubview(PrimarySidebarViews.cloud, group.id)
   }, [group.id, primarySidebar])
 
   const groupName = useMemo(

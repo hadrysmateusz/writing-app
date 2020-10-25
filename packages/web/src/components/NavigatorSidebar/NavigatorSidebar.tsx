@@ -1,10 +1,8 @@
 import React from "react"
 import styled from "styled-components/macro"
 
-import { VIEWS } from "../../constants"
 import { TreeItem, AddButton } from "../TreeItem"
-import { useViewState } from "../ViewState"
-
+import { useViewState, PrimarySidebarViews, CloudViews } from "../ViewState"
 import { useModal } from "../Modal"
 import { AccountModalContent } from "../AccountModal"
 import { SidebarImportButton } from "../Importer"
@@ -29,9 +27,14 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
           <SectionContainer>
             <TreeItem
               icon="cloud"
-              onClick={() => primarySidebar.switchView(VIEWS.ALL)}
+              onClick={() =>
+                primarySidebar.switchSubview(
+                  PrimarySidebarViews.cloud,
+                  CloudViews.ALL
+                )
+              }
               depth={0}
-              isActive={currentView === VIEWS.ALL}
+              isActive={currentView === CloudViews.ALL}
             >
               <div style={{ width: "100%" }}>All Documents</div>
               <AddButton groupId={null} />
@@ -39,9 +42,14 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
 
             <TreeItem
               icon="inbox"
-              onClick={() => primarySidebar.switchView(VIEWS.INBOX)}
+              onClick={() =>
+                primarySidebar.switchSubview(
+                  PrimarySidebarViews.cloud,
+                  CloudViews.INBOX
+                )
+              }
               depth={0}
-              isActive={currentView === VIEWS.INBOX}
+              isActive={currentView === CloudViews.INBOX}
             >
               <div style={{ width: "100%" }}>Inbox</div>
               <AddButton groupId={null} />
@@ -65,9 +73,14 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
 
             <TreeItem
               icon="trash"
-              onClick={() => primarySidebar.switchView(VIEWS.TRASH)}
+              onClick={() =>
+                primarySidebar.switchSubview(
+                  PrimarySidebarViews.cloud,
+                  CloudViews.TRASH
+                )
+              }
               depth={0}
-              isActive={currentView === VIEWS.TRASH}
+              isActive={currentView === CloudViews.TRASH}
             >
               Trash
             </TreeItem>
