@@ -3,6 +3,6 @@
   "include": ["src", "typings"],
   "exclude": ["node_modules", "build"],
   "compilerOptions": {
-    "module": "esnext"
+    "jsx": "react"
   }
 }
