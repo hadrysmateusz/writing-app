@@ -34,6 +34,16 @@ export const createRemotePouchDB = (
         opts = {
           ...opts,
           credentials: "include", // TODO: investigate the necessity of this option for jwt auth
+
+          // TODO: set the Authorization header to "Bearer {CognitoJWT}" for jwt auth or use the headers below for proxy auth
+
+          // opts.headers = [["X-Auth-CouchDB-UserName", "test"]]
+
+          // opts.headers["X-Auth-CouchDB-UserName"] = "test"
+          // opts.headers["X-Auth-CouchDB-Token"] = "token"
+          // opts.headers["X-Auth-CouchDB-Roles"] = "couchroles"
+
+          // opts?.headers?.set("X-test", "test123")
         }
 
         return fetch(url, opts)
