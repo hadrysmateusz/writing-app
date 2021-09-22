@@ -31,6 +31,13 @@ function setUpApplicationMenu() {
       label: "View",
       role: "viewMenu",
     },
+    {
+      label: "DevTools",
+      click() {
+        const [win] = BrowserWindow.getAllWindows()
+        win.webContents.openDevTools()
+      },
+    },
   ]
 
   const menu = Menu.buildFromTemplate(template)
