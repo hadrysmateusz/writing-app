@@ -2,7 +2,7 @@
 
 import electron from "electron"
 
-const app = electron.app || electron.remote.app
+const app = electron.app /*  || electron.remote.app */
 
 const isEnvSet = "ELECTRON_IS_DEV" in process.env
 const getFromEnv =

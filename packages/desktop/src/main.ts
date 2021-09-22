@@ -31,12 +31,12 @@ const filters = {
 }
 
 async function createWindow() {
-  if (IS_DEV) {
-    // TODO: switch to the new way of loading extensions https://www.electronjs.org/docs/api/extensions
-    BrowserWindow.addDevToolsExtension(
-      "C:\\Users\\ja\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.8.2_0"
-    )
-  }
+  // if (IS_DEV) {
+  //   // TODO: switch to the new way of loading extensions https://www.electronjs.org/docs/api/extensions
+  //   BrowserWindow.addDevToolsExtension(
+  //     "C:\\Users\\ja\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.8.2_0"
+  //   )
+  // }
 
   // Create the browser window.
   const win = new BrowserWindow({
@@ -53,8 +53,8 @@ async function createWindow() {
       nodeIntegration: false,
       // TODO: this might not be needed - more research required
       // https://www.electronjs.org/docs/tutorial/security#15-disable-the-remote-module
-      enableRemoteModule: false,
-      preload: __dirname + "/preload.js",
+      // enableRemoteModule: false,
+      preload: path.join(__dirname, "preload.js"),
     },
   })
 
@@ -62,7 +62,7 @@ async function createWindow() {
   win.loadURL(START_URL)
 
   // Open the DevTools.
-  win.webContents.openDevTools()
+  // win.webContents.openDevTools()
 
   // Set up application menu
   setUpApplicationMenu()
@@ -91,7 +91,7 @@ app.on("activate", () => {
 })
 
 ipcMain.handle(
-  "save-file",
+  "SAVE_FILE", // TODO: make this use the ElectronIpcChannel enum
   async (
     _event,
     payload: {
@@ -99,7 +99,10 @@ ipcMain.handle(
       format: FileFormats
       name: string | undefined
     }
-  ): Promise<{ status: DialogStatus; error: string | null }> => {
+  ): Promise<{
+    status: DialogStatus
+    error: /* string | null | */ unknown /* TODO: figure out proper error typing */
+  }> => {
     // TODO: make sure the event can be trusted
 
     const { content, format, name } = payload
@@ -151,55 +154,58 @@ ipcMain.handle(
   }
 )
 
-ipcMain.handle("read-file", async (_event, payload) => {
-  const { format } = payload
+ipcMain.handle(
+  "READ_FILE", // TODO: make this use the ElectronIpcChannel enum
+  async (_event, payload) => {
+    const { format } = payload
 
-  // TODO: better default path
-  // TODO: save the last used path for later
-  let defaultPath = path.join(os.homedir())
+    // TODO: better default path
+    // TODO: save the last used path for later
+    let defaultPath = path.join(os.homedir())
 
-  try {
-    await fs.ensureDir(defaultPath)
-  } catch (error) {
-    // TODO: better error handling
-    console.log(error)
-    throw error
-  }
-
-  const filter = filters[format]
-
-  // TODO: investigate if I should use the browserWindow argument to make the dialog modal
-  const dialogRes = await dialog.showOpenDialog({
-    title: "Import",
-    defaultPath,
-    buttonLabel: "Import",
-    filters: [filter],
-    properties: ["openFile", "multiSelections"],
-  })
-
-  // TODO: consider making canceled and empty separate statuses
-  if (dialogRes.canceled || dialogRes.filePaths.length === 0) {
-    return { status: DialogStatus.CANCELED, error: null, data: null }
-  }
-
-  const files: { fileName: string; content: string }[] = []
-
-  for (const filePath of dialogRes.filePaths) {
     try {
-      // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
-      const content = fs.readFileSync(filePath, { encoding: "utf-8" })
-      const fileName = path.basename(filePath, path.extname(filePath))
-      files.push({ fileName, content })
+      await fs.ensureDir(defaultPath)
     } catch (error) {
-      return {
-        status: DialogStatus.ERROR,
-        error: "An error ocurred reading the file :" + error.message,
-        data: null,
+      // TODO: better error handling
+      console.log(error)
+      throw error
+    }
+
+    const filter = filters[format]
+
+    // TODO: investigate if I should use the browserWindow argument to make the dialog modal
+    const dialogRes = await dialog.showOpenDialog({
+      title: "Import",
+      defaultPath,
+      buttonLabel: "Import",
+      filters: [filter],
+      properties: ["openFile", "multiSelections"],
+    })
+
+    // TODO: consider making canceled and empty separate statuses
+    if (dialogRes.canceled || dialogRes.filePaths.length === 0) {
+      return { status: DialogStatus.CANCELED, error: null, data: null }
+    }
+
+    const files: { fileName: string; content: string }[] = []
+
+    for (const filePath of dialogRes.filePaths) {
+      try {
+        // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
+        const content = fs.readFileSync(filePath, { encoding: "utf-8" })
+        const fileName = path.basename(filePath, path.extname(filePath))
+        files.push({ fileName, content })
+      } catch (error) {
+        return {
+          status: DialogStatus.ERROR,
+          error: "An error ocurred reading the file :" + error.message,
+          data: null,
+        }
       }
     }
-  }
 
-  return { status: DialogStatus.SUCCESS, error: null, data: files }
-})
+    return { status: DialogStatus.SUCCESS, error: null, data: files }
+  }
+)
 
 export {}
