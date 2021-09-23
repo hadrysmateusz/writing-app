@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Editor, Node } from "slate"
 
-import { parseToMarkdown } from "../../slate-helpers"
+// import { parseToMarkdown } from "../../slate-helpers"
 import { config } from "../config"
 
 export const useDevUtils = ({
@@ -16,7 +16,7 @@ export const useDevUtils = ({
       console.log("JSON")
       console.log(JSON.stringify(value, null, 2))
       console.log("MARKDOWN")
-      console.dir(value.map((node) => parseToMarkdown(node)).join("\n"))
+      // console.dir(value.map((node) => parseToMarkdown(node)).join("\n"))
     }
   }, [value])
 
