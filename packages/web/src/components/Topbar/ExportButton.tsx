@@ -37,24 +37,23 @@ export const ExportModalContent: React.FC<{
 
   // TODO: add a way to export in a browser (probably generate on a server if anything more complex is required and download)
   // TODO: consider offloading the serializing to the main process to allow it to run in parallel to selecting the file path
+  // TODO: fix the serializers and then move to the new ipc system
   const exportFile = useCallback(
     async (format: "html" | "md" /* TODO: replace with FileFormats enum */) => {
-      const name = currentDocument?.title
-      const serializer = { md: serializeMarkdown, html: serializeHTML }[format]
-
-      const result = await window.ipcRenderer.invoke("save-file", {
-        content: serializer(editor),
-        format: format,
-        name,
-      })
-
-      if (result.error) {
-        alert(result.error)
-      }
-
-      close()
+      // const name = currentDocument?.title
+      // const serializer = { md: serializeMarkdown, html: serializeHTML }[format]
+      // const result = await window.ipcRenderer.invoke("save-file", {
+      //   content: serializer(editor),
+      //   format: format,
+      //   name,
+      // })
+      // if (result.error) {
+      //   alert(result.error)
+      // }
+      // close()
     },
-    [close, currentDocument, editor]
+    // [close, currentDocument, editor]
+    []
   )
 
   const handleExportHTML = useCallback(() => {
