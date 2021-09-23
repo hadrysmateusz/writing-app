@@ -1,12 +1,12 @@
-import { Node } from "slate"
+import { Descendant } from "slate"
 
-export const serialize = (value: Node[]) => {
+export const serialize = (value: Descendant[]) => {
   return JSON.stringify(value)
 }
 
-export const deserialize = (value: string): Node[] => {
+export const deserialize = (value: string): Descendant[] => {
   try {
-    return JSON.parse(value) as Node[]
+    return JSON.parse(value) as Descendant[]
   } catch (err) {
     console.group("Couldn't deserialize JSON to slate value")
     console.log("VALUE:")
