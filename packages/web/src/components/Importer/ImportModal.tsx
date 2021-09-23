@@ -6,7 +6,6 @@ import { useDocumentsAPI } from "../MainProvider"
 import { deserializeMarkdown } from "../../slate-helpers/deserialize"
 import { useViewState, PrimarySidebarViews, CloudViews } from "../ViewState"
 import { useMainState } from "../MainProvider"
-import { ElectronIpcChannel } from "../../../typings/ipcRenderer"
 
 const ModalContainer = styled.div`
   background: #252525;
@@ -84,10 +83,9 @@ export const ImportModalContent: React.FC<{
 
   const importFile = useCallback(
     async (format: "md") => {
-      const result = await window.electron.invoke(
-        ElectronIpcChannel.READ_FILE,
-        { format: format }
-      )
+      const result = await window.electron.invoke("READ_FILE", {
+        format: format,
+      })
 
       if (result.status === "error") {
         // TODO: display the error better

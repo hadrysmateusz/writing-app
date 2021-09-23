@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, memo } from "react"
 import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 import mudder from "mudder"
+import isElectron from "is-electron"
 
 import { DEFAULT_EDITOR_VALUE } from "../Main"
 import { useViewState, PrimarySidebarViews, CloudViews } from "../ViewState"
@@ -10,7 +11,7 @@ import { useDatabase, DocumentDoc, GroupDoc, useSyncState } from "../Database"
 import { useLocalSettings } from "../LocalSettings"
 
 import { GROUP_TREE_ROOT } from "../../constants"
-import { listenForIpcEvent, createContext } from "../../utils"
+import { createContext } from "../../utils"
 
 import {
   DocumentsAPI,
@@ -823,15 +824,19 @@ export const MainProvider: React.FC = memo(({ children }) => {
     [db.groups, findDocumentById, updateDocument]
   )
 
+  // TODO: I could extract this to a custom hook for listening to ipc events
   useEffect(() => {
-    // Handle "new-document" messages from the main process
-    return listenForIpcEvent("new-cloud-document", () => {
-      // Remove domSelection to prevent errors
-      window.getSelection()?.removeAllRanges()
-      // Create the new document
-      // TODO: maybe infer the collection somehow from the current document or something else
-      createDocument(null)
-    })
+    if (isElectron()) {
+      // Handle "new-document" messages from the main process
+      return window.electron.subscribe("NEW_CLOUD_DOCUMENT", () => {
+        // Remove domSelection to prevent errors
+        window.getSelection()?.removeAllRanges()
+        // Create the new document
+        // TODO: maybe infer the collection somehow from the current document or something else
+        createDocument(null)
+      })
+    }
+    return undefined
   }, [createDocument])
 
   return (

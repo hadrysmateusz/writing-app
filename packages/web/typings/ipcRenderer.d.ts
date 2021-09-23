@@ -1,10 +1,5 @@
-// type ElectronIpcChannel = "new-cloud-document" | "read-file" | "save-file"
-
-enum ElectronIpcChannel {
-  NEW_CLOUD_DOCUMENT = "NEW_CLOUD_DOCUMENT",
-  READ_FILE = "READ_FILE",
-  SAVE_FILE = "SAVE_FILE",
-}
+// Figure out a way to make this a shared enum
+type ElectronIpcChannel = "NEW_CLOUD_DOCUMENT" | "READ_FILE" | "SAVE_FILE"
 
 declare global {
   interface Window {

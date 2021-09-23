@@ -91,7 +91,7 @@ app.on("activate", () => {
 })
 
 ipcMain.handle(
-  "SAVE_FILE", // TODO: make this use the ElectronIpcChannel enum
+  "SAVE_FILE",
   async (
     _event,
     payload: {
@@ -154,58 +154,55 @@ ipcMain.handle(
   }
 )
 
-ipcMain.handle(
-  "READ_FILE", // TODO: make this use the ElectronIpcChannel enum
-  async (_event, payload) => {
-    const { format } = payload
+ipcMain.handle("READ_FILE", async (_event, payload) => {
+  const { format } = payload
 
-    // TODO: better default path
-    // TODO: save the last used path for later
-    let defaultPath = path.join(os.homedir())
+  // TODO: better default path
+  // TODO: save the last used path for later
+  let defaultPath = path.join(os.homedir())
 
+  try {
+    await fs.ensureDir(defaultPath)
+  } catch (error) {
+    // TODO: better error handling
+    console.log(error)
+    throw error
+  }
+
+  const filter = filters[format]
+
+  // TODO: investigate if I should use the browserWindow argument to make the dialog modal
+  const dialogRes = await dialog.showOpenDialog({
+    title: "Import",
+    defaultPath,
+    buttonLabel: "Import",
+    filters: [filter],
+    properties: ["openFile", "multiSelections"],
+  })
+
+  // TODO: consider making canceled and empty separate statuses
+  if (dialogRes.canceled || dialogRes.filePaths.length === 0) {
+    return { status: DialogStatus.CANCELED, error: null, data: null }
+  }
+
+  const files: { fileName: string; content: string }[] = []
+
+  for (const filePath of dialogRes.filePaths) {
     try {
-      await fs.ensureDir(defaultPath)
+      // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
+      const content = fs.readFileSync(filePath, { encoding: "utf-8" })
+      const fileName = path.basename(filePath, path.extname(filePath))
+      files.push({ fileName, content })
     } catch (error) {
-      // TODO: better error handling
-      console.log(error)
-      throw error
-    }
-
-    const filter = filters[format]
-
-    // TODO: investigate if I should use the browserWindow argument to make the dialog modal
-    const dialogRes = await dialog.showOpenDialog({
-      title: "Import",
-      defaultPath,
-      buttonLabel: "Import",
-      filters: [filter],
-      properties: ["openFile", "multiSelections"],
-    })
-
-    // TODO: consider making canceled and empty separate statuses
-    if (dialogRes.canceled || dialogRes.filePaths.length === 0) {
-      return { status: DialogStatus.CANCELED, error: null, data: null }
-    }
-
-    const files: { fileName: string; content: string }[] = []
-
-    for (const filePath of dialogRes.filePaths) {
-      try {
-        // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
-        const content = fs.readFileSync(filePath, { encoding: "utf-8" })
-        const fileName = path.basename(filePath, path.extname(filePath))
-        files.push({ fileName, content })
-      } catch (error) {
-        return {
-          status: DialogStatus.ERROR,
-          error: "An error ocurred reading the file :" + error.message,
-          data: null,
-        }
+      return {
+        status: DialogStatus.ERROR,
+        error: "An error ocurred reading the file :" + error.message,
+        data: null,
       }
     }
-
-    return { status: DialogStatus.SUCCESS, error: null, data: files }
   }
-)
+
+  return { status: DialogStatus.SUCCESS, error: null, data: files }
+})
 
 export {}
