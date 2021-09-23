@@ -1,6 +1,11 @@
 import { Transforms, Node } from "slate"
 import React from "react"
-import { useEditor, ReactEditor, useFocused, useSelected } from "slate-react"
+import {
+  useSlateStatic,
+  ReactEditor,
+  useFocused,
+  useSelected,
+} from "slate-react"
 import styled from "styled-components/macro"
 import { FaEllipsisV } from "react-icons/fa"
 
@@ -30,7 +35,7 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
   slateNode,
 }) => {
   const { openMenu, ContextMenu } = useContextMenu()
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const isFocused = useFocused()
   const isSelected = useSelected()
   const { listItemDirectNode } = useListItemContext()

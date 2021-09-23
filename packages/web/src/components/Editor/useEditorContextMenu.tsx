@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { useEditor, ReactEditor } from "slate-react"
+import { useSlateStatic, ReactEditor } from "slate-react"
 import { Node } from "slate"
 import styled from "styled-components/macro"
 
@@ -34,7 +34,7 @@ const InlineFormattingContainer = styled.div`
 
 // TODO: on any context menu that is fully inside a link node, show an option to edit and remove the link
 const useEditorContextMenu = () => {
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const [
     contextMenuType,
     setContextMenuType,

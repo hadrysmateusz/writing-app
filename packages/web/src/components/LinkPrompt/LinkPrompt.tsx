@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import { Range, Transforms } from "slate"
-import { useEditor, ReactEditor } from "slate-react"
+import { useSlateStatic, ReactEditor } from "slate-react"
 import styled from "styled-components/macro"
 
 import { useModal } from "../Modal"
@@ -21,7 +21,7 @@ export const [LinkModalContext, useLinkModal] = createContext<Toggleable>()
 // TODO: remove duplication with ImageModal code
 // TODO: support other link operations, like changing url or text
 export const LinkModalProvider: React.FC = ({ children }) => {
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const [selection, setSelection] = useState<Range | null>(null)
 
   const onBeforeOpen = useCallback(() => {
@@ -60,7 +60,7 @@ const LinkModalContent: React.FC<{
   selection,
 }) => {
   const urlInputRef = useRef<HTMLInputElement | null>(null)
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const [url, setUrl] = useState<string>("")
   const { close } = useLinkModal()
 

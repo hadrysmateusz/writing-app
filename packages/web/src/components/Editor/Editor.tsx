@@ -6,8 +6,7 @@ import React, {
   MouseEvent,
 } from "react"
 import styled from "styled-components/macro"
-import { useEditor, ReactEditor } from "slate-react"
-import { Transforms, Path, Editor, Node } from "slate"
+import { useSlateStatic, ReactEditor } from "slate-react"
 import isHotkey from "is-hotkey"
 
 // import HoveringToolbar from "../HoveringToolbar"
@@ -97,7 +96,7 @@ const EditorComponent: React.FC<{
 
   const [title, setTitle] = useState<string>(currentDocument.title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
   const { isSpellCheckEnabled } = useUserdata()
 

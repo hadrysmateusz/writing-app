@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { useEditor } from "slate-react"
+import { useSlateStatic } from "slate-react"
 
 import { Button } from "../Button"
 import { serializeHTML, serializeMarkdown } from "../../slate-helpers"
@@ -32,7 +32,7 @@ const ButtonsContainer = styled.div`
 export const ExportModalContent: React.FC<{
   close: () => void
 }> = ({ close }) => {
-  const editor = useEditor()
+  const editor = useSlateStatic()
   const { currentDocument } = useMainState()
 
   // TODO: add a way to export in a browser (probably generate on a server if anything more complex is required and download)

@@ -4,7 +4,7 @@ import {
   Editable as VanillaEditable,
   RenderElementProps,
   RenderLeafProps,
-  useEditor,
+  useSlateStatic,
 } from "slate-react"
 import {
   Decorate,
@@ -37,7 +37,7 @@ export const Editable = ({
   onKeyDown: onKeyDownList = [],
   ...props
 }: Props) => {
-  const editor = useEditor()
+  const editor = useSlateStatic()
 
   const decoratePlugins = (entry: NodeEntry) => {
     let ranges: Range[] = []
