@@ -1,52 +1,46 @@
 import React, { useEffect, useState } from "react"
 import styled from "styled-components/macro"
-import { Node, Descendant } from "slate"
 import { useEditorState } from "../EditorStateProvider"
 
 const OUTLINE_HEADING_MAX_LENGTH = 40 // TODO: this might need to change to fit a resized sidebar
 
-type Outline = {
+type OutlineType = {
   baseLevel: number
-  tree: OutlineItem[]
+  tree: OutlineItemType[]
 }
 
-type OutlineItem = { level: number; textContent: string }
+type OutlineItemType = { level: number; textContent: string }
 
 export const Outline: React.FC = () => {
   const { editorValue: editorContent } = useEditorState()
 
-  const [outline, setOutline] = useState<Outline>({
+  const [outline, setOutline] = useState<OutlineType>({
     baseLevel: 3,
     tree: [],
   })
 
   useEffect(() => {
     setOutline(() => {
-      const newOutline: Outline = { baseLevel: 3, tree: [] }
+      const newOutline: OutlineType = { baseLevel: 3, tree: [] }
 
       // TODO: this is garbage. it only goes through top-level nodes which might not be enough if any kind of organizational node is introduced or even if headings are nested in a list or blockquote. It should either use some slate api to get all nodes, or deeply go through nodes recursively.
       editorContent.forEach((node) => {
-        node = node as Descendant
+        const nodeType = "type" in node ? node.type : null
 
-        const nodeType = node.type
-        const nodeChildren = node.children as Node[] | undefined
+        if (nodeType === null) return
 
-        if (typeof nodeType !== "string") {
-          console.warn("No type detected on node", node)
-          return
-        }
+        const nodeChildren = "children" in node ? node.children : null
 
-        if (nodeChildren === undefined) {
-          // node is a leaf node
-          return
-        }
+        if (nodeChildren === null) return
 
         if (nodeType.startsWith("heading_")) {
-          const textContent = nodeChildren[0]?.text
+          const childTextNode = nodeChildren[0]
 
-          if (typeof textContent !== "string") return
+          if (!("text" in childTextNode)) return
 
-          if (textContent !== undefined && textContent.trim() !== "") {
+          const textContent = childTextNode.text
+
+          if (textContent.trim() !== "") {
             const headingLevel = Number(nodeType[nodeType.length - 1])
             const trimmedContent: string = textContent.slice(
               0,
