@@ -1,6 +1,5 @@
 import React, { useCallback } from "react"
-import { useEditor } from "slate-react"
-import styled from "styled-components/macro"
+// import { useSlateStatic } from "slate-react"
 
 import Icon from "./Icon"
 import { isFormatActive, toggleFormat } from "../slate-helpers"
@@ -13,17 +12,7 @@ const StyledButton = styled.button<{ active: boolean }>`
   color: ${(p) => (p.active ? "white" : "inherit")};
 `
 
-const FormatButton = ({
-  format,
-  text,
-  onMouseDown,
-}: {
-  format: string
-  text?: string
-  onMouseDown?: (event: React.MouseEvent) => void
-}) => {
-  const editor = useEditor()
-  const isActive = isFormatActive(editor, format)
+   const editor = useSlateStatic()
 
   const defaultOnMouseDown = useCallback(
     (event: React.MouseEvent) => {
