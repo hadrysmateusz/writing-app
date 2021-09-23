@@ -24,7 +24,9 @@ export function toggleFormat(editor, format) {
 
         Transforms.unwrapNodes(editor, {
           match: (n) =>
-            typeof n.type === "string" ? LIST_TYPES.includes(n.type) : false,
+            "type" in n && n.type !== undefined
+              ? LIST_TYPES.includes(n.type)
+              : false,
           split: true,
         })
 

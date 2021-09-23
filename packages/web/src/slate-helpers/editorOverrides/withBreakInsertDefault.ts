@@ -32,42 +32,42 @@ export const withBreakInsertDefault = ({
     const oldSelection = editor.selection
     insertBreak()
 
-    if (oldSelection === null) {
-      console.warn("Can't insert default. Selection is null.")
-      return
-    }
+    // if (oldSelection === null) {
+    //   console.warn("Can't insert default. Selection is null.")
+    //   return
+    // }
 
-    try {
-      const pathToFirstNode = Editor.first(editor, oldSelection)[1]
-      const firstBlock = Editor.parent(editor, pathToFirstNode)[0]
+    // try {
+    //   const pathToFirstNode = Editor.first(editor, oldSelection)[1]
+    //   const firstBlock = Editor.parent(editor, pathToFirstNode)[0]
 
-      if (
-        firstBlock &&
-        typeof firstBlock.type === "string" &&
-        types.includes(firstBlock.type)
-      ) {
-        const newSelection = editor.selection
-        const { anchor: originalAnchor, focus: originalFocus } = oldSelection
-        if (newSelection) {
-          const startIsSelected =
-            originalAnchor.offset === 0 || originalFocus.offset === 0
-          const transformPath = [
-            newSelection.anchor.path[0] - (startIsSelected ? 1 : 0),
-          ]
-          Transforms.setNodes(
-            editor,
-            { type: defaultType },
-            { at: transformPath }
-          )
-        }
-      }
-    } catch (e) {
-      /* this trycatch block is here to prevent errors (mainly with lists)
-				if it encounters an error it just gives up which in most situations shouldn't be too bad
+    //   if (
+    //     firstBlock &&
+    //     typeof firstBlock.type === "string" &&
+    //     types.includes(firstBlock.type)
+    //   ) {
+    //     const newSelection = editor.selection
+    //     const { anchor: originalAnchor, focus: originalFocus } = oldSelection
+    //     if (newSelection) {
+    //       const startIsSelected =
+    //         originalAnchor.offset === 0 || originalFocus.offset === 0
+    //       const transformPath = [
+    //         newSelection.anchor.path[0] - (startIsSelected ? 1 : 0),
+    //       ]
+    //       Transforms.setNodes(
+    //         editor,
+    //         { type: defaultType },
+    //         { at: transformPath }
+    //       )
+    //     }
+    //   }
+    // } catch (e) {
+    //   /* this trycatch block is here to prevent errors (mainly with lists)
+    // 		if it encounters an error it just gives up which in most situations shouldn't be too bad
 
-				TODO: improve the logic of this function so that the trycatch block is not necessary
-			*/
-    }
+    // 		TODO: improve the logic of this function so that the trycatch block is not necessary
+    // 	*/
+    // }
   }
 
   return editor

@@ -14,7 +14,10 @@ export const LinkElement = ({
   children,
   element,
 }: RenderElementProps) => {
-  const href = typeof element.url === "string" ? escapeHtml(element.url) : ""
+  const href =
+    "url" in element /* typeof element.url === "string" */
+      ? escapeHtml(element.url)
+      : ""
 
   // TODO: add a way to open the url in a browser with alt+click
 

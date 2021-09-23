@@ -21,7 +21,9 @@ export const ImageElement = ({
   const focused = useFocused()
 
   // TODO: handle missing or broken urls
-  const src = typeof element.url === "string" ? escapeHtml(element.url) : ""
+  // TODO: this should work when I create proper element types without any catch-all type: string generic elements
+  // const src = element.type === "image" ? escapeHtml(element.url) : ""
+  const src = ""
 
   return (
     <div {...attributes} data-slate-type={IMAGE}>

@@ -126,7 +126,9 @@ export const withInlineShortcuts = (
     const [node, path] = entry
 
     Object.entries(matchers).some(([format, matcher]) => {
-      const match = matcher.exec(typeof node.text === "string" ? node.text : "")
+      const match = matcher.exec(
+        "text" in node /* typeof node.text  === "string" */ ? node.text : ""
+      )
       if (!match) return false
       const textContent = match[2]
       const textLength = textContent.length

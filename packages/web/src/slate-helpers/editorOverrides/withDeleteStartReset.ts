@@ -15,27 +15,27 @@ export const withDeleteStartReset = ({
   const { deleteBackward } = editor
 
   editor.deleteBackward = (...args) => {
-    const { selection } = editor
+    // const { selection } = editor
 
-    if (selection && Range.isCollapsed(selection)) {
-      const parent = Editor.above(editor, {
-        match: (n) =>
-          typeof n.type === "string" ? types.includes(n.type) : false,
-      })
+    // if (selection && Range.isCollapsed(selection)) {
+    //   const parent = Editor.above(editor, {
+    //     match: (n) =>
+    //       typeof n.type === "string" ? types.includes(n.type) : false,
+    //   })
 
-      if (parent) {
-        const [, parentPath] = parent
-        const parentStart = Editor.start(editor, parentPath)
+    //   if (parent) {
+    //     const [, parentPath] = parent
+    //     const parentStart = Editor.start(editor, parentPath)
 
-        if (Point.equals(selection.anchor, parentStart)) {
-          Transforms.setNodes(editor, { type: DEFAULT })
+    //     if (Point.equals(selection.anchor, parentStart)) {
+    //       Transforms.setNodes(editor, { type: DEFAULT })
 
-          if (onUnwrap) onUnwrap(editor)
+    //       if (onUnwrap) onUnwrap(editor)
 
-          return
-        }
-      }
-    }
+    //       return
+    //     }
+    //   }
+    // }
 
     deleteBackward(...args)
 

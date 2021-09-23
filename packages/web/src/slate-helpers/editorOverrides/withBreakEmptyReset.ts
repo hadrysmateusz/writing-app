@@ -17,28 +17,28 @@ export const withBreakEmptyReset = ({
   const { insertBreak } = editor
 
   editor.insertBreak = () => {
-    const currentNodeEntry = Editor.above(editor, {
-      match: (n) => Editor.isBlock(editor, n),
-    })
+    // const currentNodeEntry = Editor.above(editor, {
+    //   match: (n) => Editor.isBlock(editor, n),
+    // })
 
-    if (currentNodeEntry) {
-      const [currentNode] = currentNodeEntry
+    // if (currentNodeEntry) {
+    //   const [currentNode] = currentNodeEntry
 
-      if (isBlockTextEmpty(currentNode)) {
-        const parent = Editor.above(editor, {
-          match: (n) =>
-            typeof n.type === "string" ? types.includes(n.type) : false,
-        })
+    //   if (isBlockTextEmpty(currentNode)) {
+    //     const parent = Editor.above(editor, {
+    //       match: (n) =>
+    //         typeof n.type === "string" ? types.includes(n.type) : false,
+    //     })
 
-        if (parent) {
-          Transforms.setNodes(editor, { type: DEFAULT })
+    //     if (parent) {
+    //       Transforms.setNodes(editor, { type: DEFAULT })
 
-          if (onUnwrap) onUnwrap(editor)
+    //       if (onUnwrap) onUnwrap(editor)
 
-          return
-        }
-      }
-    }
+    //       return
+    //     }
+    //   }
+    // }
 
     insertBreak()
   }
