@@ -1,7 +1,7 @@
 import React, { memo } from "react"
 import styled, { keyframes, css } from "styled-components/macro"
 import Split from "react-split-grid"
-import { Node } from "slate"
+import { Descendant } from "slate"
 import { History } from "slate-history"
 
 import { SecondarySidebar } from "../SecondarySidebar"
@@ -19,7 +19,7 @@ import { EditorRenderer } from "../Editor/Editor"
 
 // TODO: resizing navigator and primary sidebar can still move content off screen, this is probably because all sidebars are not on  the same grid, I should try moving them to the same grid, and any intermediate wrappers should be logic-only
 
-export const DEFAULT_EDITOR_VALUE: Node[] = [
+export const DEFAULT_EDITOR_VALUE: Descendant[] = [
   { type: "paragraph", children: [{ text: "" }] },
 ]
 export const DEFAULT_EDITOR_HISTORY: History = { undos: [], redos: [] }

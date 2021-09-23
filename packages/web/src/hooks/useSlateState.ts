@@ -1,4 +1,4 @@
-import { Node } from "slate"
+import { Descendant } from "slate"
 
 import { serialize, deserialize } from "../components/Editor/serialization"
 
@@ -9,6 +9,6 @@ export const loadFromLocalStorage = () => {
   return serializedContent ? deserialize(serializedContent) : defaultState
 }
 
-export const saveToLocalStorage = (value: Node[]) => {
+export const saveToLocalStorage = (value: Descendant[]) => {
   localStorage.setItem("content", serialize(value))
 }

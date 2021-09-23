@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react"
 import { isEqual } from "lodash"
-import { createEditor, Node } from "slate"
+import { createEditor, Descendant, BaseEditor } from "slate"
 import { ReactEditor, Slate } from "slate-react"
 
 import { SaveDocumentFn, useMainState } from "../MainProvider"
@@ -25,7 +25,9 @@ export const [EditorStateContext, useEditorState] = createContext<EditorState>()
 export const EditorStateProvider: React.FC = ({ children }) => {
   const { currentDocument } = useMainState()
 
-  const [editorValue, setEditorValue] = useState<Node[]>(DEFAULT_EDITOR_VALUE)
+  const [editorValue, setEditorValue] = useState<Descendant[]>(
+    DEFAULT_EDITOR_VALUE
+  )
   const [isModified, setIsModified] = useState(false)
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export const EditorStateProvider: React.FC = ({ children }) => {
    * onChange event handler for the Slate component
    */
   const onChange = useCallback(
-    (value: Node[]) => {
+    (value: Descendant[]) => {
       // TODO: I could debounced-save in here
       setEditorValue(value)
 
