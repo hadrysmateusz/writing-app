@@ -1,4 +1,4 @@
-import { Transforms, Node } from "slate"
+import { Transforms, Node, Editor } from "slate"
 import React from "react"
 import {
   useSlateStatic,
@@ -133,7 +133,7 @@ export const TurnIntoContextMenuContent: React.FC<{
    * DOM node of the slate node
    */
   node?: Element
-  editor: ReactEditor
+  editor: Editor
 }> = ({ nodeRef, node, editor }) => {
   const handleSetFormat = (format: string) => () => {
     if (nodeRef === undefined && node === undefined) {

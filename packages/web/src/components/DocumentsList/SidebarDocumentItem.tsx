@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react"
 import styled, { css } from "styled-components/macro"
-import { Node } from "slate"
+import { Ancestor, Node } from "slate"
 import moment from "moment"
 
 import { DocumentDoc } from "../Database"
@@ -51,13 +51,14 @@ export const SidebarDocumentItem: React.FC<{
     const deserializedContent = JSON.parse(serializedContent)
 
     // the Node.nodes function operates on a slate node but the content is an array of children so we create a fake node object
-    const fakeRootNode = {
+    const fakeRootNode: Ancestor = {
       children: deserializedContent,
+      type: "fakeRoot",
     }
 
     // we iterate over all of the nodes and create a string of all of their text contents until we reach a desired length
     for (let [node] of Node.nodes(fakeRootNode, {})) {
-      if (typeof node.text === "string") {
+      if ("text" in node) {
         textContent += " " + node.text
 
         if (textContent.length >= SNIPPET_LENGTH) {

@@ -68,165 +68,169 @@ const useEditorContextMenu = () => {
     [openImageModal]
   )
 
-  const renderContextMenu = useCallback(() => {
-    if (contextMenuType === null) {
-      throw new Error(
-        "This context menu can't be opened without a proper type."
-      )
-    }
-
-    const renderItems = () => {
-      const { base, node } = contextMenuType
-
-      if (base === "expanded") {
-        return (
-          <>
-            <InlineFormattingContainer>
-              <FormatButton format={MARKS.BOLD} />
-              <FormatButton format={MARKS.ITALIC} />
-              <FormatButton format={MARKS.STRIKE} />
-              <FormatButton format={CODE_INLINE} />
-              {/* TODO: This doesn't work for turning the link off */}
-              <FormatButton format={LINK} onMouseDown={handleToggleLink} />
-            </InlineFormattingContainer>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement common actions")
-              }}
-            >
-              Cut
-            </ContextMenuItem>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement common actions")
-              }}
-            >
-              Copy
-            </ContextMenuItem>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement common actions")
-              }}
-            >
-              Paste
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              onMouseDown={() => {
-                // TODO: implement
-                console.warn("TODO: implement common actions")
-              }}
-            >
-              Select Block
-            </ContextMenuItem>
-          </>
+  const renderContextMenu = useCallback(
+    () => {
+      if (contextMenuType === null) {
+        throw new Error(
+          "This context menu can't be opened without a proper type."
         )
       }
 
-      if (base === "collapsed") {
-        return (
-          <>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement common actions")
-              }}
-            >
-              Paste
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              onMouseDown={() => {
-                // TODO: implement
-                console.warn("TODO: implement common actions")
-              }}
-            >
-              Select Block
-            </ContextMenuItem>
-          </>
-        )
-      }
+      const renderItems = () => {
+        const { base, node } = contextMenuType
 
-      if (base === "node") {
-        let slateNode: Node
-
-        console.log(node)
-
-        try {
-          slateNode = ReactEditor.toSlateNode(editor, node!)
-        } catch (error) {
-          // TODO: when the error boundary for this error is created this might not be necessary (or maybe some custom logic for recovering could be used)
-          console.log("couldn't resolve slate node")
-          return
+        if (base === "expanded") {
+          return (
+            <>
+              <InlineFormattingContainer>
+                <FormatButton format={MARKS.BOLD} />
+                <FormatButton format={MARKS.ITALIC} />
+                <FormatButton format={MARKS.STRIKE} />
+                <FormatButton format={CODE_INLINE} />
+                {/* TODO: This doesn't work for turning the link off */}
+                <FormatButton format={LINK} onMouseDown={handleToggleLink} />
+              </InlineFormattingContainer>
+              <ContextMenuSeparator />
+              <ContextMenuItem
+                onMouseDown={() => {
+                  console.warn("TODO: implement common actions")
+                }}
+              >
+                Cut
+              </ContextMenuItem>
+              <ContextMenuItem
+                onMouseDown={() => {
+                  console.warn("TODO: implement common actions")
+                }}
+              >
+                Copy
+              </ContextMenuItem>
+              <ContextMenuItem
+                onMouseDown={() => {
+                  console.warn("TODO: implement common actions")
+                }}
+              >
+                Paste
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuItem
+                onMouseDown={() => {
+                  // TODO: implement
+                  console.warn("TODO: implement common actions")
+                }}
+              >
+                Select Block
+              </ContextMenuItem>
+            </>
+          )
         }
 
-        const nodeType = slateNode.type as string | undefined
-
-        if (nodeType === undefined) {
-          throw new Error("node type can't be undefined (invalid node)")
+        if (base === "collapsed") {
+          return (
+            <>
+              <ContextMenuItem
+                onMouseDown={() => {
+                  console.warn("TODO: implement common actions")
+                }}
+              >
+                Paste
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuItem
+                onMouseDown={() => {
+                  // TODO: implement
+                  console.warn("TODO: implement common actions")
+                }}
+              >
+                Select Block
+              </ContextMenuItem>
+            </>
+          )
         }
 
-        return (
-          <>
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement")
-              }}
-            >
-              Delete
-            </ContextMenuItem>
+        if (base === "node") {
+          let slateNode: Node
 
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement")
-              }}
-            >
-              Duplicate
-            </ContextMenuItem>
+          console.log(node)
 
-            <ContextSubmenu text="Turn into">
-              <TurnIntoContextMenuContent editor={editor} node={node} />
-            </ContextSubmenu>
+          try {
+            slateNode = ReactEditor.toSlateNode(editor, node!)
+          } catch (error) {
+            // TODO: when the error boundary for this error is created this might not be necessary (or maybe some custom logic for recovering could be used)
+            console.log("couldn't resolve slate node")
+            return
+          }
 
-            <ContextMenuSeparator />
+          const nodeType = "type" in slateNode ? slateNode.type : undefined
 
-            <ContextMenuItem
-              onMouseDown={() => {
-                console.warn("TODO: implement")
-              }}
-            >
-              Comment
-            </ContextMenuItem>
+          if (nodeType === undefined) {
+            throw new Error("node type can't be undefined (invalid node)")
+          }
 
-            <ContextMenuSeparator />
-
-            {/* <ContextMenuItem disabled>{nodeType}</ContextMenuItem> */}
-
-            <ContextSubmenu text="Insert">
-              <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
-                Horizontal Rule
-                {/* TODO: research and change the name if needed */}
+          return (
+            <>
+              <ContextMenuItem
+                onMouseDown={() => {
+                  console.warn("TODO: implement")
+                }}
+              >
+                Delete
               </ContextMenuItem>
-              <ContextMenuItem onMouseDown={handleInsertImage}>
-                Image
-                {/* TODO: research and change the name if needed */}
+
+              <ContextMenuItem
+                onMouseDown={() => {
+                  console.warn("TODO: implement")
+                }}
+              >
+                Duplicate
               </ContextMenuItem>
-            </ContextSubmenu>
-          </>
-        )
+
+              <ContextSubmenu text="Turn into">
+                <TurnIntoContextMenuContent editor={editor} node={node} />
+              </ContextSubmenu>
+
+              <ContextMenuSeparator />
+
+              <ContextMenuItem
+                onMouseDown={() => {
+                  console.warn("TODO: implement")
+                }}
+              >
+                Comment
+              </ContextMenuItem>
+
+              <ContextMenuSeparator />
+
+              {/* <ContextMenuItem disabled>{nodeType}</ContextMenuItem> */}
+
+              <ContextSubmenu text="Insert">
+                <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
+                  Horizontal Rule
+                  {/* TODO: research and change the name if needed */}
+                </ContextMenuItem>
+                <ContextMenuItem onMouseDown={handleInsertImage}>
+                  Image
+                  {/* TODO: research and change the name if needed */}
+                </ContextMenuItem>
+              </ContextSubmenu>
+            </>
+          )
+        }
+
+        throw new Error(`invalid context menu type: ${base}`)
       }
 
-      throw new Error(`invalid context menu type: ${base}`)
-    }
-
-    return <ContextMenu>{renderItems()}</ContextMenu>
-  }, [
-    contextMenuType,
-    editor,
-    handleInsertHorizontalRule,
-    handleInsertImage,
-    handleToggleLink,
-  ])
+      return <ContextMenu>{renderItems()}</ContextMenu>
+    },
+    // TODO: I'm not sure but I think ContextMenu is excluded from dependencies to solve rerender issues, I should find a way to fix this
+    [
+      contextMenuType,
+      editor,
+      handleInsertHorizontalRule,
+      handleInsertImage,
+      handleToggleLink,
+    ]
+  )
 
   const openMenuWithType = (
     event: React.MouseEvent<Element, globalThis.MouseEvent>,

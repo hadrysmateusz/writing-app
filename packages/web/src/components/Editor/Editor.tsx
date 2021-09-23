@@ -7,6 +7,7 @@ import React, {
 } from "react"
 import styled from "styled-components/macro"
 import { useSlateStatic, ReactEditor } from "slate-react"
+import { Transforms, Path, Editor, Node } from "slate"
 import isHotkey from "is-hotkey"
 
 // import HoveringToolbar from "../HoveringToolbar"
@@ -248,7 +249,7 @@ const EditorComponent: React.FC<{
       )
 
       // open context menu for a slate node TODO: it would probably be better to somehow notify the react component that it should handle this, it could also set some custom highlighting styles etc.
-      if (typeof slateNode.type === "string") {
+      if ("type" in slateNode) {
         event.preventDefault()
         openMenu(event, {
           base: "node",
@@ -264,10 +265,10 @@ const EditorComponent: React.FC<{
   /*
     TODO: this solution might be a bit too basic and might need to be replaced with normalization
     It should also take into account the depth of the path and the type of the node (e.g. list items)
-    TODO: this should probably be merged with a solution for selecting the correct block by clicking 
-    next to it - my best guess is, it would be an event listener on the entire editor area that would 
-    get the position of the click and compare it to the bounding boxes of blocks until it finds the 
-    correct one (this would be a good place to use a more efficient search algorithm as it's not 
+    TODO: this should probably be merged with a solution for selecting the correct block by clicking
+    next to it - my best guess is, it would be an event listener on the entire editor area that would
+    get the position of the click and compare it to the bounding boxes of blocks until it finds the
+    correct one (this would be a good place to use a more efficient search algorithm as it's not
     insignificantly expensive to compare the positions of many nodes)
   */
   const handleInsertEmptyBlock = (event: MouseEvent<HTMLDivElement>) => {
@@ -276,6 +277,12 @@ const EditorComponent: React.FC<{
     const newPath = [editor.children.length]
     const lastPath = Path.previous(newPath)
     const [lastNode] = Editor.node(editor, lastPath, { edge: "end" })
+
+    // TODO: this is a temporary solution for the use of the unsafe logic below
+    if (!("text" in lastNode)) {
+      throw new Error("This node has to be a leaf node")
+    }
+
     // TODO: this assumes that the node is a leaf (which should always be true because of the way we get it but might cause issues in the future and should probably have some fallbacks)
     if (lastNode.text === "") {
       Transforms.select(editor, lastPath)
