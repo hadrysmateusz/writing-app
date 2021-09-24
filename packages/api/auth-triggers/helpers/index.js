@@ -1,3 +1,5 @@
+const fetch = require("node-fetch")
+
 const COUCHDB_BASE_URL = "http://localhost:5984" // TODO: replace with actual url
 
 // TODO: set up SSL
