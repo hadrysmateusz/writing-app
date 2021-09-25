@@ -3,6 +3,7 @@
   "include": ["src", "typings"],
   "exclude": ["node_modules", "build"],
   "compilerOptions": {
-    "jsx": "react"
+    "jsx": "react-jsx",
+    "useUnknownInCatchVariables": false
   }
 }
