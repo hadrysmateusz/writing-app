@@ -15,9 +15,9 @@ export const LogoutButton: React.FC<{
   const handleLogout = async () => {
     onBeforeLogout && onBeforeLogout()
 
-    const success = logout()
+    const success = await logout()
 
-    if (success) {
+    if (success === true) {
       onAfterLogout && onAfterLogout() // TODO: consider supporting a hook after a failed logout
       history.push("/")
     }
