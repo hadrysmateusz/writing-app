@@ -6,6 +6,7 @@ import { useDocumentsAPI } from "../MainProvider"
 import { deserializeMarkdown } from "../../slate-helpers/deserialize"
 import { useViewState, PrimarySidebarViews, CloudViews } from "../ViewState"
 import { useMainState } from "../MainProvider"
+import { CloseModalFn } from "../Modal/types"
 
 const ModalContainer = styled.div`
   background: #252525;
@@ -30,7 +31,7 @@ const ButtonsContainer = styled.div`
 `
 
 export const ImportModalContent: React.FC<{
-  close: () => void
+  close: CloseModalFn<undefined>
 }> = ({ close }) => {
   const { createDocument } = useDocumentsAPI()
   const { primarySidebar } = useViewState()
@@ -96,7 +97,7 @@ export const ImportModalContent: React.FC<{
         handleSuccess(result, format)
       }
 
-      close()
+      close(undefined)
     },
     [close, handleSuccess]
   )

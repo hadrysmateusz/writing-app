@@ -2,60 +2,55 @@ import React, { useMemo, useCallback, useState, FunctionComponent } from "react"
 
 import Modal from "./Modal"
 import { useToggleable, ToggleableHooks } from "../../hooks"
-import { UseModalReturn, OpenModalFn, ModalRenderProps } from "./types"
+import {
+  UseModalReturn,
+  OpenModalFn,
+  ModalRenderProps,
+  CloseModalFn,
+} from "./types"
 
 // TODO: Consider making modals and context menus centralized with the root component not having to be added to the tree manually from the hook and only using some kind of hook to manage its state
 
-export function useModal<ModalProps>(
+export function useModal<T, ModalProps extends object>(
   initialState: boolean,
+  defaultModalProps: ModalProps,
   options: ToggleableHooks = {}
-): UseModalReturn<ModalProps> {
-  const { close, open, isOpen } = useToggleable(initialState, options)
-  const [modalProps, setModalProps] = useState<ModalProps>()
+): UseModalReturn<T, ModalProps> {
+  const { close, open, isOpen } = useToggleable<T>(initialState, options)
+  const [modalProps, setModalProps] = useState<ModalProps>(defaultModalProps)
 
-  const openModal = useCallback<OpenModalFn<ModalProps>>(
-    (props) => {
+  const openModal = useCallback<OpenModalFn<T, ModalProps>>(
+    async (props) => {
       setModalProps(props)
-      open()
+      return open()
     },
     [open]
   )
 
-  const closeModal = useCallback(() => {
-    close()
-    setModalProps(undefined)
-  }, [close])
-
-  const toggleModal = useCallback(
-    (props?: ModalProps) => {
-      if (isOpen) {
-        closeModal()
-      } else {
-        openModal(props)
-      }
+  const closeModal = useCallback<CloseModalFn<T>>(
+    (resolveValue?: T) => {
+      close(resolveValue)
+      setModalProps(defaultModalProps)
     },
-    [closeModal, isOpen, openModal]
+    [close, defaultModalProps]
   )
 
   const StatefulModal: FunctionComponent<ModalRenderProps<
+    T,
     ModalProps
   >> = useMemo(() => {
-    // TODO: figure out a way to guarantee that the ModalProps will be available in the render method
-    return ({ render, children, ...props }) => {
+    return ({ children, ...props }) => {
       return isOpen ? (
-        <Modal onRequestClose={close} {...props}>
-          {render
-            ? render(modalProps ? { close, ...modalProps } : { close })
-            : children}
+        <Modal onRequestClose={closeModal} {...props}>
+          {children({ close: closeModal, ...modalProps })}
         </Modal>
       ) : null
     }
-  }, [close, isOpen, modalProps])
+  }, [closeModal, isOpen, modalProps])
 
   return {
     close: closeModal,
     open: openModal,
-    toggle: toggleModal,
     isOpen,
     Modal: StatefulModal,
   }

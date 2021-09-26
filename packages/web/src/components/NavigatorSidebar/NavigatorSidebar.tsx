@@ -13,11 +13,7 @@ import { SectionContainer } from "./Common"
 export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
   (_props, ref) => {
     const { primarySidebar } = useViewState()
-    const {
-      open: openAccountModal,
-      close: closeAccountModal,
-      Modal: AccountModal,
-    } = useModal(false)
+    const { open: openAccountModal, Modal: AccountModal } = useModal(false, {})
 
     const { currentView } = primarySidebar
 
@@ -57,7 +53,7 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
 
             <TreeItem
               icon="settings"
-              onClick={() => openAccountModal()}
+              onClick={() => openAccountModal({})}
               depth={0}
             >
               Settings
@@ -88,7 +84,7 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
         </Container>
 
         <AccountModal>
-          <AccountModalContent close={closeAccountModal} />
+          {(props) => <AccountModalContent {...props} />}
         </AccountModal>
       </>
     )

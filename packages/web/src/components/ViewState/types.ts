@@ -13,7 +13,7 @@ export enum SidebarID {
   navigator = "navigatorSidebar",
 }
 
-export interface SidebarBase extends Toggleable {
+export interface SidebarBase extends Toggleable<undefined> {
   id: SidebarID
   side: Side
   maxWidth: number

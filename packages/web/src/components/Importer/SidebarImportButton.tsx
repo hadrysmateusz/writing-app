@@ -6,10 +6,13 @@ import { useModal } from "../Modal"
 import { ImportModalContent } from "../Importer"
 
 export const SidebarImportButton: React.FC = () => {
-  const { open: openImportModal, Modal: ImportModal } = useModal(false)
+  const { open: openImportModal, Modal: ImportModal } = useModal<undefined, {}>(
+    false,
+    {}
+  )
 
   const handleImport = useCallback(() => {
-    openImportModal()
+    openImportModal({})
   }, [openImportModal])
 
   return (
@@ -17,9 +20,7 @@ export const SidebarImportButton: React.FC = () => {
       <TreeItem icon="import" onClick={handleImport} depth={0}>
         Import
       </TreeItem>
-      <ImportModal
-        render={({ close }) => <ImportModalContent close={close} />}
-      />
+      <ImportModal>{(props) => <ImportModalContent {...props} />}</ImportModal>
     </>
   )
 }

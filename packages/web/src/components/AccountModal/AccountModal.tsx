@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import styled from "styled-components/macro"
 
 import { LogoutButton } from "../Auth"
+import { CloseModalFn } from "../Modal/types"
 import { useUserdata } from "../Userdata"
 
 const ModalContainer = styled.div`
@@ -26,7 +27,7 @@ const Container = styled.div`
 
 // TODO: rename component and file
 export const AccountModalContent: React.FC<{
-  close: () => void
+  close: CloseModalFn<void>
 }> = ({ close }) => {
   const { isSpellCheckEnabled, updateSetting } = useUserdata()
   const [isSpellCheckEnabledField, setIsSpellCheckEnabledField] = useState<

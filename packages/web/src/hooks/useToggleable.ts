@@ -1,9 +1,9 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 
-export interface Toggleable {
+export interface Toggleable<T> {
   isOpen: boolean
-  open: () => void
-  close: () => void
+  open: () => Promise<T | undefined> | void // TODO: the void here is just a temporary patch
+  close: (resolveValue?: T) => void
   toggle: () => void
 }
 
@@ -20,7 +20,7 @@ export interface ToggleableHooks extends SimplifiedToggleableHooks {
 }
 
 // TODO: add a loading state - trigger it when running onBeforeOpen and open after it's done
-export const useToggleable = (
+export const useToggleable = <T = undefined>(
   initialState: boolean,
   {
     onBeforeOpen,
@@ -33,32 +33,59 @@ export const useToggleable = (
 ) => {
   const [isOpen, setIsOpen] = useState(initialState)
 
-  const open = useCallback(() => {
+  const awaitCloseRef = useRef<{
+    resolve: (value?: T) => void
+  }>()
+
+  const open = useCallback(async () => {
     onBeforeOpen && onBeforeOpen()
     onBeforeChange && onBeforeChange(true)
 
     setIsOpen(true)
 
+    const awaitClosePromise = new Promise<T | undefined>((resolve, reject) => {
+      awaitCloseRef.current = { resolve }
+    })
+
     onAfterChange && onAfterChange(true)
     onAfterOpen && onAfterOpen()
+
+    return awaitClosePromise
   }, [onAfterChange, onAfterOpen, onBeforeChange, onBeforeOpen])
 
-  const close = useCallback(() => {
-    onBeforeClose && onBeforeClose()
-    onBeforeChange && onBeforeChange(false)
+  const close = useCallback(
+    (resolveValue?: T) => {
+      onBeforeClose && onBeforeClose()
+      onBeforeChange && onBeforeChange(false)
 
-    setIsOpen(false)
+      setIsOpen(false)
 
-    onAfterChange && onAfterChange(false)
-    onAfterClose && onAfterClose()
-  }, [onAfterChange, onAfterClose, onBeforeChange, onBeforeClose])
+      awaitCloseRef.current?.resolve(resolveValue)
+      awaitCloseRef.current = undefined
+
+      onAfterChange && onAfterChange(false)
+      onAfterClose && onAfterClose()
+    },
+    [onAfterChange, onAfterClose, onBeforeChange, onBeforeClose]
+  )
+
+  // // TODO: refactor this and make it safer to use
+  // const closeWithoutResolving = useCallback(() => {
+  //   onBeforeClose && onBeforeClose()
+  //   onBeforeChange && onBeforeChange(false)
+
+  //   setIsOpen(false)
+
+  //   onAfterChange && onAfterChange(false)
+  //   onAfterClose && onAfterClose()
+  // }, [onAfterChange, onAfterClose, onBeforeChange, onBeforeClose])
 
   const toggle = useCallback(() => {
     // The abstraction functions are used to make sure that all pre & post hooks are fired
     if (isOpen) {
-      close()
+      return close()
     } else {
-      open()
+      return open()
     }
   }, [close, isOpen, open])
 

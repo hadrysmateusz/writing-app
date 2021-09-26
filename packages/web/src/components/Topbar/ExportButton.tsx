@@ -1,11 +1,12 @@
 import React, { useCallback } from "react"
-import { useSlateStatic } from "slate-react"
+// import { useSlateStatic } from "slate-react"
 
 import { Button } from "../Button"
-import { serializeHTML, serializeMarkdown } from "../../slate-helpers"
+// import { serializeHTML, serializeMarkdown } from "../../slate-helpers"
 import { useModal } from "../Modal"
 import styled from "styled-components/macro"
-import { useMainState } from "../MainProvider"
+// import { useMainState } from "../MainProvider"
+import { CloseModalFn } from "../Modal/types"
 
 const ModalContainer = styled.div`
   background: #252525;
@@ -30,10 +31,10 @@ const ButtonsContainer = styled.div`
 `
 
 export const ExportModalContent: React.FC<{
-  close: () => void
+  close: CloseModalFn<void>
 }> = ({ close }) => {
-  const editor = useSlateStatic()
-  const { currentDocument } = useMainState()
+  // const editor = useSlateStatic()
+  // const { currentDocument } = useMainState()
 
   // TODO: add a way to export in a browser (probably generate on a server if anything more complex is required and download)
   // TODO: consider offloading the serializing to the main process to allow it to run in parallel to selecting the file path
@@ -78,22 +79,16 @@ export const ExportModalContent: React.FC<{
 }
 
 export const ExportButton: React.FC = () => {
-  const {
-    open: openExportModal,
-    close: closeExportModal,
-    Modal: ExportModal,
-  } = useModal(false)
+  const { open: openExportModal, Modal: ExportModal } = useModal(false, {})
 
   const handleExport = () => {
-    openExportModal()
+    openExportModal({})
   }
 
   return (
     <>
       <Button onClick={handleExport}>Export</Button>
-      <ExportModal>
-        <ExportModalContent close={closeExportModal} />
-      </ExportModal>
+      <ExportModal>{(props) => <ExportModalContent {...props} />}</ExportModal>
     </>
   )
 }

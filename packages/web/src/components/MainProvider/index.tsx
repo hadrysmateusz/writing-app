@@ -81,9 +81,12 @@ export const MainProvider: React.FC = memo(({ children }) => {
   // TODO: make sorting not take uppercase/lowercase into consideration (probably by having a separate 'slugTitle' field)
   const [sorting, setSorting] = useState<Sorting>(defaultSorting)
   // The document deletion confirmation modal
-  const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<{
-    documentId?: string
-  }>(false)
+  const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<
+    undefined,
+    {
+      documentId?: string
+    }
+  >(false, { documentId: undefined })
 
   const { index, direction } = sorting
 
@@ -880,9 +883,9 @@ export const MainProvider: React.FC = memo(({ children }) => {
             findGroupById,
           }}
         >
-          <ConfirmDeleteModal
-            render={(props) => <ConfirmDeleteModalContent {...props} />}
-          />
+          <ConfirmDeleteModal>
+            {(props) => <ConfirmDeleteModalContent {...props} />}
+          </ConfirmDeleteModal>
 
           {children}
         </GroupsAPIContext.Provider>

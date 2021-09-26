@@ -10,7 +10,7 @@ export type Sorting = {
 }
 
 export type ConfirmDeleteModalProps = {
-  close: Toggleable["close"]
+  close: Toggleable<undefined>["close"]
   documentId?: string
 }
 

@@ -23,7 +23,7 @@ const ModalBox = styled.div`
 `
 
 // TODO: the modal almost definitely needs work: accessibility, focus trapping, options, different ways of closing it, etc.
-export const Modal: React.FC<{ onRequestClose: () => void }> = ({
+export const Modal: React.FC<{ onRequestClose: (...args: any) => any }> = ({
   children,
   onRequestClose,
 }) => {

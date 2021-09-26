@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react"
+import React, { useCallback, useMemo } from "react"
 
 import { useStatelessToggleable, Toggleable } from "../../hooks"
 import { createContext } from "../../utils"
@@ -13,7 +13,7 @@ export const [ViewStateContext, useViewState] = createContext<ViewState>()
 // TODO: remove this, replace with custom methods for each sidebar
 const useSidebarView = (
   settingName: "secondarySidebarCurrentView" | "primarySidebarCurrentView",
-  toggleable: Toggleable
+  toggleable: Toggleable<undefined>
 ): [string, SwitchViewFn] => {
   const { updateLocalSetting, ...localSettings } = useLocalSettings()
 
