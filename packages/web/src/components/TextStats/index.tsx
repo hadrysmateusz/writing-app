@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react"
+import { FC, useEffect, useState } from "react"
+import styled from "styled-components"
 import unified from "unified"
 import latin from "retext-latin"
 import size from "unist-util-size"
@@ -6,13 +7,12 @@ import vfile from "vfile"
 
 import { serializeText } from "../../slate-helpers"
 
-import styled from "styled-components"
 import { useEditorState } from "../EditorStateProvider"
 
 // TODO: add option to customise WPM reading speed
 const WPM = 275
 
-const TextStats: React.FC = () => {
+const TextStats: FC = () => {
   const { editorValue: editorContent } = useEditorState()
 
   const [chars, setChars] = useState(0)
@@ -21,6 +21,8 @@ const TextStats: React.FC = () => {
   const [readingTime, setReadingTime] = useState(0)
 
   useEffect(() => {
+    if (editorContent === undefined) return // TODO: handle this better (probably check higher up and ensure it's defined)
+
     const text = serializeText(editorContent)
 
     var tree = unified().use(latin).parse(vfile(text))

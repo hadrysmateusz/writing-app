@@ -20,6 +20,11 @@ export const Outline: React.FC = () => {
   })
 
   useEffect(() => {
+    if (editorContent === undefined) {
+      // TODO: handle this better (probably check higher up and ensure it's defined)
+      return
+    }
+
     setOutline(() => {
       const newOutline: OutlineType = { baseLevel: 3, tree: [] }
 
@@ -33,7 +38,9 @@ export const Outline: React.FC = () => {
 
         if (nodeChildren === null) return
 
-        if (nodeType.startsWith("heading_")) {
+        let headingRegExp = /^h[123456]$/
+
+        if (headingRegExp.test(nodeType)) {
           const childTextNode = nodeChildren[0]
 
           if (!("text" in childTextNode)) return
