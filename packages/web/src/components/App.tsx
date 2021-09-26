@@ -28,21 +28,21 @@ Amplify.configure({
 export const App = () => {
   // This effect catches all uncaught contextmenu events and prevents the display of the default context menu
   // TODO: make sure all basic context menu actions have a custom alternative (especially text-related in the editor like cutting and pasting )
-  useEffect(() => {
-    const listener = (event: MouseEvent) => {
-      event.preventDefault()
-      console.warn(
-        `Prevented a contextmenu event. Consider creating a custom one for this element. This warning was triggered on the following element:`
-      )
-      console.dir(event.target)
-    }
+  // useEffect(() => {
+  //   const listener = (event: MouseEvent) => {
+  //     event.preventDefault()
+  //     console.warn(
+  //       `Prevented a contextmenu event. Consider creating a custom one for this element. This warning was triggered on the following element:`
+  //     )
+  //     console.dir(event.target)
+  //   }
 
-    document.addEventListener("contextmenu", listener)
+  //   document.addEventListener("contextmenu", listener)
 
-    return () => {
-      document.removeEventListener("contextmenu", listener)
-    }
-  })
+  //   return () => {
+  //     document.removeEventListener("contextmenu", listener)
+  //   }
+  // })
 
   return (
     <>
