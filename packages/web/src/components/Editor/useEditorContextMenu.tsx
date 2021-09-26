@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react"
-import { useSlateStatic, ReactEditor } from "slate-react"
+import { ReactEditor } from "slate-react"
 import { Node } from "slate"
 import styled from "styled-components/macro"
 
@@ -9,13 +9,13 @@ import {
   ContextMenuSeparator,
   ContextSubmenu,
 } from "../ContextMenu"
-import FormatButton from "../FormatButton"
+// import FormatButton from "../FormatButton"
 import { TurnIntoContextMenuContent } from "../NodeToolbar"
-import { useImageModal } from "../ImageModal"
-import { useLinkModal } from "../LinkPrompt"
+// import { useImageModal } from "../ImageModal"
+// import { useLinkModal } from "../LinkPrompt"
 
-import { MARKS } from "../../constants/Slate"
-import { CODE_INLINE, LINK, insertHorizontalRule } from "../../slate-plugins"
+import { insertHorizontalRule } from "../../slate-plugins"
+import { useEventEditorId, useStoreEditorRef } from "@udecode/plate-core"
 
 type ContextMenuType = {
   base: string
@@ -34,45 +34,56 @@ const InlineFormattingContainer = styled.div`
 
 // TODO: on any context menu that is fully inside a link node, show an option to edit and remove the link
 const useEditorContextMenu = () => {
-  const editor = useSlateStatic()
+  const editor = useStoreEditorRef(useEventEditorId("focus"))
+
   const [
     contextMenuType,
     setContextMenuType,
   ] = useState<ContextMenuType | null>(null)
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const { open: openImageModal } = useImageModal()
-  const { open: openLinkModal } = useLinkModal()
+  // const { open: openImageModal } = useImageModal()
+  // const { open: openLinkModal } = useLinkModal()
 
   // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
   const handleInsertHorizontalRule = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
-      insertHorizontalRule(editor)
+      if (editor) {
+        insertHorizontalRule(editor)
+      }
     },
     [editor]
   )
 
-  const handleToggleLink = useCallback(
-    (event: React.MouseEvent) => {
-      event.preventDefault()
-      openLinkModal()
-    },
-    [openLinkModal]
-  )
+  // const handleToggleLink = useCallback(
+  //   (event: React.MouseEvent) => {
+  //     event.preventDefault()
+  //     // TODO: move the new link inserting logic from the toolbar here as well
+  //     // openLinkModal()
+  //   },
+  //   [openLinkModal]
+  // )
 
-  const handleInsertImage = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      event.preventDefault()
-      openImageModal()
-    },
-    [openImageModal]
-  )
+  // const handleInsertImage = useCallback(
+  //   (event: React.MouseEvent<HTMLDivElement>) => {
+  //     event.preventDefault()
+  //     // TODO: move the new image inserting logic here as well
+  //     // openImageModal()
+  //   },
+  //   [openImageModal]
+  // )
 
   const renderContextMenu = useCallback(
     () => {
       if (contextMenuType === null) {
         throw new Error(
           "This context menu can't be opened without a proper type."
+        )
+      }
+
+      if (editor === undefined) {
+        throw new Error(
+          "Context menu can't be opened because the editor is undefined"
         )
       }
 
@@ -83,14 +94,17 @@ const useEditorContextMenu = () => {
           return (
             <>
               <InlineFormattingContainer>
-                <FormatButton format={MARKS.BOLD} />
+                {/* TODO: use new plate-based elements and functions */}
+                {/* <FormatButton format={MARKS.BOLD} />
                 <FormatButton format={MARKS.ITALIC} />
                 <FormatButton format={MARKS.STRIKE} />
-                <FormatButton format={CODE_INLINE} />
+                <FormatButton format={CODE_INLINE} /> */}
                 {/* TODO: This doesn't work for turning the link off */}
-                <FormatButton format={LINK} onMouseDown={handleToggleLink} />
+                {/* <FormatButton format={LINK} onMouseDown={handleToggleLink} /> */}
               </InlineFormattingContainer>
+
               <ContextMenuSeparator />
+
               <ContextMenuItem
                 onMouseDown={() => {
                   console.warn("TODO: implement common actions")
@@ -112,7 +126,9 @@ const useEditorContextMenu = () => {
               >
                 Paste
               </ContextMenuItem>
+
               <ContextMenuSeparator />
+
               <ContextMenuItem
                 onMouseDown={() => {
                   // TODO: implement
@@ -135,7 +151,9 @@ const useEditorContextMenu = () => {
               >
                 Paste
               </ContextMenuItem>
+
               <ContextMenuSeparator />
+
               <ContextMenuItem
                 onMouseDown={() => {
                   // TODO: implement
@@ -206,12 +224,10 @@ const useEditorContextMenu = () => {
               <ContextSubmenu text="Insert">
                 <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
                   Horizontal Rule
-                  {/* TODO: research and change the name if needed */}
                 </ContextMenuItem>
-                <ContextMenuItem onMouseDown={handleInsertImage}>
+                {/* <ContextMenuItem onMouseDown={handleInsertImage}>
                   Image
-                  {/* TODO: research and change the name if needed */}
-                </ContextMenuItem>
+                </ContextMenuItem> */}
               </ContextSubmenu>
             </>
           )
@@ -223,13 +239,7 @@ const useEditorContextMenu = () => {
       return <ContextMenu>{renderItems()}</ContextMenu>
     },
     // TODO: I'm not sure but I think ContextMenu is excluded from dependencies to solve rerender issues, I should find a way to fix this
-    [
-      contextMenuType,
-      editor,
-      handleInsertHorizontalRule,
-      handleInsertImage,
-      handleToggleLink,
-    ]
+    [/* ContextMenu,  */ contextMenuType, editor, handleInsertHorizontalRule]
   )
 
   const openMenuWithType = (

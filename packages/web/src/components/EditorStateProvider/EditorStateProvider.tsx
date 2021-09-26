@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react"
 import { isEqual } from "lodash"
-import { createEditor, Descendant, BaseEditor } from "slate"
-import { ReactEditor, Slate, withReact } from "slate-react"
+import { Descendant, BaseEditor } from "slate"
+import { ReactEditor } from "slate-react"
 
 import { SaveDocumentFn, useMainState } from "../MainProvider"
 import { deserialize, serialize } from "../Editor"
@@ -10,10 +10,15 @@ import { LinkModalProvider } from "../LinkPrompt"
 import { DEFAULT_EDITOR_VALUE, EditorState } from "../Main"
 
 // import { applyPlugins } from "../../slate-plugin-system"
-import { useDevUtils } from "../../dev-tools"
+// import { useDevUtils } from "../../dev-tools"
 // import { plugins } from "../../pluginsList"
 import { withDelayRender } from "../../withDelayRender"
 import { createContext } from "../../utils"
+import {
+  useEventEditorId,
+  useStoreEditorState,
+  useStoreEditorValue,
+} from "@udecode/plate-core"
 
 type ImageElement = {
   type: "image"
@@ -35,59 +40,61 @@ declare module "slate" {
 
 const NoEditorState = withDelayRender(1000)(() => <div>No editor object</div>)
 
-export const [EditorStateContext, useEditorState] = createContext<EditorState>()
+export const [EditorStateContext, useEditorState] = createContext<any>() // TODO: fix the typings when I stabilize the api
 
 /**
  * State provider for editor and secondary sidebar
  */
 export const EditorStateProvider: React.FC = ({ children }) => {
   const { currentDocument } = useMainState()
+  const editor = useStoreEditorState(useEventEditorId("focus"))
+  const editorValue = useStoreEditorValue(useEventEditorId("focus"))
 
-  const [editorValue, setEditorValue] = useState<Descendant[]>(
-    DEFAULT_EDITOR_VALUE
-  )
+  // const [editorValue, setEditorValue] = useState<Descendant[]>(
+  //   DEFAULT_EDITOR_VALUE
+  // )
   const [isModified, setIsModified] = useState(false)
 
-  useEffect(() => {
-    // TODO: replace defaultEditorValue with null
-    const content = currentDocument?.content
-      ? deserialize(currentDocument.content)
-      : DEFAULT_EDITOR_VALUE
+  // useEffect(() => {
+  //   // TODO: replace defaultEditorValue with null
+  //   const content = currentDocument?.content
+  //     ? deserialize(currentDocument.content)
+  //     : DEFAULT_EDITOR_VALUE
 
-    setEditorValue(content)
-  }, [currentDocument])
+  //   setEditorValue(content)
+  // }, [currentDocument])
 
   // If the editor needs to be accessed above in the react tree, try using some kind of pub/sub / event system. Don't lift this because it will have a huge performance impact
-  const [editor, setEditor] = useState<CustomEditor | null>(null)
+  // const [editor, setEditor] = useState<CustomEditor | null>(null)
 
-  const createEditorObject = useCallback(() => {
-    // let editor = applyPlugins(createEditor(), plugins) as ReactEditor
-    let editor = withReact(createEditor())
-    setEditor(editor)
-  }, [])
+  // const createEditorObject = useCallback(() => {
+  //   // let editor = applyPlugins(createEditor(), plugins) as ReactEditor
+  //   let editor = withReact(createEditor())
+  //   setEditor(editor)
+  // }, [])
 
-  /**
-   * Creates the editor object
-   */
-  useEffect(() => {
-    createEditorObject()
-  }, [createEditorObject])
+  // /**
+  //  * Creates the editor object
+  //  */
+  // useEffect(() => {
+  //   createEditorObject()
+  // }, [createEditorObject])
 
-  /**
-   * onChange event handler for the Slate component
-   */
-  const onChange = useCallback(
-    (value: Descendant[]) => {
-      // TODO: I could debounced-save in here
-      setEditorValue(value)
+  // /**
+  //  * onChange event handler for the Slate component
+  //  */
+  // const onChange = useCallback(
+  //   (value: Descendant[]) => {
+  //     // TODO: I could debounced-save in here
+  //     setEditorValue(value)
 
-      // if the content has changed, set the modified flag (skip the expensive check if it's already true)
-      if (!isModified) {
-        setIsModified(!isEqual(editorValue, value))
-      }
-    },
-    [editorValue, isModified]
-  )
+  //     // if the content has changed, set the modified flag (skip the expensive check if it's already true)
+  //     if (!isModified) {
+  //       setIsModified(!isEqual(editorValue, value))
+  //     }
+  //   },
+  //   [editorValue, isModified]
+  // )
 
   /**
    * Save document
@@ -95,42 +102,62 @@ export const EditorStateProvider: React.FC = ({ children }) => {
    * Works on the current document
    */
   const saveDocument: SaveDocumentFn = useCallback(async () => {
-    if (isModified) {
-      const updatedDocument =
-        (await currentDocument?.atomicUpdate((doc) => {
-          doc.content = serialize(editorValue)
-          return doc
-        })) || null
-
-      setIsModified(false)
-      return updatedDocument
+    if (editor === undefined) {
+      console.error("Can't save, the editor is undefined")
+      return null
     }
-    return null
-  }, [currentDocument, editorValue, isModified, setIsModified])
 
-  useDevUtils({ value: editorValue, editor })
+    const nodes = editor.children as Descendant[]
+
+    console.log("nodes", nodes)
+    console.log("serialized nodes", serialize(nodes))
+
+    // TODO: uncomment the if statement when I restore the 'isModified' functionality
+    // if (isModified) {
+    const updatedDocument =
+      (await currentDocument?.atomicUpdate((doc) => {
+        doc.content = serialize(nodes)
+        return doc
+      })) || null
+
+    setIsModified(false)
+    return updatedDocument
+    // }
+    // return null
+  }, [currentDocument, editor /* isModified */])
+
+  // useDevUtils({ value: editorValue, editor })
 
   const editorState = useMemo(
     () => ({
       isModified,
       editorValue,
-      resetEditor: createEditorObject,
+      resetEditor: /* createEditorObject */ () => null,
       saveDocument,
       setIsModified,
-      setEditorValue,
+      setEditorValue: () => null,
     }),
-    [createEditorObject, editorValue, isModified, saveDocument]
+    [editorValue, isModified, saveDocument]
   )
 
-  return editor ? (
-    <Slate editor={editor} value={editorValue} onChange={onChange}>
-      <EditorStateContext.Provider value={editorState}>
-        <ImageModalProvider>
-          <LinkModalProvider>{children}</LinkModalProvider>
-        </ImageModalProvider>
-      </EditorStateContext.Provider>
-    </Slate>
-  ) : (
-    <NoEditorState />
+  // return editor ? (
+  //   <>
+  //     {/* <Slate editor={editor} value={editorValue} onChange={onChange}> */}
+  //     <EditorStateContext.Provider value={editorState}>
+  //       {/* <ImageModalProvider>
+  //         <LinkModalProvider>{children}</LinkModalProvider>
+  //       </ImageModalProvider> */}
+  //       <LinkModalProvider>{children}</LinkModalProvider>
+  //     </EditorStateContext.Provider>
+  //     {/* </Slate> */}
+  //   </>
+  // ) : (
+  //   <NoEditorState />
+  // )
+
+  return (
+    <EditorStateContext.Provider value={editorState}>
+      <LinkModalProvider>{children}</LinkModalProvider>
+    </EditorStateContext.Provider>
   )
 }
