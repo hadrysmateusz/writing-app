@@ -39,38 +39,47 @@ import { FiDownload, FiPlus } from "react-icons/fi"
 
 import { MdStar } from "react-icons/md"
 
+import {
+  ELEMENT_BLOCKQUOTE,
+  ELEMENT_CODE_BLOCK,
+  ELEMENT_H1,
+  ELEMENT_H2,
+  ELEMENT_H3,
+  ELEMENT_H4,
+  ELEMENT_H5,
+  ELEMENT_H6,
+  ELEMENT_PARAGRAPH,
+  MARK_BOLD,
+  MARK_CODE,
+  MARK_ITALIC,
+  MARK_STRIKETHROUGH,
+  MARK_UNDERLINE,
+  ELEMENT_UL,
+  ELEMENT_OL,
+  ELEMENT_LINK,
+} from "@udecode/plate"
+
 // First-Party icons
 import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
 import { ReactComponent as Heading2 } from "../../assets/Heading2.svg"
 
-import {
-  BLOCKQUOTE,
-  CODE_BLOCK,
-  HeadingType,
-  LINK,
-  BOLD,
-  ITALIC,
-  STRIKE,
-  CODE_INLINE,
-  IMAGE,
-} from "../../slate-plugins"
-import { ListType } from "../../slateTypes"
+import { IMAGE } from "../../slate-plugins"
 
 const iconLibrary = {
   /* For icons representing blocks, marks and other slate node types the icon 
   names use the type names of those nodes for simplicity */
-  [BOLD]: FaBold,
-  [ITALIC]: FaItalic,
-  [STRIKE]: FaStrikethrough,
-  [CODE_INLINE]: FaCode,
-  [LINK]: FaLink,
-  [CODE_BLOCK]: FaCode,
-  [BLOCKQUOTE]: FaQuoteRight,
+  [MARK_BOLD]: FaBold,
+  [MARK_ITALIC]: FaItalic,
+  [MARK_STRIKETHROUGH]: FaStrikethrough,
+  [MARK_CODE]: FaCode,
+  [ELEMENT_CODE_BLOCK]: FaCode,
+  [ELEMENT_BLOCKQUOTE]: FaQuoteRight,
+  [ELEMENT_OL]: FaListOl,
+  [ELEMENT_UL]: FaListUl,
+  [ELEMENT_H1]: Heading1,
+  [ELEMENT_H2]: Heading2,
+  [ELEMENT_LINK]: FaLink,
   [IMAGE]: FaImage,
-  [ListType.OL_LIST]: FaListOl,
-  [ListType.UL_LIST]: FaListUl,
-  [HeadingType.H1]: Heading1,
-  [HeadingType.H2]: Heading2,
   plus: FiPlus,
   cloud: AiFillCloud,
   caretRight: BsCaretRightFill,
