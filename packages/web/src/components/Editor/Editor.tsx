@@ -493,7 +493,6 @@ const EditorComponent: React.FC<{
                   {/* <ToolbarSearchHighlight icon={Search} setSearch={setSearch} /> */}
                   {/* <ToolbarButtonsList /> */}
                   {/* <ToolbarLink icon={<Link />} />  */}
-                  {/* <ToolbarImage icon={<Image />} />  */}
                   {/* <BallonToolbarMarks /> */}
                   {/* <MentionSelect
                         {...getMentionSelectProps()}

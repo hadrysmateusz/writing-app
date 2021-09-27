@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from "react"
 import styled from "styled-components/macro"
 
 import { useModal } from "../Modal"
-import { insertImage } from "../../slate-plugins"
-import createContext from "../../utils/createContext"
 import { CloseModalFn, Modal } from "../Modal/types"
+
+import createContext from "../../utils/createContext"
 
 const ModalContainer = styled.div`
   background: #252525;
@@ -15,7 +15,7 @@ const ModalContainer = styled.div`
 `
 
 export type ImageModalProps = {}
-export type ImageModalOpenReturnValue = void // TODO: replace with string (this is temporary until I implement image elements)
+export type ImageModalOpenReturnValue = string
 
 export type ImageModalContextValue = Modal<
   ImageModalOpenReturnValue,
@@ -58,7 +58,7 @@ export const ImageModalProvider: React.FC = ({ children }) => {
 
   return (
     <ImageModalContext.Provider value={toggleableProps}>
-      <Modal>{(props) => <ImageModalContent {...props} />}</Modal>
+      <Modal component={ImageModalContent} />
       {children}
     </ImageModalContext.Provider>
   )
@@ -85,7 +85,7 @@ const ImageModalContent: React.FC<
     //   // TODO: handle a situation where it's not a valid url
     //   insertImage(editor, url)
     // }
-    close() // TODO: return the image url when I implement image elements
+    close(url) // TODO: return the image url when I implement image elements
   }
 
   useEffect(() => {

@@ -1,4 +1,148 @@
-export {}
+import {
+  ELEMENT_BLOCKQUOTE,
+  ELEMENT_CODE_BLOCK,
+  ELEMENT_CODE_LINE,
+  ELEMENT_H1,
+  ELEMENT_H2,
+  ELEMENT_H3,
+  ELEMENT_H4,
+  ELEMENT_H5,
+  ELEMENT_H6,
+  ELEMENT_PARAGRAPH,
+  MARK_BOLD,
+  MARK_CODE,
+  MARK_ITALIC,
+  MARK_STRIKETHROUGH,
+  MARK_UNDERLINE,
+  getPlatePluginType,
+  useStoreEditorRef,
+  useEventEditorId,
+  HeadingToolbar,
+  ToolbarElement,
+  ToolbarMark,
+  ToolbarList,
+  ELEMENT_UL,
+  ELEMENT_OL,
+  ELEMENT_LINK,
+  ELEMENT_IMAGE,
+} from "@udecode/plate"
+import { ToolbarCodeBlock } from "@udecode/plate-code-block-ui"
+
+import Icon from "./Icon"
+import { ToolbarLink } from "./ToolbarLink"
+import { ToolbarImage } from "./ToolbarImage"
+import { useLinkModal } from "./LinkPrompt"
+import { useImageModal } from "./ImageModal"
+
+const Toolbar = () => {
+  const editor = useStoreEditorRef(useEventEditorId("focus"))
+  const { open: openLinkModal } = useLinkModal()
+  const { open: openImageModal } = useImageModal()
+
+  const getLinkUrl = async (prevUrl: string | null) => {
+    const url = await openLinkModal({ prevUrl })
+    return typeof url === "string" ? url : null
+  }
+
+  const getImageUrl = async () => {
+    const url = await openImageModal({})
+    return typeof url === "string" ? url : null
+  }
+
+  return (
+    <HeadingToolbar>
+      {/* <button
+        onClick={() => {
+          console.log(editor)
+        }}
+      >
+        Print Editor
+      </button> */}
+
+      <ToolbarElement
+        type={getPlatePluginType(editor, ELEMENT_H1)}
+        icon={<Icon icon={ELEMENT_H1} />}
+      />
+      <ToolbarElement
+        type={getPlatePluginType(editor, ELEMENT_H2)}
+        icon={<Icon icon={ELEMENT_H2} />}
+      />
+      {/* <ToolbarElement
+        type={getPlatePluginType(editor, ELEMENT_H3)}
+        icon={"H3"}
+      />
+      <ToolbarElement
+        type={getPlatePluginType(editor, ELEMENT_H4)}
+        icon={"H4"}
+      />
+      <ToolbarElement
+        type={getPlatePluginType(editor, ELEMENT_H5)}
+        icon={"H5"}
+      />
+      <ToolbarElement
+        type={getPlatePluginType(editor, ELEMENT_H6)}
+        icon={"H6"}
+      /> */}
+      <ToolbarElement
+        type={getPlatePluginType(editor, ELEMENT_BLOCKQUOTE)}
+        icon={<Icon icon={ELEMENT_BLOCKQUOTE} />}
+      />
+      <ToolbarCodeBlock
+        type={getPlatePluginType(editor, ELEMENT_CODE_BLOCK)}
+        icon={<Icon icon={ELEMENT_CODE_BLOCK} />}
+      />
+      <ToolbarList
+        type={getPlatePluginType(editor, ELEMENT_UL)}
+        icon={<Icon icon={ELEMENT_UL} />}
+      />
+      <ToolbarList
+        type={getPlatePluginType(editor, ELEMENT_OL)}
+        icon={<Icon icon={ELEMENT_OL} />}
+      />
+      <ToolbarImage
+        icon={<Icon icon={ELEMENT_IMAGE} />}
+        getImageUrl={getImageUrl}
+      />
+
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_BOLD)}
+        icon={<Icon icon={MARK_BOLD} />}
+      />
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_ITALIC)}
+        icon={<Icon icon={MARK_ITALIC} />}
+      />
+      {/* <ToolbarMark
+        type={getPlatePluginType(editor, MARK_UNDERLINE)}
+        icon={<Icon icon={MARK_UNDERLINE} />}
+      /> */}
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_STRIKETHROUGH)}
+        icon={<Icon icon={MARK_STRIKETHROUGH} />}
+      />
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_CODE)}
+        icon={<Icon icon={MARK_CODE} />}
+      />
+      {/* <ToolbarMark
+        type={getPlatePluginType(editor, MARK_SUPERSCRIPT)}
+        clear={getPlatePluginType(editor, MARK_SUBSCRIPT)}
+        icon={<Superscript />}
+      />
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_SUBSCRIPT)}
+        clear={getPlatePluginType(editor, MARK_SUPERSCRIPT)}
+        icon={<Subscript />}
+      /> */}
+      <ToolbarLink
+        getLinkUrl={getLinkUrl}
+        icon={<Icon icon={ELEMENT_LINK} />}
+      />
+    </HeadingToolbar>
+  )
+}
+
+export default Toolbar
 
 // import React, { useCallback, useMemo } from "react"
 // import { useSlateStatic } from "slate-react"

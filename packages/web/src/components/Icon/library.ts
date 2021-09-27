@@ -57,13 +57,12 @@ import {
   ELEMENT_UL,
   ELEMENT_OL,
   ELEMENT_LINK,
+  ELEMENT_IMAGE,
 } from "@udecode/plate"
 
 // First-Party icons
 import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
 import { ReactComponent as Heading2 } from "../../assets/Heading2.svg"
-
-import { IMAGE } from "../../slate-plugins"
 
 const iconLibrary = {
   /* For icons representing blocks, marks and other slate node types the icon 
@@ -79,7 +78,7 @@ const iconLibrary = {
   [ELEMENT_H1]: Heading1,
   [ELEMENT_H2]: Heading2,
   [ELEMENT_LINK]: FaLink,
-  [IMAGE]: FaImage,
+  [ELEMENT_IMAGE]: FaImage,
   plus: FiPlus,
   cloud: AiFillCloud,
   caretRight: BsCaretRightFill,
