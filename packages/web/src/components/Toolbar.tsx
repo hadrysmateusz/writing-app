@@ -1,3 +1,4 @@
+import styled from "styled-components"
 import {
   ELEMENT_BLOCKQUOTE,
   ELEMENT_CODE_BLOCK,
@@ -50,7 +51,7 @@ const Toolbar = () => {
   }
 
   return (
-    <HeadingToolbar>
+    <ToolbarContainer>
       {/* <button
         onClick={() => {
           console.log(editor)
@@ -138,9 +139,23 @@ const Toolbar = () => {
         getLinkUrl={getLinkUrl}
         icon={<Icon icon={ELEMENT_LINK} />}
       />
-    </HeadingToolbar>
+    </ToolbarContainer>
   )
 }
+
+const ToolbarContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  user-select: none;
+  flex-wrap: wrap;
+  color: #545454;
+  margin: 10px -4px 20px;
+
+  .slate-ToolbarButton-active {
+    color: #eee;
+  }
+`
 
 export default Toolbar
 
