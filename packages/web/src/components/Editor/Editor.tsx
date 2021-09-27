@@ -1,14 +1,7 @@
-import React, {
-  KeyboardEvent,
-  useState,
-  useRef,
-  useEffect,
-  MouseEvent,
-  useMemo,
-} from "react"
+import React, { useState, useRef, useEffect, useMemo } from "react"
 import styled from "styled-components/macro"
 import { ReactEditor } from "slate-react"
-import { Transforms, Path, Editor, Node } from "slate"
+import { Transforms } from "slate"
 import isHotkey from "is-hotkey"
 import {
   Plate,
@@ -22,57 +15,26 @@ import {
   createHorizontalRulePlugin,
   createLinkPlugin,
   createListPlugin,
-  createTablePlugin,
-  createMediaEmbedPlugin,
   createCodeBlockPlugin,
-  createAlignPlugin,
   createBoldPlugin,
   createCodePlugin,
   createItalicPlugin,
-  createHighlightPlugin,
   createUnderlinePlugin,
   createStrikethroughPlugin,
-  createSubscriptPlugin,
-  createSuperscriptPlugin,
-  createFontColorPlugin,
-  createFontBackgroundColorPlugin,
-  createFontSizePlugin,
-  createKbdPlugin,
   createNodeIdPlugin,
   createAutoformatPlugin,
   createResetNodePlugin,
   createSoftBreakPlugin,
   createExitBreakPlugin,
-  createNormalizeTypesPlugin,
   createTrailingBlockPlugin,
   createSelectOnBackspacePlugin,
   createPlateComponents,
   createPlateOptions,
   ELEMENT_BLOCKQUOTE,
   ELEMENT_CODE_BLOCK,
-  ELEMENT_CODE_LINE,
-  ELEMENT_H1,
-  ELEMENT_H2,
-  ELEMENT_H3,
-  ELEMENT_H4,
-  ELEMENT_H5,
-  ELEMENT_H6,
   ELEMENT_PARAGRAPH,
-  MARK_BOLD,
-  MARK_CODE,
-  MARK_ITALIC,
-  MARK_STRIKETHROUGH,
-  MARK_UNDERLINE,
-  getPlatePluginType,
   useStoreEditorRef,
   useEventEditorId,
-  HeadingToolbar,
-  ToolbarElement,
-  ToolbarMark,
-  ToolbarList,
-  ELEMENT_UL,
-  ELEMENT_OL,
-  ELEMENT_LINK,
   ELEMENT_HR,
   ELEMENT_IMAGE,
   isBlockAboveEmpty,
@@ -558,8 +520,6 @@ const EditorComponent: React.FC<{
                 >
                   <Toolbar />
                   {/* <ToolbarSearchHighlight icon={Search} setSearch={setSearch} /> */}
-                  {/* <ToolbarButtonsList /> */}
-                  {/* <ToolbarLink icon={<Link />} />  */}
                   {/* <BallonToolbarMarks /> */}
                   {/* <MentionSelect
                         {...getMentionSelectProps()}
@@ -572,14 +532,6 @@ const EditorComponent: React.FC<{
             </>
             // <>
             //   {/* <HoveringToolbar /> */}
-            //   {/* <Toolbar /> */}
-            //   <StyledNamingInput
-            //     ref={titleRef}
-            //     value={title}
-            //     onChange={handleTitleChange}
-            //     onKeyDown={handleTitleKeydown}
-            //     onRename={handleRename}
-            //   />
             //   <ListContext.Provider value={{ listLevel: 0 }}>
             //     <ListItemContext.Provider value={{ listItemDirectNode: null }}>
             //       <EditableContainer
