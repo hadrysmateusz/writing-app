@@ -39,10 +39,14 @@ export function useModal<T, ModalProps extends object>(
     T,
     ModalProps
   >> = useMemo(() => {
-    return ({ children, ...props }) => {
+    return ({ component: C, children, ...props }) => {
       return isOpen ? (
         <Modal onRequestClose={closeModal} {...props}>
-          {children({ close: closeModal, ...modalProps })}
+          {C ? (
+            <C {...{ close: closeModal, ...modalProps }} />
+          ) : children ? (
+            children({ close: closeModal, ...modalProps })
+          ) : null}
         </Modal>
       ) : null
     }

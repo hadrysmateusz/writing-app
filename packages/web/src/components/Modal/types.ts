@@ -20,6 +20,11 @@ export type UseModalReturn<
   Modal: FunctionComponent<ModalRenderProps<T, ModalProps>>
 }
 
+export type ModalContentProps<T, ModalProps> = {
+  close: CloseModalFn<T>
+} & ModalProps
+
 export interface ModalRenderProps<T, ModalProps> {
-  children: (props: { close: CloseModalFn<T> } & ModalProps) => ReactNode
+  component?: React.ComponentType<ModalContentProps<T, ModalProps>>
+  children?: (props: ModalContentProps<T, ModalProps>) => ReactNode
 }
