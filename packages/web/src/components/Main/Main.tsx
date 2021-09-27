@@ -11,6 +11,8 @@ import { useViewState } from "../ViewState"
 import { useMainState } from "../MainProvider"
 import { useSidebar } from "../SidebarCommon"
 import { EditorStateProvider } from "../EditorStateProvider"
+import { ImageModalProvider } from "../ImageModal"
+import { LinkModalProvider } from "../LinkPrompt"
 
 import { withDelayRender } from "../../withDelayRender"
 import { EditorRenderer } from "../Editor/Editor"
@@ -40,20 +42,24 @@ const EditorAndSecondarySidebar: React.FC = () => {
 
   return (
     <EditorStateProvider>
-      <Split
-        {...getSplitProps()}
-        render={({ getGridProps, getGutterProps }) => (
-          <Grid sidebarWidth={width} {...getGridProps()}>
-            <EditorRenderer />
-            <Gutter
-              {...getGutterProps("column", 1)}
-              isSidebarOpen={secondarySidebar.isOpen}
-              isDragging={isDragging}
-            />
-            <SecondarySidebar ref={ref} />
-          </Grid>
-        )}
-      />
+      <ImageModalProvider>
+        <LinkModalProvider>
+          <Split
+            {...getSplitProps()}
+            render={({ getGridProps, getGutterProps }) => (
+              <Grid sidebarWidth={width} {...getGridProps()}>
+                <EditorRenderer />
+                <Gutter
+                  {...getGutterProps("column", 1)}
+                  isSidebarOpen={secondarySidebar.isOpen}
+                  isDragging={isDragging}
+                />
+                <SecondarySidebar ref={ref} />
+              </Grid>
+            )}
+          />
+        </LinkModalProvider>
+      </ImageModalProvider>
     </EditorStateProvider>
   )
 }

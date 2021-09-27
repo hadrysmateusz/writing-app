@@ -5,8 +5,7 @@ import { ReactEditor } from "slate-react"
 
 import { SaveDocumentFn, useMainState } from "../MainProvider"
 import { deserialize, serialize } from "../Editor"
-import { ImageModalProvider } from "../ImageModal"
-import { LinkModalProvider } from "../LinkPrompt"
+
 import { DEFAULT_EDITOR_VALUE, EditorState } from "../Main"
 
 // import { applyPlugins } from "../../slate-plugin-system"
@@ -157,7 +156,7 @@ export const EditorStateProvider: React.FC = ({ children }) => {
 
   return (
     <EditorStateContext.Provider value={editorState}>
-      <LinkModalProvider>{children}</LinkModalProvider>
+      {children}
     </EditorStateContext.Provider>
   )
 }
