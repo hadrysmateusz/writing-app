@@ -73,7 +73,19 @@ import {
   ELEMENT_UL,
   ELEMENT_OL,
   ELEMENT_LINK,
-  // ToolbarLink,
+  ELEMENT_HR,
+  ELEMENT_IMAGE,
+  isBlockAboveEmpty,
+  isSelectionAtBlockStart,
+  ELEMENT_TODO_LI,
+  ResetBlockTypePluginOptions,
+  SoftBreakPluginOptions,
+  ExitBreakPluginOptions,
+  KEYS_HEADING,
+  createDeserializeCSVPlugin,
+  createDeserializeMDPlugin,
+  createDeserializeHTMLPlugin,
+  createDeserializeAstPlugin,
 } from "@udecode/plate"
 import { EditableProps } from "slate-react/dist/components/editable"
 
@@ -100,6 +112,7 @@ import {
 } from "./styledComponents"
 import useEditorContextMenu from "./useEditorContextMenu"
 import { deserialize } from "."
+import autoformatRules from "./autoformatRules"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading</div>)
 
@@ -154,6 +167,58 @@ export const EditorRenderer: React.FC = () => {
 
 const components = createPlateComponents()
 const options = createPlateOptions()
+
+const resetBlockTypesCommonRule = {
+  types: [ELEMENT_BLOCKQUOTE, ELEMENT_TODO_LI],
+  defaultType: ELEMENT_PARAGRAPH,
+}
+
+export const optionsResetBlockTypePlugin: ResetBlockTypePluginOptions = {
+  rules: [
+    {
+      ...resetBlockTypesCommonRule,
+      hotkey: "Enter",
+      predicate: isBlockAboveEmpty,
+    },
+    {
+      ...resetBlockTypesCommonRule,
+      hotkey: "Backspace",
+      predicate: isSelectionAtBlockStart,
+    },
+  ],
+}
+
+export const optionsSoftBreakPlugin: SoftBreakPluginOptions = {
+  rules: [
+    { hotkey: "shift+enter" },
+    {
+      hotkey: "enter",
+      query: {
+        allow: [ELEMENT_CODE_BLOCK, ELEMENT_BLOCKQUOTE /* , ELEMENT_TD */],
+      },
+    },
+  ],
+}
+
+export const optionsExitBreakPlugin: ExitBreakPluginOptions = {
+  rules: [
+    {
+      hotkey: "mod+enter",
+    },
+    {
+      hotkey: "mod+shift+enter",
+      before: true,
+    },
+    {
+      hotkey: "enter",
+      query: {
+        start: true,
+        end: true,
+        allow: KEYS_HEADING,
+      },
+    },
+  ],
+}
 
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
@@ -416,7 +481,7 @@ const EditorComponent: React.FC<{
       createBlockquotePlugin(),
       createTodoListPlugin(),
       createHeadingPlugin(),
-      // createImagePlugin(),
+      createImagePlugin(),
       createHorizontalRulePlugin(),
       createLinkPlugin(),
       createListPlugin(),
@@ -437,25 +502,27 @@ const EditorComponent: React.FC<{
       // createFontSizePlugin(),
       // createKbdPlugin(),
       createNodeIdPlugin(),
-      // createAutoformatPlugin(optionsAutoformat),
-      // createResetNodePlugin(optionsResetBlockTypePlugin),
-      // createSoftBreakPlugin(optionsSoftBreakPlugin),
-      // createExitBreakPlugin(optionsExitBreakPlugin),
+      createAutoformatPlugin({
+        rules: autoformatRules,
+      }),
+      createResetNodePlugin(optionsResetBlockTypePlugin),
+      createSoftBreakPlugin(optionsSoftBreakPlugin),
+      createExitBreakPlugin(optionsExitBreakPlugin), // TODO: this doesn't seem to work in e.g. an image caption
       // createNormalizeTypesPlugin({
       //   rules: [{ path: [0], strictType: ELEMENT_H1 }],
       // }),
-      // createTrailingBlockPlugin({ type: ELEMENT_PARAGRAPH }),
-      // createSelectOnBackspacePlugin({ allow: [ELEMENT_IMAGE, ELEMENT_HR] }),
+      createTrailingBlockPlugin({ type: ELEMENT_PARAGRAPH }), // TODO: this doesn't seem to always work
+      createSelectOnBackspacePlugin({ allow: [ELEMENT_IMAGE, ELEMENT_HR] }),
     ]
 
-    // plugins.push(
-    //   ...[
-    //     createDeserializeMDPlugin({ plugins }),
-    //     createDeserializeCSVPlugin({ plugins }),
-    //     createDeserializeHTMLPlugin({ plugins }),
-    //     createDeserializeAstPlugin({ plugins }),
-    //   ]
-    // )
+    plugins.push(
+      ...[
+        createDeserializeMDPlugin({ plugins }),
+        createDeserializeCSVPlugin({ plugins }),
+        createDeserializeHTMLPlugin({ plugins }),
+        createDeserializeAstPlugin({ plugins }),
+      ]
+    )
 
     return plugins
   }, [])
