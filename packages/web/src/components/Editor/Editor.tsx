@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo, FC } from "react"
+import React, { useState, useRef, useEffect, useMemo } from "react"
 import styled from "styled-components/macro"
 import { ReactEditor } from "slate-react"
 import { Transforms } from "slate"
@@ -14,13 +14,8 @@ import { EditableProps } from "slate-react/dist/components/editable"
 
 // import HoveringToolbar from "../HoveringToolbar"
 import { NamingInput } from "../RenamingInput"
-import { DocumentDoc, useDatabase } from "../Database"
-import {
-  SaveDocumentFn,
-  useGroupsAPI,
-  useMainState,
-  useTabsState,
-} from "../MainProvider"
+import { DocumentDoc } from "../Database"
+import { SaveDocumentFn, useMainState } from "../MainProvider"
 import TrashBanner from "../TrashBanner"
 import { useDocumentsAPI } from "../MainProvider"
 // import { useUserdata } from "../Userdata"
@@ -41,7 +36,7 @@ import {
 import useEditorContextMenu from "./useEditorContextMenu"
 import { deserialize } from "."
 import pluginsList from "./pluginsList"
-import { formatOptional } from "../../utils"
+import { EditorTabsBar } from "../EditorTabs"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading</div>)
 
@@ -53,20 +48,19 @@ export const EditorRenderer: React.FC = () => {
     currentDocument,
     isDocumentLoading,
     // unsyncedDocs,
-    openDocument,
   } = useMainState()
-  const tabsState = useTabsState()
   // const { secondarySidebar } = useViewState()
   const { /* isModified, */ saveDocument } = useEditorState()
-  const { createDocument } = useDocumentsAPI()
 
   return (
     <OutermosterContainer>
-      {isDocumentLoading ? (
-        <DocumentLoadingState />
-      ) : currentDocument ? (
-        <>
-          {/* <button
+      <EditorTabsBar />
+      <OutermostContainer>
+        {isDocumentLoading ? (
+          <DocumentLoadingState />
+        ) : currentDocument ? (
+          <>
+            {/* <button
             onClick={() => {
               secondarySidebar.toggle()
             }}
@@ -82,34 +76,20 @@ export const EditorRenderer: React.FC = () => {
               : "SYNCED"}
           </div> */}
 
-          {/* <div>{isModified ? "Unsaved changes" : "Saved"}</div> */}
+            {/* <div>{isModified ? "Unsaved changes" : "Saved"}</div> */}
 
-          <EditorTabsContainer
-            onClick={async (e) => {
-              if (e.target === e.currentTarget) {
-                const document = await createDocument(null, undefined, {
-                  switchToDocument: false,
-                })
-                openDocument(document.id, { inNewTab: true })
-              }
-            }}
-          >
-            {Object.keys(tabsState.tabs).map((tabId) => (
-              <EditorTab key={tabId} tabId={tabId} />
-            ))}
-          </EditorTabsContainer>
-
-          <EditorComponent
-            key={currentDocument.id} // Necessary to reload the component on id change
-            currentDocument={currentDocument}
-            saveDocument={saveDocument}
-          />
-        </>
-      ) : (
-        // This div is here to prevent issues with split pane rendering
-        // TODO: add proper empty state
-        <div>No document selected</div>
-      )}
+            <EditorComponent
+              key={currentDocument.id} // Necessary to reload the component on id change
+              currentDocument={currentDocument}
+              saveDocument={saveDocument}
+            />
+          </>
+        ) : (
+          // This div is here to prevent issues with split pane rendering
+          // TODO: add proper empty state
+          <div>No document selected</div>
+        )}
+      </OutermostContainer>
     </OutermosterContainer>
   )
 }
@@ -376,7 +356,7 @@ const EditorComponent: React.FC<{
   }
 
   return (
-    <OutermostContainer>
+    <>
       {currentDocument.isDeleted ?? (
         <TrashBanner documentId={currentDocument.id} />
       )}
@@ -437,67 +417,7 @@ const EditorComponent: React.FC<{
           )}
         </InnerContainer>
       </OuterContainer>
-    </OutermostContainer>
-  )
-}
-
-const initialTabData = { title: "", group: null }
-
-const EditorTab: FC<{ tabId: string }> = ({ tabId }) => {
-  const db = useDatabase()
-  const tabsState = useTabsState()
-  const { findGroupById } = useGroupsAPI()
-  const { openDocument } = useMainState()
-
-  const isActive = tabsState.currentTab === tabId
-  const tab = tabsState.tabs[tabId]
-  const [tabData, setTabData] = useState<{
-    title: string
-    group: string | null
-  }>(initialTabData)
-
-  useEffect(() => {
-    if (tab.documentId === null) {
-      setTabData(initialTabData)
-      return undefined
-    }
-    const sub = db.documents.findOne(tab.documentId).$.subscribe((doc) => {
-      if (!doc) {
-        // TODO: handle this more gracefully
-        throw new Error("Document not found")
-      }
-      const title = formatOptional(doc?.title, "Untitled")
-
-      if (!doc?.parentGroup) {
-        setTabData({
-          title: title,
-          group: "",
-        })
-      } else {
-        findGroupById(doc.parentGroup).then((group) => {
-          setTabData({
-            title: title,
-            group: group.name,
-          })
-        })
-      }
-    })
-    return () => sub.unsubscribe()
-  }, [db.documents, findGroupById, tab.documentId])
-
-  const handleClick = () => {
-    if (isActive) {
-      return
-    }
-    openDocument(tab.documentId)
-  }
-
-  return (
-    <EditorTabContainer isActive={isActive} onClick={handleClick}>
-      <div className="tab-title">{tabData.title}</div>
-      {tabData.group ? <div className="tab-group">{tabData.group}</div> : null}
-      {/* TODO: add close button */}
-    </EditorTabContainer>
+    </>
   )
 }
 
@@ -510,33 +430,6 @@ const StyledNamingInput = styled(NamingInput)`
   font-size: 36px;
   line-height: 54px;
   color: #f8f8f8;
-`
-
-const EditorTabsContainer = styled.div`
-  background: var(--bg-100);
-  height: var(--tab-size);
-  width: 100%;
-  display: flex;
-  align-items: stretch;
-  justify-content: start;
-`
-
-const EditorTabContainer = styled.div<{ isActive: boolean }>`
-  border-radius: var(--tab-corner-radius) var(--tab-corner-radius) 0 0;
-  height: var(--tab-size);
-  padding: 0 16px;
-  font-size: 12px;
-  color: ${({ isActive }) => (isActive ? "#f6f6f6" : "#A3A3A3")};
-  background: ${({ isActive }) => (isActive ? "var(--bg-200)" : "transparent")};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  .tab-group {
-    margin-left: 9px;
-    font-size: 10px;
-    color: ${({ isActive }) => (isActive ? "#717171" : "#545454")};
-  }
 `
 
 const OutermosterContainer = styled.div`
