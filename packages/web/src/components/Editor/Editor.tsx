@@ -378,20 +378,13 @@ const EditorComponent: React.FC<{
 
   return (
     <OutermostContainer>
-      {currentDocument.isDeleted && (
+      {currentDocument.isDeleted ?? (
         <TrashBanner documentId={currentDocument.id} />
       )}
       <OuterContainer>
         <InnerContainer>
           {currentDocument && !isDocumentLoading && currentEditor && (
             <>
-              <StyledNamingInput
-                ref={titleRef}
-                value={title}
-                onChange={handleTitleChange}
-                onKeyDown={handleTitleKeydown}
-                onRename={handleRename}
-              />
               <EditableContainer>
                 <Plate
                   id="main"
@@ -402,6 +395,13 @@ const EditorComponent: React.FC<{
                   initialValue={getInitialEditorValue()}
                   onChange={onChange}
                 >
+                  <StyledNamingInput
+                    ref={titleRef}
+                    value={title}
+                    onChange={handleTitleChange}
+                    onKeyDown={handleTitleKeydown}
+                    onRename={handleRename}
+                  />
                   <Toolbar />
                   {/* <ToolbarSearchHighlight icon={Search} setSearch={setSearch} /> */}
                   {/* <BallonToolbarMarks /> */}
