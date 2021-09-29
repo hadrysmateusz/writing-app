@@ -2,23 +2,15 @@ import styled from "styled-components"
 import {
   ELEMENT_BLOCKQUOTE,
   ELEMENT_CODE_BLOCK,
-  ELEMENT_CODE_LINE,
   ELEMENT_H1,
   ELEMENT_H2,
-  ELEMENT_H3,
-  ELEMENT_H4,
-  ELEMENT_H5,
-  ELEMENT_H6,
-  ELEMENT_PARAGRAPH,
   MARK_BOLD,
   MARK_CODE,
   MARK_ITALIC,
   MARK_STRIKETHROUGH,
-  MARK_UNDERLINE,
   getPlatePluginType,
   useStoreEditorRef,
   useEventEditorId,
-  HeadingToolbar,
   ToolbarElement,
   ToolbarMark,
   ToolbarList,
@@ -59,7 +51,6 @@ const Toolbar = () => {
       >
         Print Editor
       </button> */}
-
       <ToolbarElement
         type={getPlatePluginType(editor, ELEMENT_H1)}
         icon={<Icon icon={ELEMENT_H1} />}
@@ -68,6 +59,7 @@ const Toolbar = () => {
         type={getPlatePluginType(editor, ELEMENT_H2)}
         icon={<Icon icon={ELEMENT_H2} />}
       />
+      <ToolbarSpacer small />
       {/* <ToolbarElement
         type={getPlatePluginType(editor, ELEMENT_H3)}
         icon={"H3"}
@@ -92,6 +84,11 @@ const Toolbar = () => {
         type={getPlatePluginType(editor, ELEMENT_CODE_BLOCK)}
         icon={<Icon icon={ELEMENT_CODE_BLOCK} />}
       />
+      <ToolbarImage
+        icon={<Icon icon={ELEMENT_IMAGE} />}
+        getImageUrl={getImageUrl}
+      />
+      <ToolbarSpacer small />
       <ToolbarList
         type={getPlatePluginType(editor, ELEMENT_UL)}
         icon={<Icon icon={ELEMENT_UL} />}
@@ -100,11 +97,7 @@ const Toolbar = () => {
         type={getPlatePluginType(editor, ELEMENT_OL)}
         icon={<Icon icon={ELEMENT_OL} />}
       />
-      <ToolbarImage
-        icon={<Icon icon={ELEMENT_IMAGE} />}
-        getImageUrl={getImageUrl}
-      />
-
+      <ToolbarSpacer />
       <ToolbarMark
         type={getPlatePluginType(editor, MARK_BOLD)}
         icon={<Icon icon={MARK_BOLD} />}
@@ -135,6 +128,7 @@ const Toolbar = () => {
         clear={getPlatePluginType(editor, MARK_SUPERSCRIPT)}
         icon={<Subscript />}
       /> */}
+      <ToolbarSpacer small />
       <ToolbarLink
         getLinkUrl={getLinkUrl}
         icon={<Icon icon={ELEMENT_LINK} />}
@@ -142,6 +136,12 @@ const Toolbar = () => {
     </ToolbarContainer>
   )
 }
+
+const ToolbarSpacer = styled.div<{
+  small?: boolean
+}>`
+  width: ${({ small }) => (small ? "12" : "36")}px;
+`
 
 const ToolbarContainer = styled.div`
   display: flex;
@@ -152,7 +152,11 @@ const ToolbarContainer = styled.div`
   color: #545454;
   margin: 10px -4px 20px;
 
-  .slate-ToolbarButton-active {
+  .slate-ToolbarButton:hover {
+    color: #7d7d7d;
+  }
+  .slate-ToolbarButton-active,
+  .slate-ToolbarButton-active:hover {
     color: #eee;
   }
 `
