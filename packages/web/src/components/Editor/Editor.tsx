@@ -5,49 +5,10 @@ import { Transforms } from "slate"
 import isHotkey from "is-hotkey"
 import {
   Plate,
-  createReactPlugin,
-  createHistoryPlugin,
-  createParagraphPlugin,
-  createBlockquotePlugin,
-  createTodoListPlugin,
-  createHeadingPlugin,
-  createImagePlugin,
-  createHorizontalRulePlugin,
-  createLinkPlugin,
-  createListPlugin,
-  createCodeBlockPlugin,
-  createBoldPlugin,
-  createCodePlugin,
-  createItalicPlugin,
-  createUnderlinePlugin,
-  createStrikethroughPlugin,
-  createNodeIdPlugin,
-  createAutoformatPlugin,
-  createResetNodePlugin,
-  createSoftBreakPlugin,
-  createExitBreakPlugin,
-  createTrailingBlockPlugin,
-  createSelectOnBackspacePlugin,
   createPlateComponents,
   createPlateOptions,
-  ELEMENT_BLOCKQUOTE,
-  ELEMENT_CODE_BLOCK,
-  ELEMENT_PARAGRAPH,
   useStoreEditorRef,
   useEventEditorId,
-  ELEMENT_HR,
-  ELEMENT_IMAGE,
-  isBlockAboveEmpty,
-  isSelectionAtBlockStart,
-  ELEMENT_TODO_LI,
-  ResetBlockTypePluginOptions,
-  SoftBreakPluginOptions,
-  ExitBreakPluginOptions,
-  KEYS_HEADING,
-  createDeserializeCSVPlugin,
-  createDeserializeMDPlugin,
-  createDeserializeHTMLPlugin,
-  createDeserializeAstPlugin,
 } from "@udecode/plate"
 import { EditableProps } from "slate-react/dist/components/editable"
 
@@ -74,7 +35,7 @@ import {
 } from "./styledComponents"
 import useEditorContextMenu from "./useEditorContextMenu"
 import { deserialize } from "."
-import autoformatRules from "./autoformatRules"
+import pluginsList from "./pluginsList"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading</div>)
 
@@ -130,72 +91,21 @@ export const EditorRenderer: React.FC = () => {
 const components = createPlateComponents()
 const options = createPlateOptions()
 
-const resetBlockTypesCommonRule = {
-  types: [ELEMENT_BLOCKQUOTE, ELEMENT_TODO_LI],
-  defaultType: ELEMENT_PARAGRAPH,
-}
-
-export const optionsResetBlockTypePlugin: ResetBlockTypePluginOptions = {
-  rules: [
-    {
-      ...resetBlockTypesCommonRule,
-      hotkey: "Enter",
-      predicate: isBlockAboveEmpty,
-    },
-    {
-      ...resetBlockTypesCommonRule,
-      hotkey: "Backspace",
-      predicate: isSelectionAtBlockStart,
-    },
-  ],
-}
-
-export const optionsSoftBreakPlugin: SoftBreakPluginOptions = {
-  rules: [
-    { hotkey: "shift+enter" },
-    {
-      hotkey: "enter",
-      query: {
-        allow: [ELEMENT_CODE_BLOCK, ELEMENT_BLOCKQUOTE /* , ELEMENT_TD */],
-      },
-    },
-  ],
-}
-
-export const optionsExitBreakPlugin: ExitBreakPluginOptions = {
-  rules: [
-    {
-      hotkey: "mod+enter",
-    },
-    {
-      hotkey: "mod+shift+enter",
-      before: true,
-    },
-    {
-      hotkey: "enter",
-      query: {
-        start: true,
-        end: true,
-        allow: KEYS_HEADING,
-      },
-    },
-  ],
-}
-
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
   currentDocument: DocumentDoc
   saveDocument: SaveDocumentFn
 }> = ({ currentDocument, saveDocument }) => {
+  const editor = useStoreEditorRef(useEventEditorId("focus"))
+
   const { onChange } = useEditorState()
   const { isDocumentLoading, currentEditor } = useMainState()
   const { renameDocument } = useDocumentsAPI()
-  const editor = useStoreEditorRef(useEventEditorId("focus"))
+  const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
+  // const { isSpellCheckEnabled } = useUserdata()
 
   const [title, setTitle] = useState<string>(currentDocument.title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
-  const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
-  const { isSpellCheckEnabled } = useUserdata()
 
   // TODO: check if this is still needed
   // const fixSelection = () => {
@@ -436,60 +346,6 @@ const EditorComponent: React.FC<{
     [editor, openMenu, saveDocument]
   )
 
-  const pluginsMemo = useMemo(() => {
-    const plugins = [
-      createReactPlugin(),
-      createHistoryPlugin(),
-      createParagraphPlugin(),
-      createBlockquotePlugin(),
-      createTodoListPlugin(),
-      createHeadingPlugin(),
-      createImagePlugin(),
-      createHorizontalRulePlugin(),
-      createLinkPlugin(),
-      createListPlugin(),
-      // createTablePlugin(),
-      // createMediaEmbedPlugin(),
-      createCodeBlockPlugin(),
-      // createAlignPlugin(),
-      createBoldPlugin(),
-      createCodePlugin(),
-      createItalicPlugin(),
-      // createHighlightPlugin(),
-      createUnderlinePlugin(),
-      createStrikethroughPlugin(),
-      // createSubscriptPlugin(),
-      // createSuperscriptPlugin(),
-      // createFontColorPlugin(),
-      // createFontBackgroundColorPlugin(),
-      // createFontSizePlugin(),
-      // createKbdPlugin(),
-      createNodeIdPlugin(),
-      createAutoformatPlugin({
-        rules: autoformatRules,
-      }),
-      createResetNodePlugin(optionsResetBlockTypePlugin),
-      createSoftBreakPlugin(optionsSoftBreakPlugin),
-      createExitBreakPlugin(optionsExitBreakPlugin), // TODO: this doesn't seem to work in e.g. an image caption
-      // createNormalizeTypesPlugin({
-      //   rules: [{ path: [0], strictType: ELEMENT_H1 }],
-      // }),
-      createTrailingBlockPlugin({ type: ELEMENT_PARAGRAPH }), // TODO: this doesn't seem to always work
-      createSelectOnBackspacePlugin({ allow: [ELEMENT_IMAGE, ELEMENT_HR] }),
-    ]
-
-    plugins.push(
-      ...[
-        createDeserializeMDPlugin({ plugins }),
-        createDeserializeCSVPlugin({ plugins }),
-        createDeserializeHTMLPlugin({ plugins }),
-        createDeserializeAstPlugin({ plugins }),
-      ]
-    )
-
-    return plugins
-  }, [])
-
   const getInitialEditorValue = () => {
     return deserialize(currentDocument.content)
   }
@@ -513,7 +369,7 @@ const EditorComponent: React.FC<{
               <EditableContainer>
                 <Plate
                   id="main"
-                  plugins={pluginsMemo}
+                  plugins={pluginsList}
                   components={components}
                   options={options}
                   editableProps={editableProps}
