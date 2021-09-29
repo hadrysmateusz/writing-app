@@ -1,16 +1,17 @@
-import { forwardRef, memo } from "react"
-
-import { SECONDARY_VIEWS } from "../../constants"
+import { FC, forwardRef, memo } from "react"
 
 import {
   SidebarContainer,
   SidebarTabsContainer,
   SidebarTab,
-  SidebarToggle,
+  SidebarToggleButton,
 } from "../SidebarCommon"
-import { useViewState } from "../ViewState"
+import {
+  MultiViewSidebar,
+  SecondarySidebarViews,
+  useViewState,
+} from "../ViewState"
 import { Switch, Case } from "../Conditional"
-import Icon from "../Icon"
 
 import { DashboardView } from "./views"
 
@@ -25,25 +26,58 @@ export const SecondarySidebar = memo(
       <SidebarContainer ref={ref} collapsed={!secondarySidebar.isOpen}>
         {secondarySidebar.isOpen ? (
           <>
-            <SidebarTabsContainer>
-              <SidebarTab isActive={true}>
-                <Icon icon="stats" />
-              </SidebarTab>
-            </SidebarTabsContainer>
+            <SecondarySidebarTabs />
 
             <Switch value={secondarySidebar.currentView}>
               <Case
-                value={SECONDARY_VIEWS.SNIPPETS}
+                value={SecondarySidebarViews.stats}
                 component={<DashboardView />}
               />
-              {/* TODO: better handle the default case */}
-              <Case default component={<div />} />
             </Switch>
           </>
         ) : null}
 
-        <SidebarToggle sidebar={secondarySidebar} />
+        <SecondarySidebarToggle sidebar={secondarySidebar} />
       </SidebarContainer>
     )
   })
 )
+
+export const SecondarySidebarTabs = () => {
+  const { secondarySidebar } = useViewState()
+
+  const handleClick = (view: SecondarySidebarViews) => () => {
+    if (!secondarySidebar.isOpen) {
+      secondarySidebar.open()
+    }
+    secondarySidebar.switchView(view)
+  }
+
+  const isTabActive = (view: SecondarySidebarViews) => {
+    return secondarySidebar.isOpen && secondarySidebar.currentView === view
+  }
+
+  return (
+    <SidebarTabsContainer>
+      <SidebarTab
+        isActive={isTabActive(SecondarySidebarViews.stats)}
+        onClick={handleClick(SecondarySidebarViews.stats)}
+        icon="stats"
+      />
+    </SidebarTabsContainer>
+  )
+}
+
+export const SecondarySidebarToggle: FC<{
+  sidebar: MultiViewSidebar<SecondarySidebarViews>
+}> = ({ sidebar }) => {
+  return (
+    <SidebarToggleButton
+      leftSide={true}
+      isSidebarOpen={sidebar.isOpen}
+      onClick={() => {
+        sidebar.toggle()
+      }}
+    />
+  )
+}

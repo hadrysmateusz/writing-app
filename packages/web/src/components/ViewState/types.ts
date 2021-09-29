@@ -1,7 +1,5 @@
 import { Toggleable } from "../../hooks"
 
-export type SwitchViewFn = (view: PrimarySidebarViews) => void
-
 export enum Side {
   left = "left",
   right = "right",
@@ -38,6 +36,10 @@ export enum SnippetsViews {
   // GROUP = "snippets_group",
 }
 
+export enum SecondarySidebarViews {
+  stats = "stats",
+}
+
 export enum PrimarySidebarViews {
   cloud = "cloud",
   local = "local",
@@ -52,21 +54,24 @@ export type PrimarySidebarSubviews = {
   snippets: SnippetsViews | string
 }
 
-export interface MultiViewSidebar extends SidebarBase {
+export interface MultiViewSidebar<
+  Views = PrimarySidebarViews | SecondarySidebarViews
+> extends SidebarBase {
   currentView: string
-  switchView: SwitchViewFn
+  switchView: (view: Views) => void
 }
 
 export interface SingleViewSidebar extends SidebarBase {}
 
 export interface NavigatorSidebar extends SingleViewSidebar {}
 
-export interface PrimarySidebar extends MultiViewSidebar {
+export interface PrimarySidebar extends MultiViewSidebar<PrimarySidebarViews> {
   currentSubviews: { cloud: string; local: string; snippets: string }
-  switchSubview: (view: string, subview: string) => void
+  switchSubview: (view: PrimarySidebarViews, subview: string) => void
 }
 
-export interface SecondarySidebar extends MultiViewSidebar {}
+export interface SecondarySidebar
+  extends MultiViewSidebar<SecondarySidebarViews> {}
 
 export type Sidebar = NavigatorSidebar | PrimarySidebar | SecondarySidebar
 

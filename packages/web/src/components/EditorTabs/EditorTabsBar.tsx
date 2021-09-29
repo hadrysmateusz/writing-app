@@ -1,14 +1,20 @@
 import { FC } from "react"
 import styled from "styled-components/macro"
+
 import { useDocumentsAPI, useMainState, useTabsState } from "../MainProvider"
+import { PrimarySidebarTabs } from "../PrimarySidebar"
+import { SecondarySidebarTabs } from "../SecondarySidebar"
+import { useViewState } from "../ViewState"
+
 import EditorTab from "./EditorTab"
 
 const EditorTabsBar: FC = () => {
   const { openDocument } = useMainState()
   const tabsState = useTabsState()
   const { createDocument } = useDocumentsAPI()
+  const { primarySidebar, secondarySidebar } = useViewState()
 
-  const handleClick = async (e) => {
+  const handleDoubleClick = async (e) => {
     if (e.target === e.currentTarget) {
       const document = await createDocument(null, undefined, {
         switchToDocument: false,
@@ -18,13 +24,20 @@ const EditorTabsBar: FC = () => {
   }
 
   return (
-    <EditorTabsContainer onClick={handleClick}>
+    <EditorTabsContainer>
+      {!primarySidebar.isOpen ? <PrimarySidebarTabs /> : null}
       {Object.keys(tabsState.tabs).map((tabId) => (
         <EditorTab key={tabId} tabId={tabId} />
       ))}
+      <EditorTabsFiller onDoubleClick={handleDoubleClick} />
+      {!secondarySidebar.isOpen ? <SecondarySidebarTabs /> : null}
     </EditorTabsContainer>
   )
 }
+
+const EditorTabsFiller = styled.div`
+  flex-grow: 1;
+`
 
 const EditorTabsContainer = styled.div`
   background: var(--bg-100);

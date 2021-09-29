@@ -1,28 +1,11 @@
-import React, { FC } from "react"
 import styled from "styled-components/macro"
-
-import { MultiViewSidebar } from "../ViewState"
-
-export const SidebarToggle: FC<{ sidebar: MultiViewSidebar }> = ({
-  sidebar,
-}) => {
-  return (
-    <ToggleButton
-      leftSide={sidebar.id === "secondarySidebar"}
-      isSidebarOpen={sidebar.isOpen}
-      onClick={() => {
-        sidebar.toggle()
-      }}
-    />
-  )
-}
 
 type ToggleButtonProps = {
   isSidebarOpen: boolean
   leftSide: boolean
 }
 
-const ToggleButton = styled.div<ToggleButtonProps>`
+export const SidebarToggleButton = styled.div<ToggleButtonProps>`
   --sidebar-toggle-size: 20px;
   --sidebar-toggle-color: #363636;
 

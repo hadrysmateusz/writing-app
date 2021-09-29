@@ -1,36 +1,15 @@
 import React, { useCallback, useMemo } from "react"
 
-import { useStatelessToggleable, Toggleable } from "../../hooks"
-import { createContext } from "../../utils"
-
 import { useLocalSettings } from "../LocalSettings"
 import defaultLocalSettings from "../LocalSettings/default"
 
-import { ViewState, SwitchViewFn, SidebarID, Side } from "./types"
+import { useStatelessToggleable } from "../../hooks"
+import { createContext } from "../../utils"
+
+import { PrimarySidebarViews, SecondarySidebarViews } from "."
+import { ViewState, SidebarID, Side } from "./types"
 
 export const [ViewStateContext, useViewState] = createContext<ViewState>()
-
-// TODO: remove this, replace with custom methods for each sidebar
-const useSidebarView = (
-  settingName: "secondarySidebarCurrentView" | "primarySidebarCurrentView",
-  toggleable: Toggleable<undefined>
-): [string, SwitchViewFn] => {
-  const { updateLocalSetting, ...localSettings } = useLocalSettings()
-
-  const currentView = localSettings[settingName]
-
-  const switchView: SwitchViewFn = (view) => {
-    const newView = view || defaultLocalSettings.secondarySidebarCurrentView
-
-    updateLocalSetting("secondarySidebarCurrentView", newView)
-
-    if (!currentView) {
-      toggleable.open()
-    }
-  }
-
-  return [currentView, switchView]
-}
 
 const useSidebarToggleable = (
   settingName:
@@ -63,14 +42,13 @@ export const ViewStateProvider: React.FC<{}> = ({ children }) => {
     updateLocalSetting,
     primarySidebarCurrentSubviews,
     primarySidebarCurrentView,
+    secondarySidebarCurrentView,
   } = useLocalSettings()
 
   const switchPrimaryView = useCallback(
-    (view: string) => {
+    (view: PrimarySidebarViews) => {
       const newView = view || defaultLocalSettings.primarySidebarCurrentView
-
       updateLocalSetting("primarySidebarCurrentView", newView)
-
       if (!primarySidebarCurrentView) {
         primaryToggleable.open()
       }
@@ -79,7 +57,7 @@ export const ViewStateProvider: React.FC<{}> = ({ children }) => {
   )
 
   const switchPrimarySubview = useCallback(
-    (view: string, subview: string) => {
+    (view: PrimarySidebarViews, subview: string) => {
       updateLocalSetting("primarySidebarCurrentSubviews", {
         ...primarySidebarCurrentSubviews,
         [view]: subview,
@@ -91,10 +69,16 @@ export const ViewStateProvider: React.FC<{}> = ({ children }) => {
 
   // TODO: create a view switch wrapper for primary sidebar that can handle both views, and subviews
 
-  const [
-    secondarySidebarCurrentView,
-    switchSecondarySidebarView,
-  ] = useSidebarView("secondarySidebarCurrentView", secondaryToggleable)
+  const switchSecondaryView = useCallback(
+    (view: SecondarySidebarViews) => {
+      const newView = view || defaultLocalSettings.secondarySidebarCurrentView
+      updateLocalSetting("secondarySidebarCurrentView", newView)
+      if (!secondarySidebarCurrentView) {
+        secondaryToggleable.open()
+      }
+    },
+    [secondarySidebarCurrentView, secondaryToggleable, updateLocalSetting]
+  )
 
   const primarySidebar = useMemo(
     () => ({
@@ -125,13 +109,9 @@ export const ViewStateProvider: React.FC<{}> = ({ children }) => {
       minWidth: 180,
       maxWidth: 400,
       currentView: secondarySidebarCurrentView,
-      switchView: switchSecondarySidebarView,
+      switchView: switchSecondaryView,
     }),
-    [
-      secondarySidebarCurrentView,
-      secondaryToggleable,
-      switchSecondarySidebarView,
-    ]
+    [secondaryToggleable, secondarySidebarCurrentView, switchSecondaryView]
   )
 
   const navigatorSidebar = useMemo(

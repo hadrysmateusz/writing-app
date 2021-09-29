@@ -38,7 +38,7 @@ import { CgMoreAlt } from "react-icons/cg"
 
 import { FiDownload, FiPlus } from "react-icons/fi"
 
-import { MdStar } from "react-icons/md"
+import { MdStar, MdClose } from "react-icons/md"
 
 import {
   ELEMENT_BLOCKQUOTE,
@@ -59,6 +59,7 @@ import {
 import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
 import { ReactComponent as Heading2 } from "../../assets/Heading2.svg"
 
+// TODO: make the Icon component use the keys of this object as the type for the icon prop
 const iconLibrary = {
   /* For icons representing blocks, marks and other slate node types the icon 
   names use the type names of those nodes for simplicity */
@@ -96,6 +97,7 @@ const iconLibrary = {
   settings: IoMdSettings,
   import: FiDownload,
   clipboard: FaClipboard,
+  close: MdClose,
 }
 
 export default iconLibrary

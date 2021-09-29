@@ -1,16 +1,19 @@
-import { forwardRef, memo } from "react"
+import { FC, forwardRef, memo } from "react"
 
 import {
   SidebarContainer,
   SidebarTabsContainer,
+  SidebarToggleButton,
   SidebarTab,
-  SidebarToggle,
 } from "../SidebarCommon"
-import { useViewState, PrimarySidebarViews } from "../ViewState"
+import {
+  useViewState,
+  PrimarySidebarViews,
+  MultiViewSidebar,
+} from "../ViewState"
 import { Switch, Case } from "../Conditional"
 
 import { Cloud } from "./Cloud"
-import Icon from "../Icon"
 
 /**
  * memo is used to prevent huge amounts of rerenders when resizing the sidebar
@@ -23,38 +26,7 @@ export const PrimarySidebar = memo(
       <SidebarContainer ref={ref} collapsed={!primarySidebar.isOpen}>
         {primarySidebar.isOpen ? (
           <>
-            <SidebarTabsContainer>
-              <SidebarTab
-                isActive={
-                  primarySidebar.currentView === PrimarySidebarViews.cloud
-                }
-                onClick={() => {
-                  primarySidebar.switchView(PrimarySidebarViews.cloud)
-                }}
-              >
-                <Icon icon="cloud" />
-              </SidebarTab>
-              <SidebarTab
-                isActive={
-                  primarySidebar.currentView === PrimarySidebarViews.local
-                }
-                onClick={() => {
-                  primarySidebar.switchView(PrimarySidebarViews.local)
-                }}
-              >
-                <Icon icon="folderClosed" />
-              </SidebarTab>
-              <SidebarTab
-                isActive={
-                  primarySidebar.currentView === PrimarySidebarViews.snippets
-                }
-                onClick={() => {
-                  primarySidebar.switchView(PrimarySidebarViews.snippets)
-                }}
-              >
-                <Icon icon="clipboard" />
-              </SidebarTab>
-            </SidebarTabsContainer>
+            <PrimarySidebarTabs />
 
             <Switch value={primarySidebar.currentView}>
               <Case value={PrimarySidebarViews.cloud} component={<Cloud />} />
@@ -62,8 +34,57 @@ export const PrimarySidebar = memo(
           </>
         ) : null}
 
-        <SidebarToggle sidebar={primarySidebar} />
+        <PrimarySidebarToggle sidebar={primarySidebar} />
       </SidebarContainer>
     )
   })
 )
+
+export const PrimarySidebarTabs = () => {
+  const { primarySidebar } = useViewState()
+
+  const handleClick = (view: PrimarySidebarViews) => () => {
+    if (!primarySidebar.isOpen) {
+      primarySidebar.open()
+    }
+    primarySidebar.switchView(view)
+  }
+
+  const isTabActive = (view: PrimarySidebarViews) => {
+    return primarySidebar.isOpen && primarySidebar.currentView === view
+  }
+
+  return (
+    <SidebarTabsContainer>
+      <SidebarTab
+        isActive={isTabActive(PrimarySidebarViews.cloud)}
+        onClick={handleClick(PrimarySidebarViews.cloud)}
+        icon="cloud"
+      />
+      <SidebarTab
+        isActive={isTabActive(PrimarySidebarViews.local)}
+        onClick={handleClick(PrimarySidebarViews.local)}
+        icon="folderClosed"
+      />
+      <SidebarTab
+        isActive={isTabActive(PrimarySidebarViews.snippets)}
+        onClick={handleClick(PrimarySidebarViews.snippets)}
+        icon="clipboard"
+      />
+    </SidebarTabsContainer>
+  )
+}
+
+export const PrimarySidebarToggle: FC<{
+  sidebar: MultiViewSidebar<PrimarySidebarViews>
+}> = ({ sidebar }) => {
+  return (
+    <SidebarToggleButton
+      leftSide={false}
+      isSidebarOpen={sidebar.isOpen}
+      onClick={() => {
+        sidebar.toggle()
+      }}
+    />
+  )
+}
