@@ -1,8 +1,8 @@
-import React from "react"
+// import React from "react"
 import { RenderElementProps, useFocused, useSelected } from "slate-react"
 import styled from "styled-components/macro"
 import { IMAGE } from "../types"
-import escapeHtml from "escape-html"
+// import escapeHtml from "escape-html"
 
 const StyledImage = styled.img<{ selected: boolean; focused: boolean }>`
   display: block;

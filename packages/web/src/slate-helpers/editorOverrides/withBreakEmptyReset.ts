@@ -1,5 +1,5 @@
-import { Editor, Transforms } from "slate"
-import { DEFAULT, isBlockTextEmpty } from ".."
+import { Editor /* , Transforms */ } from "slate"
+// import { DEFAULT, isBlockTextEmpty } from ".."
 
 /**
  * On insert break at the start of an empty block in types,

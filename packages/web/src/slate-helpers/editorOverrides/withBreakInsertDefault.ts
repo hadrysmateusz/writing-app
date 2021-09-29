@@ -1,4 +1,4 @@
-import { Transforms, Editor } from "slate"
+// import { Transforms, Editor } from "slate"
 import { ReactEditor } from "slate-react"
 
 interface BreakInsertDefaultOptions {
@@ -29,7 +29,7 @@ export const withBreakInsertDefault = ({
   const { insertBreak } = editor
 
   editor.insertBreak = () => {
-    const oldSelection = editor.selection
+    // const oldSelection = editor.selection
     insertBreak()
 
     // if (oldSelection === null) {

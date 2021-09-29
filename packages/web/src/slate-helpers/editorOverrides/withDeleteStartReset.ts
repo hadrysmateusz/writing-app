@@ -1,5 +1,5 @@
-import { Editor, Point, Range, Transforms } from "slate"
-import { DEFAULT } from ".."
+import { Editor /* , Point, Range, Transforms */ } from "slate"
+// import { DEFAULT } from ".."
 
 /**
  * On delete at the start of an empty block in types,

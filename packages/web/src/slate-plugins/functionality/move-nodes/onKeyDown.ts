@@ -1,4 +1,4 @@
-import { Transforms, Path, Editor } from "slate"
+import { /* Transforms, Path, */ Editor } from "slate"
 
 // import { ReactEditor } from "slate-react"
 // import {
