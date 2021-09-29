@@ -22,8 +22,11 @@ export const SidebarDocumentItem: React.FC<{
     DocumentContextMenu,
     getEditableProps,
   } = useDocumentContextMenu(document)
-  const { /*  groups, */ currentEditor, switchDocument } = useMainState()
-  const { unsyncedDocs } = useMainState()
+  const {
+    /*  groups, */ currentEditor,
+    switchDocument,
+    unsyncedDocs,
+  } = useMainState()
 
   const isUnsynced = unsyncedDocs.includes(document.id)
 

@@ -80,7 +80,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [groups, setGroups] = useState<GroupDoc[]>([])
   // (this might actually be very wrong) storing documents here is unnecessary (they're not used anywhere (and probably neither are groups)) and because couchdb is replicated locally it's probably not much of a performance improvement TODO: remove it and investigate removing groups
-  const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
   const [isDocumentLoading, setIsDocumentLoading] = useState<boolean>(true)
   // Current document - the actual document object of the current document
@@ -348,22 +347,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
   //   [currentEditor, fetchDocument, setCurrentEditor]
   // )
 
-  const updateDocumentsList = useCallback(
-    (documents: DocumentDoc[]) => {
-      if (!documents) {
-        throw new Error("Couldn't fetch documents")
-      }
-      // If there are no documents, throw an error - it will be caught and the currentEditor will be set to null
-      if (documents.length === 0) {
-        setDocuments([])
-        setCurrentEditor(null)
-      } else {
-        setDocuments(documents)
-      }
-    },
-    [setCurrentEditor]
-  )
-
   /**
    * Fetches all things required for the app to run
    */
@@ -392,7 +375,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
         setIsInitialLoad(false)
         setGroups(newGroups)
-        updateDocumentsList(newDocuments)
+        // updateDocumentsList(newDocuments)
         setFavorites(newFavorites)
         setIsLoading(false)
       })()
@@ -406,7 +389,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
     fetchDocument,
     findGroupById,
     switchDocument,
-    updateDocumentsList,
   ])
 
   /**
@@ -415,13 +397,8 @@ export const MainProvider: React.FC = memo(({ children }) => {
    * TODO: needs a significant rewrite
    */
   useEffect(() => {
-    let documentsSub: Subscription | undefined
     let groupsSub: Subscription | undefined
     let favoritesSub: Subscription | undefined
-
-    documentsSub = documentsQuery.$.subscribe((newDocuments) => {
-      updateDocumentsList(newDocuments)
-    })
 
     groupsSub = groupsQuery.$.subscribe((newGroups) => {
       setGroups(newGroups)
@@ -432,9 +409,9 @@ export const MainProvider: React.FC = memo(({ children }) => {
     })
 
     return () => {
-      cancelSubscriptions(documentsSub, groupsSub, favoritesSub)
+      cancelSubscriptions(groupsSub, favoritesSub)
     }
-  }, [documentsQuery.$, favoritesQuery.$, groupsQuery.$, updateDocumentsList])
+  }, [favoritesQuery.$, groupsQuery.$])
 
   /**
    * Changes the sorting options for the documents list
@@ -940,7 +917,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
         isDocumentLoading,
         groups,
         favorites,
-        documents,
         isLoading,
         sorting,
         unsyncedDocs,
