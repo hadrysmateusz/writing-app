@@ -13,7 +13,6 @@ export type MainState = {
   sorting: Sorting
   unsyncedDocs: string[]
   changeSorting: ChangeSortingFn
-  switchDocument: SwitchDocumentFn
   updateCurrentDocument: UpdateCurrentDocumentFn
   openDocument: OpenDocumentFn
 }

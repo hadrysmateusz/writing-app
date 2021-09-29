@@ -24,7 +24,7 @@ export const SidebarDocumentItem: React.FC<{
   } = useDocumentContextMenu(document)
   const {
     /*  groups, */ currentEditor,
-    switchDocument,
+    openDocument,
     unsyncedDocs,
   } = useMainState()
 
@@ -78,14 +78,9 @@ export const SidebarDocumentItem: React.FC<{
   //   groups,
   // ])
 
-  const openDocument = useCallback(() => {
-    switchDocument(document.id)
-  }, [document.id, switchDocument])
-
   const handleClick = useCallback(() => {
-    // TODO: the fact that this function uses the prefetched documents list makes it impossible to preview documents in trash
-    openDocument()
-  }, [openDocument])
+    openDocument(document.id)
+  }, [document.id, openDocument])
 
   const modifiedAt = moment(document.modifiedAt).format("LL")
 

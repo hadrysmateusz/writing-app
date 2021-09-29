@@ -12,7 +12,7 @@ const DocumentTreeItem: React.FC<{
   depth?: number
   icon?: string
 }> = ({ document, depth = 0, icon }) => {
-  const { switchDocument } = useMainState()
+  const { openDocument } = useMainState()
 
   const {
     openMenu,
@@ -27,13 +27,9 @@ const DocumentTreeItem: React.FC<{
     document.title,
   ])
 
-  const openDocument = useCallback(() => {
-    switchDocument(document.id)
-  }, [document.id, switchDocument])
-
   const handleClick = useCallback(() => {
-    openDocument()
-  }, [openDocument])
+    openDocument(document.id)
+  }, [document.id, openDocument])
 
   const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation()

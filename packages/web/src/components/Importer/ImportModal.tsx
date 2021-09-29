@@ -35,7 +35,7 @@ export const ImportModalContent: React.FC<{
 }> = ({ close }) => {
   const { createDocument } = useDocumentsAPI()
   const { primarySidebar } = useViewState()
-  const { switchDocument } = useMainState()
+  const { openDocument } = useMainState()
 
   const handleSuccess = useCallback(
     async (result: any, format: "md") => {
@@ -74,12 +74,12 @@ export const ImportModalContent: React.FC<{
       }
 
       const docId = documents[0].id
-      switchDocument(docId)
+      openDocument(docId)
 
       // TODO: when selecting target collection for imports is implemented this should be replaced with the groupId
       primarySidebar.switchSubview(PrimarySidebarViews.cloud, CloudViews.INBOX)
     },
-    [createDocument, primarySidebar, switchDocument]
+    [createDocument, primarySidebar, openDocument]
   )
 
   const importFile = useCallback(

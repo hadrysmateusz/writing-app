@@ -23,7 +23,7 @@ export const ConfirmDeleteModalContent: FunctionComponent<ConfirmDeleteModalProp
   close,
 }) => {
   const { findDocumentById } = useDocumentsAPI()
-  const { switchDocument } = useMainState()
+  const { openDocument } = useMainState()
 
   const permanentlyRemoveDocument = useCallback(
     async (documentId: string) => {
@@ -34,13 +34,13 @@ export const ConfirmDeleteModalContent: FunctionComponent<ConfirmDeleteModalProp
 
       try {
         await original.remove()
-        switchDocument(null)
+        openDocument(null)
       } catch (error) {
         // TODO: better surface this error to the user
         console.error("The document was not removed")
       }
     },
-    [findDocumentById, switchDocument]
+    [findDocumentById, openDocument]
   )
 
   const handleConfirm = useCallback(() => {

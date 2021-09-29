@@ -302,49 +302,12 @@ export const MainProvider: React.FC = memo(({ children }) => {
     [db.groups]
   )
 
-  const setCurrentEditor = useCallback(
-    (value: string | null) => {
-      updateLocalSetting("currentEditor", value)
-    },
-    [updateLocalSetting]
-  )
-
-  // /**
-  //  * This function uses an id argument instead of 'currentEditor' because it's supposed to be called from switchDocument before the 'currentEditor' value is updated
-  //  */
-  // const fetchDocument = useCallback(
-  //   async (id: string | null) => {
-  //     // resetEditor()
-
-  //     if (id === null) {
-  //       setCurrentDocument(null)
-  //       return
-  //     }
-
-  //     setIsDocumentLoading(true)
-
-  //     const documentDoc = await findDocumentById(id, true)
-
-  //     setIsDocumentLoading(false)
-  //     setCurrentDocument(documentDoc)
+  // TODO: remove currentEditor from local settings as it's replaced by tabs.currentTabs
+  // const setCurrentEditor = useCallback(
+  //   (value: string | null) => {
+  //     updateLocalSetting("currentEditor", value)
   //   },
-  //   [findDocumentById]
-  // )
-
-  // TODO: remove this temporary alias
-  const switchDocument = openDocument
-
-  // /**
-  //  * Switches the currently open document
-  //  */
-  // const switchDocument: SwitchDocumentFn = useCallback(
-  //   async (id) => {
-  //     if (currentEditor === id) return
-
-  //     setCurrentEditor(id)
-  //     return fetchDocument(id)
-  //   },
-  //   [currentEditor, fetchDocument, setCurrentEditor]
+  //   [updateLocalSetting]
   // )
 
   /**
@@ -354,24 +317,16 @@ export const MainProvider: React.FC = memo(({ children }) => {
     if (isInitialLoad) {
       ;(async () => {
         const groupsPromise = groupsQuery.exec()
-        const documentsPromise = documentsQuery.exec()
         // TODO: favorites can probably be moved into a separate hook as they are not needed for first load
         const favoritesPromise = favoritesQuery.exec()
 
         // TODO: this can fail if root group can't be found / created - handle this properly
-        const [newGroups, newDocuments, newFavorites] = await Promise.all([
+        const [newGroups, newFavorites] = await Promise.all([
           groupsPromise,
-          documentsPromise,
           favoritesPromise,
         ])
 
         fetchDocument(currentEditor)
-
-        // if current editor is set to null and there are new documents, switch to the first one
-        // TODO: I should probably rethink my approach to this empty state
-        if (newDocuments && newDocuments[0] && currentEditor === null) {
-          switchDocument(newDocuments[0].id)
-        }
 
         setIsInitialLoad(false)
         setGroups(newGroups)
@@ -388,7 +343,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
     groupsQuery,
     fetchDocument,
     findGroupById,
-    switchDocument,
+    openDocument,
   ])
 
   /**
@@ -766,7 +721,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
       })
 
       if (switchToDocument) {
-        switchDocument(docId)
+        openDocument(docId)
       }
 
       if (switchToGroup) {
@@ -786,7 +741,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
       return newDocument
     },
-    [db.documents, primarySidebar, switchDocument]
+    [db.documents, primarySidebar, openDocument]
   )
 
   /**
@@ -920,7 +875,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
         isLoading,
         sorting,
         unsyncedDocs,
-        switchDocument,
         updateCurrentDocument,
         changeSorting,
         openDocument,
