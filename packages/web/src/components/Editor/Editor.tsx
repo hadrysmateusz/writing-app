@@ -187,6 +187,7 @@ const EditorComponent: React.FC<{
   currentDocument: DocumentDoc
   saveDocument: SaveDocumentFn
 }> = ({ currentDocument, saveDocument }) => {
+  const { onChange } = useEditorState()
   const { isDocumentLoading, currentEditor } = useMainState()
   const { renameDocument } = useDocumentsAPI()
   const editor = useStoreEditorRef(useEventEditorId("focus"))
@@ -517,6 +518,7 @@ const EditorComponent: React.FC<{
                   options={options}
                   editableProps={editableProps}
                   initialValue={getInitialEditorValue()}
+                  onChange={onChange}
                 >
                   <Toolbar />
                   {/* <ToolbarSearchHighlight icon={Search} setSearch={setSearch} /> */}

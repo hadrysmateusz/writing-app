@@ -1,23 +1,21 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react"
+import React, { useCallback, useState, useMemo } from "react"
 import { isEqual } from "lodash"
 import { Descendant, BaseEditor } from "slate"
 import { ReactEditor } from "slate-react"
-
-import { SaveDocumentFn, useMainState } from "../MainProvider"
-import { deserialize, serialize } from "../Editor"
-
-import { DEFAULT_EDITOR_VALUE, EditorState } from "../Main"
-
-// import { applyPlugins } from "../../slate-plugin-system"
-// import { useDevUtils } from "../../dev-tools"
-// import { plugins } from "../../pluginsList"
-import { withDelayRender } from "../../withDelayRender"
-import { createContext } from "../../utils"
 import {
   useEventEditorId,
   useStoreEditorState,
   useStoreEditorValue,
 } from "@udecode/plate-core"
+
+import { SaveDocumentFn, useMainState } from "../MainProvider"
+import { /* deserialize, */ serialize } from "../Editor"
+
+// import { DEFAULT_EDITOR_VALUE, EditorState } from "../Main"
+
+// import { useDevUtils } from "../../dev-tools"
+// import { withDelayRender } from "../../withDelayRender"
+import { createContext } from "../../utils"
 
 type ImageElement = {
   type: "image"
@@ -79,21 +77,24 @@ export const EditorStateProvider: React.FC = ({ children }) => {
   //   createEditorObject()
   // }, [createEditorObject])
 
-  // /**
-  //  * onChange event handler for the Slate component
-  //  */
-  // const onChange = useCallback(
-  //   (value: Descendant[]) => {
-  //     // TODO: I could debounced-save in here
-  //     setEditorValue(value)
+  /**
+   * onChange event handler for the Slate component
+   */
+  const onChange = useCallback(
+    (value: Descendant[]) => {
+      // // TODO: I could debounced-save in here
+      // setEditorValue(value)
 
-  //     // if the content has changed, set the modified flag (skip the expensive check if it's already true)
-  //     if (!isModified) {
-  //       setIsModified(!isEqual(editorValue, value))
-  //     }
-  //   },
-  //   [editorValue, isModified]
-  // )
+      // if the content has changed, set the modified flag (skip the expensive check if it's already true)
+      if (!isModified) {
+        const hasChanged = !isEqual(editorValue, value)
+        if (hasChanged) {
+          setIsModified(true)
+        }
+      }
+    },
+    [editorValue, isModified]
+  )
 
   /**
    * Save document
@@ -108,22 +109,18 @@ export const EditorStateProvider: React.FC = ({ children }) => {
 
     const nodes = editor.children as Descendant[]
 
-    console.log("nodes", nodes)
-    console.log("serialized nodes", serialize(nodes))
+    if (isModified) {
+      const updatedDocument =
+        (await currentDocument?.atomicUpdate((doc) => {
+          doc.content = serialize(nodes)
+          return doc
+        })) || null
 
-    // TODO: uncomment the if statement when I restore the 'isModified' functionality
-    // if (isModified) {
-    const updatedDocument =
-      (await currentDocument?.atomicUpdate((doc) => {
-        doc.content = serialize(nodes)
-        return doc
-      })) || null
-
-    setIsModified(false)
-    return updatedDocument
-    // }
-    // return null
-  }, [currentDocument, editor /* isModified */])
+      setIsModified(false)
+      return updatedDocument
+    }
+    return null
+  }, [currentDocument, editor, isModified])
 
   // useDevUtils({ value: editorValue, editor })
 
@@ -135,8 +132,9 @@ export const EditorStateProvider: React.FC = ({ children }) => {
       saveDocument,
       setIsModified,
       setEditorValue: () => null,
+      onChange,
     }),
-    [editorValue, isModified, saveDocument]
+    [editorValue, isModified, onChange, saveDocument]
   )
 
   // return editor ? (
