@@ -35,7 +35,8 @@ declare module "slate" {
   }
 }
 
-const NoEditorState = withDelayRender(1000)(() => <div>No editor object</div>)
+// TODO: I will probably have to replace this with some other empty state
+// const NoEditorState = withDelayRender(1000)(() => <div>No editor object</div>)
 
 export const [EditorStateContext, useEditorState] = createContext<any>() // TODO: fix the typings when I stabilize the api
 

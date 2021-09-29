@@ -45,12 +45,11 @@ async function createWindow() {
     minWidth: 300, // The minWidth shouldn't be too high because it would prevent multi-tasking on most screens
     minHeight: 600,
     title: APP_NAME,
-    // devTools: false, TODO: consider setting this in prod to prevent opening the devtools
     // frame: false,
     acceptFirstMouse: true,
     backgroundColor: "#131313",
     webPreferences: {
-      nodeIntegration: false,
+      // devTools: false, TODO: consider setting this in prod to prevent opening the devtools
       // TODO: this might not be needed - more research required
       // https://www.electronjs.org/docs/tutorial/security#15-disable-the-remote-module
       // enableRemoteModule: false,

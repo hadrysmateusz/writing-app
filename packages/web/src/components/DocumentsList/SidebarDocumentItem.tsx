@@ -131,17 +131,17 @@ const DeleteButton = styled.div`
   }
 `
 
-const Group = styled.div`
-  font-size: 10px;
-  line-height: 16px;
-  text-transform: uppercase;
-  font-weight: 500;
-  color: #717171;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 2px;
-`
+// const Group = styled.div`
+//   font-size: 10px;
+//   line-height: 16px;
+//   text-transform: uppercase;
+//   font-weight: 500;
+//   color: #717171;
+//   white-space: nowrap;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   margin-bottom: 2px;
+// `
 
 const Title = styled.div<{ isUnsynced: boolean }>`
   width: 100%;

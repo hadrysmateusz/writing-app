@@ -169,8 +169,6 @@ const useEditorContextMenu = () => {
         if (base === "node") {
           let slateNode: Node
 
-          console.log(node)
-
           try {
             slateNode = ReactEditor.toSlateNode(editor, node!)
           } catch (error) {
@@ -238,7 +236,8 @@ const useEditorContextMenu = () => {
 
       return <ContextMenu>{renderItems()}</ContextMenu>
     },
-    // TODO: I'm not sure but I think ContextMenu is excluded from dependencies to solve rerender issues, I should find a way to fix this
+    // TODO: I'm not sure but I think ContextMenu is excluded from dependencies to solve rerender issues, I should find a way to fix this (the warning is disabled for now)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [/* ContextMenu,  */ contextMenuType, editor, handleInsertHorizontalRule]
   )
 

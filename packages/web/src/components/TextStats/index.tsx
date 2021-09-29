@@ -17,7 +17,7 @@ const TextStats: FC = () => {
 
   const [chars, setChars] = useState(0)
   const [words, setWords] = useState(0)
-  const [sentences, setSentences] = useState(0)
+  // const [sentences, setSentences] = useState(0)
   const [readingTime, setReadingTime] = useState(0)
 
   useEffect(() => {
@@ -29,13 +29,13 @@ const TextStats: FC = () => {
 
     const _chars = text.length // TODO: filter newlines (will need to account for different line endings)
     const _words = size(tree, "WordNode")
-    const _sentences = size(tree, "SentenceNode")
+    // const _sentences = size(tree, "SentenceNode")
     // This uses words as defined by 5 characters instead of actual space-separated words TODO: make sure this is a good approach
     const _readingTime = Math.round(_chars / 5 / (WPM / 60)) // In seconds
 
     setChars(_chars)
     setWords(_words)
-    setSentences(_sentences)
+    // setSentences(_sentences)
     setReadingTime(_readingTime)
   }, [editorContent])
 

@@ -79,6 +79,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
   const [isLoading, setIsLoading] = useState(true)
   const [groups, setGroups] = useState<GroupDoc[]>([])
+  // (this might actually be very wrong) storing documents here is unnecessary (they're not used anywhere (and probably neither are groups)) and because couchdb is replicated locally it's probably not much of a performance improvement TODO: remove it and investigate removing groups
   const [documents, setDocuments] = useState<DocumentDoc[]>([])
   const [favorites, setFavorites] = useState<DocumentDoc[]>([])
   const [isDocumentLoading, setIsDocumentLoading] = useState<boolean>(true)
@@ -168,8 +169,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
   useEffect(() => {
     // Subscribes to changes on the documents collection
     const sub = db.documents.$.subscribe((event) => {
-      console.log(event)
-
       const { rxDocument } = event
 
       // TODO: I think this might mark documents as changed even when the change is coming FROM the server, make sure that doesn't happen
@@ -466,8 +465,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
         ? m.mudder(prevPosition, "Z", 1)
         : m.mudder(1))[0]
 
-      console.log(lastSibling, newPosition)
-
       let newGroup: GroupDoc | undefined
 
       try {
@@ -556,8 +553,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
       targetId
     ) => {
       try {
-        // debugger
-
         if (targetId === GROUP_TREE_ROOT) {
           targetId = null
         }
@@ -727,13 +722,11 @@ export const MainProvider: React.FC = memo(({ children }) => {
       }
       // TODO: this can be extracted for use with other collections
       // TODO: handle errors (especially the ones thrown in pre-middleware because they mean the operation wasn't applied) (maybe handle them in more specialized functions like rename and save)
-      console.log("saving")
       const updatedDocument: DocumentDoc = await original.update(
         typeof updater === "function"
           ? { $set: updater(original) }
           : { $set: updater }
       )
-      console.log("saved")
       return updatedDocument
     },
     [findDocumentById]

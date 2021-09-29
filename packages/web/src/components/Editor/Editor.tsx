@@ -172,7 +172,6 @@ const EditorComponent: React.FC<{
 
   // When the document title changes elsewhere, update the state here
   useEffect(() => {
-    console.log("updating title")
     setTitle(currentDocument.title)
   }, [currentDocument.title])
 
