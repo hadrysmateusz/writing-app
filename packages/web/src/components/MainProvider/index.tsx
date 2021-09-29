@@ -78,9 +78,8 @@ export const MainProvider: React.FC = memo(({ children }) => {
   const syncState = useSyncState()
 
   const [isLoading, setIsLoading] = useState(true)
+  // TODO: remove the central groups list and replace with querying the local database where needed
   const [groups, setGroups] = useState<GroupDoc[]>([])
-  // (this might actually be very wrong) storing documents here is unnecessary (they're not used anywhere (and probably neither are groups)) and because couchdb is replicated locally it's probably not much of a performance improvement TODO: remove it and investigate removing groups
-  const [favorites, setFavorites] = useState<DocumentDoc[]>([])
   const [isDocumentLoading, setIsDocumentLoading] = useState<boolean>(true)
   // Current document - the actual document object of the current document
   // TODO: when tabs are implemented this should probably be handled by individual tabs and shared through context
@@ -317,21 +316,16 @@ export const MainProvider: React.FC = memo(({ children }) => {
     if (isInitialLoad) {
       ;(async () => {
         const groupsPromise = groupsQuery.exec()
-        // TODO: favorites can probably be moved into a separate hook as they are not needed for first load
-        const favoritesPromise = favoritesQuery.exec()
 
         // TODO: this can fail if root group can't be found / created - handle this properly
-        const [newGroups, newFavorites] = await Promise.all([
-          groupsPromise,
-          favoritesPromise,
-        ])
+        const [newGroups] = await Promise.all([groupsPromise])
 
         fetchDocument(currentEditor)
 
         setIsInitialLoad(false)
         setGroups(newGroups)
         // updateDocumentsList(newDocuments)
-        setFavorites(newFavorites)
+        // setFavorites(newFavorites)
         setIsLoading(false)
       })()
     }
@@ -353,18 +347,13 @@ export const MainProvider: React.FC = memo(({ children }) => {
    */
   useEffect(() => {
     let groupsSub: Subscription | undefined
-    let favoritesSub: Subscription | undefined
 
     groupsSub = groupsQuery.$.subscribe((newGroups) => {
       setGroups(newGroups)
     })
 
-    favoritesSub = favoritesQuery.$.subscribe((newFavorites) => {
-      setFavorites(newFavorites)
-    })
-
     return () => {
-      cancelSubscriptions(groupsSub, favoritesSub)
+      cancelSubscriptions(groupsSub)
     }
   }, [favoritesQuery.$, groupsQuery.$])
 
@@ -871,7 +860,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
         currentDocument,
         isDocumentLoading,
         groups,
-        favorites,
         isLoading,
         sorting,
         unsyncedDocs,

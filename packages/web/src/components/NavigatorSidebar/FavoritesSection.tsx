@@ -1,16 +1,30 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 import { SectionHeader, SectionContainer } from "./Common"
 import DocumentTreeItem from "./DocumentTreeItem"
-import { useMainState } from "../MainProvider"
 import { useToggleable } from "../../hooks"
 import { TreeItem } from "../TreeItem"
+import { DocumentDoc, useDatabase } from "../Database"
 
 /* The number of favorites displayed without toggling */
 const LIMIT_FAVORITES = 4
 
 export const FavoritesSection: React.FC = React.memo(() => {
-  const { favorites } = useMainState()
+  const db = useDatabase()
+  const [favorites, setFavorites] = useState<DocumentDoc[]>([])
+
+  useEffect(() => {
+    const sub = db.documents
+      .findNotRemoved()
+      .where("isFavorite")
+      .eq(true)
+      // .sort({ [index]: direction })
+      .$.subscribe((newFavorites) => {
+        setFavorites(newFavorites)
+      })
+    return () => sub.unsubscribe()
+  }, [db.documents])
+
   const { isOpen, open, close } = useToggleable(false)
 
   // TODO: limit the number of favorites fetched in the initial query

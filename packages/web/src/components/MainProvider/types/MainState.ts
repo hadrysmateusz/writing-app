@@ -7,7 +7,7 @@ export type MainState = {
   isDocumentLoading: boolean
   groups: GroupDoc[]
   // documents: DocumentDoc[]
-  favorites: DocumentDoc[]
+  // favorites: DocumentDoc[]
   currentDocument: DocumentDoc | null
   currentEditor: string | null
   sorting: Sorting
