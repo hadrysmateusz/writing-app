@@ -15,6 +15,7 @@ export type MainState = {
   changeSorting: ChangeSortingFn
   switchDocument: SwitchDocumentFn
   updateCurrentDocument: UpdateCurrentDocumentFn
+  openDocument: OpenDocumentFn
 }
 
 export type ChangeSortingFn = (
@@ -24,7 +25,12 @@ export type ChangeSortingFn = (
 
 export type SaveDocumentFn = () => Promise<DocumentDocType | null> // TODO: move
 
-export type SwitchDocumentFn = (documentId: string | null) => void
+export type OpenDocumentFn = (
+  documentId: string | null,
+  options?: { inNewTab?: boolean }
+) => Promise<DocumentDoc | null>
+
+export type SwitchDocumentFn = OpenDocumentFn
 
 export type UpdateCurrentDocumentFn = (
   updater: Updater<DocumentDoc, DocumentDocType>

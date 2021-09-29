@@ -16,7 +16,7 @@ import { useDocumentsAPI } from "./MainProvider"
 export const useDocumentContextMenu = (document: DocumentDoc) => {
   const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const { groups } = useMainState()
+  const { groups /* , currentEditor */ } = useMainState()
   const {
     removeDocument,
     renameDocument,
@@ -71,10 +71,9 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   )
 
   // const isCurrent = useMemo(() => {
-  //   // TODO: something doesn't work here
-  //   if (currentDocument === null) return false
-  //   return document.id === currentDocument.id
-  // }, [currentDocument, document.id])
+  //   if (currentEditor === null) return false
+  //   return document.id === currentEditor
+  // }, [currentEditor, document.id])
 
   // TODO: add item for exporting
 

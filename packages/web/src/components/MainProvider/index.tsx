@@ -1,4 +1,11 @@
-import React, { useState, useCallback, useEffect, useMemo, memo } from "react"
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  memo,
+  useReducer,
+} from "react"
 import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 import mudder from "mudder"
@@ -30,16 +37,17 @@ import {
   RemoveGroupFn,
   PermanentlyRemoveDocumentFn,
   UpdateCurrentDocumentFn,
-  SwitchDocumentFn,
   MainState,
   ChangeSortingFn,
   Sorting,
   FindGroupByIdFn,
   UpdateGroupFn,
   MoveGroupFn,
+  OpenDocumentFn,
 } from "./types"
 import { cancelSubscriptions } from "./helpers"
 import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
+import { tabsInit, TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
 
 const m = mudder.base62
 
@@ -54,12 +62,18 @@ export const [DocumentsAPIContext, useDocumentsAPI] = createContext<
   DocumentsAPI
 >()
 
+export const [TabsStateContext, useTabsState] = createContext<TabsState>()
+
 // TODO: make methods using IDs to find documents/groups/etc accept the actual RxDB document object instead to skip the query
 // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
 
 export const MainProvider: React.FC = memo(({ children }) => {
   const db = useDatabase()
-  const { currentEditor, unsyncedDocs, updateLocalSetting } = useLocalSettings()
+  const {
+    currentEditor: initialCurrentEditor,
+    unsyncedDocs,
+    updateLocalSetting,
+  } = useLocalSettings()
   const { primarySidebar } = useViewState()
   const syncState = useSyncState()
 
@@ -80,6 +94,27 @@ export const MainProvider: React.FC = memo(({ children }) => {
   // TODO: make this a per-collection setting
   // TODO: make sorting not take uppercase/lowercase into consideration (probably by having a separate 'slugTitle' field)
   const [sorting, setSorting] = useState<Sorting>(defaultSorting)
+
+  const [tabsState, tabsDispatch] = useReducer<TabsReducer>(
+    tabsReducer((value: string) => {
+      updateLocalSetting("currentEditor", value)
+    }),
+    tabsInit(/* initialCurrentEditor */ "d1afc7c6-0aaf-490f-8dcd-da64b5e3cf72")
+    // TODO: I need to save all tabs (with their tabIds and documentIds) to restore it like this
+  )
+
+  console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
+
+  // TODO: figure out if I should keep this or just use tabsState.currentTab
+  const currentEditor = tabsState.tabs[tabsState.currentTab].documentId
+  // console.log(
+  //   "rendering mainprovider",
+  //   tabsState,
+  //   tabsState.currentTab,
+  //   tabsState.tabs[tabsState.currentTab],
+  //   currentEditor
+  // )
+
   // The document deletion confirmation modal
   const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<
     undefined,
@@ -184,6 +219,62 @@ export const MainProvider: React.FC = memo(({ children }) => {
     [db.documents]
   )
 
+  const fetchDocument = useCallback(
+    async function (documentId: string | null) {
+      if (documentId === null) {
+        setCurrentDocument(null)
+        return null
+      }
+      setIsDocumentLoading(true)
+      const documentDoc = await findDocumentById(documentId, true)
+      setIsDocumentLoading(false)
+      if (!documentDoc) {
+        // TODO: maybe handle this more gracefully
+        throw new Error(`Document with id: ${documentId} wasn't found`)
+      }
+      setCurrentDocument(documentDoc)
+      return documentDoc
+    },
+    [findDocumentById]
+  )
+
+  const openDocument = useCallback<OpenDocumentFn>(
+    async function (documentId, options = {}) {
+      const { inNewTab = false } = options
+
+      // console.log("switching document to", documentId)
+
+      if (documentId !== null) {
+        // check if tab with this documentId already exists
+        let tabId: string | null = null
+        for (let [id, tab] of Object.entries(tabsState.tabs)) {
+          if (tab.documentId === documentId) {
+            tabId = id
+          }
+        }
+
+        if (tabId !== null) {
+          tabsDispatch({ type: "switch-tab", tabId })
+        } else if (currentEditor === null || inNewTab) {
+          tabsDispatch({
+            type: "create-tab",
+            documentId: documentId,
+            switch: true,
+          })
+        } else {
+          tabsDispatch({
+            type: "change-document",
+            tabId: tabsState.currentTab,
+            documentId: documentId,
+          })
+        }
+      }
+
+      return fetchDocument(documentId)
+    },
+    [currentEditor, fetchDocument, tabsState.currentTab, tabsState.tabs]
+  )
+
   /**
    * Finds a single group by id.
    *
@@ -220,40 +311,43 @@ export const MainProvider: React.FC = memo(({ children }) => {
     [updateLocalSetting]
   )
 
-  /**
-   * This function uses an id argument instead of 'currentEditor' because it's supposed to be called from switchDocument before the 'currentEditor' value is updated
-   */
-  const fetchDocument = useCallback(
-    async (id: string | null) => {
-      // resetEditor()
+  // /**
+  //  * This function uses an id argument instead of 'currentEditor' because it's supposed to be called from switchDocument before the 'currentEditor' value is updated
+  //  */
+  // const fetchDocument = useCallback(
+  //   async (id: string | null) => {
+  //     // resetEditor()
 
-      if (id === null) {
-        setCurrentDocument(null)
-        return
-      }
+  //     if (id === null) {
+  //       setCurrentDocument(null)
+  //       return
+  //     }
 
-      setIsDocumentLoading(true)
+  //     setIsDocumentLoading(true)
 
-      const documentDoc = await findDocumentById(id, true)
+  //     const documentDoc = await findDocumentById(id, true)
 
-      setIsDocumentLoading(false)
-      setCurrentDocument(documentDoc)
-    },
-    [findDocumentById]
-  )
+  //     setIsDocumentLoading(false)
+  //     setCurrentDocument(documentDoc)
+  //   },
+  //   [findDocumentById]
+  // )
 
-  /**
-   * Switches the currently open document
-   */
-  const switchDocument: SwitchDocumentFn = useCallback(
-    async (id) => {
-      if (currentEditor === id) return
+  // TODO: remove this temporary alias
+  const switchDocument = openDocument
 
-      setCurrentEditor(id)
-      return fetchDocument(id)
-    },
-    [currentEditor, fetchDocument, setCurrentEditor]
-  )
+  // /**
+  //  * Switches the currently open document
+  //  */
+  // const switchDocument: SwitchDocumentFn = useCallback(
+  //   async (id) => {
+  //     if (currentEditor === id) return
+
+  //     setCurrentEditor(id)
+  //     return fetchDocument(id)
+  //   },
+  //   [currentEditor, fetchDocument, setCurrentEditor]
+  // )
 
   const updateDocumentsList = useCallback(
     (documents: DocumentDoc[]) => {
@@ -674,6 +768,9 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
   /**
    * Handles creating a new document
+   * TODO: switchToDocument (and especially their defaults) cause a lot of hard to spot bugs, figure out a way to better handle this (maybe remove this functionality from here or create a separate wrapper function to handle these functionalities or at least make them required instead of optional)
+   * TODO: think about how this function should co-exist with the openDocument function and how their functionalities overlap
+   * TODO: maybe
    */
   const createDocument: CreateDocumentFn = useCallback(
     async (parentGroup, values = {}, options = {}) => {
@@ -857,6 +954,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
         switchDocument,
         updateCurrentDocument,
         changeSorting,
+        openDocument,
       }}
     >
       <DocumentsAPIContext.Provider
@@ -883,11 +981,13 @@ export const MainProvider: React.FC = memo(({ children }) => {
             findGroupById,
           }}
         >
-          <ConfirmDeleteModal>
-            {(props) => <ConfirmDeleteModalContent {...props} />}
-          </ConfirmDeleteModal>
+          <TabsStateContext.Provider value={tabsState}>
+            <ConfirmDeleteModal>
+              {(props) => <ConfirmDeleteModalContent {...props} />}
+            </ConfirmDeleteModal>
 
-          {children}
+            {children}
+          </TabsStateContext.Provider>
         </GroupsAPIContext.Provider>
       </DocumentsAPIContext.Provider>
     </MainStateContext.Provider>
