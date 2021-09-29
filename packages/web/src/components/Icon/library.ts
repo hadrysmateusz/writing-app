@@ -32,6 +32,7 @@ import {
   BsLayoutSidebar,
   BsLayoutSidebarReverse,
 } from "react-icons/bs"
+import { BiStats } from "react-icons/bi"
 
 import { CgMoreAlt } from "react-icons/cg"
 
@@ -73,6 +74,7 @@ const iconLibrary = {
   [ELEMENT_H2]: Heading2,
   [ELEMENT_LINK]: FaLink,
   [ELEMENT_IMAGE]: FaImage,
+  stats: BiStats,
   plus: FiPlus,
   cloud: AiFillCloud,
   caretRight: BsCaretRightFill,

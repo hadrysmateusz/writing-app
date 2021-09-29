@@ -1,14 +1,16 @@
-import React, { forwardRef, memo } from "react"
+import { forwardRef, memo } from "react"
 
 import { SECONDARY_VIEWS } from "../../constants"
 
 import {
   SidebarContainer,
   SidebarTabsContainer,
+  SidebarTab,
   SidebarToggle,
 } from "../SidebarCommon"
 import { useViewState } from "../ViewState"
 import { Switch, Case } from "../Conditional"
+import Icon from "../Icon"
 
 import { DashboardView } from "./views"
 
@@ -23,7 +25,11 @@ export const SecondarySidebar = memo(
       <SidebarContainer ref={ref} collapsed={!secondarySidebar.isOpen}>
         {secondarySidebar.isOpen ? (
           <>
-            <SidebarTabsContainer>{/* <SidebarTab /> */}</SidebarTabsContainer>
+            <SidebarTabsContainer>
+              <SidebarTab isActive={true}>
+                <Icon icon="stats" />
+              </SidebarTab>
+            </SidebarTabsContainer>
 
             <Switch value={secondarySidebar.currentView}>
               <Case
