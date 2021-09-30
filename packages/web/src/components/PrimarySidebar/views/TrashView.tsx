@@ -8,7 +8,7 @@ import { TrashDocumentsList } from "../../DocumentsList"
 
 export const TrashView: React.FC = () => {
   return (
-    <PrimarySidebarViewContainer noButton>
+    <PrimarySidebarViewContainer>
       <InnerContainer groupId={undefined}>
         <TrashDocumentsList />
       </InnerContainer>
