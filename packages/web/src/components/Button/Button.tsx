@@ -42,17 +42,17 @@ const variants = {
     }
   `,
   danger: css`
-    /* border-color: var(--danger0);
-    background: white;
-    color: var(--danger0);
+    border-color: #db4141;
+    background: #db4141;
+    color: white;
 
     &:not([disabled]) {
       &:hover {
-        border-color: var(--danger0);
-        background: var(--danger0);
+        border-color: #db4141;
+        background: #db4141;
         color: white;
       }
-    } */
+    }
   `,
 }
 
