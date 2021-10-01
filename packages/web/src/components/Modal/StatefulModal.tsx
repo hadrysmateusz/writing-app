@@ -11,15 +11,18 @@ import {
 
 // TODO: Consider making modals and context menus centralized with the root component not having to be added to the tree manually from the hook and only using some kind of hook to manage its state
 
-export function useModal<T, ModalProps extends object>(
+export function useModal<ReturnValue, ModalProps extends object>(
   initialState: boolean,
   defaultModalProps: ModalProps,
   options: ToggleableHooks = {}
-): UseModalReturn<T, ModalProps> {
-  const { close, open, isOpen } = useToggleable<T>(initialState, options)
+): UseModalReturn<ReturnValue, ModalProps> {
+  const { close, open, isOpen } = useToggleable<ReturnValue>(
+    initialState,
+    options
+  )
   const [modalProps, setModalProps] = useState<ModalProps>(defaultModalProps)
 
-  const openModal = useCallback<OpenModalFn<T, ModalProps>>(
+  const openModal = useCallback<OpenModalFn<ReturnValue, ModalProps>>(
     async (props) => {
       setModalProps(props)
       return open()
@@ -27,8 +30,8 @@ export function useModal<T, ModalProps extends object>(
     [open]
   )
 
-  const closeModal = useCallback<CloseModalFn<T>>(
-    (resolveValue?: T) => {
+  const closeModal = useCallback<CloseModalFn<ReturnValue>>(
+    (resolveValue?: ReturnValue) => {
       close(resolveValue)
       setModalProps(defaultModalProps)
     },
@@ -36,7 +39,7 @@ export function useModal<T, ModalProps extends object>(
   )
 
   const StatefulModal: FunctionComponent<ModalRenderProps<
-    T,
+    ReturnValue,
     ModalProps
   >> = useMemo(() => {
     return ({ component: C, children, ...props }) => {

@@ -1,30 +1,30 @@
 import { FunctionComponent, ReactNode } from "react"
 // import { Toggleable } from "../../hooks"
 
-export type OpenModalFn<T, ModalProps> = (
+export type OpenModalFn<ReturnValue, ModalProps> = (
   props: ModalProps
-) => Promise<T | undefined>
+) => Promise<ReturnValue | undefined>
 
 export type CloseModalFn<T> = (resolveValue: T) => void
 
-export type Modal<T, ModalProps> = {
+export type Modal<ReturnValue, ModalProps> = {
   isOpen: boolean
-  open: OpenModalFn<T, ModalProps>
-  close: CloseModalFn<T>
+  open: OpenModalFn<ReturnValue, ModalProps>
+  close: CloseModalFn<ReturnValue>
 }
 
 export type UseModalReturn<
-  T,
+  ReturnValue,
   ModalProps
-> /* Omit<Toggleable<T>, "open"> & */ = Modal<T, ModalProps> & {
-  Modal: FunctionComponent<ModalRenderProps<T, ModalProps>>
+> /* Omit<Toggleable<T>, "open"> & */ = Modal<ReturnValue, ModalProps> & {
+  Modal: FunctionComponent<ModalRenderProps<ReturnValue, ModalProps>>
 }
 
-export type ModalContentProps<T, ModalProps> = {
-  close: CloseModalFn<T>
+export type ModalContentProps<ReturnValue, ModalProps> = {
+  close: CloseModalFn<ReturnValue>
 } & ModalProps
 
-export interface ModalRenderProps<T, ModalProps> {
-  component?: React.ComponentType<ModalContentProps<T, ModalProps>>
-  children?: (props: ModalContentProps<T, ModalProps>) => ReactNode
+export interface ModalRenderProps<ReturnValue, ModalProps> {
+  component?: React.ComponentType<ModalContentProps<ReturnValue, ModalProps>>
+  children?: (props: ModalContentProps<ReturnValue, ModalProps>) => ReactNode
 }
