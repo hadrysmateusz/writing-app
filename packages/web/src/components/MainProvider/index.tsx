@@ -14,15 +14,19 @@ import isElectron from "is-electron"
 import { DEFAULT_EDITOR_VALUE } from "../Main"
 import { useViewState, PrimarySidebarViews, CloudViews } from "../ViewState"
 import { useModal } from "../Modal"
-import { useDatabase, DocumentDoc, GroupDoc, useSyncState } from "../Database"
+import {
+  useDatabase,
+  DocumentDoc,
+  GroupDoc,
+  useSyncState,
+  MyDatabase,
+} from "../Database"
 import { useLocalSettings } from "../LocalSettings"
 
 import { GROUP_TREE_ROOT } from "../../constants"
 import { createContext } from "../../utils"
 
 import {
-  DocumentsAPI,
-  GroupsAPI,
   CreateDocumentFn,
   RenameDocumentFn,
   MoveDocumentToGroupFn,
@@ -37,7 +41,6 @@ import {
   RemoveGroupFn,
   PermanentlyRemoveDocumentFn,
   UpdateCurrentDocumentFn,
-  MainState,
   ChangeSortingFn,
   Sorting,
   FindGroupByIdFn,
@@ -45,24 +48,25 @@ import {
   MoveGroupFn,
   OpenDocumentFn,
 } from "./types"
+import {
+  MainStateContext,
+  GroupsAPIContext,
+  DocumentsAPIContext,
+  useDocumentsAPI,
+  useGroupsAPI,
+  useMainState,
+} from "./context"
 import { cancelSubscriptions } from "./helpers"
 import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
-import { tabsInit, TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
+import { TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
+import AppLoadingState from "./AppLoadingState"
 
 const m = mudder.base62
 
-const defaultSorting: Sorting = {
-  index: "title",
-  direction: "desc",
-}
-
-export const [MainStateContext, useMainState] = createContext<MainState>()
-export const [GroupsAPIContext, useGroupsAPI] = createContext<GroupsAPI>()
-export const [DocumentsAPIContext, useDocumentsAPI] = createContext<
-  DocumentsAPI
->()
-
 export const [TabsStateContext, useTabsState] = createContext<TabsState>()
+
+const createGroupsQuery = (db: MyDatabase) =>
+  db.groups.find().sort({ position: "desc" })
 
 // TODO: make methods using IDs to find documents/groups/etc accept the actual RxDB document object instead to skip the query
 // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
@@ -70,207 +74,68 @@ export const [TabsStateContext, useTabsState] = createContext<TabsState>()
 export const MainProvider: React.FC = memo(({ children }) => {
   const db = useDatabase()
   const {
-    currentEditor: initialCurrentEditor,
+    tabs: initialTabs,
     unsyncedDocs,
     updateLocalSetting,
   } = useLocalSettings()
   const { primarySidebar } = useViewState()
   const syncState = useSyncState()
 
-  const [isLoading, setIsLoading] = useState(true)
   // TODO: remove the central groups list and replace with querying the local database where needed
   const [groups, setGroups] = useState<GroupDoc[]>([])
+
+  // Flag to manage whether this is the first time the app is loaded
+  const [isInitialLoad, setIsInitialLoad] = useState(() => true)
+
   const [isDocumentLoading, setIsDocumentLoading] = useState<boolean>(true)
   // Current document - the actual document object of the current document
   // TODO: when tabs are implemented this should probably be handled by individual tabs and shared through context
   const [currentDocument, setCurrentDocument] = useState<DocumentDoc | null>(
     null
   )
-  // Flag to manage whether this is the first time documents are loaded
-  const [isInitialLoad, setIsInitialLoad] = useState(() => true)
-  // State of the sorting options for the documents list
-  // TODO: persist this locally
-  // TODO: make this a per-collection setting
-  // TODO: make sorting not take uppercase/lowercase into consideration (probably by having a separate 'slugTitle' field)
-  const [sorting, setSorting] = useState<Sorting>(defaultSorting)
+
+  const tabsReducer_ = useMemo(() => {
+    return tabsReducer((value: TabsState) => {
+      // the set timeout is necessary to prevent an error caused by updating another component's state while this one is rendering
+      setTimeout(() => {
+        updateLocalSetting("tabs", value)
+      }, 0)
+    })
+  }, [updateLocalSetting])
 
   const [tabsState, tabsDispatch] = useReducer<TabsReducer>(
-    tabsReducer((value: string) => {
-      updateLocalSetting("currentEditor", value)
-    }),
-    tabsInit(/* initialCurrentEditor */ "d1afc7c6-0aaf-490f-8dcd-da64b5e3cf72")
-    // TODO: I need to save all tabs (with their tabIds and documentIds) to restore it like this
+    tabsReducer_,
+    initialTabs
   )
 
-  console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
+  const closeTab = useCallback((tabId) => {
+    tabsDispatch({ type: "close-tab", tabId })
+  }, [])
+
+  // console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
 
   // TODO: figure out if I should keep this or just use tabsState.currentTab
-  const currentEditor = tabsState.tabs[tabsState.currentTab].documentId
+  const currentDocumentId = useMemo(() => {
+    let currentDocumentId
+    if (tabsState.currentTab === null) {
+      currentDocumentId = null
+    } else {
+      if (tabsState.tabs[tabsState.currentTab]) {
+        currentDocumentId = tabsState.tabs[tabsState.currentTab].documentId
+      } else {
+        currentDocumentId = null
+      }
+    }
+    return currentDocumentId
+  }, [tabsState.currentTab, tabsState.tabs])
+
   // console.log(
   //   "rendering mainprovider",
   //   tabsState,
   //   tabsState.currentTab,
   //   tabsState.tabs[tabsState.currentTab],
-  //   currentEditor
+  //   currentDocumentId
   // )
-
-  // The document deletion confirmation modal
-  const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<
-    undefined,
-    {
-      documentId?: string
-    }
-  >(false, { documentId: undefined })
-
-  const { index, direction } = sorting
-
-  //#region queries
-
-  const groupsQuery = useMemo(() => {
-    return db.groups.find().sort({ position: "desc" })
-  }, [db.groups])
-
-  const documentsQuery = useMemo(() => {
-    return db.documents.findNotRemoved().sort({ [index]: direction })
-  }, [db.documents, direction, index])
-
-  const favoritesQuery = useMemo(() => {
-    return db.documents
-      .findNotRemoved()
-      .where("isFavorite")
-      .eq(true)
-      .sort({ [index]: direction })
-  }, [db.documents, direction, index])
-
-  //#endregion
-
-  // Handles removing documents from unsynced array when they get replicated
-  useEffect(() => {
-    const sub = syncState.documents?.replicationState.change$.subscribe(
-      (observer) => {
-        if (observer.direction === "push") {
-          const syncedDocs = observer.change.docs.map((doc) => doc._id)
-
-          const tempUnsyncedDocs = unsyncedDocs.filter(
-            (doc) => !syncedDocs.includes(doc)
-          )
-
-          updateLocalSetting("unsyncedDocs", tempUnsyncedDocs)
-        }
-      }
-    )
-
-    return () => sub && sub.unsubscribe()
-  }, [syncState.documents, unsyncedDocs, updateLocalSetting])
-
-  // Handles marking documents as unsynced when they are created, updated or deleted
-  useEffect(() => {
-    // Subscribes to changes on the documents collection
-    const sub = db.documents.$.subscribe((event) => {
-      const { rxDocument } = event
-
-      // TODO: I think this might mark documents as changed even when the change is coming FROM the server, make sure that doesn't happen
-
-      // TODO: make sure that DELETE operations are handled properly, the code below is most likely not enough
-      if (!rxDocument) {
-        console.log("Skipping. No rxDocument in the event")
-        return
-      }
-
-      if (rxDocument.isLocal) {
-        console.log(`Skipping. Document ${rxDocument.id} is local.`)
-        return
-      }
-
-      // Add document id to unsynced docs list, if it's not already in it
-      if (!unsyncedDocs.includes(rxDocument.id)) {
-        updateLocalSetting("unsyncedDocs", [...unsyncedDocs, rxDocument.id])
-      }
-    })
-
-    return () => sub.unsubscribe()
-  }, [db.documents.$, unsyncedDocs, updateLocalSetting])
-
-  /**
-   * Finds a single document by id
-   *
-   * TODO: figure out better naming to separate this from findDocuments
-   */
-  const findDocumentById: FindDocumentByIdFn = useCallback(
-    async (
-      /**
-       * Id of the document
-       */
-      id: string,
-      /**
-       * Whether the query should consider removed documents
-       */
-      includeRemoved: boolean = false
-    ) => {
-      if (includeRemoved) {
-        return await db.documents.findOne().where("id").eq(id).exec()
-      } else {
-        return await db.documents.findOneNotRemoved().where("id").eq(id).exec()
-      }
-    },
-    [db.documents]
-  )
-
-  const fetchDocument = useCallback(
-    async function (documentId: string | null) {
-      if (documentId === null) {
-        setCurrentDocument(null)
-        return null
-      }
-      setIsDocumentLoading(true)
-      const documentDoc = await findDocumentById(documentId, true)
-      setIsDocumentLoading(false)
-      if (!documentDoc) {
-        // TODO: maybe handle this more gracefully
-        throw new Error(`Document with id: ${documentId} wasn't found`)
-      }
-      setCurrentDocument(documentDoc)
-      return documentDoc
-    },
-    [findDocumentById]
-  )
-
-  const openDocument = useCallback<OpenDocumentFn>(
-    async function (documentId, options = {}) {
-      const { inNewTab = false } = options
-
-      // console.log("switching document to", documentId)
-
-      if (documentId !== null) {
-        // check if tab with this documentId already exists
-        let tabId: string | null = null
-        for (let [id, tab] of Object.entries(tabsState.tabs)) {
-          if (tab.documentId === documentId) {
-            tabId = id
-          }
-        }
-
-        if (tabId !== null) {
-          tabsDispatch({ type: "switch-tab", tabId })
-        } else if (currentEditor === null || inNewTab) {
-          tabsDispatch({
-            type: "create-tab",
-            documentId: documentId,
-            switch: true,
-          })
-        } else {
-          tabsDispatch({
-            type: "change-document",
-            tabId: tabsState.currentTab,
-            documentId: documentId,
-          })
-        }
-      }
-
-      return fetchDocument(documentId)
-    },
-    [currentEditor, fetchDocument, tabsState.currentTab, tabsState.tabs]
-  )
 
   /**
    * Finds a single group by id.
@@ -300,69 +165,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
     },
     [db.groups]
   )
-
-  // TODO: remove currentEditor from local settings as it's replaced by tabs.currentTabs
-  // const setCurrentEditor = useCallback(
-  //   (value: string | null) => {
-  //     updateLocalSetting("currentEditor", value)
-  //   },
-  //   [updateLocalSetting]
-  // )
-
-  /**
-   * Fetches all things required for the app to run
-   */
-  useEffect(() => {
-    if (isInitialLoad) {
-      ;(async () => {
-        const groupsPromise = groupsQuery.exec()
-
-        // TODO: this can fail if root group can't be found / created - handle this properly
-        const [newGroups] = await Promise.all([groupsPromise])
-
-        fetchDocument(currentEditor)
-
-        setIsInitialLoad(false)
-        setGroups(newGroups)
-        // updateDocumentsList(newDocuments)
-        // setFavorites(newFavorites)
-        setIsLoading(false)
-      })()
-    }
-  }, [
-    currentEditor,
-    isInitialLoad,
-    documentsQuery,
-    favoritesQuery,
-    groupsQuery,
-    fetchDocument,
-    findGroupById,
-    openDocument,
-  ])
-
-  /**
-   * Handles setting up critical subscriptions
-   *
-   * TODO: needs a significant rewrite
-   */
-  useEffect(() => {
-    let groupsSub: Subscription | undefined
-
-    groupsSub = groupsQuery.$.subscribe((newGroups) => {
-      setGroups(newGroups)
-    })
-
-    return () => {
-      cancelSubscriptions(groupsSub)
-    }
-  }, [favoritesQuery.$, groupsQuery.$])
-
-  /**
-   * Changes the sorting options for the documents list
-   */
-  const changeSorting: ChangeSortingFn = useCallback((index, direction) => {
-    setSorting({ index, direction })
-  }, [])
 
   /**
    * Creates a new group under the provided parent group
@@ -433,16 +235,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
   )
 
   /**
-   * Rename group by id
-   */
-  const renameGroup: RenameGroupFn = useCallback(
-    async (groupId, name) => {
-      return updateGroup(groupId, { name: name.trim() })
-    },
-    [updateGroup]
-  )
-
-  /**
    * Handles deleting groups and its children
    */
   const removeGroup: RemoveGroupFn = useCallback(
@@ -454,6 +246,16 @@ export const MainProvider: React.FC = memo(({ children }) => {
       return original.remove()
     },
     [findGroupById]
+  )
+
+  /**
+   * Rename group by id
+   */
+  const renameGroup: RenameGroupFn = useCallback(
+    async (groupId, name) => {
+      return updateGroup(groupId, { name: name.trim() })
+    },
+    [updateGroup]
   )
 
   const moveGroup: MoveGroupFn = useCallback(
@@ -607,77 +409,139 @@ export const MainProvider: React.FC = memo(({ children }) => {
     [db.groups, findGroupById, updateGroup]
   )
 
+  //#region sync state
+
+  // Handles removing documents from unsynced array when they get replicated
+  useEffect(() => {
+    const sub = syncState.documents?.replicationState.change$.subscribe(
+      (observer) => {
+        if (observer.direction === "push") {
+          const syncedDocs = observer.change.docs.map((doc) => doc._id)
+
+          const tempUnsyncedDocs = unsyncedDocs.filter(
+            (doc) => !syncedDocs.includes(doc)
+          )
+
+          updateLocalSetting("unsyncedDocs", tempUnsyncedDocs)
+        }
+      }
+    )
+
+    return () => sub && sub.unsubscribe()
+  }, [syncState.documents, unsyncedDocs, updateLocalSetting])
+
+  // Handles marking documents as unsynced when they are created, updated or deleted
+  useEffect(() => {
+    // Subscribes to changes on the documents collection
+    const sub = db.documents.$.subscribe((event) => {
+      const { rxDocument } = event
+
+      // TODO: I think this might mark documents as changed even when the change is coming FROM the server, make sure that doesn't happen
+
+      // TODO: make sure that DELETE operations are handled properly, the code below is most likely not enough
+      if (!rxDocument) {
+        console.log("Skipping. No rxDocument in the event")
+        return
+      }
+
+      if (rxDocument.isLocal) {
+        console.log(`Skipping. Document ${rxDocument.id} is local.`)
+        return
+      }
+
+      // Add document id to unsynced docs list, if it's not already in it
+      if (!unsyncedDocs.includes(rxDocument.id)) {
+        updateLocalSetting("unsyncedDocs", [...unsyncedDocs, rxDocument.id])
+      }
+    })
+
+    return () => sub.unsubscribe()
+  }, [db.documents.$, unsyncedDocs, updateLocalSetting])
+
+  //#endregion
+
   /**
-   * Constructs a basic query for finding documents
+   * Finds a single document by id
    *
-   * TODO: figure out better naming to separate this from findDocumentById
+   * TODO: figure out better naming to separate this from findDocuments
    */
-  const findDocuments: FindDocumentsFn = useCallback(
-    (
+  const findDocumentById: FindDocumentByIdFn = useCallback(
+    async (
+      /**
+       * Id of the document
+       */
+      id: string,
       /**
        * Whether the query should consider removed documents
        */
-      includeRemoved = false
+      includeRemoved: boolean = false
     ) => {
       if (includeRemoved) {
-        return db.documents.find()
+        return await db.documents.findOne().where("id").eq(id).exec()
       } else {
-        return db.documents.findNotRemoved()
+        return await db.documents.findOneNotRemoved().where("id").eq(id).exec()
       }
     },
     [db.documents]
   )
 
-  /**
-   * Updates the document using an object or function
-   *
-   * TODO: consider using atomicUpdate or atomicSet
-   *
-   * TODO: create an advanced version of the function that uses the full mongo update syntax: https://docs.mongodb.com/manual/reference/operator/update-field/
-   */
-  const updateDocument: UpdateDocumentFn = useCallback(
-    async (id, updater, includeRemoved = false) => {
-      const original = await findDocumentById(id, includeRemoved)
-      if (original === null) {
-        throw new Error(`no document found matching this id (${id})`)
+  const fetchDocument = useCallback(
+    async function (documentId: string | null) {
+      if (documentId === null) {
+        setCurrentDocument(null)
+        return null
       }
-      // TODO: this can be extracted for use with other collections
-      // TODO: handle errors (especially the ones thrown in pre-middleware because they mean the operation wasn't applied) (maybe handle them in more specialized functions like rename and save)
-      const updatedDocument: DocumentDoc = await original.update(
-        typeof updater === "function"
-          ? { $set: updater(original) }
-          : { $set: updater }
-      )
-      return updatedDocument
+
+      setIsDocumentLoading(true)
+      const documentDoc = await findDocumentById(documentId, true)
+      setIsDocumentLoading(false)
+      if (!documentDoc) {
+        // TODO: maybe handle this more gracefully
+        throw new Error(`Document with id: ${documentId} wasn't found`)
+      }
+      setCurrentDocument(documentDoc)
+      return documentDoc
     },
     [findDocumentById]
   )
 
-  /**
-   * Update current document
-   */
-  const updateCurrentDocument: UpdateCurrentDocumentFn = useCallback(
-    async (updater) => {
-      try {
-        if (currentEditor === null) {
-          throw new Error("no document is currently selected")
+  const openDocument = useCallback<OpenDocumentFn>(
+    async function (documentId, options = {}) {
+      const { inNewTab = false } = options
+
+      // console.log("switching document to", documentId)
+
+      if (documentId !== null) {
+        // check if tab with this documentId already exists
+        let tabId: string | null = null
+        for (let [id, tab] of Object.entries(tabsState.tabs)) {
+          if (tab.documentId === documentId) {
+            tabId = id
+          }
         }
-        const updatedDocument = await updateDocument(
-          currentEditor,
-          updater,
-          true
-        )
-        return updatedDocument
-      } catch (error) {
-        // TODO: better error handling
-        throw error
-        // const msgBase = "Can't update the current document"
-        // console.error(`${msgBase}: ${error.message}`)
-        // setError(msgBase)
-        // return null
+
+        if (tabId !== null) {
+          tabsDispatch({ type: "switch-tab", tabId })
+        } else if (currentDocumentId === null || inNewTab) {
+          tabsDispatch({
+            type: "create-tab",
+            documentId: documentId,
+            switch: true,
+          })
+        } else if (tabsState.currentTab !== null) {
+          tabsDispatch({
+            type: "change-document",
+            tabId: tabsState.currentTab,
+            documentId: documentId,
+          })
+        } else {
+          throw new Error("Couldn't open document")
+        }
       }
+
+      return fetchDocument(documentId)
     },
-    [currentEditor, updateDocument]
+    [currentDocumentId, fetchDocument, tabsState.currentTab, tabsState.tabs]
   )
 
   /**
@@ -731,6 +595,52 @@ export const MainProvider: React.FC = memo(({ children }) => {
       return newDocument
     },
     [db.documents, primarySidebar, openDocument]
+  )
+
+  /**
+   * Constructs a basic query for finding documents
+   *
+   * TODO: figure out better naming to separate this from findDocumentById
+   */
+  const findDocuments: FindDocumentsFn = useCallback(
+    (
+      /**
+       * Whether the query should consider removed documents
+       */
+      includeRemoved = false
+    ) => {
+      if (includeRemoved) {
+        return db.documents.find()
+      } else {
+        return db.documents.findNotRemoved()
+      }
+    },
+    [db.documents]
+  )
+
+  /**
+   * Updates the document using an object or function
+   *
+   * TODO: consider using atomicUpdate or atomicSet
+   *
+   * TODO: create an advanced version of the function that uses the full mongo update syntax: https://docs.mongodb.com/manual/reference/operator/update-field/
+   */
+  const updateDocument: UpdateDocumentFn = useCallback(
+    async (id, updater, includeRemoved = false) => {
+      const original = await findDocumentById(id, includeRemoved)
+      if (original === null) {
+        throw new Error(`no document found matching this id (${id})`)
+      }
+      // TODO: this can be extracted for use with other collections
+      // TODO: handle errors (especially the ones thrown in pre-middleware because they mean the operation wasn't applied) (maybe handle them in more specialized functions like rename and save)
+      const updatedDocument: DocumentDoc = await original.update(
+        typeof updater === "function"
+          ? { $set: updater(original) }
+          : { $set: updater }
+      )
+      return updatedDocument
+    },
+    [findDocumentById]
   )
 
   /**
@@ -797,16 +707,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
   )
 
   /**
-   * Permanently removes a document
-   */
-  const permanentlyRemoveDocument: PermanentlyRemoveDocumentFn = useCallback(
-    (documentId: string) => {
-      openConfirmDeleteModal({ documentId })
-    },
-    [openConfirmDeleteModal]
-  )
-
-  /**
    * Restore document by id
    */
   const restoreDocument: RestoreDocumentFn = useCallback(
@@ -838,6 +738,149 @@ export const MainProvider: React.FC = memo(({ children }) => {
     [db.groups, findDocumentById, updateDocument]
   )
 
+  /**
+   * Update current document
+   */
+  const updateCurrentDocument: UpdateCurrentDocumentFn = useCallback(
+    async (updater) => {
+      try {
+        if (currentDocumentId === null) {
+          throw new Error("no document is currently selected")
+        }
+        const updatedDocument = await updateDocument(
+          currentDocumentId,
+          updater,
+          true
+        )
+        return updatedDocument
+      } catch (error) {
+        // TODO: better error handling
+        throw error
+        // const msgBase = "Can't update the current document"
+        // console.error(`${msgBase}: ${error.message}`)
+        // setError(msgBase)
+        // return null
+      }
+    },
+    [currentDocumentId, updateDocument]
+  )
+
+  //#region deletion confirmation modal
+
+  // The document deletion confirmation modal
+  const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<
+    boolean,
+    {
+      documentId: string | null
+    }
+  >(false, { documentId: null })
+
+  /**
+   * Permanently removes a document
+   */
+  const permanentlyRemoveDocument: PermanentlyRemoveDocumentFn = useCallback(
+    (documentId: string) => {
+      openConfirmDeleteModal({ documentId })
+    },
+    [openConfirmDeleteModal]
+  )
+
+  //#endregion
+
+  /**
+   * Handles setting up the group subscription
+   */
+  useEffect(() => {
+    let groupsSub: Subscription | undefined
+
+    groupsSub = createGroupsQuery(db).$.subscribe((newGroups) => {
+      setGroups(newGroups)
+    })
+
+    return () => {
+      cancelSubscriptions(groupsSub)
+    }
+  }, [db])
+
+  /**
+   * Fetches all things required for the app to run
+   */
+  useEffect(() => {
+    if (isInitialLoad) {
+      ;(async () => {
+        setIsInitialLoad(false)
+
+        const groupsPromise = createGroupsQuery(db).exec()
+        // TODO: this can fail if root group can't be found / created - handle this properly
+        const [newGroups] = await Promise.all([groupsPromise])
+
+        if (currentDocumentId === null) {
+          const document = await createDocument(null, undefined, {
+            switchToDocument: false,
+            switchToGroup: false,
+          })
+          setCurrentDocument(document)
+          setIsDocumentLoading(false)
+          tabsDispatch({
+            type: "create-tab",
+            documentId: document.id,
+            switch: true,
+          })
+        } else {
+          await fetchDocument(currentDocumentId)
+        }
+
+        setGroups(newGroups)
+      })()
+    }
+  }, [
+    createDocument,
+    fetchDocument,
+    currentDocumentId,
+    db,
+    isDocumentLoading,
+    isInitialLoad,
+    tabsState.tabs,
+  ])
+
+  useEffect(() => {
+    // If there's no tabs create a new one
+    // We check value of isDocument loading to prevent multiple tabs/documents being created at once
+    if (Object.keys(tabsState.tabs).length === 0 && !isDocumentLoading) {
+      setIsDocumentLoading(true)
+      createDocument(null, undefined, {
+        switchToDocument: false,
+      }).then((document) => {
+        setCurrentDocument(document)
+        tabsDispatch({
+          type: "create-tab",
+          documentId: document.id,
+          switch: true,
+        })
+        setIsDocumentLoading(false)
+      })
+    }
+  }, [createDocument, isDocumentLoading, tabsState.tabs])
+
+  //#region sorting
+
+  // State of the sorting options for the documents list
+  // TODO: persist this locally
+  // TODO: make this a per-collection setting
+  // TODO: make sorting not take uppercase/lowercase into consideration (probably by having a separate 'slugTitle' field)
+  const [sorting, setSorting] = useState<Sorting>({
+    index: "title",
+    direction: "desc",
+  })
+  /**
+   * Changes the sorting options for the documents list
+   */
+  const changeSorting: ChangeSortingFn = useCallback((index, direction) => {
+    setSorting({ index, direction })
+  }, [])
+
+  //#endregion sorting
+
   // TODO: I could extract this to a custom hook for listening to ipc events
   useEffect(() => {
     if (isElectron()) {
@@ -853,56 +896,99 @@ export const MainProvider: React.FC = memo(({ children }) => {
     return undefined
   }, [createDocument])
 
-  return (
-    <MainStateContext.Provider
-      value={{
-        currentEditor,
-        currentDocument,
-        isDocumentLoading,
-        groups,
-        isLoading,
-        sorting,
-        unsyncedDocs,
-        updateCurrentDocument,
-        changeSorting,
-        openDocument,
-      }}
-    >
-      <DocumentsAPIContext.Provider
-        value={{
-          toggleDocumentFavorite,
-          createDocument,
-          removeDocument,
-          permanentlyRemoveDocument,
-          restoreDocument,
-          renameDocument,
-          moveDocumentToGroup,
-          findDocumentById,
-          updateDocument,
-          findDocuments,
-        }}
-      >
-        <GroupsAPIContext.Provider
-          value={{
-            moveGroup,
-            removeGroup,
-            renameGroup,
-            createGroup,
-            updateGroup,
-            findGroupById,
-          }}
-        >
-          <TabsStateContext.Provider value={tabsState}>
-            <ConfirmDeleteModal>
-              {(props) => <ConfirmDeleteModalContent {...props} />}
-            </ConfirmDeleteModal>
+  const mainState = useMemo(
+    () => ({
+      currentDocumentId,
+      currentDocument,
+      isDocumentLoading,
+      groups,
+      sorting,
+      unsyncedDocs,
+      updateCurrentDocument,
+      changeSorting,
+      openDocument,
+      closeTab, // TODO: find a better place to expose this
+    }),
+    [
+      currentDocumentId,
+      currentDocument,
+      isDocumentLoading,
+      groups,
+      sorting,
+      unsyncedDocs,
+      updateCurrentDocument,
+      changeSorting,
+      openDocument,
+      closeTab,
+    ]
+  )
+  const documentsAPI = useMemo(
+    () => ({
+      toggleDocumentFavorite,
+      createDocument,
+      removeDocument,
+      permanentlyRemoveDocument,
+      restoreDocument,
+      renameDocument,
+      moveDocumentToGroup,
+      findDocumentById,
+      updateDocument,
+      findDocuments,
+    }),
+    [
+      createDocument,
+      findDocumentById,
+      findDocuments,
+      moveDocumentToGroup,
+      permanentlyRemoveDocument,
+      removeDocument,
+      renameDocument,
+      restoreDocument,
+      toggleDocumentFavorite,
+      updateDocument,
+    ]
+  )
+  const groupsAPI = useMemo(
+    () => ({
+      moveGroup,
+      removeGroup,
+      renameGroup,
+      createGroup,
+      updateGroup,
+      findGroupById,
+    }),
+    [
+      createGroup,
+      findGroupById,
+      moveGroup,
+      removeGroup,
+      renameGroup,
+      updateGroup,
+    ]
+  )
 
-            {children}
+  return (
+    <MainStateContext.Provider value={mainState}>
+      <DocumentsAPIContext.Provider value={documentsAPI}>
+        <GroupsAPIContext.Provider value={groupsAPI}>
+          <TabsStateContext.Provider value={tabsState}>
+            <ConfirmDeleteModal component={ConfirmDeleteModalContent} />
+            {isInitialLoad ? <AppLoadingState /> : children}
           </TabsStateContext.Provider>
         </GroupsAPIContext.Provider>
       </DocumentsAPIContext.Provider>
     </MainStateContext.Provider>
   )
 })
+
+// TODO: move the logic to separate files and only handle imports/exports in the index file
+export {
+  DocumentsAPIContext,
+  GroupsAPIContext,
+  MainStateContext,
+  useDocumentsAPI,
+  useGroupsAPI,
+  useMainState,
+}
 
 export * from "./types"

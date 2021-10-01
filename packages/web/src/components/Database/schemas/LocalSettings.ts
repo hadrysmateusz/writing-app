@@ -29,8 +29,15 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
         type: "string",
       },
     },
-    currentEditor: {
-      type: ["string", "null"],
+    tabs: {
+      type: "object",
+      properties: {
+        currentTab: { type: ["string", "null"] },
+        tabs: {
+          type: "object",
+          additionalItems: true,
+        },
+      },
     },
     primarySidebarCurrentView: {
       type: "string",

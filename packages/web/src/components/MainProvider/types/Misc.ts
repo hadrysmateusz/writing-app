@@ -1,5 +1,3 @@
-import { Toggleable } from "../../../hooks"
-
 export type Direction = "asc" | "desc"
 
 export type SortingIndex = "modifiedAt" | "title"
@@ -10,8 +8,7 @@ export type Sorting = {
 }
 
 export type ConfirmDeleteModalProps = {
-  close: Toggleable<undefined>["close"]
-  documentId?: string
+  documentId: string | null
 }
 
 /**

@@ -1,5 +1,5 @@
-import React, { memo } from "react"
-import styled, { keyframes, css } from "styled-components/macro"
+import React from "react"
+import styled, { css } from "styled-components/macro"
 import Split from "react-split-grid"
 import { Descendant } from "slate"
 import { History } from "slate-history"
@@ -8,13 +8,9 @@ import { SecondarySidebar } from "../SecondarySidebar"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { PrimarySidebar } from "../PrimarySidebar"
 import { useViewState } from "../ViewState"
-import { useMainState } from "../MainProvider"
 import { useSidebar } from "../SidebarCommon"
 import { EditorStateProvider } from "../EditorStateProvider"
-import { ImageModalProvider } from "../ImageModal"
-import { LinkModalProvider } from "../LinkPrompt"
 
-import { withDelayRender } from "../../withDelayRender"
 import { EditorRenderer } from "../Editor/Editor"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
@@ -26,13 +22,6 @@ export const DEFAULT_EDITOR_VALUE: Descendant[] = [
 ]
 export const DEFAULT_EDITOR_HISTORY: History = { undos: [], redos: [] }
 
-const AppLoadingIndicator = withDelayRender(1000)(() => <div>Loading</div>)
-const AppLoadingState = () => (
-  <AppLoadingContainer>
-    <AppLoadingIndicator />
-  </AppLoadingContainer>
-)
-
 /**
  * Renders the editor and secondary sidebar in split panes
  */
@@ -42,24 +31,20 @@ const EditorAndSecondarySidebar: React.FC = () => {
 
   return (
     <EditorStateProvider>
-      <ImageModalProvider>
-        <LinkModalProvider>
-          <Split
-            {...getSplitProps()}
-            render={({ getGridProps, getGutterProps }) => (
-              <Grid sidebarWidth={width} {...getGridProps()}>
-                <EditorRenderer />
-                <Gutter
-                  {...getGutterProps("column", 1)}
-                  isSidebarOpen={secondarySidebar.isOpen}
-                  isDragging={isDragging}
-                />
-                <SecondarySidebar ref={ref} />
-              </Grid>
-            )}
-          />
-        </LinkModalProvider>
-      </ImageModalProvider>
+      <Split
+        {...getSplitProps()}
+        render={({ getGridProps, getGutterProps }) => (
+          <Grid sidebarWidth={width} {...getGridProps()}>
+            <EditorRenderer />
+            <Gutter
+              {...getGutterProps("column", 1)}
+              isSidebarOpen={secondarySidebar.isOpen}
+              isDragging={isDragging}
+            />
+            <SecondarySidebar ref={ref} />
+          </Grid>
+        )}
+      />
     </EditorStateProvider>
   )
 }
@@ -92,7 +77,7 @@ const InnerSidebarsAndEditor: React.FC = () => {
 /**
  * Renders the navigator sidebar and everything else in split panes
  */
-const NavigatorSidebarAndRest: React.FC = () => {
+const Main: React.FC = () => {
   const { navigatorSidebar } = useViewState()
   const { getSplitProps, ref, width, isDragging } = useSidebar(navigatorSidebar)
 
@@ -113,36 +98,6 @@ const NavigatorSidebarAndRest: React.FC = () => {
     />
   )
 }
-
-const Main = memo(() => {
-  const { isLoading } = useMainState()
-  const error = null // TODO: actual error handling
-
-  return isLoading ? (
-    <AppLoadingState />
-  ) : error ? (
-    <div>{error || "Error"}</div>
-  ) : (
-    <NavigatorSidebarAndRest />
-  )
-})
-
-const breathingColor = keyframes`
-  from { color: #999999; }
-	to { color: #f6f6f6; }
-`
-
-const AppLoadingContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  background: var(--bg-200);
-  text-transform: uppercase;
-  font: 500 40px Poppins;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: alternate 1.5s infinite ${breathingColor};
-`
 
 const Grid = styled.div`
   display: grid;

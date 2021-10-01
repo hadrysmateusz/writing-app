@@ -3,18 +3,19 @@ import { GroupDoc, DocumentDoc, DocumentDocType } from "../../Database"
 import { Sorting, SortingIndex, Direction, Updater } from "./Misc"
 
 export type MainState = {
-  isLoading: boolean
+  // isLoading: boolean
   isDocumentLoading: boolean
   groups: GroupDoc[]
   // documents: DocumentDoc[]
   // favorites: DocumentDoc[]
   currentDocument: DocumentDoc | null
-  currentEditor: string | null
+  currentDocumentId: string | null
   sorting: Sorting
   unsyncedDocs: string[]
   changeSorting: ChangeSortingFn
   updateCurrentDocument: UpdateCurrentDocumentFn
   openDocument: OpenDocumentFn
+  closeTab: (tabId: string) => void
 }
 
 export type ChangeSortingFn = (

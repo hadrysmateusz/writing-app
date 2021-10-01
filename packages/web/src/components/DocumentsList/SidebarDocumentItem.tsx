@@ -23,7 +23,7 @@ export const SidebarDocumentItem: React.FC<{
     getEditableProps,
   } = useDocumentContextMenu(document)
   const {
-    /*  groups, */ currentEditor,
+    /*  groups, */ currentDocumentId,
     openDocument,
     unsyncedDocs,
   } = useMainState()
@@ -36,9 +36,9 @@ export const SidebarDocumentItem: React.FC<{
   // }, [document.parentGroup, groupId])
 
   const isCurrent = useMemo(() => {
-    if (currentEditor === null) return false
-    return document.id === currentEditor
-  }, [currentEditor, document.id])
+    if (currentDocumentId === null) return false
+    return document.id === currentDocumentId
+  }, [currentDocumentId, document.id])
 
   const title = useMemo(() => formatOptional(document.title, "Untitled"), [
     document.title,

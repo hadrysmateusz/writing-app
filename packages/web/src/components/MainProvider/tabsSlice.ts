@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"
 export type TabsStateTab = { documentId: string | null }
 export type TabsState = {
   tabs: { [tabId: string]: TabsStateTab }
-  currentTab: string
+  currentTab: string | null
 }
 export type TabsAction =
   | { type: "switch-tab"; tabId: string }
@@ -14,48 +14,68 @@ export type TabsAction =
 
 export type TabsReducer = Reducer<TabsState, TabsAction>
 
-// TODO: make the persist function save the entire state including tabs list
-export const tabsReducer = function (persist: (value: string) => void) {
+export const tabsReducer = function (persist: (value: TabsState) => void) {
   return function (state: TabsState, action: TabsAction): TabsState {
-    // console.log("reducer", action, state)
     console.log("tabs action:", action.type, action)
+    let newState: TabsState = state
     switch (action.type) {
-      case "switch-tab":
+      case "switch-tab": {
         if (!state.tabs[action.tabId]) {
           throw new Error(
             `Can't switch tab. Reason: Tab with id: ${action.tabId} doesn't exist`
           )
         }
-        persist(action.tabId)
-        return { ...state, currentTab: action.tabId }
-      case "create-tab":
-        // TODO: figure out if I should check for the existence of a tab with this document here or whatever funciton wraps the dispatch
+        newState = { ...state, currentTab: action.tabId }
+        break
+      }
+      case "create-tab": {
+        // TODO: figure out if I should check for the existence of a tab with this document here or whatever function wraps the dispatch
         const newTabId = uuidv4()
-        const newCurrentTab = !!action.switch ? newTabId : state.currentTab
-        persist(newCurrentTab)
-        return {
+        newState = {
           tabs: {
             ...state.tabs,
             [newTabId]: { documentId: action.documentId },
           },
-          currentTab: newCurrentTab,
+          currentTab: !!action.switch ? newTabId : state.currentTab,
         }
-      case "close-tab":
-        // TODO: if you close current tab switch to another
-        if (!state.tabs[action.tabId]) {
+        break
+      }
+      case "close-tab": {
+        const { tabId } = action
+
+        if (!state.tabs[tabId]) {
           console.warn("Attempted to close a tab that doesn't exist")
-          return state
+          break
         }
-        const { [action.tabId]: removedTab, ...remainingTabs } = state.tabs
-        return { ...state, tabs: remainingTabs }
+
+        const { [tabId]: removedTab, ...remainingTabs } = state.tabs
+
+        if (tabId === state.currentTab) {
+          const tabIds = Object.keys(state.tabs)
+          const removedTabIndex = tabIds.findIndex((t) => t === tabId)
+          const remainingTabIds = Object.keys(remainingTabs)
+          const newCurrentTabIndex =
+            removedTabIndex < remainingTabIds.length - 1
+              ? removedTabIndex
+              : removedTabIndex - 1
+          newState = {
+            // Switch to a different tab if the closed tab was the current one
+            currentTab: remainingTabIds[newCurrentTabIndex] ?? null,
+            tabs: remainingTabs,
+          }
+        } else {
+          newState = { ...state, tabs: remainingTabs }
+        }
+        break
+      }
       case "change-document":
         if (!state.tabs[action.tabId]) {
           console.warn(
             "Attempted to change content of a tab that doesn't exist"
           )
-          return state
+          break
         }
-        return {
+        newState = {
           ...state,
           tabs: {
             ...state.tabs,
@@ -65,17 +85,17 @@ export const tabsReducer = function (persist: (value: string) => void) {
             },
           },
         }
+        break
     }
+    persist(newState)
+    return newState
   }
 }
 
-export function tabsInit(currentEditor: string | null): TabsState {
-  const id = uuidv4()
+export function tabsInit(): TabsState {
   return {
-    currentTab: id,
-    tabs: {
-      [id]: { documentId: currentEditor },
-    },
+    tabs: {},
+    currentTab: null,
   }
 }
 

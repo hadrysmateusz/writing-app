@@ -1,4 +1,5 @@
 import { RxDocument, RxCollection } from "rxdb"
+import { TabsState } from "../../MainProvider/tabsSlice"
 
 /**
  * Contains only the actual user preferences/settings, for use elsewhere
@@ -13,9 +14,9 @@ export type LocalSettings = {
    */
   unsyncedDocs: string[]
   /**
-   * Current editor (most likely corresponding to document id)
+   * Tabs state
    */
-  currentEditor: string | null
+  tabs: TabsState
   /**
    * Current view for the primary sidebar
    */

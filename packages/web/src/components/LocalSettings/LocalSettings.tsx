@@ -64,9 +64,7 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
     defaults.secondarySidebarCurrentView
   )
 
-  const [currentEditor, setCurrentEditor] = useState<
-    LocalSettings["currentEditor"]
-  >(defaults.currentEditor)
+  const [tabs, setTabs] = useState<LocalSettings["tabs"]>(defaults.tabs)
 
   const [primarySidebarIsOpen, setPrimarySidebarIsOpen] = useState<
     LocalSettings["primarySidebarIsOpen"]
@@ -132,7 +130,7 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
             setPrimarySidebarCurrentSubviews
           )
           update("secondarySidebarCurrentView", setSecondarySidebarCurrentView)
-          update("currentEditor", setCurrentEditor)
+          update("tabs", setTabs)
           update("primarySidebarIsOpen", setPrimarySidebarIsOpen)
           update("secondarySidebarIsOpen", setSecondarySidebarIsOpen)
           update("navigatorSidebarIsOpen", setNavigatorSidebarIsOpen)
@@ -183,8 +181,8 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
         case "secondarySidebarCurrentView":
           setSecondarySidebarCurrentView(value)
           break
-        case "currentEditor":
-          setCurrentEditor(value)
+        case "tabs":
+          setTabs(value)
           break
         case "primarySidebarIsOpen":
           setPrimarySidebarIsOpen(value)
@@ -224,7 +222,7 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
         primarySidebarCurrentView,
         primarySidebarCurrentSubviews,
         secondarySidebarCurrentView,
-        currentEditor,
+        tabs,
         primarySidebarIsOpen,
         secondarySidebarIsOpen,
         navigatorSidebarIsOpen,

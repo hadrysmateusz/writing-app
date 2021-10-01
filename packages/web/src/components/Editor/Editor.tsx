@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect, useMemo } from "react"
-import styled from "styled-components/macro"
+import React, { useMemo } from "react"
+
 import { ReactEditor } from "slate-react"
-import { Transforms } from "slate"
 import isHotkey from "is-hotkey"
 import {
   Plate,
@@ -13,17 +12,17 @@ import {
 import { EditableProps } from "slate-react/dist/components/editable"
 
 // import HoveringToolbar from "../HoveringToolbar"
-import { NamingInput } from "../RenamingInput"
+// import { useUserdata } from "../Userdata"
+// import { useViewState } from "../ViewState"
 import { DocumentDoc } from "../Database"
 import { SaveDocumentFn, useMainState } from "../MainProvider"
 import TrashBanner from "../TrashBanner"
-import { useDocumentsAPI } from "../MainProvider"
-// import { useUserdata } from "../Userdata"
-// import { useViewState } from "../ViewState"
 import { useEditorState } from "../EditorStateProvider"
 import Toolbar from "../Toolbar"
+import { EditorTabsBar } from "../EditorTabs"
+import { ImageModalProvider } from "../ImageModal"
+import { LinkModalProvider } from "../LinkPrompt"
 
-import { createEmptyNode } from "../../helpers/createEmptyNode"
 import { withDelayRender } from "../../withDelayRender"
 
 import {
@@ -32,13 +31,17 @@ import {
   OutermostContainer,
   // InsertBlockField,
   InnerContainer,
+  OutermosterContainer,
 } from "./styledComponents"
 import useEditorContextMenu from "./useEditorContextMenu"
-import { deserialize } from "."
 import pluginsList from "./pluginsList"
-import { EditorTabsBar } from "../EditorTabs"
+import { deserialize } from "./serialization"
+import TitleInput from "./TitleInput"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading</div>)
+
+const components = createPlateComponents()
+const options = createPlateOptions()
 
 /**
  * Renders the editor if there is a document selected
@@ -49,7 +52,6 @@ export const EditorRenderer: React.FC = () => {
     isDocumentLoading,
     // unsyncedDocs,
   } = useMainState()
-  // const { secondarySidebar } = useViewState()
   const { /* isModified, */ saveDocument } = useEditorState()
 
   return (
@@ -60,29 +62,25 @@ export const EditorRenderer: React.FC = () => {
           <DocumentLoadingState />
         ) : currentDocument ? (
           <>
-            {/* <button
-            onClick={() => {
-              secondarySidebar.toggle()
-            }}
-          >
-            sidebar
-          </button>
+            {/* 
+            <div>
+              {isModified
+                ? "MODIFIED"
+                : unsyncedDocs.includes(currentDocument.id)
+                ? "SAVED & UNREPLICATED"
+                : "SYNCED"}
+            </div> 
+            */}
 
-          <div>
-            {isModified
-              ? "MODIFIED"
-              : unsyncedDocs.includes(currentDocument.id)
-              ? "SAVED & UNREPLICATED"
-              : "SYNCED"}
-          </div> */}
-
-            {/* <div>{isModified ? "Unsaved changes" : "Saved"}</div> */}
-
-            <EditorComponent
-              key={currentDocument.id} // Necessary to reload the component on id change
-              currentDocument={currentDocument}
-              saveDocument={saveDocument}
-            />
+            <ImageModalProvider>
+              <LinkModalProvider>
+                <EditorComponent
+                  key={currentDocument.id} // Necessary to reload the component on id change
+                  currentDocument={currentDocument}
+                  saveDocument={saveDocument}
+                />
+              </LinkModalProvider>
+            </ImageModalProvider>
           </>
         ) : (
           // This div is here to prevent issues with split pane rendering
@@ -94,9 +92,6 @@ export const EditorRenderer: React.FC = () => {
   )
 }
 
-const components = createPlateComponents()
-const options = createPlateOptions()
-
 const EditorComponent: React.FC<{
   // we get the currentDocument from a prop because inside this component it can't be null
   currentDocument: DocumentDoc
@@ -104,14 +99,10 @@ const EditorComponent: React.FC<{
 }> = ({ currentDocument, saveDocument }) => {
   const editor = useStoreEditorRef(useEventEditorId("focus"))
 
-  const { onChange } = useEditorState()
-  const { isDocumentLoading, currentEditor } = useMainState()
-  const { renameDocument } = useDocumentsAPI()
-  const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
   // const { isSpellCheckEnabled } = useUserdata()
+  const { onChange } = useEditorState()
 
-  const [title, setTitle] = useState<string>(currentDocument.title)
-  const titleRef = useRef<HTMLTextAreaElement | null>(null)
+  const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
 
   // TODO: check if this is still needed
   // const fixSelection = () => {
@@ -149,11 +140,6 @@ const EditorComponent: React.FC<{
   //     fixSelection()
   //   }
   // }
-
-  // When the document title changes elsewhere, update the state here
-  useEffect(() => {
-    setTitle(currentDocument.title)
-  }, [currentDocument.title])
 
   // /**
   //  * Focus the correct element on mount
@@ -198,37 +184,6 @@ const EditorComponent: React.FC<{
   //   }
   //   ReactEditor.focus(editor)
   // }
-
-  const handleRename = (newValue: string) => {
-    renameDocument(currentDocument.id, newValue)
-  }
-
-  const handleTitleKeydown = (event: React.KeyboardEvent) => {
-    if (editor === undefined) {
-      console.error("editor is undefined ")
-      return false
-    }
-
-    // TODO: allow other ways of navigating between the title and editor content like arrow down and up (there are many multi-line considerations there)
-    // TODO: why is the Esc here?
-    if (isHotkey(["Enter", "Esc"], event)) {
-      // prevent the line break from being inserted into the title (TODO: some version of this behavior might be desirable)
-      event.preventDefault()
-      // TODO: insert an empty block at the start of the editor
-      Transforms.insertNodes(editor, createEmptyNode(), {
-        at: [0],
-        select: true,
-      })
-      // move focus to the editor (as if the title was a part of the editable area) - this will automatically trigger a rename
-      ReactEditor.focus(editor)
-      return false
-    }
-    return true
-  }
-
-  const handleTitleChange = (newValue: string) => {
-    setTitle(newValue)
-  }
 
   const editableProps: EditableProps = useMemo(
     () => ({
@@ -351,93 +306,41 @@ const EditorComponent: React.FC<{
     [editor, openMenu, saveDocument]
   )
 
-  const getInitialEditorValue = () => {
-    return deserialize(currentDocument.content)
-  }
-
   return (
     <>
-      {currentDocument.isDeleted ?? (
+      {currentDocument.isDeleted && (
         <TrashBanner documentId={currentDocument.id} />
       )}
       <OuterContainer>
         <InnerContainer>
-          {currentDocument && !isDocumentLoading && currentEditor && (
-            <>
-              <EditableContainer>
-                <Plate
-                  id="main"
-                  plugins={pluginsList}
-                  components={components}
-                  options={options}
-                  editableProps={editableProps}
-                  initialValue={getInitialEditorValue()}
-                  onChange={onChange}
-                >
-                  <StyledNamingInput
-                    ref={titleRef}
-                    value={title}
-                    onChange={handleTitleChange}
-                    onKeyDown={handleTitleKeydown}
-                    onRename={handleRename}
-                  />
-                  <Toolbar />
-                  {/* <ToolbarSearchHighlight icon={Search} setSearch={setSearch} /> */}
-                  {/* <BallonToolbarMarks /> */}
-                  {/* <MentionSelect
-                        {...getMentionSelectProps()}
-                        renderLabel={renderMentionLabel}
-                      /> 
-                  */}
-                </Plate>
-                {isMenuOpen && renderContextMenu()}
-              </EditableContainer>
-            </>
-            // <>
-            //   {/* <HoveringToolbar /> */}
-            //   <ListContext.Provider value={{ listLevel: 0 }}>
-            //     <ListItemContext.Provider value={{ listItemDirectNode: null }}>
-            //       <EditableContainer
-            //         onBlur={handleContentBlur}
-            //         onMouseDown={handleEditorMouseDown}
-            //       >
-            //         <Editable
-            //           plugins={plugins}
-            //           placeholder="Start writing"
-            //           onKeyDown={[handleSaveDocument, handleFixSelection]}
-            //           spellCheck={isSpellCheckEnabled}
-            //         />
-            //         <InsertBlockField onMouseDown={handleInsertEmptyBlock} />
+          <EditableContainer>
+            <Plate
+              id="main"
+              plugins={pluginsList}
+              components={components}
+              options={options}
+              editableProps={editableProps}
+              initialValue={deserialize(currentDocument.content)}
+              onChange={onChange}
+            >
+              <TitleInput currentDocument={currentDocument} />
+              <Toolbar />
+              {/* <ToolbarSearchHighlight icon={Search} setSearch={setSearch} /> */}
+              {/* <BallonToolbarMarks /> */}
+              {/* <MentionSelect
+                    {...getMentionSelectProps()}
+                    renderLabel={renderMentionLabel}
+                  /> 
+              */}
+            </Plate>
+            {isMenuOpen && renderContextMenu()}
+          </EditableContainer>
 
-            //         {isMenuOpen && renderContextMenu()}
-            //       </EditableContainer>
-            //     </ListItemContext.Provider>
-            //   </ListContext.Provider>
-            // </>
-          )}
+          {/* <HoveringToolbar /> */}
         </InnerContainer>
       </OuterContainer>
     </>
   )
 }
-
-const StyledNamingInput = styled(NamingInput)`
-  margin-top: 16px;
-  margin-bottom: 8px;
-  font-weight: bold;
-  font-family: "Poppins";
-  letter-spacing: 0.01em;
-  font-size: 36px;
-  line-height: 54px;
-  color: #f8f8f8;
-`
-
-const OutermosterContainer = styled.div`
-  min-width: 500px; // TODO: probably change this with media queries
-  min-height: 0;
-  height: 100%;
-  display: grid;
-  grid-template-rows: var(--tab-size) 1fr;
-`
 
 export default EditorComponent

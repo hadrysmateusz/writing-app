@@ -1,4 +1,5 @@
 import { LocalSettings } from "../Database"
+import { tabsInit } from "../MainProvider/tabsSlice"
 import {
   CloudViews,
   LocalViews,
@@ -10,7 +11,7 @@ import {
 const defaultLocalSettings: LocalSettings = {
   expandedKeys: [],
   unsyncedDocs: [],
-  currentEditor: null,
+  tabs: tabsInit(),
   primarySidebarCurrentView: PrimarySidebarViews.cloud,
   primarySidebarCurrentSubviews: {
     cloud: CloudViews.ALL,
