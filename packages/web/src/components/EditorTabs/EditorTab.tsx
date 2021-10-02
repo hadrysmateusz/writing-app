@@ -1,10 +1,11 @@
-import { useState, useEffect, FC, useCallback } from "react"
 import styled from "styled-components/macro"
+import { useState, useEffect, FC, useCallback } from "react"
 
 import { useDatabase } from "../Database"
 import { useGroupsAPI, useMainState, useTabsState } from "../MainProvider"
-import { formatOptional } from "../../utils"
 import Icon from "../Icon"
+
+import { formatOptional } from "../../utils"
 
 const initialTabData = { title: "", group: null }
 
@@ -76,7 +77,7 @@ const EditorTab: FC<{ tabId: string }> = ({ tabId }) => {
   )
 }
 
-const EditorTabContainer = styled.div<{ isActive: boolean }>`
+const EditorTabContainer = styled.div<{ isActive?: boolean }>`
   border-radius: var(--tab-corner-radius) var(--tab-corner-radius) 0 0;
   height: var(--tab-size);
   padding: 0 16px;

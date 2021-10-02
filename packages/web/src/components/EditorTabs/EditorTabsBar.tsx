@@ -7,6 +7,7 @@ import { SecondarySidebarTabs } from "../SecondarySidebar"
 import { useViewState } from "../ViewState"
 
 import EditorTab from "./EditorTab"
+import EditorTabAdd from "./EditorTabAdd"
 
 const EditorTabsBar: FC = () => {
   const { openDocument } = useMainState()
@@ -30,6 +31,7 @@ const EditorTabsBar: FC = () => {
       {Object.keys(tabsState.tabs).map((tabId) => (
         <EditorTab key={tabId} tabId={tabId} />
       ))}
+      <EditorTabAdd />
       <EditorTabsFiller onDoubleClick={handleDoubleClick} />
       {!secondarySidebar.isOpen ? <SecondarySidebarTabs /> : null}
     </EditorTabsContainer>
