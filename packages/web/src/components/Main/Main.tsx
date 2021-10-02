@@ -1,8 +1,6 @@
 import React from "react"
 import styled, { css } from "styled-components/macro"
 import Split from "react-split-grid"
-import { Descendant } from "slate"
-import { History } from "slate-history"
 
 import { SecondarySidebar } from "../SecondarySidebar"
 import { NavigatorSidebar } from "../NavigatorSidebar"
@@ -16,11 +14,6 @@ import { EditorRenderer } from "../Editor/Editor"
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 
 // TODO: resizing navigator and primary sidebar can still move content off screen, this is probably because all sidebars are not on  the same grid, I should try moving them to the same grid, and any intermediate wrappers should be logic-only
-
-export const DEFAULT_EDITOR_VALUE: Descendant[] = [
-  { type: "paragraph", children: [{ text: "" }] },
-]
-export const DEFAULT_EDITOR_HISTORY: History = { undos: [], redos: [] }
 
 /**
  * Renders the editor and secondary sidebar in split panes

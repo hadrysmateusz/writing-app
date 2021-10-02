@@ -2,7 +2,7 @@ import { FC } from "react"
 import styled from "styled-components/macro"
 
 import { Button } from "../Button"
-import { useDocumentsAPI, useMainState } from "."
+import { useDocumentsAPI } from "."
 import { ConfirmDeleteModalProps } from "./types"
 import { CloseModalFn } from "../Modal/types"
 
