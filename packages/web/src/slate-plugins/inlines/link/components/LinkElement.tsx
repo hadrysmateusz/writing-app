@@ -1,7 +1,6 @@
-import React from "react"
 import { RenderElementProps } from "slate-react"
 import styled from "styled-components/macro"
-import escapeHtml from "escape-html"
+// import escapeHtml from "escape-html"
 
 import { LINK } from "../types"
 
@@ -14,15 +13,15 @@ export const LinkElement = ({
   children,
   element,
 }: RenderElementProps) => {
-  const href =
-    "url" in element /* typeof element.url === "string" */
-      ? escapeHtml(element.url)
-      : ""
+  // const href =
+  //   "url" in element /* typeof element.url === "string" */
+  //     ? escapeHtml(element.url)
+  //     : ""
 
   // TODO: add a way to open the url in a browser with alt+click
 
   return (
-    <StyledA {...attributes} data-slate-type={LINK} href={href}>
+    <StyledA {...attributes} data-slate-type={LINK} href={/* href */ ""}>
       {children}
     </StyledA>
   )

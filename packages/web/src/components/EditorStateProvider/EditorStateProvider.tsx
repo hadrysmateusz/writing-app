@@ -17,13 +17,9 @@ import { /* deserialize, */ serialize } from "../Editor"
 // import { withDelayRender } from "../../withDelayRender"
 import { createContext } from "../../utils"
 
-type ImageElement = {
-  type: "image"
-  url: string
-  children: (CustomText | CustomElement)[]
-}
+// TODO: create proper typings
 type GenericElement = { type: string; children: (CustomText | CustomElement)[] }
-type CustomElement = GenericElement | ImageElement
+type CustomElement = GenericElement
 type CustomText = { text: string }
 type CustomEditor = BaseEditor & ReactEditor & { type: string | undefined }
 
