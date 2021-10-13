@@ -12,6 +12,8 @@
     "clean": "yarn workspaces run clean",
     "dev:desktop": "cross-env BROWSER=none concurrently --kill-others \"yarn dev:web\" \"yarn workspace @writing-tool/desktop compile -w\" \"wait-on http://localhost:3000 && yarn workspace @writing-tool/desktop start\"",
     "dev:web": "yarn workspace @writing-tool/web start",
+    "start": "yarn dev:desktop",
+    "build": "yarn workspace @writing-tool/desktop build",
     "lint": "yarn workspaces run lint"
   },
   "husky": {
