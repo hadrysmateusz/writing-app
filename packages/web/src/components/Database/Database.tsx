@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from "react"
-import { addRxPlugin } from "rxdb"
+import {
+  addPouchPlugin,
+  addRxPlugin,
+  createRxDatabase,
+  getRxStoragePouch,
+} from "rxdb"
+import { RxDBMigrationPlugin } from "rxdb/plugins/migration"
+import { RxDBReplicationCouchDBPlugin } from "rxdb/plugins/replication-couchdb"
+import { RxDBLeaderElectionPlugin } from "rxdb/plugins/leader-election"
 import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 
 import { useCurrentUser } from "../Auth"
 
-import { MyDatabase, SyncStates } from "./types"
-import { createCollections, createLocalDB, initializeSync } from "./helpers"
+import { MyDatabase, SyncStates, MyDatabaseCollections } from "./types"
+import { encodeLocalDbName, initializeSync } from "./helpers"
 import { DatabaseContext, SyncStateContext } from "./context"
-import { initialSyncState } from "./constants"
+import { dbNameBase, initialSyncState, usernameStartWord } from "./constants"
 import models from "./models"
+import { createDocumentPreSaveHook, createGroupPreInsertHook } from "."
 
-addRxPlugin(PouchDbAdapterIdb)
-addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
+addPouchPlugin(PouchDbAdapterIdb)
+addPouchPlugin(PouchDbAdapterHttp) // enable syncing over http
+addRxPlugin(RxDBMigrationPlugin)
+addRxPlugin(RxDBReplicationCouchDBPlugin)
+addRxPlugin(RxDBLeaderElectionPlugin)
 
 // TODO: figure out the cause of the "invalid adapter: http" error and if it can impact the production environment IT MIGHT BE BECAUSE IT SHOULDN'T USE HTTP IN PROD BUT RATHER HTTPS, MAYBE BECAUSE THE APP IS RUNNING ON HTTPS AND CORS IS AN ISSUE, OR MAYBE SOMETHING ELSE. IF THIS FAILS, TRY SEARCHING POUCHDB SOURCE FOR THE ERROR AND SEE WHY IT'S THROWN
 
@@ -23,9 +35,15 @@ addRxPlugin(PouchDbAdapterHttp) // enable syncing over http
 // TODO: eventually migrate to one shared userdata database with filtered queries and proper access control etc.
 // TODO: better loading and error states
 
-export const DatabaseProvider: React.FC<{}> = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [database, setDatabase] = useState<MyDatabase | null>(null)
+export const DatabaseProvider: React.FC = ({ children }) => {
+  // const [isLoading, setIsLoading] = useState(true)
+  // const [database, setDatabase] = useState<MyDatabase | null>(null)
+
+  const [{ database, status }, setDatabaseState] = useState<{
+    database: MyDatabase | null
+    status: "LOADING" | "ERROR" | "READY"
+  }>({ database: null, status: "LOADING" })
+
   const [syncState, setSyncState] = useState<SyncStates>(initialSyncState)
   const currentUser = useCurrentUser()
 
@@ -33,78 +51,63 @@ export const DatabaseProvider: React.FC<{}> = ({ children }) => {
   // TODO: re-running this might crash the app (make sure there are no unnecessary rerenders of this component and figure out a way to handle this error)
   useEffect(() => {
     ;(async () => {
-      const username = currentUser.username
+      try {
+        const username = currentUser.username
+        const dbName = `${dbNameBase}${usernameStartWord}${username}`
+        console.log("dbName:", dbName)
+        console.log("endocedDbName:", encodeLocalDbName(dbName))
+        const db = await createRxDatabase<MyDatabaseCollections>({
+          name: encodeLocalDbName(dbName),
+          storage: getRxStoragePouch("idb"),
+          // pouchSettings: {
+          //   // This doesn't seem to work as expected and should probably be replaced with manual checks and simply not calling the create functions if they fail
+          //   skip_setup: true,
+          // },
+          // // TODO: this flag is set to address the issue with the auth provider remounting the component after logging in to the same account twice but it probably will have some unintended consequences so try to find a better solution
+          // ignoreDuplicate: true,
+        })
 
-      const db = await createLocalDB(username)
+        await db.addCollections(models)
 
-      await createCollections(db, models)
-      initializeSync(db, models, username, (val) => setSyncState(val))
+        initializeSync(db, models, username, (val) => setSyncState(val))
 
-      // Hook to remove nested groups and documents when a group is removed
-      db.groups.preRemove(async (groupData) => {
-        // Because the listeners are filed only after all hooks run, we await on all async actions to avoid de-sync issues
-        // TODO: try moving all promises into a single Promise.all to parallelize for possible performance gains
+        db.groups.preRemove(createGroupPreInsertHook(db), false)
+        db.documents.preSave(createDocumentPreSaveHook(), false)
 
-        // Find all documents that are a direct child of this group
-        const documents = await db.documents
-          .find()
-          .where("parentGroup")
-          .eq(groupData.id)
-          .exec()
+        db.waitForLeadership().then(() => {
+          console.log("Long lives the king!") // <- runs when db becomes leader
+        })
 
-        // Remove all children that are the child of this group.
-        await Promise.all(
-          documents.map(async (doc) => {
-            try {
-              doc.softRemove()
-            } catch (error) {
-              console.log(error)
-            }
-          })
-        )
+        // Write the database object to window for debugging TODO: disable in prod
+        window["db"] = db
 
-        // Find all groups that are a direct child of this group
-        const groups = await db.groups
-          .find()
-          .where("parentGroup")
-          .eq(groupData.id)
-          .exec()
-
-        // Remove all child groups (which should also trigger the hook to remove all nested docs)
-        await Promise.all(groups.map((doc) => doc.remove()))
-      }, false)
-
-      // Hook to update the modifiedAt field on every update
-      db.documents.preSave(async (data, doc) => {
-        // TODO: check for changes, if there aren't any, don't update the modifiedAt date
-        data.modifiedAt = Date.now()
-      }, false)
-
-      db.waitForLeadership().then(() => {
-        console.log("Long lives the king!") // <- runs when db becomes leader
-      })
-
-      // Write the database object to window for debugging TODO: disable in prod
-      window["db"] = db
-
-      setDatabase(db)
-      setIsLoading(false)
+        setDatabaseState({ database: db, status: "READY" })
+      } catch (e) {
+        console.error(e)
+        setDatabaseState({ database: null, status: "ERROR" })
+      }
     })()
   }, [currentUser.username])
 
-  return (
-    <>
-      {isLoading ? (
-        "Loading..."
-      ) : database === null ? (
-        "Database setup error"
-      ) : (
-        <SyncStateContext.Provider value={syncState}>
-          <DatabaseContext.Provider value={database}>
-            {children}
-          </DatabaseContext.Provider>
-        </SyncStateContext.Provider>
-      )}
-    </>
-  )
+  switch (status) {
+    case "LOADING":
+      return <LoadingState />
+    case "ERROR":
+      return <ErrorState />
+    case "READY":
+      if (database) {
+        return (
+          <SyncStateContext.Provider value={syncState}>
+            <DatabaseContext.Provider value={database}>
+              {children}
+            </DatabaseContext.Provider>
+          </SyncStateContext.Provider>
+        )
+      } else {
+        return <ErrorState />
+      }
+  }
 }
+
+const ErrorState: React.FC = () => <>Database setup error</>
+const LoadingState: React.FC = () => <>Loading...</>

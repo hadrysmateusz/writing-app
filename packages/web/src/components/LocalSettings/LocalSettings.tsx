@@ -1,46 +1,30 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useCallback, FC } from "react"
 import createContext from "../../utils/createContext"
-import { useDatabase, LocalSettingsDoc, LocalSettings } from "../Database"
+import { useDatabase, LocalSettings } from "../Database"
 import { useCurrentUser } from "../Auth"
 import defaults from "./default"
-
-export type LocalSettingsState = LocalSettings & {
-  updateLocalSetting: <K extends keyof LocalSettings>(
-    key: K,
-    value: LocalSettings[K]
-  ) => Promise<LocalSettingsDoc>
-}
+import { LocalSettingsState } from "./types"
 
 export const [LocalSettingsContext, useLocalSettings] = createContext<
   LocalSettingsState
 >()
 
+export class LocalSettingsDocError extends Error {
+  constructor(message) {
+    super(message)
+    this.name = "LocalSettingsDocError"
+  }
+}
+
 // TODO: consider integrating it with the MainProvider
 // TODO: better handle loading states, make sure the defaults aren't used until they're necessary
-
-export const LocalSettingsProvider: React.FC = ({ children }) => {
+export const LocalSettingsProvider: FC = ({ children }) => {
   const db = useDatabase()
   const currentUser = useCurrentUser()
   const [isInitialLoad, setIsInitialLoad] = useState(() => true)
 
-  /**
-   * RxDB query that fetches the local settings
-   */
-  const query = useMemo(() => db.local_settings.findOne(currentUser.username), [
-    currentUser.username,
-    db.local_settings,
-  ])
-
-  /**
-   * RxDB document containing the local settings
-   */
-  const [
-    localSettingsDoc,
-    setLocalSettingsDoc,
-  ] = useState<LocalSettingsDoc | null>(null)
-
   //#region values of the actual local settings - separated to optimize rerendering
-  // TODO: I shouldn't have to separate this - INVESTIGATE
+  // TODO: I shouldn't have to separate this - INVESTIGATE (probably replace with reducer)
 
   const [expandedKeys, setExpandedKeys] = useState<
     LocalSettings["expandedKeys"]
@@ -86,73 +70,59 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
 
   // Get the local settings for the first time
   useEffect(() => {
-    // console.log(isInitialLoad, currentUser.username)
-
     if (isInitialLoad) {
       db.local_settings
         .findOne(currentUser.username)
         .exec()
-        .then((newLocalSettingsDoc) => {
+        .then(async (newLocalSettingsDoc) => {
+          // If a local settings doc is not present, create one
+          // TODO: handle this better (perhaps through a unified first launch process)
           if (!newLocalSettingsDoc) {
-            db.local_settings.insert({
+            newLocalSettingsDoc = await db.local_settings.insert({
               ...defaults,
+              tabs: JSON.stringify(defaults.tabs),
               userId: currentUser.username,
             })
           }
 
-          const data = newLocalSettingsDoc?.toJSON()
+          // const localSettingsData = newLocalSettingsDoc.toJSON()
 
-          /**
-           * Updates internal state for a given setting if it's present on the fetched document
-           *
-           * TODO: better handle the case where the value is not present because that indicates an issue (maybe use the default, or even update the RxDB collection with the default)
-           */
-          const update = <K extends keyof LocalSettings>(
-            key: K,
-            updater: React.Dispatch<React.SetStateAction<LocalSettings[K]>>
-          ) => {
-            const value = data?.[key]
-            if (value === undefined) return
-            updater(value)
-          }
+          console.log(newLocalSettingsDoc)
 
-          console.log("newLocalSettingsDoc", newLocalSettingsDoc)
-
-          setLocalSettingsDoc(newLocalSettingsDoc)
-
-          //#region update all the values of settings in state
-
-          update("expandedKeys", setExpandedKeys)
-          update("unsyncedDocs", setUnsyncedDocs)
-          update("primarySidebarCurrentView", setPrimarySidebarCurrentView)
-          update(
-            "primarySidebarCurrentSubviews",
-            setPrimarySidebarCurrentSubviews
+          setExpandedKeys(newLocalSettingsDoc.expandedKeys)
+          setUnsyncedDocs(newLocalSettingsDoc.unsyncedDocs)
+          setPrimarySidebarCurrentView(
+            newLocalSettingsDoc.primarySidebarCurrentView
           )
-          update("secondarySidebarCurrentView", setSecondarySidebarCurrentView)
-          update("tabs", setTabs)
-          update("primarySidebarIsOpen", setPrimarySidebarIsOpen)
-          update("secondarySidebarIsOpen", setSecondarySidebarIsOpen)
-          update("navigatorSidebarIsOpen", setNavigatorSidebarIsOpen)
+          setPrimarySidebarCurrentSubviews(
+            newLocalSettingsDoc.primarySidebarCurrentSubviews
+          )
+          setSecondarySidebarCurrentView(
+            newLocalSettingsDoc.secondarySidebarCurrentView
+          )
 
-          //#endregion
+          let newTabsValue = JSON.parse(newLocalSettingsDoc.tabs)
+          if (
+            (newTabsValue.currentTab !== null &&
+              typeof newTabsValue.currentTab !== "string") ||
+            (Array.isArray(newTabsValue.tabs) &&
+              newTabsValue.tabs.some((t) => typeof t !== "string"))
+          ) {
+            // throw new LocalSettingsDocError(
+            //   `Tabs couldn't be parsed properly. Received string: ${newLocalSettingsDoc.tabs}`
+            // )
+            newTabsValue = defaults.tabs
+          }
+          setTabs(newTabsValue)
+
+          setPrimarySidebarIsOpen(newLocalSettingsDoc.primarySidebarIsOpen)
+          setSecondarySidebarIsOpen(newLocalSettingsDoc.secondarySidebarIsOpen)
+          setNavigatorSidebarIsOpen(newLocalSettingsDoc.navigatorSidebarIsOpen)
 
           setIsInitialLoad(false)
         })
     }
   }, [currentUser.username, db.local_settings, isInitialLoad])
-
-  // Set up local settings subscription
-  useEffect(() => {
-    const subscription = query.$.subscribe((newLocalSettingsDoc) => {
-      console.log(newLocalSettingsDoc)
-      setLocalSettingsDoc(newLocalSettingsDoc)
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [query.$])
 
   /**
    * Updates a setting under the given key with the given value
@@ -162,6 +132,7 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
    *
    * @todo this typing doesn't support nested properties
    */
+  // TODO: replace this whole system with a simple reducer based approach
   const updateLocalSetting = useCallback(
     async <K extends keyof LocalSettings>(key: K, value: any) => {
       // Optimistically updates the state
@@ -197,20 +168,35 @@ export const LocalSettingsProvider: React.FC = ({ children }) => {
           throw new Error(`unknown setting ${key}`)
       }
 
-      if (localSettingsDoc === null) {
-        throw Error("The localSettingsDoc object is missing")
-      }
-
       try {
-        const newDoc = await localSettingsDoc.atomicSet(key, value)
+        const localSettingsDoc = await db.local_settings
+          .findOne(currentUser.username)
+          .exec()
+
+        if (localSettingsDoc === null) {
+          throw new LocalSettingsDocError(
+            `Couldn't find a local settings doc for user: ${currentUser.username}`
+          )
+        }
+
+        // value of tabs is a nested object so it has to get stringified
+        if (key === "tabs") {
+          value = JSON.stringify(value)
+        }
+
+        const newDoc = await localSettingsDoc.atomicPatch({ [key]: value })
         return newDoc
       } catch (error) {
         // TODO: better error handling
-        console.error("Local settings change wasn't saved")
-        throw error
+        if (error instanceof LocalSettingsDocError) {
+          console.error(error.message)
+        } else {
+          console.error("Local settings change wasn't saved")
+        }
+        throw error // rethrow
       }
     },
-    [localSettingsDoc]
+    [currentUser.username, db.local_settings]
   )
 
   return (

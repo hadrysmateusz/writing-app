@@ -1,4 +1,8 @@
-import { RxCollectionCreator, RxDatabase, RxReplicationState } from "rxdb"
+import {
+  RxCollectionCreator,
+  RxCouchDBReplicationState,
+  RxDatabase,
+} from "rxdb"
 import PouchDB from "pouchdb-core"
 
 import { DocumentCollection } from "./Document"
@@ -21,7 +25,6 @@ export type MyDatabaseCollections = {
 }
 
 export interface MyModel extends RxCollectionCreator {
-  name: CollectionNames
   /**
    * Custom properties
    */
@@ -37,7 +40,7 @@ export type MyDatabase = RxDatabase<MyDatabaseCollections>
 
 export type SyncState = {
   remoteDB: PouchDB.Database<{}>
-  replicationState: RxReplicationState
+  replicationState: RxCouchDBReplicationState
 }
 
 export type SyncStates = {

@@ -44,6 +44,8 @@ export const App = () => {
   //   }
   // })
 
+  // TODO: figure out why production desktop build always goes to "page not found" by default
+
   return (
     <>
       <GlobalStyles />

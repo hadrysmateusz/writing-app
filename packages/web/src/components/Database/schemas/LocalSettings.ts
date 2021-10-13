@@ -5,12 +5,12 @@ import { LocalSettingsDocType } from "../types"
 export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
   title: "local settings schema",
   description: "describes a set of local settings",
-  version: 1,
+  version: 0,
+  primaryKey: "userId",
   type: "object",
   properties: {
     userId: {
       type: "string",
-      primary: true,
       final: true,
     },
     expandedKeys: {
@@ -29,16 +29,17 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
         type: "string",
       },
     },
-    tabs: {
-      type: "object",
-      properties: {
-        currentTab: { type: ["string", "null"] },
-        tabs: {
-          type: "object",
-          additionalItems: true,
-        },
-      },
-    },
+    // tabs: {
+    //   type: "object",
+    //   properties: {
+    //     currentTab: { type: ["string", "null"] },
+    //     tabs: {
+    //       type: "object",
+    //       additionalItems: true,
+    //     },
+    //   },
+    // },
+    tabs: { type: "string" },
     primarySidebarCurrentView: {
       type: "string",
     },

@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom"
 import { useAuthContext } from "./Auth"
 
 import { Button } from "../Button"
+import { useDatabase } from "../Database"
 
 export const LogoutButton: React.FC<{
   onBeforeLogout?: () => void
@@ -11,6 +12,7 @@ export const LogoutButton: React.FC<{
 }> = ({ onBeforeLogout, onAfterLogout }) => {
   const history = useHistory()
   const { logout } = useAuthContext()
+  const db = useDatabase()
 
   const handleLogout = async () => {
     onBeforeLogout && onBeforeLogout()
@@ -19,7 +21,10 @@ export const LogoutButton: React.FC<{
 
     if (success === true) {
       onAfterLogout && onAfterLogout() // TODO: consider supporting a hook after a failed logout
-      history.push("/")
+      // TODO: check if this is necessary and how to do it properly
+      db.destroy().then(() => {
+        history.push("/")
+      })
     }
   }
 

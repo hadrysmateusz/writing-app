@@ -105,7 +105,9 @@ export const UserdataProvider: React.FC = ({ children }) => {
     key: K,
     value: UserSettings[K]
   ) => {
-    if (userdataDoc === null) {
+    let oldUserdataDoc = userdataDoc
+
+    if (oldUserdataDoc === null) {
       /*
         TODO: better error handling
 
@@ -118,11 +120,16 @@ export const UserdataProvider: React.FC = ({ children }) => {
 
         Consider using upsert or atomicUpsert as well
       */
-      throw Error("The userdataDoc object is missing")
+
+      // insert a default userdata object if one doesn't exist
+      oldUserdataDoc = await db.userdata.insert({
+        ...defaultUserdata,
+        userId: currentUser.username,
+      })
     }
 
     try {
-      const newDoc = await userdataDoc.atomicSet(key, value)
+      const newDoc = await oldUserdataDoc.atomicPatch({ [key]: value })
       return newDoc
     } catch (error) {
       // TODO: better error handling

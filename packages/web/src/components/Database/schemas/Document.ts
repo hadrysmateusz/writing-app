@@ -6,11 +6,11 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
   description: "describes a document",
   version: 0,
+  primaryKey: "id",
   type: "object",
   properties: {
     id: {
       type: "string",
-      primary: true,
       final: true,
     },
     title: {
@@ -42,8 +42,14 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
     "parentGroup",
     "createdAt",
     "modifiedAt",
-    "isDeleted",
     "isFavorite",
+    "isDeleted",
   ],
   indexes: ["modifiedAt", "title"],
+}
+
+// Hook to update the modifiedAt field on every update
+export const createDocumentPreSaveHook = () => async (data, _doc) => {
+  // TODO: check for changes, if there aren't any, don't update the modifiedAt date
+  data.modifiedAt = Date.now()
 }

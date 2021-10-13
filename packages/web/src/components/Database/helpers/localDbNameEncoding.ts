@@ -6,7 +6,8 @@ import { usernameStartWord } from "../constants"
 export const getUsernameFromLocalDbName = (
   dbName: string
 ): [string, number] => {
-  const usernameIndex = dbName.indexOf("_uid_") + usernameStartWord.length
+  const usernameIndex =
+    dbName.indexOf(usernameStartWord) + usernameStartWord.length
   const username = dbName.substring(usernameIndex)
   return [username, usernameIndex]
 }
@@ -33,11 +34,15 @@ export const validateLocalDbName = (name: string): void => {
 export const encodeLocalDbName = (name: string): string => {
   validateLocalDbName(name)
   const [username, usernameIndex] = getUsernameFromLocalDbName(name)
-  return name.substring(0, usernameIndex) + username.replace(/-/g, "_")
+  const nameFirstPart = name.substring(0, usernameIndex)
+  const nameSecondPart = username.replace(/-/g, "_")
+  return nameFirstPart + nameSecondPart
 }
 
 export const decodeLocalDbName = (name: string): string => {
   validateLocalDbName(name)
   const [username, usernameIndex] = getUsernameFromLocalDbName(name)
-  return name.substring(0, usernameIndex) + username.replace(/_/g, "-")
+  const nameFirstPart = name.substring(0, usernameIndex)
+  const nameSecondPart = username.replace(/_/g, "-")
+  return nameFirstPart + nameSecondPart
 }

@@ -1,10 +1,4 @@
-import {
-  CollectionNames,
-  DocumentCollection,
-  DocumentDoc,
-  LocalSettings,
-  MyModel,
-} from "./types"
+import { CollectionNames, DocumentCollection, DocumentDoc } from "./types"
 import {
   documentSchema,
   groupSchema,
@@ -13,9 +7,8 @@ import {
 } from "./schemas"
 
 // TODO: skip_setup doesn't seem to work as expected and should probably be replaced with manual checks and simply not calling the create functions if they fail
-export const models: MyModel[] = [
-  {
-    name: CollectionNames.documents,
+export const models = {
+  [CollectionNames.documents]: {
     schema: documentSchema,
     statics: {
       findNotRemoved(this: DocumentCollection) {
@@ -35,57 +28,49 @@ export const models: MyModel[] = [
       },
     },
     migrationStrategies: {},
-    pouchSettings: {
-      skip_setup: true,
-    },
+    // pouchSettings: {
+    //   skip_setup: true,
+    // },
     options: {
       sync: true,
     },
   },
-  {
-    name: CollectionNames.groups,
+  [CollectionNames.groups]: {
     schema: groupSchema,
     statics: {},
     methods: {},
     migrationStrategies: {},
-    pouchSettings: {
-      skip_setup: true,
-    },
+    // pouchSettings: {
+    //   skip_setup: true,
+    // },
     options: {
       sync: true,
     },
   },
-  {
-    name: CollectionNames.userdata,
+  [CollectionNames.userdata]: {
     schema: userdataSchema,
     statics: {},
     methods: {},
     migrationStrategies: {},
-    pouchSettings: {
-      skip_setup: true,
-    },
+    // pouchSettings: {
+    //   skip_setup: true,
+    // },
     options: {
       sync: true,
     },
   },
-  {
-    name: CollectionNames.local_settings,
+  [CollectionNames.local_settings]: {
     schema: localSettingsSchema,
     statics: {},
     methods: {},
-    migrationStrategies: {
-      1: (doc: LocalSettings) => {
-        doc.unsyncedDocs = []
-        return doc
-      },
-    },
-    pouchSettings: {
-      skip_setup: true,
-    },
+    migrationStrategies: {},
+    // pouchSettings: {
+    //   skip_setup: true,
+    // },
     options: {
       sync: false,
     },
   },
-]
+}
 
 export default models

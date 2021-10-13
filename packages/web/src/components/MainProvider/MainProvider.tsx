@@ -8,6 +8,7 @@ import React, {
   useReducer,
 } from "react"
 import { Subscription } from "rxjs"
+import { RxChangeEvent } from "rxdb"
 import { v4 as uuidv4 } from "uuid"
 import mudder from "mudder"
 import isElectron from "is-electron"
@@ -429,27 +430,29 @@ export const MainProvider: React.FC = memo(({ children }) => {
   // Handles marking documents as unsynced when they are created, updated or deleted
   useEffect(() => {
     // Subscribes to changes on the documents collection
-    const sub = db.documents.$.subscribe((event) => {
-      const { rxDocument } = event
+    const sub = db.documents.$.subscribe(
+      (event: RxChangeEvent<DocumentDoc>) => {
+        const { documentData, isLocal, documentId } = event
 
-      // TODO: I think this might mark documents as changed even when the change is coming FROM the server, make sure that doesn't happen
+        // TODO: I think this might mark documents as changed even when the change is coming FROM the server, make sure that doesn't happen
+        // TODO: make sure that DELETE operations are handled properly, the code below is most likely not enough
 
-      // TODO: make sure that DELETE operations are handled properly, the code below is most likely not enough
-      if (!rxDocument) {
-        console.log("Skipping. No rxDocument in the event")
-        return
+        if (!documentData) {
+          console.log("Skipping. No documentData in the event")
+          return
+        }
+
+        if (isLocal) {
+          console.log(`Skipping. Document ${documentId} is local.`)
+          return
+        }
+
+        // Add document id to unsynced docs list, if it's not already in it
+        if (!unsyncedDocs.includes(documentId)) {
+          updateLocalSetting("unsyncedDocs", [...unsyncedDocs, documentId])
+        }
       }
-
-      if (rxDocument.isLocal) {
-        console.log(`Skipping. Document ${rxDocument.id} is local.`)
-        return
-      }
-
-      // Add document id to unsynced docs list, if it's not already in it
-      if (!unsyncedDocs.includes(rxDocument.id)) {
-        updateLocalSetting("unsyncedDocs", [...unsyncedDocs, rxDocument.id])
-      }
-    })
+    )
 
     return () => sub.unsubscribe()
   }, [db.documents.$, unsyncedDocs, updateLocalSetting])

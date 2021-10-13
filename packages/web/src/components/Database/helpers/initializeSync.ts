@@ -61,7 +61,7 @@ export const setUpSyncForCollection = (
 ): SyncState => {
   const remoteDB = createRemotePouchDB(username, collection.name)
 
-  const replicationState = collection.sync({
+  const replicationState = collection.syncCouchDB({
     remote: remoteDB,
     waitForLeadership: true,
     options: {
@@ -78,7 +78,7 @@ export const initializeSync = (
   /**
    * TODO: see if I can override the DB type to include options on collections, this way I will be able to use db.collections here instead of an argument
    */
-  collections: MyModel[],
+  collections: { [name: string]: MyModel },
   username: string,
   /**
    * Function to update state with the syncState value
@@ -89,16 +89,16 @@ export const initializeSync = (
     if (config.dbSync) {
       const tempSyncState = initialSyncState
 
-      collections
-        .filter((col) => col.options.sync)
-        .forEach((col) => {
-          const state = setUpSyncForCollection(db[col.name], username)
+      Object.entries(collections)
+        .filter(([_name, col]) => col.options.sync)
+        .forEach(([name, _col]) => {
+          const state = setUpSyncForCollection(db[name], username)
 
-          if (col.name === "documents") {
+          if (name === "documents") {
             console.log(state)
           }
 
-          tempSyncState[col.name] = state
+          tempSyncState[name] = state
         })
 
       onChange(tempSyncState)

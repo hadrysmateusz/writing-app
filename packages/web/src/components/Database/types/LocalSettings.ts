@@ -47,11 +47,15 @@ export type LocalSettings = {
   navigatorSidebarIsOpen: boolean
 }
 
-export type LocalSettingsDocType = LocalSettings & {
+export type LocalSettingsDocType = Omit<LocalSettings, "tabs"> & {
   /**
    * UID of the user this local settings object belongs to
    */
   userId: string
+  /**
+   * For the databse doc we replace the type of the tabs object with string as it has to be stringified
+   */
+  tabs: string
 }
 
 export type LocalSettingsDocMethods = {}
