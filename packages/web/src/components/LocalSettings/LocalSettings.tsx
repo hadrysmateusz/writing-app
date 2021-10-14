@@ -1,72 +1,63 @@
-import { useState, useEffect, useCallback, FC } from "react"
-import createContext from "../../utils/createContext"
+import { useState, useEffect, useCallback, FC, useRef } from "react"
+
 import { useDatabase, LocalSettings } from "../Database"
 import { useCurrentUser } from "../Auth"
+
 import defaults from "./default"
-import { LocalSettingsState } from "./types"
-
-export const [LocalSettingsContext, useLocalSettings] = createContext<
-  LocalSettingsState
->()
-
-export class LocalSettingsDocError extends Error {
-  constructor(message) {
-    super(message)
-    this.name = "LocalSettingsDocError"
-  }
-}
+import { LocalSettingsStore } from "./types"
+import useLocalSetting from "./useLocalSetting"
+import { LocalSettingsContext } from "./misc"
+import { LocalSettingsDocError } from "."
 
 // TODO: consider integrating it with the MainProvider
 // TODO: better handle loading states, make sure the defaults aren't used until they're necessary
 export const LocalSettingsProvider: FC = ({ children }) => {
   const db = useDatabase()
   const currentUser = useCurrentUser()
-  const [isInitialLoad, setIsInitialLoad] = useState(() => true)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const localSettingsStoreRef = useRef<LocalSettingsStore>({})
 
-  //#region values of the actual local settings - separated to optimize rerendering
-  // TODO: I shouldn't have to separate this - INVESTIGATE (probably replace with reducer)
+  const expandedKeys = useLocalSetting<LocalSettings["expandedKeys"]>(
+    "expandedKeys",
+    localSettingsStoreRef
+  )
 
-  const [expandedKeys, setExpandedKeys] = useState<
-    LocalSettings["expandedKeys"]
-  >(defaults.expandedKeys)
-
-  const [primarySidebarCurrentView, setPrimarySidebarCurrentView] = useState<
+  const primarySidebarCurrentView = useLocalSetting<
     LocalSettings["primarySidebarCurrentView"]
-  >(defaults.primarySidebarCurrentView)
+  >("primarySidebarCurrentView", localSettingsStoreRef)
 
-  const [
-    primarySidebarCurrentSubviews,
-    setPrimarySidebarCurrentSubviews,
-  ] = useState<LocalSettings["primarySidebarCurrentSubviews"]>(
-    defaults.primarySidebarCurrentSubviews
+  const primarySidebarCurrentSubviews = useLocalSetting<
+    LocalSettings["primarySidebarCurrentSubviews"]
+  >("primarySidebarCurrentSubviews", localSettingsStoreRef)
+
+  const secondarySidebarCurrentView = useLocalSetting<
+    LocalSettings["secondarySidebarCurrentView"]
+  >("secondarySidebarCurrentView", localSettingsStoreRef)
+
+  const tabs = useLocalSetting<LocalSettings["tabs"]>(
+    "tabs",
+    localSettingsStoreRef,
+    {
+      requiresCustomDefaultSetter: true,
+    }
   )
 
-  const [
-    secondarySidebarCurrentView,
-    setSecondarySidebarCurrentView,
-  ] = useState<LocalSettings["secondarySidebarCurrentView"]>(
-    defaults.secondarySidebarCurrentView
-  )
-
-  const [tabs, setTabs] = useState<LocalSettings["tabs"]>(defaults.tabs)
-
-  const [primarySidebarIsOpen, setPrimarySidebarIsOpen] = useState<
+  const primarySidebarIsOpen = useLocalSetting<
     LocalSettings["primarySidebarIsOpen"]
-  >(defaults.primarySidebarIsOpen)
+  >("primarySidebarIsOpen", localSettingsStoreRef)
 
-  const [secondarySidebarIsOpen, setSecondarySidebarIsOpen] = useState<
+  const secondarySidebarIsOpen = useLocalSetting<
     LocalSettings["secondarySidebarIsOpen"]
-  >(defaults.secondarySidebarIsOpen)
+  >("secondarySidebarIsOpen", localSettingsStoreRef)
 
-  const [navigatorSidebarIsOpen, setNavigatorSidebarIsOpen] = useState<
+  const navigatorSidebarIsOpen = useLocalSetting<
     LocalSettings["navigatorSidebarIsOpen"]
-  >(defaults.navigatorSidebarIsOpen)
+  >("navigatorSidebarIsOpen", localSettingsStoreRef)
 
-  const [unsyncedDocs, setUnsyncedDocs] = useState<
-    LocalSettings["unsyncedDocs"]
-  >(defaults.unsyncedDocs)
-
-  //#endregion
+  const unsyncedDocs = useLocalSetting<LocalSettings["unsyncedDocs"]>(
+    "unsyncedDocs",
+    localSettingsStoreRef
+  )
 
   // Get the local settings for the first time
   useEffect(() => {
@@ -85,39 +76,53 @@ export const LocalSettingsProvider: FC = ({ children }) => {
             })
           }
 
-          // const localSettingsData = newLocalSettingsDoc.toJSON()
+          const nonNullSettingsDoc = newLocalSettingsDoc
 
-          console.log(newLocalSettingsDoc)
+          /**
+           *  Set initial values for all settings
+           */
+          // This will cause multiple rerenders because of setState calls which could be optimized with a reducer
+          // or a wrapper component which fetches the local settings doc and passes it into this component as a prop which is then used in the initial value setter of the setState call
+          // ^ Although this might not matter because most of the app is a conditionally rendered child of this component
+          Object.entries(localSettingsStoreRef.current).forEach(
+            ([key, settingsObj]) => {
+              console.log(key, settingsObj)
+              if (!settingsObj.requiresCustomDefaultSetter) {
+                settingsObj.setValue(nonNullSettingsDoc[key])
+              } else {
+                switch (key) {
+                  case "tabs": {
+                    let newValue = JSON.parse(nonNullSettingsDoc.tabs)
 
-          setExpandedKeys(newLocalSettingsDoc.expandedKeys)
-          setUnsyncedDocs(newLocalSettingsDoc.unsyncedDocs)
-          setPrimarySidebarCurrentView(
-            newLocalSettingsDoc.primarySidebarCurrentView
+                    const isCurrentTabTypeCorrect = !(
+                      newValue.currentTab !== null &&
+                      typeof newValue.currentTab !== "string"
+                    )
+
+                    const isTabsTypeCorrect = !(
+                      Array.isArray(newValue.tabs) &&
+                      newValue.tabs.some((t) => typeof t !== "string")
+                    )
+
+                    if (isCurrentTabTypeCorrect && isTabsTypeCorrect) {
+                      console.warn(
+                        `Tabs couldn't be parsed properly. Received string: ${nonNullSettingsDoc.tabs}`
+                      )
+                      newValue = defaults.tabs
+                    }
+
+                    settingsObj.setValue(newValue)
+
+                    break
+                  }
+                  default:
+                    throw new Error(
+                      `Local setting: ${key} is missing a default setter`
+                    )
+                }
+              }
+            }
           )
-          setPrimarySidebarCurrentSubviews(
-            newLocalSettingsDoc.primarySidebarCurrentSubviews
-          )
-          setSecondarySidebarCurrentView(
-            newLocalSettingsDoc.secondarySidebarCurrentView
-          )
-
-          let newTabsValue = JSON.parse(newLocalSettingsDoc.tabs)
-          if (
-            (newTabsValue.currentTab !== null &&
-              typeof newTabsValue.currentTab !== "string") ||
-            (Array.isArray(newTabsValue.tabs) &&
-              newTabsValue.tabs.some((t) => typeof t !== "string"))
-          ) {
-            // throw new LocalSettingsDocError(
-            //   `Tabs couldn't be parsed properly. Received string: ${newLocalSettingsDoc.tabs}`
-            // )
-            newTabsValue = defaults.tabs
-          }
-          setTabs(newTabsValue)
-
-          setPrimarySidebarIsOpen(newLocalSettingsDoc.primarySidebarIsOpen)
-          setSecondarySidebarIsOpen(newLocalSettingsDoc.secondarySidebarIsOpen)
-          setNavigatorSidebarIsOpen(newLocalSettingsDoc.navigatorSidebarIsOpen)
 
           setIsInitialLoad(false)
         })
@@ -135,38 +140,12 @@ export const LocalSettingsProvider: FC = ({ children }) => {
   // TODO: replace this whole system with a simple reducer based approach
   const updateLocalSetting = useCallback(
     async <K extends keyof LocalSettings>(key: K, value: any) => {
-      // Optimistically updates the state
-      switch (key) {
-        case "expandedKeys":
-          setExpandedKeys(value)
-          break
-        case "unsyncedDocs":
-          setUnsyncedDocs(value)
-          break
-        case "primarySidebarCurrentView":
-          setPrimarySidebarCurrentView(value)
-          break
-        case "primarySidebarCurrentSubviews":
-          setPrimarySidebarCurrentSubviews(value)
-          break
-        case "secondarySidebarCurrentView":
-          setSecondarySidebarCurrentView(value)
-          break
-        case "tabs":
-          setTabs(value)
-          break
-        case "primarySidebarIsOpen":
-          setPrimarySidebarIsOpen(value)
-          break
-        case "secondarySidebarIsOpen":
-          setSecondarySidebarIsOpen(value)
-          break
-        case "navigatorSidebarIsOpen":
-          setNavigatorSidebarIsOpen(value)
-          break
-        default:
-          throw new Error(`unknown setting ${key}`)
+      if (!localSettingsStoreRef.current[key]) {
+        throw new Error(`unknown setting ${key}`)
       }
+
+      // Optimistically updates the state
+      localSettingsStoreRef.current[key]?.setValue(value)
 
       try {
         const localSettingsDoc = await db.local_settings
@@ -199,6 +178,7 @@ export const LocalSettingsProvider: FC = ({ children }) => {
     [currentUser.username, db.local_settings]
   )
 
+  // TODO: actually the individual values should be replaced by a general getter function using a ref or a function that queries the database directly because exposing them here only leads to unnecessary rerenders as these aren't supposed to be often-changing direct-access values (they are often re-exposed by their respective managers/providers)
   return (
     <LocalSettingsContext.Provider
       value={{
