@@ -5,6 +5,7 @@ import { useDocumentsAPI, useMainState } from "../MainProvider"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import Icon from "../Icon"
 import { ANIMATION_FADEIN, ellipsis } from "../../style-utils"
+import { PrimarySidebarViews, useViewState } from "../ViewState"
 
 const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
 
@@ -13,6 +14,7 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
   children,
 }) => {
   const { changeSorting, sorting } = useMainState()
+  const { primarySidebar } = useViewState()
   const { createDocument } = useDocumentsAPI()
 
   const { openMenu, closeMenu, ContextMenu } = useContextMenu()
@@ -48,7 +50,15 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
     <>
       <SectionHeaderContainer isSortingMenuOpen={isSortingMenuOpen}>
         {/* TODO: fix the context menu */}
-        <div className="SectionHeader_Name" onContextMenu={handleContextMenu}>
+        <div
+          className="SectionHeader_Name"
+          onContextMenu={handleContextMenu}
+          onClick={() => {
+            if (typeof groupId === "string") {
+              primarySidebar.switchSubview(PrimarySidebarViews.cloud, groupId)
+            }
+          }}
+        >
           {children}
         </div>
         <div
