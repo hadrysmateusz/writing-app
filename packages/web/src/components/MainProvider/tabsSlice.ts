@@ -11,6 +11,7 @@ export type TabsAction =
   | { type: "create-tab"; documentId: string; switch: boolean }
   | { type: "close-tab"; tabId: string }
   | { type: "change-document"; tabId: string; documentId: string }
+  | { type: "set-state"; newState: TabsState }
 
 export type TabsReducer = Reducer<TabsState, TabsAction>
 
@@ -19,6 +20,10 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
     console.log("tabs action:", action.type, action)
     let newState: TabsState = state
     switch (action.type) {
+      case "set-state": {
+        newState = action.newState
+        break
+      }
       case "switch-tab": {
         if (!state.tabs[action.tabId]) {
           throw new Error(
