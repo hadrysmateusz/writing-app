@@ -1,13 +1,18 @@
-import React, { useCallback, useMemo } from "react"
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react"
 
-import { useLocalSettings } from "../LocalSettings"
-import defaultLocalSettings from "../LocalSettings/default"
+import { useLocalSettings, defaultLocalSettings } from "../LocalSettings"
 
 import { useStatelessToggleable } from "../../hooks"
 import { createContext } from "../../utils"
 
-import { PrimarySidebarViews, SecondarySidebarViews } from "."
+import {
+  PrimarySidebarSubview,
+  PrimarySidebarSubviews,
+  PrimarySidebarViews,
+  SecondarySidebarViews,
+} from "."
 import { ViewState, SidebarID, Side } from "./types"
+import { withDelayRender } from "../../withDelayRender"
 
 export const [ViewStateContext, useViewState] = createContext<ViewState>()
 
@@ -17,13 +22,19 @@ const useSidebarToggleable = (
     | "secondarySidebarIsOpen"
     | "navigatorSidebarIsOpen"
 ) => {
-  const { updateLocalSetting, ...localSettings } = useLocalSettings()
+  const { updateLocalSetting, getLocalSetting } = useLocalSettings()
 
-  const isOpen = localSettings[settingName]
+  const [isOpen, setIsOpen] = useState(defaultLocalSettings[settingName])
+
+  useEffect(() => {
+    getLocalSetting(settingName).then((value) => setIsOpen(value))
+  }, [getLocalSetting, settingName])
 
   const onChange = useCallback(
-    (value: boolean) => {
-      updateLocalSetting(settingName, value)
+    async (value: boolean) => {
+      setIsOpen(value)
+      await updateLocalSetting(settingName, value)
+      return
     },
     [settingName, updateLocalSetting]
   )
@@ -38,46 +49,92 @@ export const ViewStateProvider: React.FC<{}> = ({ children }) => {
   const primaryToggleable = useSidebarToggleable("primarySidebarIsOpen")
   const secondaryToggleable = useSidebarToggleable("secondarySidebarIsOpen")
 
-  const {
-    updateLocalSetting,
+  const [isLoading, setIsLoading] = useState(true)
+
+  const [primarySidebarCurrentView, setPrimarySidebarCurrentView] = useState(
+    defaultLocalSettings.primarySidebarCurrentView
+  )
+  const [
     primarySidebarCurrentSubviews,
-    primarySidebarCurrentView,
+    setPrimarySidebarCurrentSubviews,
+  ] = useState(defaultLocalSettings.primarySidebarCurrentSubviews)
+  const [
     secondarySidebarCurrentView,
-  } = useLocalSettings()
+    setSecondarySidebarCurrentView,
+  ] = useState(defaultLocalSettings.secondarySidebarCurrentView)
+  const [expandedKeys, setExpandedKeys] = useState(
+    defaultLocalSettings.expandedKeys
+  )
+
+  const { updateLocalSetting, getLocalSetting } = useLocalSettings()
+
+  const { open: openPrimary } = primaryToggleable
+  const { open: openSecondary } = secondaryToggleable
+
+  useEffect(() => {
+    ;(async () => {
+      const primarySidebarCurrentView = await getLocalSetting(
+        "primarySidebarCurrentView"
+      )
+      const primarySidebarCurrentSubviews = await getLocalSetting(
+        "primarySidebarCurrentSubviews"
+      )
+      const secondarySidebarCurrentView = await getLocalSetting(
+        "secondarySidebarCurrentView"
+      )
+      const expandedKeys = await getLocalSetting("expandedKeys")
+      setPrimarySidebarCurrentView(primarySidebarCurrentView)
+      setPrimarySidebarCurrentSubviews(primarySidebarCurrentSubviews)
+      setSecondarySidebarCurrentView(secondarySidebarCurrentView)
+      setExpandedKeys(expandedKeys)
+      setIsLoading(false)
+    })()
+  }, [getLocalSetting])
 
   const switchPrimaryView = useCallback(
-    (view: PrimarySidebarViews) => {
-      const newView = view || defaultLocalSettings.primarySidebarCurrentView
-      updateLocalSetting("primarySidebarCurrentView", newView)
-      if (!primarySidebarCurrentView) {
-        primaryToggleable.open()
+    async (view: PrimarySidebarViews) => {
+      setPrimarySidebarCurrentView(view)
+
+      if (!primaryToggleable.isOpen) {
+        openPrimary()
       }
+
+      await updateLocalSetting("primarySidebarCurrentView", view)
     },
-    [primarySidebarCurrentView, primaryToggleable, updateLocalSetting]
+    [openPrimary, primaryToggleable.isOpen, updateLocalSetting]
   )
 
   const switchPrimarySubview = useCallback(
-    (view: PrimarySidebarViews, subview: string) => {
-      updateLocalSetting("primarySidebarCurrentSubviews", {
-        ...primarySidebarCurrentSubviews,
-        [view]: subview,
+    async <T extends keyof PrimarySidebarSubviews>(
+      view: PrimarySidebarViews,
+      subview: PrimarySidebarSubview<T>
+    ) => {
+      setPrimarySidebarCurrentSubviews((prevValue) => {
+        const newValue = {
+          ...prevValue,
+          [view]: subview,
+        }
+        updateLocalSetting("primarySidebarCurrentSubviews", newValue)
+        return newValue
       })
       switchPrimaryView(view)
     },
-    [primarySidebarCurrentSubviews, switchPrimaryView, updateLocalSetting]
+    [switchPrimaryView, updateLocalSetting]
   )
 
   // TODO: create a view switch wrapper for primary sidebar that can handle both views, and subviews
 
   const switchSecondaryView = useCallback(
-    (view: SecondarySidebarViews) => {
-      const newView = view || defaultLocalSettings.secondarySidebarCurrentView
-      updateLocalSetting("secondarySidebarCurrentView", newView)
-      if (!secondarySidebarCurrentView) {
-        secondaryToggleable.open()
+    async (view: SecondarySidebarViews) => {
+      setSecondarySidebarCurrentView(view)
+
+      if (!secondaryToggleable.isOpen) {
+        openSecondary()
       }
+
+      await updateLocalSetting("secondarySidebarCurrentView", view)
     },
-    [secondarySidebarCurrentView, secondaryToggleable, updateLocalSetting]
+    [openSecondary, secondaryToggleable.isOpen, updateLocalSetting]
   )
 
   const primarySidebar = useMemo(
@@ -121,8 +178,10 @@ export const ViewStateProvider: React.FC<{}> = ({ children }) => {
       side: Side.left,
       minWidth: 150,
       maxWidth: 300,
+      expandedKeys,
+      setExpandedKeys,
     }),
-    [navigatorToggleable]
+    [expandedKeys, navigatorToggleable]
   )
 
   return (
@@ -133,7 +192,9 @@ export const ViewStateProvider: React.FC<{}> = ({ children }) => {
         secondarySidebar,
       }}
     >
-      {children}
+      {isLoading ? <LoadingState /> : children}
     </ViewStateContext.Provider>
   )
 }
+
+const LoadingState: FC = withDelayRender(1000)(() => <div>Loading...</div>)

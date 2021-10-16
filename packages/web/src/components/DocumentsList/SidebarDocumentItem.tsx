@@ -25,10 +25,10 @@ export const SidebarDocumentItem: React.FC<{
   const {
     /*  groups, */ currentDocumentId,
     openDocument,
-    unsyncedDocs,
+    // unsyncedDocs,
   } = useMainState()
 
-  const isUnsynced = unsyncedDocs.includes(document.id)
+  // const isUnsynced = unsyncedDocs.includes(document.id)
 
   // // TODO: optimize this
   // const isInCurrentGroup = useMemo(() => {
@@ -97,7 +97,7 @@ export const SidebarDocumentItem: React.FC<{
         isCurrent={isCurrent}
       >
         {/* {!isInCurrentGroup && <Group>{groupName}</Group>} */}
-        <Title isUnsynced={isUnsynced}>
+        <Title isUnsynced={/* isUnsynced */ false}>
           <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>
         {snippet.trim().length > 0 && <Snippet>{snippet}</Snippet>}

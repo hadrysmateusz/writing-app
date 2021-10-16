@@ -8,7 +8,6 @@ import React, {
   useReducer,
 } from "react"
 import { Subscription } from "rxjs"
-import { RxChangeEvent } from "rxdb"
 import { v4 as uuidv4 } from "uuid"
 import mudder from "mudder"
 import isElectron from "is-electron"
@@ -19,10 +18,10 @@ import {
   useDatabase,
   DocumentDoc,
   GroupDoc,
-  useSyncState,
+  // useSyncState,
   MyDatabase,
 } from "../Database"
-import { useLocalSettings } from "../LocalSettings"
+import { defaultLocalSettings, useLocalSettings } from "../LocalSettings"
 
 import { GROUP_TREE_ROOT } from "../../constants"
 import { createContext } from "../../utils"
@@ -79,12 +78,12 @@ const createGroupsQuery = (db: MyDatabase) =>
 export const MainProvider: React.FC = memo(({ children }) => {
   const db = useDatabase()
   const {
-    tabs: initialTabs,
-    unsyncedDocs,
+    // unsyncedDocs,
+    getLocalSetting,
     updateLocalSetting,
   } = useLocalSettings()
   const { primarySidebar } = useViewState()
-  const syncState = useSyncState()
+  // const syncState = useSyncState()
 
   // TODO: remove the central groups list and replace with querying the local database where needed
   const [groups, setGroups] = useState<GroupDoc[]>([])
@@ -110,7 +109,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
   const [tabsState, tabsDispatch] = useReducer<TabsReducer>(
     tabsReducer_,
-    initialTabs
+    defaultLocalSettings.tabs
   )
 
   const closeTab = useCallback((tabId) => {
@@ -408,54 +407,54 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
   //#region sync state
 
-  // Handles removing documents from unsynced array when they get replicated
-  useEffect(() => {
-    const sub = syncState.documents?.replicationState.change$.subscribe(
-      (observer) => {
-        if (observer.direction === "push") {
-          const syncedDocs = observer.change.docs.map((doc) => doc._id)
+  // // Handles removing documents from unsynced array when they get replicated
+  // useEffect(() => {
+  //   const sub = syncState.documents?.replicationState.change$.subscribe(
+  //     (observer) => {
+  //       if (observer.direction === "push") {
+  //         const syncedDocs = observer.change.docs.map((doc) => doc._id)
 
-          const tempUnsyncedDocs = unsyncedDocs.filter(
-            (doc) => !syncedDocs.includes(doc)
-          )
+  //         const tempUnsyncedDocs = unsyncedDocs.filter(
+  //           (doc) => !syncedDocs.includes(doc)
+  //         )
 
-          updateLocalSetting("unsyncedDocs", tempUnsyncedDocs)
-        }
-      }
-    )
+  //         updateLocalSetting("unsyncedDocs", tempUnsyncedDocs)
+  //       }
+  //     }
+  //   )
 
-    return () => sub && sub.unsubscribe()
-  }, [syncState.documents, unsyncedDocs, updateLocalSetting])
+  //   return () => sub && sub.unsubscribe()
+  // }, [syncState.documents, unsyncedDocs, updateLocalSetting])
 
-  // Handles marking documents as unsynced when they are created, updated or deleted
-  useEffect(() => {
-    // Subscribes to changes on the documents collection
-    const sub = db.documents.$.subscribe(
-      (event: RxChangeEvent<DocumentDoc>) => {
-        const { documentData, isLocal, documentId } = event
+  // // Handles marking documents as unsynced when they are created, updated or deleted
+  // useEffect(() => {
+  //   // Subscribes to changes on the documents collection
+  //   const sub = db.documents.$.subscribe(
+  //     (event: RxChangeEvent<DocumentDoc>) => {
+  //       const { documentData, isLocal, documentId } = event
 
-        // TODO: I think this might mark documents as changed even when the change is coming FROM the server, make sure that doesn't happen
-        // TODO: make sure that DELETE operations are handled properly, the code below is most likely not enough
+  //       // TODO: I think this might mark documents as changed even when the change is coming FROM the server, make sure that doesn't happen
+  //       // TODO: make sure that DELETE operations are handled properly, the code below is most likely not enough
 
-        if (!documentData) {
-          console.log("Skipping. No documentData in the event")
-          return
-        }
+  //       if (!documentData) {
+  //         console.log("Skipping. No documentData in the event")
+  //         return
+  //       }
 
-        if (isLocal) {
-          console.log(`Skipping. Document ${documentId} is local.`)
-          return
-        }
+  //       if (isLocal) {
+  //         console.log(`Skipping. Document ${documentId} is local.`)
+  //         return
+  //       }
 
-        // Add document id to unsynced docs list, if it's not already in it
-        if (!unsyncedDocs.includes(documentId)) {
-          updateLocalSetting("unsyncedDocs", [...unsyncedDocs, documentId])
-        }
-      }
-    )
+  //       // Add document id to unsynced docs list, if it's not already in it
+  //       if (!unsyncedDocs.includes(documentId)) {
+  //         updateLocalSetting("unsyncedDocs", [...unsyncedDocs, documentId])
+  //       }
+  //     }
+  //   )
 
-    return () => sub.unsubscribe()
-  }, [db.documents.$, unsyncedDocs, updateLocalSetting])
+  //   return () => sub.unsubscribe()
+  // }, [db.documents.$, unsyncedDocs, updateLocalSetting])
 
   //#endregion
 
@@ -807,13 +806,18 @@ export const MainProvider: React.FC = memo(({ children }) => {
   useEffect(() => {
     if (isInitialLoad) {
       ;(async () => {
-        setIsInitialLoad(false)
-
-        const groupsPromise = createGroupsQuery(db).exec()
         // TODO: this can fail if root group can't be found / created - handle this properly
-        const [newGroups] = await Promise.all([groupsPromise])
+        const newGroups = await createGroupsQuery(db).exec()
 
-        if (currentDocumentId === null) {
+        const initialTabsState = await getLocalSetting("tabs")
+
+        tabsDispatch({ type: "set-state", newState: initialTabsState })
+
+        // TODO: this reuses code from the currentDocumentId useMemo. Refactor this
+        if (
+          initialTabsState.currentTab === null ||
+          !initialTabsState.tabs[initialTabsState.currentTab] === null
+        ) {
           const document = await createDocument(null, undefined, {
             switchToDocument: false,
             switchToGroup: false,
@@ -826,21 +830,16 @@ export const MainProvider: React.FC = memo(({ children }) => {
             switch: true,
           })
         } else {
-          await fetchDocument(currentDocumentId)
+          const docId =
+            initialTabsState.tabs[initialTabsState.currentTab].documentId
+          await fetchDocument(docId)
         }
 
+        setIsInitialLoad(false)
         setGroups(newGroups)
       })()
     }
-  }, [
-    createDocument,
-    fetchDocument,
-    currentDocumentId,
-    db,
-    isDocumentLoading,
-    isInitialLoad,
-    tabsState.tabs,
-  ])
+  }, [createDocument, db, fetchDocument, getLocalSetting, isInitialLoad])
 
   useEffect(() => {
     // If there's no tabs create a new one
@@ -902,7 +901,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
       isDocumentLoading,
       groups,
       sorting,
-      unsyncedDocs,
+      // unsyncedDocs,
       updateCurrentDocument,
       changeSorting,
       openDocument,
@@ -914,7 +913,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
       isDocumentLoading,
       groups,
       sorting,
-      unsyncedDocs,
+      // unsyncedDocs,
       updateCurrentDocument,
       changeSorting,
       openDocument,

@@ -5,17 +5,14 @@ export type LocalSettingObject<SettingType> = {
   requiresCustomDefaultSetter: boolean
 }
 
-export type LocalSettingsStore = {
-  [SettingType in keyof LocalSettings]?: LocalSettingObject<SettingType>
-}
-
 export type LocalSettingHookOptions = { requiresCustomDefaultSetter?: boolean }
 
-export type LocalSettingsContextValue = LocalSettings & {
+export type LocalSettingsContextValue = {
   updateLocalSetting: <K extends keyof LocalSettings>(
     key: K,
     value: LocalSettings[K]
   ) => Promise<LocalSettingsDoc>
+  getLocalSetting: <K extends keyof LocalSettings>(
+    key: K
+  ) => Promise<LocalSettings[K]>
 }
-
-export type LocalSettingsKeys = keyof LocalSettings

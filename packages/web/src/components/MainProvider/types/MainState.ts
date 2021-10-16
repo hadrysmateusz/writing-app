@@ -11,7 +11,7 @@ export type MainState = {
   currentDocument: DocumentDoc | null
   currentDocumentId: string | null
   sorting: Sorting
-  unsyncedDocs: string[]
+  // unsyncedDocs: string[]
   changeSorting: ChangeSortingFn
   updateCurrentDocument: UpdateCurrentDocumentFn
   openDocument: OpenDocumentFn

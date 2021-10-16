@@ -1,5 +1,12 @@
 import { RxDocument, RxCollection } from "rxdb"
 import { TabsState } from "../../MainProvider/tabsSlice"
+import {
+  PrimarySidebarSubviews,
+  PrimarySidebarViews,
+  SecondarySidebarViews,
+} from "../../ViewState"
+
+// type TabsKey
 
 /**
  * Contains only the actual user preferences/settings, for use elsewhere
@@ -20,19 +27,15 @@ export type LocalSettings = {
   /**
    * Current view for the primary sidebar
    */
-  primarySidebarCurrentView: string
+  primarySidebarCurrentView: PrimarySidebarViews
   /**
    * Current subview for the primary sidebar
    */
-  primarySidebarCurrentSubviews: {
-    cloud: string
-    local: string
-    snippets: string
-  }
+  primarySidebarCurrentSubviews: PrimarySidebarSubviews
   /**
    * Current view for the secondary sidebar
    */
-  secondarySidebarCurrentView: string
+  secondarySidebarCurrentView: SecondarySidebarViews
   /**
    * Is primary sidebar open
    */

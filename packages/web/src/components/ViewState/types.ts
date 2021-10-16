@@ -1,4 +1,6 @@
+import React from "@udecode/plate-dnd/node_modules/@types/react"
 import { Toggleable } from "../../hooks"
+import { LocalSettings } from "../Database/types"
 
 export enum Side {
   left = "left",
@@ -54,6 +56,10 @@ export type PrimarySidebarSubviews = {
   snippets: SnippetsViews | string
 }
 
+export type PrimarySidebarSubview<
+  Subview extends keyof PrimarySidebarSubviews
+> = PrimarySidebarSubviews[Subview]
+
 export interface MultiViewSidebar<
   Views = PrimarySidebarViews | SecondarySidebarViews
 > extends SidebarBase {
@@ -63,7 +69,12 @@ export interface MultiViewSidebar<
 
 export interface SingleViewSidebar extends SidebarBase {}
 
-export interface NavigatorSidebar extends SingleViewSidebar {}
+export interface NavigatorSidebar extends SingleViewSidebar {
+  expandedKeys: LocalSettings["expandedKeys"]
+  setExpandedKeys: React.Dispatch<
+    React.SetStateAction<LocalSettings["expandedKeys"]>
+  >
+}
 
 export interface PrimarySidebar extends MultiViewSidebar<PrimarySidebarViews> {
   currentSubviews: { cloud: string; local: string; snippets: string }

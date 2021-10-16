@@ -48,30 +48,34 @@ const GroupTreeItem: React.FC<{
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
   const [hoverState, setHoverState] = useState<HoverState>(HoverState.outside)
   const droppableRef = useRef<HTMLDivElement | null>(null)
-  const { expandedKeys, updateLocalSetting } = useLocalSettings()
+  const { navigatorSidebar } = useViewState()
+  const { updateLocalSetting } = useLocalSettings()
 
   const isExpanded = useMemo(() => {
-    return expandedKeys.includes(group.id)
-  }, [expandedKeys, group.id])
+    return navigatorSidebar.expandedKeys.includes(group.id)
+  }, [group.id, navigatorSidebar.expandedKeys])
 
   const setIsExpanded = useCallback(
     (value: boolean) => {
+      let oldExpandedKeys = navigatorSidebar.expandedKeys
       let newExpandedKeys: LocalSettings["expandedKeys"]
 
       if (value === true) {
         // This check is to ensure that there are no duplicated keys
         if (isExpanded) {
-          newExpandedKeys = expandedKeys
+          newExpandedKeys = oldExpandedKeys
         } else {
-          newExpandedKeys = [...expandedKeys, group.id]
+          newExpandedKeys = [...oldExpandedKeys, group.id]
         }
       } else {
-        newExpandedKeys = expandedKeys.filter((id) => id !== group.id)
+        newExpandedKeys = oldExpandedKeys.filter((id) => id !== group.id)
       }
 
+      // TODO: merge updating local setting into the setExpandedKeys function
+      navigatorSidebar.setExpandedKeys(newExpandedKeys)
       updateLocalSetting("expandedKeys", newExpandedKeys)
     },
-    [expandedKeys, group.id, isExpanded, updateLocalSetting]
+    [group.id, isExpanded, navigatorSidebar, updateLocalSetting]
   )
 
   const isEmpty = useMemo(() => {

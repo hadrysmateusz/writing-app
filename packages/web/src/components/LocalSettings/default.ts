@@ -8,7 +8,7 @@ import {
   SnippetsViews,
 } from "../ViewState/types" // TODO: has to be imported from /types directly to avoid a circular import
 
-const defaultLocalSettings: LocalSettings = {
+export const defaultLocalSettings: LocalSettings = {
   expandedKeys: [],
   unsyncedDocs: [],
   tabs: tabsInit(),
