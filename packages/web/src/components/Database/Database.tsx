@@ -55,8 +55,7 @@ export const DatabaseProvider: React.FC = ({ children }) => {
       try {
         const username = currentUser.username
         const dbName = `${dbNameBase}${usernameStartWord}${username}`
-        console.log("dbName:", dbName)
-        console.log("endocedDbName:", encodeLocalDbName(dbName))
+
         const db = await createRxDatabase<MyDatabaseCollections>({
           name: encodeLocalDbName(dbName),
           storage: getRxStoragePouch("idb"),
