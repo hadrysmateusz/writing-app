@@ -19,6 +19,7 @@ import { DatabaseContext, SyncStateContext } from "./context"
 import { dbNameBase, initialSyncState, usernameStartWord } from "./constants"
 import models from "./models"
 import { createDocumentPreSaveHook, createGroupPreInsertHook } from "."
+import { withDelayRender } from "../../withDelayRender"
 
 addPouchPlugin(PouchDbAdapterIdb)
 addPouchPlugin(PouchDbAdapterHttp) // enable syncing over http
@@ -110,4 +111,6 @@ export const DatabaseProvider: React.FC = ({ children }) => {
 }
 
 const ErrorState: React.FC = () => <>Database setup error</>
-const LoadingState: React.FC = () => <>Loading...</>
+const LoadingState: React.FC = withDelayRender(1000)(() => (
+  <div>Loading...</div>
+))

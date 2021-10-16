@@ -1,7 +1,7 @@
 import { withDelayRender } from "../../withDelayRender"
 import styled, { keyframes } from "styled-components/macro"
 
-const AppLoadingIndicator = withDelayRender(1000)(() => <div>Loading</div>)
+const AppLoadingIndicator = withDelayRender(1000)(() => <div>Loading...</div>)
 
 const AppLoadingState = () => (
   <AppLoadingContainer>

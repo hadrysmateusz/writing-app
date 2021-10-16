@@ -38,7 +38,7 @@ import pluginsList from "./pluginsList"
 import { deserialize } from "./serialization"
 import TitleInput from "./TitleInput"
 
-const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading</div>)
+const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
 const components = createPlateComponents()
 const options = createPlateOptions()
