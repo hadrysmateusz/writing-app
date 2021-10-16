@@ -33,7 +33,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
    * A wrapper around setIsAuthenticated
    */
   const changeAuthState = useCallback(async (newState: boolean) => {
-    console.log("change auth state")
     if (newState) {
       console.log("logged in")
       const currentUser = await Auth.currentAuthenticatedUser()

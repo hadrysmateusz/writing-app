@@ -94,10 +94,6 @@ export const initializeSync = (
         .forEach(([name, _col]) => {
           const state = setUpSyncForCollection(db[name], username)
 
-          if (name === "documents") {
-            console.log(state)
-          }
-
           tempSyncState[name] = state
         })
 
