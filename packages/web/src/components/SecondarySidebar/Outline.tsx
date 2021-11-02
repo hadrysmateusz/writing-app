@@ -1,6 +1,6 @@
+import { useEventEditorId, useStoreEditorValue } from "@udecode/plate-core"
 import React, { useEffect, useState } from "react"
 import styled from "styled-components/macro"
-import { useEditorState } from "../EditorStateProvider"
 
 const OUTLINE_HEADING_MAX_LENGTH = 40 // TODO: this might need to change to fit a resized sidebar
 
@@ -12,7 +12,7 @@ type OutlineType = {
 type OutlineItemType = { level: number; textContent: string }
 
 export const Outline: React.FC = () => {
-  const { editorValue: editorContent } = useEditorState()
+  const editorValue = useStoreEditorValue(useEventEditorId("focus"))
 
   const [outline, setOutline] = useState<OutlineType>({
     baseLevel: 3,
@@ -20,7 +20,7 @@ export const Outline: React.FC = () => {
   })
 
   useEffect(() => {
-    if (editorContent === undefined) {
+    if (editorValue === undefined) {
       // TODO: handle this better (probably check higher up and ensure it's defined)
       return
     }
@@ -29,7 +29,7 @@ export const Outline: React.FC = () => {
       const newOutline: OutlineType = { baseLevel: 3, tree: [] }
 
       // TODO: this is garbage. it only goes through top-level nodes which might not be enough if any kind of organizational node is introduced or even if headings are nested in a list or blockquote. It should either use some slate api to get all nodes, or deeply go through nodes recursively.
-      editorContent.forEach((node) => {
+      editorValue.forEach((node) => {
         const nodeType = "type" in node ? node.type : null
 
         if (nodeType === null) return
@@ -68,7 +68,7 @@ export const Outline: React.FC = () => {
       })
       return newOutline
     })
-  }, [editorContent])
+  }, [editorValue])
 
   return (
     <OutlineContainer>

@@ -7,23 +7,24 @@ import vfile from "vfile"
 
 import { serializeText } from "../../slate-helpers"
 
-import { useEditorState } from "../EditorStateProvider"
+import { useEventEditorId, useStoreEditorValue } from "@udecode/plate-core"
 
 // TODO: add option to customise WPM reading speed
 const WPM = 275
 
 const TextStats: FC = () => {
-  const { editorValue: editorContent } = useEditorState()
+  const editorValue = useStoreEditorValue(useEventEditorId("focus"))
 
   const [chars, setChars] = useState(0)
   const [words, setWords] = useState(0)
   // const [sentences, setSentences] = useState(0)
   const [readingTime, setReadingTime] = useState(0)
 
+  // TODO: debounce/throttle the calculations
   useEffect(() => {
-    if (editorContent === undefined) return // TODO: handle this better (probably check higher up and ensure it's defined)
+    if (editorValue === undefined) return // TODO: handle this better (probably check higher up and ensure it's defined)
 
-    const text = serializeText(editorContent)
+    const text = serializeText(editorValue)
 
     var tree = unified().use(latin).parse(vfile(text))
 
@@ -37,7 +38,7 @@ const TextStats: FC = () => {
     setWords(_words)
     // setSentences(_sentences)
     setReadingTime(_readingTime)
-  }, [editorContent])
+  }, [editorValue])
 
   const readingTimeMin = Math.floor(readingTime / 60)
   const readingTimeSec = readingTime - readingTimeMin * 60
