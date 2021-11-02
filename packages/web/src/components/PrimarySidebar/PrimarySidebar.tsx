@@ -44,10 +44,12 @@ export const PrimarySidebarTabs = () => {
   const { primarySidebar, navigatorSidebar } = useViewState()
 
   const handleClick = (view: PrimarySidebarViews) => () => {
-    if (!primarySidebar.isOpen) {
+    if (primarySidebar.currentView === view && primarySidebar.isOpen) {
+      primarySidebar.close()
+    } else {
       primarySidebar.open()
+      primarySidebar.switchView(view)
     }
-    primarySidebar.switchView(view)
   }
 
   const isTabActive = (view: PrimarySidebarViews) => {

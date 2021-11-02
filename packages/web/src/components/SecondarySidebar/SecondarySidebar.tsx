@@ -47,10 +47,12 @@ export const SecondarySidebarTabs = () => {
   const { secondarySidebar } = useViewState()
 
   const handleClick = (view: SecondarySidebarViews) => () => {
-    if (!secondarySidebar.isOpen) {
+    if (secondarySidebar.currentView === view && secondarySidebar.isOpen) {
+      secondarySidebar.close()
+    } else {
       secondarySidebar.open()
+      secondarySidebar.switchView(view)
     }
-    secondarySidebar.switchView(view)
   }
 
   const isTabActive = (view: SecondarySidebarViews) => {
