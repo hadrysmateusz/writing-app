@@ -43,6 +43,13 @@ const TitleInput: React.FC<{ currentDocument: DocumentDoc }> = ({
       return false
     }
 
+    // Use the saving keyboard shortcut to apply title change
+    if (isHotkey("mod+s", event)) {
+      console.log("saving")
+      event.preventDefault()
+      onRename(value)
+    }
+
     // TODO: allow other ways of navigating between the title and editor content like arrow down and up (there are many multi-line considerations there)
     // TODO: why is the Esc here?
     if (isHotkey(["Enter", "Esc"], event)) {
