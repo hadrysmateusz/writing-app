@@ -65,7 +65,7 @@ const OuterContainer = styled.div<OuterContainerProps>`
     p.isActive &&
     `
     color: white;
-    background: #222;
+    background: #1b1b1b;
     `}
 
   ${(p) =>
@@ -78,7 +78,7 @@ const OuterContainer = styled.div<OuterContainerProps>`
       cursor: pointer;
       :hover {
         color: white;
-        background: #222;
+        background: #1b1b1b;
       }
     `}
 `
