@@ -67,14 +67,8 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
     if (onClick) {
       onClick(event)
     }
-    /* Stops parent tree items from being toggled as well
-    TODO: find a way to accomplish that without using stopPropagation */
-    event.stopPropagation()
-  }
-
-  const handleToggleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     toggle()
-    /* Stops other handlers from being triggered
+    /* Stops parent tree items from being toggled as well
     TODO: find a way to accomplish that without using stopPropagation */
     event.stopPropagation()
   }
@@ -95,7 +89,7 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
     <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
       <TreeItem depth={depth} isSpecial={isSpecial} isActive={isActive}>
         <InnerContainer>
-          <CaretContainer onClick={handleToggleClick} isExpanded={isExpanded}>
+          <CaretContainer isExpanded={isExpanded}>
             <Icon icon={"caretRight"} />
           </CaretContainer>
           {/* TODO: de-duplicated the icon code with the one in TreeItem */}
