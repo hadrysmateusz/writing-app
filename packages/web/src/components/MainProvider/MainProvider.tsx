@@ -508,9 +508,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
   const openDocument = useCallback<OpenDocumentFn>(
     async function (documentId, options = {}) {
-      const { inNewTab = false } = options
-
-      // console.log("switching document to", documentId)
+      const { inNewTab = true } = options
 
       if (documentId !== null) {
         // check if tab with this documentId already exists
