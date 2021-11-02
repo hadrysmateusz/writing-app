@@ -51,6 +51,45 @@ const Toolbar = () => {
       >
         Print Editor
       </button> */}
+
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_BOLD)}
+        icon={<Icon icon={MARK_BOLD} />}
+      />
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_ITALIC)}
+        icon={<Icon icon={MARK_ITALIC} />}
+      />
+      {/* <ToolbarMark
+        type={getPlatePluginType(editor, MARK_UNDERLINE)}
+        icon={<Icon icon={MARK_UNDERLINE} />}
+      /> */}
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_STRIKETHROUGH)}
+        icon={<Icon icon={MARK_STRIKETHROUGH} />}
+      />
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_CODE)}
+        icon={<Icon icon={MARK_CODE} />}
+      />
+      {/* <ToolbarMark
+        type={getPlatePluginType(editor, MARK_SUPERSCRIPT)}
+        clear={getPlatePluginType(editor, MARK_SUBSCRIPT)}
+        icon={<Superscript />}
+      />
+      <ToolbarMark
+        type={getPlatePluginType(editor, MARK_SUBSCRIPT)}
+        clear={getPlatePluginType(editor, MARK_SUPERSCRIPT)}
+        icon={<Subscript />}
+      /> */}
+      {/* <ToolbarSpacer small /> */}
+      <ToolbarLink
+        getLinkUrl={getLinkUrl}
+        icon={<Icon icon={ELEMENT_LINK} />}
+      />
+
+      <ToolbarSpacer small />
+
       <ToolbarElement
         type={getPlatePluginType(editor, ELEMENT_H1)}
         icon={<Icon icon={ELEMENT_H1} />}
@@ -96,42 +135,6 @@ const Toolbar = () => {
       <ToolbarList
         type={getPlatePluginType(editor, ELEMENT_OL)}
         icon={<Icon icon={ELEMENT_OL} />}
-      />
-      <ToolbarSpacer />
-      <ToolbarMark
-        type={getPlatePluginType(editor, MARK_BOLD)}
-        icon={<Icon icon={MARK_BOLD} />}
-      />
-      <ToolbarMark
-        type={getPlatePluginType(editor, MARK_ITALIC)}
-        icon={<Icon icon={MARK_ITALIC} />}
-      />
-      {/* <ToolbarMark
-        type={getPlatePluginType(editor, MARK_UNDERLINE)}
-        icon={<Icon icon={MARK_UNDERLINE} />}
-      /> */}
-      <ToolbarMark
-        type={getPlatePluginType(editor, MARK_STRIKETHROUGH)}
-        icon={<Icon icon={MARK_STRIKETHROUGH} />}
-      />
-      <ToolbarMark
-        type={getPlatePluginType(editor, MARK_CODE)}
-        icon={<Icon icon={MARK_CODE} />}
-      />
-      {/* <ToolbarMark
-        type={getPlatePluginType(editor, MARK_SUPERSCRIPT)}
-        clear={getPlatePluginType(editor, MARK_SUBSCRIPT)}
-        icon={<Superscript />}
-      />
-      <ToolbarMark
-        type={getPlatePluginType(editor, MARK_SUBSCRIPT)}
-        clear={getPlatePluginType(editor, MARK_SUPERSCRIPT)}
-        icon={<Subscript />}
-      /> */}
-      <ToolbarSpacer small />
-      <ToolbarLink
-        getLinkUrl={getLinkUrl}
-        icon={<Icon icon={ELEMENT_LINK} />}
       />
     </ToolbarContainer>
   )
