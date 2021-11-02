@@ -116,7 +116,7 @@ const GroupTreeItem: React.FC<{
     [group.name]
   )
 
-  const isActive = primarySidebar.currentView === group.id
+  const isActive = primarySidebar.currentSubviews.cloud === group.id
   const icon = isExpanded
     ? "folderOpen"
     : isEmpty
