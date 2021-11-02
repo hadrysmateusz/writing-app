@@ -25,11 +25,13 @@ const EditorTabsBar: FC = () => {
     }
   }
 
+  const onlyHasOneTab = Object.keys(tabsState.tabs).length === 1
+
   return (
     <EditorTabsContainer>
       {!primarySidebar.isOpen ? <PrimarySidebarTabs /> : null}
       {Object.keys(tabsState.tabs).map((tabId) => (
-        <EditorTab key={tabId} tabId={tabId} />
+        <EditorTab key={tabId} tabId={tabId} isOnlyTab={onlyHasOneTab} />
       ))}
       <EditorTabAdd />
       <EditorTabsFiller onDoubleClick={handleDoubleClick} />
@@ -49,6 +51,7 @@ const EditorTabsContainer = styled.div`
   display: flex;
   align-items: stretch;
   justify-content: start;
+  user-select: none;
 `
 
 export default EditorTabsBar
