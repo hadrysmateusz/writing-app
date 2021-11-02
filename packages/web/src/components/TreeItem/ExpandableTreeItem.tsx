@@ -89,6 +89,7 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
     <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
       <TreeItem depth={depth} isSpecial={isSpecial} isActive={isActive}>
         <InnerContainer>
+          {/* TODO: make clicking on the caret only toggle but not switch view */}
           <CaretContainer isExpanded={isExpanded}>
             <Icon icon={"caretRight"} />
           </CaretContainer>
