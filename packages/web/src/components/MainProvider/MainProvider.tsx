@@ -563,6 +563,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
       const newDocument = await db.documents.insert({
         id: docId,
         title, // TODO: consider custom title sanitation / formatting
+        titleSlug: encodeURI(title.toLowerCase() + Date.now()),
         content: serializedContent,
         parentGroup: parentGroup,
         createdAt: timestamp,
@@ -867,7 +868,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
   // TODO: make this a per-collection setting
   // TODO: make sorting not take uppercase/lowercase into consideration (probably by having a separate 'slugTitle' field)
   const [sorting, setSorting] = useState<Sorting>({
-    index: "title",
+    index: "titleSlug",
     direction: "desc",
   })
   /**

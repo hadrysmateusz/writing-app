@@ -5,7 +5,7 @@ import { DocumentDocType } from "../types"
 export const documentSchema: RxJsonSchema<DocumentDocType> = {
   title: "document schema",
   description: "describes a document",
-  version: 0,
+  version: 5,
   primaryKey: "id",
   type: "object",
   properties: {
@@ -16,6 +16,7 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
     title: {
       type: "string",
     },
+    titleSlug: { type: "string" },
     content: {
       type: "string",
     },
@@ -45,11 +46,14 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
     "isFavorite",
     "isDeleted",
   ],
-  indexes: ["modifiedAt", "title"],
+  indexes: ["modifiedAt", "titleSlug"],
 }
 
 // Hook to update the modifiedAt field on every update
 export const createDocumentPreSaveHook = () => async (data, _doc) => {
   // TODO: check for changes, if there aren't any, don't update the modifiedAt date
   data.modifiedAt = Date.now()
+  data.titleSlug = `${
+    data.title.trim() === "" ? "untitled" : data.title.trim().toLowerCase()
+  } ${Date.now()}`.trim()
 }

@@ -27,7 +27,47 @@ export const models = {
         })
       },
     },
-    migrationStrategies: {},
+    // TODO: remove migration strategies 1 and 2 when I clear the database. They are temporary
+    migrationStrategies: {
+      1: function (oldDoc: DocumentDoc) {
+        // TODO: improve the way titleSlugs are created with some additional encoding/sanitization
+        oldDoc.titleSlug = oldDoc.title.toLowerCase() + " " + Date.now()
+        console.log("title:", oldDoc.title, "titleSlug:", oldDoc.titleSlug)
+        return oldDoc
+      },
+      2: function (oldDoc: DocumentDoc) {
+        // TODO: improve the way titleSlugs are created with some additional encoding/sanitization
+        oldDoc.titleSlug = oldDoc.title.toLowerCase() + " " + Date.now()
+        console.log("title:", oldDoc.title, "titleSlug:", oldDoc.titleSlug)
+        return oldDoc
+      },
+      3: function (oldDoc: DocumentDoc) {
+        // TODO: improve the way titleSlugs are created with some additional encoding/sanitization
+        oldDoc.titleSlug = oldDoc.title.toLowerCase() + " " + Date.now()
+        console.log("title:", oldDoc.title, "titleSlug:", oldDoc.titleSlug)
+        return oldDoc
+      },
+      4: function (oldDoc: DocumentDoc) {
+        // TODO: improve the way titleSlugs are created with some additional encoding/sanitization
+        oldDoc.titleSlug = (
+          oldDoc.title.toLowerCase() +
+          " " +
+          Date.now()
+        ).trim()
+        console.log("title:", oldDoc.title, "titleSlug:", oldDoc.titleSlug)
+        return oldDoc
+      },
+      5: function (oldDoc: DocumentDoc) {
+        // TODO: improve the way titleSlugs are created with some additional encoding/sanitization
+        oldDoc.titleSlug = `${
+          oldDoc.title.trim() === ""
+            ? "untitled"
+            : oldDoc.title.trim().toLowerCase()
+        } ${Date.now()}`.trim()
+        console.log("title:", oldDoc.title, "titleSlug:", oldDoc.titleSlug)
+        return oldDoc
+      },
+    },
     // pouchSettings: {
     //   skip_setup: true,
     // },

@@ -13,6 +13,10 @@ export type DocumentDocType = {
    */
   title: string
   /**
+   * A specially formatted title used for things like sorting
+   */
+  titleSlug: string
+  /**
    * Serialized document content
    */
   content: string

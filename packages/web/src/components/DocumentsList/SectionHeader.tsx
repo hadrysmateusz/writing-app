@@ -7,7 +7,7 @@ import Icon from "../Icon"
 import { ANIMATION_FADEIN, ellipsis } from "../../style-utils"
 import { PrimarySidebarViews, useViewState } from "../ViewState"
 
-const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
+const SORT_METHODS = { modifiedAt: "Date updated", titleSlug: "Title" }
 
 export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
   groupId,
@@ -78,8 +78,8 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
       </ContextMenu>
 
       <SortingContextMenu>
-        <ContextMenuItem onClick={() => changeSorting("title", "asc")}>
-          {SORT_METHODS.title}
+        <ContextMenuItem onClick={() => changeSorting("titleSlug", "asc")}>
+          {SORT_METHODS.titleSlug}
         </ContextMenuItem>
         <ContextMenuItem onClick={() => changeSorting("modifiedAt", "desc")}>
           {SORT_METHODS.modifiedAt}
@@ -109,6 +109,11 @@ const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
     flex-shrink: 1;
     min-width: 0;
     ${ellipsis}
+
+    &:hover {
+      color: #ccc;
+      cursor: pointer;
+    }
   }
 
   .SectionHeader_SortBy {
