@@ -41,6 +41,8 @@ import { FiDownload, FiPlus } from "react-icons/fi"
 
 import { MdStar, MdClose } from "react-icons/md"
 
+import { RiSideBarFill } from "react-icons/ri"
+
 import {
   ELEMENT_BLOCKQUOTE,
   ELEMENT_CODE_BLOCK,
@@ -86,6 +88,7 @@ const iconLibrary = {
   starOutline: FaRegStar,
   sidebarLeft: BsLayoutSidebar,
   sidebarRight: BsLayoutSidebarReverse,
+  sidebarNavigator: RiSideBarFill,
   trash: IoMdTrash,
   folderOpen: AiFillFolderOpen,
   folderClosed: AiFillFolder,

@@ -41,7 +41,7 @@ export const PrimarySidebar = memo(
 )
 
 export const PrimarySidebarTabs = () => {
-  const { primarySidebar } = useViewState()
+  const { primarySidebar, navigatorSidebar } = useViewState()
 
   const handleClick = (view: PrimarySidebarViews) => () => {
     if (!primarySidebar.isOpen) {
@@ -70,6 +70,15 @@ export const PrimarySidebarTabs = () => {
         isActive={isTabActive(PrimarySidebarViews.snippets)}
         onClick={handleClick(PrimarySidebarViews.snippets)}
         icon="clipboard"
+      />
+      <SidebarTab
+        rightSide={true}
+        isActive={false}
+        icon="sidebarNavigator"
+        title="Toggle the navigator sidebar"
+        onClick={() => {
+          navigatorSidebar.toggle()
+        }}
       />
     </SidebarTabsContainer>
   )
