@@ -94,7 +94,7 @@ export const optionsExitBreakPlugin: ExitBreakPluginOptions = {
   ],
 }
 
-const plugins = [
+export const plugins = [
   createReactPlugin(),
   createHistoryPlugin(),
   createParagraphPlugin(),
