@@ -3,9 +3,9 @@ import React from "react"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
-  NewButton,
 } from "../../SidebarCommon"
 import { InboxDocumentsList } from "../../DocumentsList"
+import { NewButton } from "../NewButton"
 
 export const InboxView: React.FC = () => {
   return (

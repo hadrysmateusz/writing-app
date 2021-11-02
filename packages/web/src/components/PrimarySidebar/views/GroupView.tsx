@@ -3,10 +3,10 @@ import React from "react"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
-  NewButton,
 } from "../../SidebarCommon"
 import { GroupDocumentsList } from "../../DocumentsList"
 import { useViewState } from "../../ViewState"
+import { NewButton } from "../NewButton"
 
 export const GroupView: React.FC = () => {
   const { primarySidebar } = useViewState()

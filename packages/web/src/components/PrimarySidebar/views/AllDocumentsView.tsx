@@ -3,9 +3,9 @@ import React from "react"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
-  NewButton,
 } from "../../SidebarCommon"
 import { AllDocumentsList } from "../../DocumentsList"
+import { NewButton } from "../NewButton"
 
 export const AllDocumentsView: React.FC = () => {
   return (
