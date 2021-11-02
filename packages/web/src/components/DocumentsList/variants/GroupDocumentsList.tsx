@@ -97,6 +97,8 @@ const GroupDocumentsListInternal: FC<{
         title={formatOptional(group.name, "Unnamed Collection")}
         documents={documents}
         groupId={group.id}
+        parentGroupId={group.parentGroup}
+        main
       />
       {childGroups.map((group) => (
         <SubGroupList key={group.id} groupId={group.id} />

@@ -4,15 +4,22 @@ import styled from "styled-components/macro"
 import SidebarDocumentItem from "./SidebarDocumentItem"
 import { DocumentDoc } from "../Database"
 import { SectionHeader } from "./SectionHeader"
+import MainHeader from "./MainHeader"
 
 export const DocumentsList: React.FC<{
   title: string
   documents: DocumentDoc[]
   groupId?: string | null
-}> = ({ title, documents, groupId }) => {
+  parentGroupId?: string | null
+  main?: boolean
+}> = ({ title, documents, groupId, parentGroupId, main = false }) => {
   return (
     <>
-      <SectionHeader groupId={groupId}>{title}</SectionHeader>
+      {main ? (
+        <MainHeader title={title} parentGroupId={parentGroupId} />
+      ) : (
+        <SectionHeader groupId={groupId}>{title}</SectionHeader>
+      )}
       <DocumentsListWithoutHeader groupId={groupId} documents={documents} />
     </>
   )

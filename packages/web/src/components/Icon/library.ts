@@ -31,8 +31,9 @@ import {
   BsCaretDownFill,
   BsLayoutSidebar,
   BsLayoutSidebarReverse,
+  BsArrow90DegUp,
 } from "react-icons/bs"
-import { BiStats } from "react-icons/bi"
+import { BiStats, BiSort } from "react-icons/bi"
 
 import { CgMoreAlt } from "react-icons/cg"
 
@@ -98,6 +99,8 @@ const iconLibrary = {
   import: FiDownload,
   clipboard: FaClipboard,
   close: MdClose,
+  arrow90DegUp: BsArrow90DegUp,
+  sort: BiSort,
 }
 
 export default iconLibrary
