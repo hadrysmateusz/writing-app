@@ -56,6 +56,7 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
         const { [tabId]: removedTab, ...remainingTabs } = state.tabs
 
         if (tabId === state.currentTab) {
+          console.log("Closed current tab!")
           const tabIds = Object.keys(state.tabs)
           const removedTabIndex = tabIds.findIndex((t) => t === tabId)
           const remainingTabIds = Object.keys(remainingTabs)
