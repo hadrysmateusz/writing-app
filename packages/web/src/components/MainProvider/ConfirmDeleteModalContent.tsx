@@ -5,6 +5,7 @@ import { Button } from "../Button"
 import { useDocumentsAPI } from "."
 import { ConfirmDeleteModalProps } from "./types"
 import { CloseModalFn } from "../Modal/types"
+import { useDatabase } from "../Database"
 
 const ModalContainer = styled.div`
   background: #252525;
@@ -26,43 +27,49 @@ export const ConfirmDeleteModalContent: FC<
   ConfirmDeleteModalProps & {
     close: CloseModalFn<ConfirmDeleteModalReturnValue>
   }
-> = ({ documentId, close }) => {
-  const { findDocumentById } = useDocumentsAPI()
+> = ({ close, children, ...options }) => {
+  const { actuallyPermanentlyRemoveDocument } = useDocumentsAPI()
+  const db = useDatabase()
 
-  const permanentlyRemoveDocument = async (documentId: string) => {
-    const original = await findDocumentById(documentId, true)
-    if (original === null) {
-      throw new Error(`no document found matching this id (${documentId})`)
-    }
+  // TODO: add loading state, especially important when deleting all
+  const handleConfirm = async () => {
+    if (options.all) {
+      const documentsInTrash = await db.documents
+        .find()
+        .where("isDeleted")
+        .eq(true)
+        .exec()
 
-    try {
-      await original.remove()
-    } catch (error) {
-      // TODO: better surface this error to the user
-      console.error("The document was not removed")
-    }
-  }
+      // TODO: use the builtin batch delete function from rxDB and create an actuallyPermanentlyRemoveAllDocuments function to optimize this, because it's agonizingly slow
 
-  const handleConfirm = () => {
-    if (documentId) {
-      permanentlyRemoveDocument(documentId)
+      for (let doc of documentsInTrash) {
+        console.log("deleting", doc)
+        await actuallyPermanentlyRemoveDocument(doc.id)
+      }
     } else {
-      // TODO: better error handling
-      console.error("Missing documentId")
+      if (options.documentId) {
+        await actuallyPermanentlyRemoveDocument(options.documentId)
+      } else {
+        // TODO: better error handling
+        console.error("Missing documentId")
+      }
     }
     return close(true)
   }
 
   const handleCancel = () => close(false)
 
-  // TODO: make the modal look good
+  const msgPrompt = options.all
+    ? "Are you sure you want to permanently delete all documents in trash?"
+    : "Are you sure you want to delete this document permanently?"
+  const msgConfirm = options.all ? "Yes. Delete all" : "Yes. Delete it"
+
   return (
     <ModalContainer>
-      <p>Are you sure you want to delete this document permanently?</p>
+      <p>{msgPrompt}</p>
       <Container>
-        {/* TODO: add danger style */}
         <Button onClick={handleConfirm} variant={"danger"}>
-          Yes. Delete it
+          {msgConfirm}
         </Button>
         <Button onClick={handleCancel}>Cancel</Button>
       </Container>

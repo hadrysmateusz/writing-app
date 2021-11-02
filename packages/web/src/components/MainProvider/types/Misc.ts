@@ -1,15 +1,21 @@
 export type Direction = "asc" | "desc"
 
-export type SortingIndex = "modifiedAt" | "title"
+export type SortingIndex = "modifiedAt" | "titleSlug"
 
 export type Sorting = {
   index: SortingIndex
   direction: Direction
 }
 
-export type ConfirmDeleteModalProps = {
-  documentId: string | null
-}
+export type ConfirmDeleteModalProps =
+  | {
+      all: false
+      documentId: string | null
+    }
+  | {
+      all: true
+      documentId: undefined
+    }
 
 /**
  * The generic type has to be an RxDB Document

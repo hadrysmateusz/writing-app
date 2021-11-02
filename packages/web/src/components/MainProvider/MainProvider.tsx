@@ -47,6 +47,7 @@ import {
   UpdateGroupFn,
   MoveGroupFn,
   OpenDocumentFn,
+  ConfirmDeleteModalProps,
 } from "./types"
 import {
   MainStateContext,
@@ -116,7 +117,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
     tabsDispatch({ type: "close-tab", tabId })
   }, [])
 
-  // console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
+  console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
 
   // TODO: figure out if I should keep this or just use tabsState.currentTab
   const currentDocumentId = useMemo(() => {
@@ -132,6 +133,8 @@ export const MainProvider: React.FC = memo(({ children }) => {
     }
     return currentDocumentId
   }, [tabsState.currentTab, tabsState.tabs])
+
+  console.log("currentDocumentId", currentDocumentId)
 
   /**
    * Finds a single group by id.
@@ -769,19 +772,52 @@ export const MainProvider: React.FC = memo(({ children }) => {
   // The document deletion confirmation modal
   const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<
     boolean,
-    {
-      documentId: string | null
-    }
-  >(false, { documentId: null })
+    ConfirmDeleteModalProps
+  >(false, { all: false, documentId: null })
 
   /**
    * Permanently removes a document
    */
   const permanentlyRemoveDocument: PermanentlyRemoveDocumentFn = useCallback(
     (documentId: string) => {
-      openConfirmDeleteModal({ documentId })
+      openConfirmDeleteModal({ all: false, documentId })
     },
     [openConfirmDeleteModal]
+  )
+
+  const permanentlyRemoveAllDocuments = useCallback(() => {
+    openConfirmDeleteModal({ all: true, documentId: undefined })
+  }, [openConfirmDeleteModal])
+
+  // TODO: fix naming with this and the function that opens the confirm deletion modal
+  const actuallyPermanentlyRemoveDocument = useCallback(
+    async (documentId: string) => {
+      const original = await findDocumentById(documentId, true)
+      if (original === null) {
+        throw new Error(`no document found matching this id (${documentId})`)
+      }
+
+      try {
+        await original.remove()
+      } catch (error) {
+        // TODO: better surface this error to the user
+        console.error("The document was not removed")
+      }
+
+      // check if document is open in a tab and close it
+      let foundTabId: string | null = null
+      Object.entries(tabsState.tabs).some(([tabId, tab]) => {
+        if (tab.documentId === documentId) {
+          foundTabId = tabId
+          return true
+        }
+        return false
+      })
+      if (foundTabId !== null) {
+        closeTab(foundTabId)
+      }
+    },
+    [closeTab, findDocumentById, tabsState.tabs]
   )
 
   //#endregion
@@ -861,6 +897,11 @@ export const MainProvider: React.FC = memo(({ children }) => {
     }
   }, [createDocument, isDocumentLoading, tabsState.tabs])
 
+  useEffect(() => {
+    console.log("currentDocumentId changed, refetching document")
+    fetchDocument(currentDocumentId)
+  }, [currentDocumentId, fetchDocument])
+
   //#region sorting
 
   // State of the sorting options for the documents list
@@ -927,6 +968,8 @@ export const MainProvider: React.FC = memo(({ children }) => {
       createDocument,
       removeDocument,
       permanentlyRemoveDocument,
+      actuallyPermanentlyRemoveDocument,
+      permanentlyRemoveAllDocuments,
       restoreDocument,
       renameDocument,
       moveDocumentToGroup,
@@ -940,6 +983,8 @@ export const MainProvider: React.FC = memo(({ children }) => {
       findDocuments,
       moveDocumentToGroup,
       permanentlyRemoveDocument,
+      actuallyPermanentlyRemoveDocument,
+      permanentlyRemoveAllDocuments,
       removeDocument,
       renameDocument,
       restoreDocument,
