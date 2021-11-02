@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useRef } from "react"
-import styled from "styled-components/macro"
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
+import { useEventEditorId, useStoreEditorRef } from "@udecode/plate-core"
 
 import { useModal } from "../Modal"
+import { getAndUpsertLink } from "../Toolbar"
+
 import createContext from "../../utils/createContext"
-import { CloseModalFn, Modal } from "../Modal/types"
 
-export type LinkModalProps = { prevUrl: string | null }
-export type LinkModalOpenReturnValue = string
-
-export type LinkModalContextValue = Modal<
+import {
+  LinkModalContentProps,
+  LinkModalContextValue,
   LinkModalOpenReturnValue,
-  LinkModalProps
->
+  LinkModalProps,
+} from "./types"
+import { ModalContainer } from "./styledComponents"
 
 export const [LinkModalContext, useLinkModal] = createContext<
   LinkModalContextValue
@@ -20,6 +21,7 @@ export const [LinkModalContext, useLinkModal] = createContext<
 // TODO: remove duplication with ImageModal code
 // TODO: support other link operations, like changing url or text
 export const LinkModalProvider: React.FC = ({ children }) => {
+  const editor = useStoreEditorRef(useEventEditorId("focus"))
   // const editor = useSlateStatic()
   // const [selection, setSelection] = useState<Range | null>(null)
 
@@ -49,23 +51,46 @@ export const LinkModalProvider: React.FC = ({ children }) => {
     }
   )
 
+  /**
+   * Convenience function for opening the modal and getting the url from it
+   */
+  const getLinkUrl = useCallback(
+    async (prevUrl: string | null) => {
+      const url = await toggleableProps.open({ prevUrl })
+      return typeof url === "string" ? url : null
+    },
+    [toggleableProps]
+  )
+
+  /**
+   * Convenience method handling the entire flow for opening the modal and upserting link with resulting url
+   */
+  const upsertLinkFromModal = useCallback(async () => {
+    if (!editor) {
+      console.warn("editor is undefined")
+      return
+    }
+    await getAndUpsertLink(editor, getLinkUrl)
+  }, [editor, getLinkUrl])
+
+  const value = useMemo(
+    () => ({ ...toggleableProps, upsertLinkFromModal, getLinkUrl }),
+    [getLinkUrl, toggleableProps, upsertLinkFromModal]
+  )
+
   return (
-    <LinkModalContext.Provider value={toggleableProps}>
-      <Modal>
-        {(props) => {
-          return <LinkModalContent {...props} />
-        }}
-      </Modal>
+    <LinkModalContext.Provider value={value}>
+      <Modal component={LinkModalContent} />
       {children}
     </LinkModalContext.Provider>
   )
 }
 
-const LinkModalContent: React.FC<
-  LinkModalProps & { close: CloseModalFn<LinkModalOpenReturnValue> }
-> = ({ close, prevUrl }) => {
+const LinkModalContent: React.FC<LinkModalContentProps> = ({
+  close,
+  prevUrl,
+}) => {
   const urlInputRef = useRef<HTMLInputElement | null>(null)
-  // const editor = useSlateStatic()
   const [url, setUrl] = useState<string>(prevUrl ?? "")
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,11 +115,3 @@ const LinkModalContent: React.FC<
     </ModalContainer>
   )
 }
-
-const ModalContainer = styled.div`
-  background: #252525;
-  border: 1px solid #363636;
-  padding: 20px;
-  border-radius: 4px;
-  color: white;
-`

@@ -1,5 +1,4 @@
 import { FunctionComponent, ReactNode } from "react"
-// import { Toggleable } from "../../hooks"
 
 export type OpenModalFn<ReturnValue, ModalProps> = (
   props: ModalProps
@@ -13,10 +12,10 @@ export type Modal<ReturnValue, ModalProps> = {
   close: CloseModalFn<ReturnValue>
 }
 
-export type UseModalReturn<
+export type UseModalReturn<ReturnValue, ModalProps> = Modal<
   ReturnValue,
   ModalProps
-> /* Omit<Toggleable<T>, "open"> & */ = Modal<ReturnValue, ModalProps> & {
+> & {
   Modal: FunctionComponent<ModalRenderProps<ReturnValue, ModalProps>>
 }
 

@@ -188,15 +188,7 @@ const EditorComponent: React.FC<{
   const editableProps: EditableProps = useMemo(
     () => ({
       placeholder: "Start writing…",
-      spellCheck: /* isSpellCheckEnabled */ false, // TODO: change this back when I restore userdata preferences
-      onKeyDown: (e) => {
-        // TODO: try using this event in the entire editor area as it would be more intuitive I think
-        // TODO: also apply renaming (if focus is in the title input)
-        if (isHotkey("mod+s", e)) {
-          e.preventDefault()
-          saveDocument()
-        }
-      },
+      spellCheck: /* isSpellCheckEnabled */ false, // TODO: change this back when I restore userdata
       onBlur: (e) => {
         // TODO: if you close the window or reload without clicking on something else the blur doesn't trigger and the content doesn't get saved
         saveDocument()
@@ -217,6 +209,23 @@ const EditorComponent: React.FC<{
           // these refer to the dom nodes that directly map to slate element nodes
           let selectionTargetParentSlateNode: Element | null = null
           let eventTargetParentSlateNode: Element | null = null
+
+          let targetElement: HTMLElement
+
+          const targetNode = event.target as globalThis.Node
+
+          // if the node is already an element then use it if not find it's parent element
+          if (targetNode.nodeType === 1) {
+            targetElement = targetNode as HTMLElement
+          } else {
+            targetElement = targetNode.parentElement!
+          }
+
+          eventTargetParentSlateNode = targetElement.closest(
+            `[data-slate-node="element"]`
+          )
+
+          if (eventTargetParentSlateNode === null) return // TODO: better handle this
 
           if (domSelection !== null) {
             // if the selection is expanded and the event is within the selection, trigger the appropriate menu
@@ -242,7 +251,10 @@ const EditorComponent: React.FC<{
                 event.pageY <= rect.y + rect.height
               ) {
                 event.preventDefault()
-                openMenu(event, { base: "expanded" })
+                openMenu(event, {
+                  base: "expanded",
+                  node: eventTargetParentSlateNode,
+                })
               }
               return
             }
@@ -258,29 +270,15 @@ const EditorComponent: React.FC<{
             }
           }
 
-          let targetElement: HTMLElement
-
-          const targetNode = event.target as globalThis.Node
-
-          // if the node is already an element then use it if not find it's parent element
-          if (targetNode.nodeType === 1) {
-            targetElement = targetNode as HTMLElement
-          } else {
-            targetElement = targetNode.parentElement!
-          }
-
-          eventTargetParentSlateNode = targetElement.closest(
-            `[data-slate-node="element"]`
-          )
-
-          if (eventTargetParentSlateNode === null) return // TODO: better handle this
-
           if (
             selectionTargetParentSlateNode?.isSameNode(
               eventTargetParentSlateNode
             )
           ) {
-            openMenu(event, { base: "collapsed" })
+            openMenu(event, {
+              base: "collapsed",
+              node: eventTargetParentSlateNode,
+            })
             return
           }
 
@@ -311,7 +309,14 @@ const EditorComponent: React.FC<{
       {currentDocument.isDeleted && (
         <TrashBanner documentId={currentDocument.id} />
       )}
-      <OuterContainer>
+      <OuterContainer
+        onKeyDown={(e) => {
+          if (isHotkey("mod+s", e)) {
+            e.preventDefault()
+            saveDocument()
+          }
+        }}
+      >
         <InnerContainer>
           <EditableContainer>
             <Plate

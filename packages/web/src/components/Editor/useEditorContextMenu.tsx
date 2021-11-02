@@ -1,7 +1,20 @@
 import React, { useState, useCallback } from "react"
 import { ReactEditor } from "slate-react"
-import { Node } from "slate"
+import { Editor, Node, Transforms } from "slate"
 import styled from "styled-components/macro"
+import {
+  MARK_BOLD,
+  MARK_CODE,
+  MARK_ITALIC,
+  MARK_STRIKETHROUGH,
+  getPlatePluginType,
+  useStoreEditorRef,
+  useEventEditorId,
+  ToolbarMark,
+  ELEMENT_LINK,
+  serializeHTMLFromNodes,
+  deserializeHTMLToFragment,
+} from "@udecode/plate"
 
 import {
   ContextMenuItem,
@@ -9,17 +22,17 @@ import {
   ContextMenuSeparator,
   ContextSubmenu,
 } from "../ContextMenu"
-// import FormatButton from "../FormatButton"
 import { TurnIntoContextMenuContent } from "../NodeToolbar"
-// import { useImageModal } from "../ImageModal"
-// import { useLinkModal } from "../LinkPrompt"
+import { useImageModal } from "../ImageModal"
+import { useLinkModal } from "../LinkPrompt"
+import Icon from "../Icon"
+import { ToolbarLink } from "../Toolbar" // TODO: refactor those components to make them more general
 
-// import { insertHorizontalRule } from "../../slate-plugins"
-import { useEventEditorId, useStoreEditorRef } from "@udecode/plate-core"
+import plugins from "./pluginsList"
 
 type ContextMenuType = {
-  base: string
-  node?: Element
+  base: "collapsed" | "expanded" | "node"
+  node: Element
 }
 
 const InlineFormattingContainer = styled.div`
@@ -36,42 +49,120 @@ const InlineFormattingContainer = styled.div`
 const useEditorContextMenu = () => {
   const editor = useStoreEditorRef(useEventEditorId("focus"))
 
+  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { insertImageFromModal } = useImageModal()
+  const { getLinkUrl } = useLinkModal()
+
   const [
     contextMenuType,
     setContextMenuType,
   ] = useState<ContextMenuType | null>(null)
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  // const { open: openImageModal } = useImageModal()
-  // const { open: openLinkModal } = useLinkModal()
 
-  // // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
-  // const handleInsertHorizontalRule = useCallback(
-  //   (event: React.MouseEvent<HTMLDivElement>) => {
-  //     event.preventDefault()
-  //     if (editor) {
-  //       insertHorizontalRule(editor)
-  //     }
-  //   },
-  //   [editor]
-  // )
+  // TODO: ensure this works properly in both electron and the browser by checking for permissions etc.
+  const addSelectionToClipboard = async (): Promise<void> => {
+    if (editor && editor.selection) {
+      const fragment = Editor.fragment(editor, editor.selection)
 
-  // const handleToggleLink = useCallback(
-  //   (event: React.MouseEvent) => {
-  //     event.preventDefault()
-  //     // TODO: move the new link inserting logic from the toolbar here as well
-  //     // openLinkModal()
-  //   },
-  //   [openLinkModal]
-  // )
+      const html = serializeHTMLFromNodes(editor, {
+        plugins: plugins,
+        nodes: fragment,
+      })
 
-  // const handleInsertImage = useCallback(
-  //   (event: React.MouseEvent<HTMLDivElement>) => {
-  //     event.preventDefault()
-  //     // TODO: move the new image inserting logic here as well
-  //     // openImageModal()
-  //   },
-  //   [openImageModal]
-  // )
+      console.log(html)
+
+      const items = {}
+
+      const type1 = "text/html"
+      const blob1: any = new Blob([html], { type: type1 }) // TODO: figure out why typescript freaks out without casting to any
+      items[type1] = blob1
+
+      const selection = window.getSelection()
+      if (selection) {
+        const type2 = "text/plain"
+        const blob1: any = new Blob([selection.toString()], { type: type2 })
+        items[type2] = blob1
+      }
+
+      const data = [new ClipboardItem(items)]
+
+      navigator.clipboard.write(data).then(async () => {
+        console.log("success")
+      })
+    }
+  }
+
+  const copySelectionToClipboard = async (): Promise<void> => {
+    addSelectionToClipboard()
+  }
+
+  const cutSelectionToClipboard = async (): Promise<void> => {
+    addSelectionToClipboard()
+
+    if (editor !== undefined) {
+      Transforms.delete(editor)
+    }
+  }
+
+  // TODO: figure out how to programmatically paste formatted HTML
+  const pasteFromClipboard = async (): Promise<void> => {
+    console.warn("TODO: make this work")
+    const clipboardItems = await navigator.clipboard.read()
+
+    for (const clipboardItem of clipboardItems) {
+      if (clipboardItem.types.includes("text/html")) {
+        const blob = await clipboardItem.getType("text/html")
+        const htmlObject = document.createElement("div")
+        htmlObject.innerHTML = await blob.text() // TODO: make sure this is secure and can't be exploited
+
+        const preparedHTMLObject = { element: htmlObject, children: [] }
+
+        console.log(preparedHTMLObject)
+
+        const fragment = deserializeHTMLToFragment(preparedHTMLObject)
+
+        console.log(fragment)
+      }
+    }
+  }
+
+  const handleCopySelectionToClipboard = () => {
+    copySelectionToClipboard()
+  }
+  const handleCutSelectionToClipboard = () => {
+    cutSelectionToClipboard()
+  }
+  const handlePasteFromClipboard = () => {
+    pasteFromClipboard()
+  }
+  const handleInsertImage = async (event) => {
+    event.preventDefault()
+    insertImageFromModal()
+  }
+  // const handleToggleLink = async (event) => {
+  //   event.preventDefault()
+  //   upsertLinkFromModal()
+  // }
+  const handleSelectBlock = useCallback(
+    (e) => {
+      if (!editor) {
+        console.warn("editor is undefined")
+        return
+      }
+
+      Transforms.deselect(editor)
+
+      setContextMenuType((prev) => {
+        if (prev === null) {
+          return null
+        }
+        return { ...prev, base: "node" }
+      })
+
+      e.preventDefault()
+      e.stopPropagation()
+    },
+    [editor]
+  )
 
   const renderContextMenu = useCallback(
     () => {
@@ -94,49 +185,49 @@ const useEditorContextMenu = () => {
           return (
             <>
               <InlineFormattingContainer>
-                {/* TODO: use new plate-based elements and functions */}
-                {/* <FormatButton format={MARKS.BOLD} />
-                <FormatButton format={MARKS.ITALIC} />
-                <FormatButton format={MARKS.STRIKE} />
-                <FormatButton format={CODE_INLINE} /> */}
-                {/* TODO: This doesn't work for turning the link off */}
-                {/* <FormatButton format={LINK} onMouseDown={handleToggleLink} /> */}
+                <ToolbarMark
+                  type={getPlatePluginType(editor, MARK_BOLD)}
+                  icon={<Icon icon={MARK_BOLD} />}
+                />
+                <ToolbarMark
+                  type={getPlatePluginType(editor, MARK_ITALIC)}
+                  icon={<Icon icon={MARK_ITALIC} />}
+                />
+                <ToolbarMark
+                  type={getPlatePluginType(editor, MARK_STRIKETHROUGH)}
+                  icon={<Icon icon={MARK_STRIKETHROUGH} />}
+                />
+                <ToolbarMark
+                  type={getPlatePluginType(editor, MARK_CODE)}
+                  icon={<Icon icon={MARK_CODE} />}
+                />
+                <ToolbarLink
+                  getLinkUrl={getLinkUrl}
+                  icon={<Icon icon={ELEMENT_LINK} />}
+                />
               </InlineFormattingContainer>
 
               <ContextMenuSeparator />
 
               <ContextMenuItem
-                onMouseDown={() => {
-                  console.warn("TODO: implement common actions")
-                }}
-              >
-                Cut
-              </ContextMenuItem>
+                text="Copy"
+                onMouseDown={handleCopySelectionToClipboard}
+              />
               <ContextMenuItem
-                onMouseDown={() => {
-                  console.warn("TODO: implement common actions")
-                }}
-              >
-                Copy
-              </ContextMenuItem>
+                text="Cut"
+                onMouseDown={handleCutSelectionToClipboard}
+              />
               <ContextMenuItem
-                onMouseDown={() => {
-                  console.warn("TODO: implement common actions")
-                }}
-              >
-                Paste
-              </ContextMenuItem>
+                text="Paste"
+                onMouseDown={handlePasteFromClipboard}
+              />
 
               <ContextMenuSeparator />
 
               <ContextMenuItem
-                onMouseDown={() => {
-                  // TODO: implement
-                  console.warn("TODO: implement common actions")
-                }}
-              >
-                Select Block
-              </ContextMenuItem>
+                text="Select Block"
+                onMouseDown={handleSelectBlock}
+              />
             </>
           )
         }
@@ -145,23 +236,16 @@ const useEditorContextMenu = () => {
           return (
             <>
               <ContextMenuItem
-                onMouseDown={() => {
-                  console.warn("TODO: implement common actions")
-                }}
-              >
-                Paste
-              </ContextMenuItem>
+                text="Paste"
+                onMouseDown={handlePasteFromClipboard}
+              />
 
               <ContextMenuSeparator />
 
               <ContextMenuItem
-                onMouseDown={() => {
-                  // TODO: implement
-                  console.warn("TODO: implement common actions")
-                }}
-              >
-                Select Block
-              </ContextMenuItem>
+                text="Select Block"
+                onMouseDown={handleSelectBlock}
+              />
             </>
           )
         }
@@ -186,20 +270,18 @@ const useEditorContextMenu = () => {
           return (
             <>
               <ContextMenuItem
+                text="Delete"
                 onMouseDown={() => {
                   console.warn("TODO: implement")
                 }}
-              >
-                Delete
-              </ContextMenuItem>
+              />
 
               <ContextMenuItem
+                text="Duplicate"
                 onMouseDown={() => {
                   console.warn("TODO: implement")
                 }}
-              >
-                Duplicate
-              </ContextMenuItem>
+              />
 
               <ContextSubmenu text="Turn into">
                 <TurnIntoContextMenuContent editor={editor} node={node} />
@@ -208,23 +290,19 @@ const useEditorContextMenu = () => {
               <ContextMenuSeparator />
 
               <ContextMenuItem
+                text="Comment"
                 onMouseDown={() => {
                   console.warn("TODO: implement")
                 }}
-              >
-                Comment
-              </ContextMenuItem>
+              />
 
               <ContextMenuSeparator />
 
-              {/* <ContextMenuItem disabled>{nodeType}</ContextMenuItem> */}
-
               <ContextSubmenu text="Insert">
+                <ContextMenuItem text="Image" onMouseDown={handleInsertImage} />
+
                 {/* <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
                   Horizontal Rule
-                </ContextMenuItem> */}
-                {/* <ContextMenuItem onMouseDown={handleInsertImage}>
-                  Image
                 </ContextMenuItem> */}
               </ContextSubmenu>
             </>

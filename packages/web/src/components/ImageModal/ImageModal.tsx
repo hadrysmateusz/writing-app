@@ -1,32 +1,25 @@
-import React, { useState, useEffect, useRef } from "react"
-import styled from "styled-components/macro"
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import { useEventEditorId, useStoreEditorRef } from "@udecode/plate-core"
 
 import { useModal } from "../Modal"
-import { CloseModalFn, Modal } from "../Modal/types"
+import { insertImage } from "../Toolbar"
 
 import createContext from "../../utils/createContext"
 
-const ModalContainer = styled.div`
-  background: #252525;
-  border: 1px solid #363636;
-  padding: 20px;
-  border-radius: 4px;
-  color: white;
-`
-
-export type ImageModalProps = {}
-export type ImageModalOpenReturnValue = string
-
-export type ImageModalContextValue = Modal<
+import {
+  ImageModalContentProps,
+  ImageModalContextValue,
   ImageModalOpenReturnValue,
-  ImageModalProps
->
+  ImageModalProps,
+} from "./types"
+import { ModalContainer } from "./styledComponents"
 
 export const [ImageModalContext, useImageModal] = createContext<
   ImageModalContextValue
 >()
 
 export const ImageModalProvider: React.FC = ({ children }) => {
+  const editor = useStoreEditorRef(useEventEditorId("focus"))
   // const editor = useSlateStatic()
   // const [selection, setSelection] = useState<Range | null>(null)
 
@@ -56,17 +49,45 @@ export const ImageModalProvider: React.FC = ({ children }) => {
     }
   )
 
+  /**
+   * Convenience function for opening the modal and getting the url from it
+   */
+  const getImageUrl = useCallback(async (): Promise<string | null> => {
+    const url = await toggleableProps.open({})
+    return typeof url === "string" ? url : null
+  }, [toggleableProps])
+
+  /**
+   * Convenience method handling the entire flow for opening the modal and inserting image with resulting url
+   */
+  const insertImageFromModal = useCallback(async () => {
+    if (!editor) {
+      console.warn("editor is undefined")
+      return
+    }
+    let url = await getImageUrl()
+    if (!url) {
+      console.warn("url wasn't provided")
+      return
+    }
+    // TODO: I could do more thorough validation of the url here
+    insertImage(editor, url)
+  }, [editor, getImageUrl])
+
+  const value = useMemo(
+    () => ({ ...toggleableProps, insertImageFromModal, getImageUrl }),
+    [insertImageFromModal, getImageUrl, toggleableProps]
+  )
+
   return (
-    <ImageModalContext.Provider value={toggleableProps}>
+    <ImageModalContext.Provider value={value}>
       <Modal component={ImageModalContent} />
       {children}
     </ImageModalContext.Provider>
   )
 }
 
-const ImageModalContent: React.FC<
-  ImageModalProps & { close: CloseModalFn<ImageModalOpenReturnValue> }
-> = ({ close }) => {
+const ImageModalContent: React.FC<ImageModalContentProps> = ({ close }) => {
   const urlInputRef = useRef<HTMLInputElement | null>(null)
   // const editor = useSlateStatic()
   const [url, setUrl] = useState<string>("")
@@ -85,7 +106,7 @@ const ImageModalContent: React.FC<
     //   // TODO: handle a situation where it's not a valid url
     //   insertImage(editor, url)
     // }
-    close(url) // TODO: return the image url when I implement image elements
+    close(url)
   }
 
   useEffect(() => {

@@ -190,10 +190,11 @@ export const ContextSubmenu: React.FC<{ text: string }> = ({
 }
 
 export const ContextMenuItem: React.FC<{
+  text?: string
   disabled?: boolean
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void
   onMouseDown?: (event: React.MouseEvent<HTMLDivElement>) => void
-}> = ({ disabled = false, onClick, onMouseDown, children, ...rest }) => {
+}> = ({ text, disabled = false, onClick, onMouseDown, children, ...rest }) => {
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (disabled) {
       event.preventDefault()
@@ -223,7 +224,7 @@ export const ContextMenuItem: React.FC<{
       onMouseDown={handleMouseDown}
       {...rest}
     >
-      {children}
+      {text ?? children}
     </ContextMenuItemContainer>
   )
 }
@@ -235,7 +236,7 @@ const CaretContainer = styled.div`
   padding-top: 2px;
 `
 
-const menuContainerCommon = css`
+export const menuContainerCommon = css`
   background: #252525;
   border: 1px solid #363636;
   border-radius: 3px;

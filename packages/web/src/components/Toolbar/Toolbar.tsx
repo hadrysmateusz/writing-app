@@ -4,6 +4,10 @@ import {
   ELEMENT_CODE_BLOCK,
   ELEMENT_H1,
   ELEMENT_H2,
+  ELEMENT_UL,
+  ELEMENT_OL,
+  ELEMENT_LINK,
+  ELEMENT_IMAGE,
   MARK_BOLD,
   MARK_CODE,
   MARK_ITALIC,
@@ -14,10 +18,6 @@ import {
   ToolbarElement,
   ToolbarMark,
   ToolbarList,
-  ELEMENT_UL,
-  ELEMENT_OL,
-  ELEMENT_LINK,
-  ELEMENT_IMAGE,
 } from "@udecode/plate"
 import { ToolbarCodeBlock } from "@udecode/plate-code-block-ui"
 
@@ -30,29 +30,11 @@ import { ToolbarImage } from "./ToolbarImage"
 
 export const Toolbar = () => {
   const editor = useStoreEditorRef(useEventEditorId("focus"))
-  const { open: openLinkModal } = useLinkModal()
-  const { open: openImageModal } = useImageModal()
-
-  const getLinkUrl = async (prevUrl: string | null) => {
-    const url = await openLinkModal({ prevUrl })
-    return typeof url === "string" ? url : null
-  }
-
-  const getImageUrl = async () => {
-    const url = await openImageModal({})
-    return typeof url === "string" ? url : null
-  }
+  const { getLinkUrl } = useLinkModal()
+  const { getImageUrl } = useImageModal()
 
   return (
     <ToolbarContainer>
-      {/* <button
-        onClick={() => {
-          console.log(editor)
-        }}
-      >
-        Print Editor
-      </button> */}
-
       <ToolbarMark
         type={getPlatePluginType(editor, MARK_BOLD)}
         icon={<Icon icon={MARK_BOLD} />}
@@ -61,10 +43,6 @@ export const Toolbar = () => {
         type={getPlatePluginType(editor, MARK_ITALIC)}
         icon={<Icon icon={MARK_ITALIC} />}
       />
-      {/* <ToolbarMark
-        type={getPlatePluginType(editor, MARK_UNDERLINE)}
-        icon={<Icon icon={MARK_UNDERLINE} />}
-      /> */}
       <ToolbarMark
         type={getPlatePluginType(editor, MARK_STRIKETHROUGH)}
         icon={<Icon icon={MARK_STRIKETHROUGH} />}
@@ -73,17 +51,6 @@ export const Toolbar = () => {
         type={getPlatePluginType(editor, MARK_CODE)}
         icon={<Icon icon={MARK_CODE} />}
       />
-      {/* <ToolbarMark
-        type={getPlatePluginType(editor, MARK_SUPERSCRIPT)}
-        clear={getPlatePluginType(editor, MARK_SUBSCRIPT)}
-        icon={<Superscript />}
-      />
-      <ToolbarMark
-        type={getPlatePluginType(editor, MARK_SUBSCRIPT)}
-        clear={getPlatePluginType(editor, MARK_SUPERSCRIPT)}
-        icon={<Subscript />}
-      /> */}
-      {/* <ToolbarSpacer small /> */}
       <ToolbarLink
         getLinkUrl={getLinkUrl}
         icon={<Icon icon={ELEMENT_LINK} />}
@@ -99,23 +66,9 @@ export const Toolbar = () => {
         type={getPlatePluginType(editor, ELEMENT_H2)}
         icon={<Icon icon={ELEMENT_H2} />}
       />
+
       <ToolbarSpacer small />
-      {/* <ToolbarElement
-        type={getPlatePluginType(editor, ELEMENT_H3)}
-        icon={"H3"}
-      />
-      <ToolbarElement
-        type={getPlatePluginType(editor, ELEMENT_H4)}
-        icon={"H4"}
-      />
-      <ToolbarElement
-        type={getPlatePluginType(editor, ELEMENT_H5)}
-        icon={"H5"}
-      />
-      <ToolbarElement
-        type={getPlatePluginType(editor, ELEMENT_H6)}
-        icon={"H6"}
-      /> */}
+
       <ToolbarElement
         type={getPlatePluginType(editor, ELEMENT_BLOCKQUOTE)}
         icon={<Icon icon={ELEMENT_BLOCKQUOTE} />}
@@ -128,7 +81,10 @@ export const Toolbar = () => {
         icon={<Icon icon={ELEMENT_IMAGE} />}
         getImageUrl={getImageUrl}
       />
+
       <ToolbarSpacer small />
+
+      {/* TODO: fix toggling lists */}
       <ToolbarList
         type={getPlatePluginType(editor, ELEMENT_UL)}
         icon={<Icon icon={ELEMENT_UL} />}
