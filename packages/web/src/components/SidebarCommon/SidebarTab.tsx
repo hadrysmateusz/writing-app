@@ -33,6 +33,13 @@ const SidebarTabContainer = styled.div<{
 
   color: ${(p) => (p.isActive ? "#7D7D7D" : "#545454")};
   background: ${(p) => (p.isActive ? "#1E1E1E" : "transparent")};
+  cursor: pointer;
+
+  &:hover {
+    color: #7d7d7d;
+    background: #1d1d1d;
+  }
+
   /* TODO: make this work with more than one tab */
   ${(p) =>
     p.rightSide &&
