@@ -9,14 +9,15 @@ import {
 import styled from "styled-components/macro"
 import { FaEllipsisV } from "react-icons/fa"
 
-import {
-  PARAGRAPH,
-  BLOCKQUOTE,
-  CODE_BLOCK,
-  HeadingType,
-  insertHorizontalRule,
-  insertImage,
-} from "../slate-plugins"
+// import {
+//   PARAGRAPH,
+//   BLOCKQUOTE,
+//   CODE_BLOCK,
+//   HeadingType,
+//   insertHorizontalRule,
+//   insertImage,
+// } from "../slate-plugins"
+// import { useListItemContext } from "../slate-plugins/elements/list/ListItemContext"
 
 import {
   useContextMenu,
@@ -24,7 +25,6 @@ import {
   ContextMenuSeparator,
   ContextSubmenu,
 } from "./ContextMenu"
-import { useListItemContext } from "../slate-plugins/elements/list/ListItemContext"
 
 // The toolbar requires the parent element to have position: relative
 
@@ -38,7 +38,7 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
   const editor = useSlateStatic()
   const isFocused = useFocused()
   const isSelected = useSelected()
-  const { listItemDirectNode } = useListItemContext()
+  // const { listItemDirectNode } = useListItemContext()
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -49,32 +49,32 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
 
   // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
 
-  const handleInsertHorizontalRule = (
-    event: React.MouseEvent<HTMLDivElement>
-  ) => {
-    event.preventDefault()
-    insertHorizontalRule(editor)
-  }
+  // const handleInsertHorizontalRule = (
+  //   event: React.MouseEvent<HTMLDivElement>
+  // ) => {
+  //   event.preventDefault()
+  //   insertHorizontalRule(editor)
+  // }
 
-  const handleInsertImage = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.preventDefault()
+  // const handleInsertImage = (event: React.MouseEvent<HTMLDivElement>) => {
+  //   event.preventDefault()
 
-    // TODO: replace the prompt in electron
-    const url = window.prompt("Enter the URL of the image:")
-    if (!url) return
-    insertImage(editor, url)
-  }
+  //   // TODO: replace the prompt in electron
+  //   const url = window.prompt("Enter the URL of the image:")
+  //   if (!url) return
+  //   insertImage(editor, url)
+  // }
 
   return isSelected && isFocused ? (
     <>
       {/* MAKE SURE THE SIDETOOLBARCONTAINER HAS CHILDREN TO PREVENT SELECTION ERRORS */}
-      <SideToolbarContainer
+      {/* <SideToolbarContainer
         onMouseDown={handleMouseDown}
         contentEditable={false}
         listItemIndent={listItemDirectNode === slateNode}
       >
         <FaEllipsisV />
-      </SideToolbarContainer>
+      </SideToolbarContainer> */}
 
       <ContextMenu>
         <ContextMenuItem
@@ -109,16 +109,14 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
 
         <ContextMenuSeparator />
 
-        <ContextSubmenu text="Insert">
+        {/* <ContextSubmenu text="Insert">
           <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
             Horizontal Rule
-            {/* TODO: research and change the name if needed */}
           </ContextMenuItem>
           <ContextMenuItem onMouseDown={handleInsertImage}>
             Image
-            {/* TODO: research and change the name if needed */}
           </ContextMenuItem>
-        </ContextSubmenu>
+        </ContextSubmenu> */}
       </ContextMenu>
     </>
   ) : null
@@ -165,13 +163,13 @@ export const TurnIntoContextMenuContent: React.FC<{
 
   return (
     <>
-      <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
+      {/* <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
         Paragraph
-      </ContextMenuItem>
+      </ContextMenuItem> */}
 
       <ContextMenuSeparator />
 
-      <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
+      {/* <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
         Heading 1
       </ContextMenuItem>
       <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H2)}>
@@ -179,16 +177,16 @@ export const TurnIntoContextMenuContent: React.FC<{
       </ContextMenuItem>
       <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H3)}>
         Heading 3
-      </ContextMenuItem>
+      </ContextMenuItem> */}
 
       <ContextMenuSeparator />
 
-      <ContextMenuItem onMouseDown={handleSetFormat(BLOCKQUOTE)}>
+      {/* <ContextMenuItem onMouseDown={handleSetFormat(BLOCKQUOTE)}>
         Blockquote
       </ContextMenuItem>
       <ContextMenuItem onMouseDown={handleSetFormat(CODE_BLOCK)}>
         Code Block
-      </ContextMenuItem>
+      </ContextMenuItem> */}
 
       <ContextMenuSeparator />
 

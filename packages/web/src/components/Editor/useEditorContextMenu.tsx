@@ -14,7 +14,7 @@ import { TurnIntoContextMenuContent } from "../NodeToolbar"
 // import { useImageModal } from "../ImageModal"
 // import { useLinkModal } from "../LinkPrompt"
 
-import { insertHorizontalRule } from "../../slate-plugins"
+// import { insertHorizontalRule } from "../../slate-plugins"
 import { useEventEditorId, useStoreEditorRef } from "@udecode/plate-core"
 
 type ContextMenuType = {
@@ -44,16 +44,16 @@ const useEditorContextMenu = () => {
   // const { open: openImageModal } = useImageModal()
   // const { open: openLinkModal } = useLinkModal()
 
-  // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
-  const handleInsertHorizontalRule = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      event.preventDefault()
-      if (editor) {
-        insertHorizontalRule(editor)
-      }
-    },
-    [editor]
-  )
+  // // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
+  // const handleInsertHorizontalRule = useCallback(
+  //   (event: React.MouseEvent<HTMLDivElement>) => {
+  //     event.preventDefault()
+  //     if (editor) {
+  //       insertHorizontalRule(editor)
+  //     }
+  //   },
+  //   [editor]
+  // )
 
   // const handleToggleLink = useCallback(
   //   (event: React.MouseEvent) => {
@@ -220,9 +220,9 @@ const useEditorContextMenu = () => {
               {/* <ContextMenuItem disabled>{nodeType}</ContextMenuItem> */}
 
               <ContextSubmenu text="Insert">
-                <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
+                {/* <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
                   Horizontal Rule
-                </ContextMenuItem>
+                </ContextMenuItem> */}
                 {/* <ContextMenuItem onMouseDown={handleInsertImage}>
                   Image
                 </ContextMenuItem> */}
@@ -238,7 +238,7 @@ const useEditorContextMenu = () => {
     },
     // TODO: I'm not sure but I think ContextMenu is excluded from dependencies to solve rerender issues, I should find a way to fix this (the warning is disabled for now)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [/* ContextMenu,  */ contextMenuType, editor, handleInsertHorizontalRule]
+    [/* ContextMenu,  */ contextMenuType, editor]
   )
 
   const openMenuWithType = (
