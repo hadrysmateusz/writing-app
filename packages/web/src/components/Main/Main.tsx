@@ -108,21 +108,18 @@ const Gutter = styled.div<{ isSidebarOpen: boolean; isDragging: boolean }>`
   background-clip: padding-box;
   width: 0;
 
-  /* TODO: better hover / dragging styles */
   ${(p) =>
     p.isSidebarOpen &&
     css`
-      width: 10px;
-      margin: 0 -5px;
+      width: 4px;
+      margin: 0 -2px;
       cursor: col-resize;
-      border-left: 5px solid;
-      border-right: 5px solid;
-      border-color: ${p.isDragging
-        ? `rgba(0, 0, 0, 0.15)`
-        : `rgba(0, 0, 0, 0)`};
+      border-left: 2px solid;
+      border-right: 2px solid;
+      border-color: ${p.isDragging ? `#333` : `rgba(0, 0, 0, 0)`};
 
       :hover {
-        border-color: rgba(0, 0, 0, 0.15);
+        border-color: #2e2e2e;
       }
     `}
 `
