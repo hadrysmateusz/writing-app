@@ -1,5 +1,6 @@
 import React, { useCallback } from "react"
 import styled from "styled-components/macro"
+import { customScrollbar } from "../../style-utils"
 
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import { useDocumentsAPI } from "../MainProvider"
@@ -48,4 +49,5 @@ export const InnerContainer: React.FC<{
 
 const InnerContainerSC = styled.div`
   overflow-y: auto;
+  ${customScrollbar}
 `

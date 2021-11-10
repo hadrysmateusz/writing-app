@@ -1,4 +1,5 @@
 import styled from "styled-components/macro"
+import { customScrollbar } from "../../style-utils"
 
 export const OutermosterContainer = styled.div`
   min-width: 500px; // TODO: probably change this with media queries
@@ -24,6 +25,7 @@ export const OuterContainer = styled.div`
   min-height: 0;
   font-size: 20px;
   box-sizing: content-box;
+  ${customScrollbar}
 `
 
 export const InnerContainer = styled.div`
