@@ -17,6 +17,26 @@ export const resetButtonStyles = css`
   cursor: pointer;
 `
 
+export const customScrollbar = css`
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  /* ::-webkit-scrollbar-thumb {
+    background-color: #38383844;
+  } */
+
+  &:hover {
+    ::-webkit-scrollbar-thumb {
+      background-color: #383838;
+
+      :hover {
+        background-color: #545454;
+      }
+    }
+  }
+`
+
 export const ANIMATION_SPIN = keyframes`
 	from {
 		transform: rotate(0deg);
