@@ -100,7 +100,7 @@ export const Toolbar = () => {
 const ToolbarSpacer = styled.div<{
   small?: boolean
 }>`
-  width: ${({ small }) => (small ? "12" : "36")}px;
+  width: ${({ small }) => (small ? "18" : "36")}px;
 `
 
 const ToolbarContainer = styled.div`
