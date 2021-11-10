@@ -77,7 +77,7 @@ export const MainHeader: FunctionComponent<{
 }
 
 const Wrapper = styled.div`
-  --padding-x: 20px;
+  --padding-x: 12px;
   --padding-y: 20px;
 
   padding: var(--padding-y) var(--padding-x);

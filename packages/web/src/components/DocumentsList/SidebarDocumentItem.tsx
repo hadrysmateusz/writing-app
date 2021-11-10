@@ -181,7 +181,8 @@ const MainContainer = styled.div<{ isCurrent: boolean }>`
   min-width: 0;
   overflow: hidden;
   user-select: none;
-  padding: 10px 20px 12px;
+  padding: 10px 12px 12px;
+  border-radius: 4px;
 
   cursor: pointer;
 

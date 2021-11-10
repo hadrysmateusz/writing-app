@@ -46,6 +46,7 @@ export const EditableContainer = styled.div`
     color: inherit;
     background: #9cb8c5;
   }
+  padding-bottom: 140px;
 `
 
 export const InsertBlockField = styled.div`
