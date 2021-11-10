@@ -98,11 +98,15 @@ const EditorTabContainer = styled.div<{ isActive?: boolean }>`
   position: relative;
   max-width: 800px;
 
+  min-width: ${({ isActive }) => (isActive ? "fit-content" : "0")};
+
   .tab-title {
+    flex-shrink: 1;
     ${ellipsis}
   }
 
   .tab-group {
+    flex-shrink: 5;
     margin-left: 9px;
     font-size: 10px;
     color: ${({ isActive }) => (isActive ? "#717171" : "#545454")};

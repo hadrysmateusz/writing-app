@@ -30,11 +30,13 @@ const EditorTabsBar: FC = () => {
   return (
     <EditorTabsContainer>
       {!primarySidebar.isOpen ? <PrimarySidebarTabs /> : null}
-      {Object.keys(tabsState.tabs).map((tabId) => (
-        <EditorTab key={tabId} tabId={tabId} isOnlyTab={onlyHasOneTab} />
-      ))}
-      <EditorTabAdd />
-      <EditorTabsFiller onDoubleClick={handleDoubleClick} />
+      <EditorTabsInnerContainer>
+        {Object.keys(tabsState.tabs).map((tabId) => (
+          <EditorTab key={tabId} tabId={tabId} isOnlyTab={onlyHasOneTab} />
+        ))}
+        <EditorTabAdd />
+        <EditorTabsFiller onDoubleClick={handleDoubleClick} />
+      </EditorTabsInnerContainer>
       {!secondarySidebar.isOpen ? <SecondarySidebarTabs /> : null}
     </EditorTabsContainer>
   )
@@ -48,6 +50,19 @@ const EditorTabsContainer = styled.div`
   background: var(--bg-100);
   height: var(--tab-size);
   width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: start;
+  user-select: none;
+`
+
+const EditorTabsInnerContainer = styled.div`
+  flex-shrink: 1;
+  background: var(--bg-100);
+  height: var(--tab-size);
+  width: 100%;
+  min-width: 0;
   display: flex;
   align-items: stretch;
   justify-content: start;

@@ -43,20 +43,17 @@ const EditorTabAddContainer = styled.div<{ isActive?: boolean }>`
   /* border-radius: var(--tab-corner-radius) var(--tab-corner-radius) 0 0; */
   width: var(--tab-size);
   height: var(--tab-size);
-  /* padding: 0 16px; */
   font-size: 15px;
   color: #a3a3a3;
   background: #131313;
-
-  /* &:hover {
-    color: #f6f6f6;
-    background: var(--bg-200);
-  } */
 
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+
+  min-width: fit-content;
+  flex-shrink: 0;
 `
 
 export default EditorTabAdd

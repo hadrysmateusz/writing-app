@@ -40,8 +40,8 @@ export const SecondarySidebarViewContainer = styled.div`
 export const SidebarTabsContainer = styled.div`
   background: var(--bg-100);
   height: var(--tab-size);
-  /* width: 100%; */
-  min-width: 0;
+  min-width: fit-content;
+  flex-shrink: 0;
   display: flex;
   align-items: stretch;
   justify-content: start;
