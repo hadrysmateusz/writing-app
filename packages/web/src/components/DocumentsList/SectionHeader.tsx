@@ -99,7 +99,7 @@ const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
 
   display: flex;
   user-select: none;
-  color: #a3a3a3;
+  color: var(--light-300);
 
   .SectionHeader_Name {
     padding: var(--padding-y);
@@ -111,7 +111,7 @@ const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
     ${ellipsis}
 
     &:hover {
-      color: #ccc;
+      color: var(--light-400);
       cursor: pointer;
     }
   }

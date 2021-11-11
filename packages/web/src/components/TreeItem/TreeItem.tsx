@@ -55,7 +55,8 @@ const OuterContainer = styled.div<OuterContainerProps>`
   padding-left: ${(p) => (p.depth + 1) * 16}px;
   width: 100%;
   user-select: none;
-  color: ${(p) => (p.isSpecial ? "#f2f2f2" : "#f0f0f0")};
+  /* color: ${(p) => (p.isSpecial ? "#f2f2f2" : "#f0f0f0")}; */
+  color: var(--light-600);
 
   &:hover .${TreeItem_AddDocumentButton} {
     display: flex;
@@ -65,20 +66,20 @@ const OuterContainer = styled.div<OuterContainerProps>`
     p.isActive &&
     `
     color: white;
-    background: #1b1b1b;
+    background: var(--dark-200);
     `}
 
   ${(p) =>
     p.disabled
       ? `
-      color: #aaa;
+      color: var(--light-300);
       cursor: default;
       `
       : `
       cursor: pointer;
       :hover {
         color: white;
-        background: #1b1b1b;
+        background: var(--dark-200);
       }
     `}
 `
@@ -109,6 +110,6 @@ const InnerContainer = styled.div<{ isSpecial: boolean }>`
 const IconContainer = styled.div<{ isSpecial: boolean }>`
   margin-right: 8px;
   margin-bottom: 1px; /* to help align the icon with the text */
-  color: ${(p) => (p.isSpecial ? "#858585" : "#5D5D5D")};
+  color: ${(p) => (p.isSpecial ? "var(--light-200)" : "var(--dark-600)")};
   font-size: 1.4em;
 `

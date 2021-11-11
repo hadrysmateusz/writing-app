@@ -7,7 +7,7 @@ type ToggleButtonProps = {
 
 export const SidebarToggleButton = styled.div<ToggleButtonProps>`
   --sidebar-toggle-size: 20px;
-  --sidebar-toggle-color: #363636;
+  --sidebar-toggle-color: var(--dark-500);
 
   height: var(--sidebar-toggle-size);
   width: var(--sidebar-toggle-size);

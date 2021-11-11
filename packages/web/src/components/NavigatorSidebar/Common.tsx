@@ -11,7 +11,7 @@ export const SectionHeader = styled.div`
   font-family: Poppins;
   font-weight: bold;
   font-size: 10px;
-  color: #a3a3a3;
+  color: var(--light-300);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   padding: 0 18px 5px;

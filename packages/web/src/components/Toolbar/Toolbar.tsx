@@ -109,15 +109,15 @@ const ToolbarContainer = styled.div`
   align-items: center;
   user-select: none;
   flex-wrap: wrap;
-  color: #545454;
+  color: var(--dark-600);
   margin: 10px -4px 20px;
 
   .slate-ToolbarButton:hover {
-    color: #7d7d7d;
+    color: var(--light-100);
   }
   .slate-ToolbarButton-active,
   .slate-ToolbarButton-active:hover {
-    color: #eee;
+    color: var(--light-500);
   }
 `
 

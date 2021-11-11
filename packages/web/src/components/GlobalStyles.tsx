@@ -10,6 +10,21 @@ const GlobalStyles = createGlobalStyle`
     --dark-200: #1B1B1B;
     --dark-300: #1F1F1F;
     --dark-400: #242424;
+    --dark-500: #373737;
+    --dark-600: #545454;
+
+    --light-100: #737373;
+    --light-200: #858585;
+    --light-300: #a6a6a6;
+    --light-400: #cbcbcb;
+    --light-500: #e8e8e8;
+    --light-600: #f6f6f6;
+
+    --danger-100: ;
+    --danger-200: #db4141;
+    --danger-300: ;
+
+    --selection-color: #9cb8c5;
 
     --bg-100: var(--dark-100);
     --bg-200: var(--dark-200);
@@ -43,7 +58,7 @@ const GlobalStyles = createGlobalStyle`
 
   /* Split Pane Styles */
 
-  .Resizer {
+  /* .Resizer {
     background: #000;
     opacity: 0.2;
     z-index: 1;
@@ -63,8 +78,8 @@ const GlobalStyles = createGlobalStyle`
   .Resizer.horizontal {
     height: 10px;
     margin: -5px 0;
-    border-top: 5px solid rgba(255, 255, 255, 0);
-    border-bottom: 5px solid rgba(255, 255, 255, 0);
+    border-top: 5px solid rgba(0, 0, 0, 0);
+    border-bottom: 5px solid rgba(0, 0, 0, 0);
     cursor: row-resize;
     width: 100%;
   }
@@ -77,8 +92,8 @@ const GlobalStyles = createGlobalStyle`
   .Resizer.vertical {
     width: 10px;
     margin: 0 -5px;
-    border-left: 5px solid rgba(255, 255, 255, 0);
-    border-right: 5px solid rgba(255, 255, 255, 0);
+    border-left: 5px solid rgba(0, 0, 0, 0);
+    border-right: 5px solid rgba(0, 0, 0, 0);
     cursor: col-resize;
   }
 
@@ -93,7 +108,7 @@ const GlobalStyles = createGlobalStyle`
   
   .Resizer.disabled:hover {
     border-color: transparent;
-  }
+  } */
 
 `
 

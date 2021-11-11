@@ -158,12 +158,12 @@ const StyledNamingInput = styled(NamingInput)`
   font-size: inherit;
 
   /* These styles are defaults that are used almost everywhere but can still be overriden using the className of the component*/
-  border: 1px solid #41474d;
+  border: 1px solid var(--dark-500);
   border-radius: 3px;
   padding: 1px 2px;
 
   ::selection {
     color: inherit;
-    background: #9cb8c5;
+    background: var(--selection-color);
   }
 `

@@ -25,7 +25,7 @@ const TrashBanner: React.FC<{ documentId: string }> = ({ documentId }) => {
 }
 
 const TrashBannerContainer = styled.div`
-  background-color: #db4141;
+  background-color: var(--danger-200);
   height: 44px;
   width: 100%;
   color: white;

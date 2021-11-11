@@ -145,7 +145,7 @@ const ContextMeta = styled.div`
   font-weight: 500;
   padding: 6px 20px;
   font-size: 11px;
-  color: #717171;
+  color: var(--light-100);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

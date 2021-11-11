@@ -8,7 +8,7 @@ export const PrimarySidebarBottomButton: React.FC<{
   handleClick: () => void
 }> = ({ icon, handleClick, children }) => (
   <PrimarySidebarBottomButtonSC onClick={handleClick}>
-    <Icon icon={icon} color="#858585" style={{ fontSize: "1.5em" }} />
+    <Icon icon={icon} color="var(--light-200)" style={{ fontSize: "1.5em" }} />
     <div>{children}</div>
   </PrimarySidebarBottomButtonSC>
 )
@@ -26,7 +26,7 @@ const PrimarySidebarBottomButtonSC = styled.div`
 
   font: 500 13px poppins;
   background: var(--bg-highlight);
-  color: #e4e4e4;
+  color: var(--light-500);
 
   :hover {
     color: white;

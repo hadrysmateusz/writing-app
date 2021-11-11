@@ -8,8 +8,8 @@ import { CloseModalFn } from "../Modal/types"
 import { useDatabase } from "../Database"
 
 const ModalContainer = styled.div`
-  background: #252525;
-  border: 1px solid #363636;
+  background: var(--dark-400);
+  border: 1px solid var(--dark-500);
   padding: 4px 20px 0;
   border-radius: 4px;
   color: white;

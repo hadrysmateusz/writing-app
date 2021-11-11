@@ -41,12 +41,13 @@ export const EditableContainer = styled.div`
   width: 100%;
   font-size: 16px;
   line-height: 26px;
-  color: #f3f3f3;
+  padding-bottom: 140px;
+
+  color: var(--light-600);
   *::selection {
     color: inherit;
-    background: #9cb8c5;
+    background: var(--selection-color);
   }
-  padding-bottom: 140px;
 `
 
 export const InsertBlockField = styled.div`

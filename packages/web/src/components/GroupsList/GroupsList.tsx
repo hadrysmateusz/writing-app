@@ -64,7 +64,7 @@ export const GroupsList: FC<{
           <EditableText
             placeholder="Unnamed"
             {...getNamingNewProps()}
-            style={{ color: "#f0f0f0" }}
+            style={{ color: "var(--light-600)" }}
           />
         </TreeItem>
       )}

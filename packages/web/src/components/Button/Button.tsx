@@ -4,14 +4,14 @@ import { ellipsis } from "../../style-utils"
 
 const variants = {
   default: css`
-    border-color: #383838;
+    color: var(--light-400);
+    border-color: var(--dark-500);
     background: transparent;
-    color: #c8c8c8;
 
     &:not([disabled]) {
       &:hover {
-        background: #212121;
-        border-color: #383838;
+        border-color: var(--dark-500);
+        background: var(--dark-400);
       }
     }
   `,
@@ -28,28 +28,28 @@ const variants = {
     } */
   `,
   accent: css`
-    border-color: #c46179;
+    /* border-color: #c46179;
     background: #c46179;
-    color: #e4e4e4;
+    color: var(--light-500); */
 
     /* text-shadow: 1px 1px rgba(0, 0, 0, 0.23), 0 0 5px rgba(0, 0, 0, 0.1); */
 
-    :not([disabled]) {
+    /* :not([disabled]) {
       :hover {
         background: #d17088;
         border-color: #d17088;
       }
-    }
+    } */
   `,
   danger: css`
-    border-color: #db4141;
-    background: #db4141;
+    border-color: var(--danger-200);
+    background: var(--danger-200);
     color: white;
 
     &:not([disabled]) {
       &:hover {
-        border-color: #db4141;
-        background: #db4141;
+        border-color: var(--danger-200);
+        background: var(--danger-200);
         color: white;
       }
     }

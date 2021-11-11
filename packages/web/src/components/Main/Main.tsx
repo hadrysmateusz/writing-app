@@ -108,6 +108,8 @@ const Gutter = styled.div<{ isSidebarOpen: boolean; isDragging: boolean }>`
   background-clip: padding-box;
   width: 0;
 
+  /* --active-border-color: var(--dark-500); */
+
   ${(p) =>
     p.isSidebarOpen &&
     css`
@@ -116,11 +118,15 @@ const Gutter = styled.div<{ isSidebarOpen: boolean; isDragging: boolean }>`
       cursor: col-resize;
       border-left: 2px solid;
       border-right: 2px solid;
-      border-color: ${p.isDragging ? `#333` : `rgba(0, 0, 0, 0)`};
+      border-color: transparent;
 
+      /* border-color: ${
+        p.isDragging ? `var(--active-border-color)` : `rgba(0, 0, 0, 0)`
+      }; */
+      /* 
       :hover {
-        border-color: #2e2e2e;
-      }
+        border-color: var(--active-border-color);
+      } */
     `}
 `
 

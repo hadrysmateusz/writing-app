@@ -19,7 +19,7 @@ const StyledNamingInput = styled(NamingInput)`
   letter-spacing: 0.01em;
   font-size: 36px;
   line-height: 54px;
-  color: #f8f8f8;
+  color: var(--light-600);
 `
 
 const TitleInput: React.FC<{ currentDocument: DocumentDoc }> = ({

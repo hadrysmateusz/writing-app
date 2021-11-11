@@ -22,16 +22,12 @@ export const customScrollbar = css`
     width: 6px;
   }
 
-  /* ::-webkit-scrollbar-thumb {
-    background-color: #38383844;
-  } */
-
   &:hover {
     ::-webkit-scrollbar-thumb {
-      background-color: #383838;
+      background-color: var(--dark-500);
 
       :hover {
-        background-color: #545454;
+        background-color: var(--dark-600);
       }
     }
   }

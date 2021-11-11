@@ -85,7 +85,7 @@ export const GroupDisplay: React.FC = () => {
 }
 
 const InboxContainer = styled.div`
-  color: #a3a3a3;
+  color: var(--light-300);
 `
 
 const GroupContainer = styled.div`

@@ -98,7 +98,7 @@ const OutlineItem = styled.div<{ level: number; baseLevel: number }>`
   font-weight: normal;
   padding: 4px 0;
   padding-left: ${(p) => (p.level - p.baseLevel) * 16}px;
-  color: #afb3b6;
+  color: var(--light-300);
   display: flex;
   font-size: 12px;
   align-items: center;
@@ -107,5 +107,5 @@ const OutlineItem = styled.div<{ level: number; baseLevel: number }>`
 const OutlineIcon = styled.span`
   margin-right: 6px;
   font-size: 12px;
-  color: #41474d;
+  color: var(--dark-500);
 `

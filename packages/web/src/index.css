@@ -24,6 +24,6 @@ code {
 }
 
 .slate-node-selected {
-  background: #f6f6f6;
-  outline: 4px solid #f6f6f6;
+  background: var(--light-600);
+  outline: 4px solid var(--light-600);
 }

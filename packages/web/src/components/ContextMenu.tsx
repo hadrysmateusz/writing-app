@@ -231,14 +231,14 @@ export const ContextMenuItem: React.FC<{
 
 const CaretContainer = styled.div`
   font-size: 0.77em;
-  color: #c3c3c3;
+  color: var(--light-400);
   margin-right: -5px;
   padding-top: 2px;
 `
 
 export const menuContainerCommon = css`
-  background: #252525;
-  border: 1px solid #363636;
+  background: var(--dark-400);
+  border: 1px solid var(--dark-500);
   border-radius: 3px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   padding: 6px 0;
@@ -260,15 +260,15 @@ const MenuContainer = styled.div<{
 
 export const ContextMenuSeparator = styled.div`
   height: 1px;
-  background: #363636;
+  background: var(--dark-500);
   margin: 6px 0;
 `
 
 export const ContextMenuItemContainer = styled.div<{ disabled?: boolean }>`
-  color: ${(p) => (p.disabled ? "#aaa" : "white")};
+  color: ${(p) => (p.disabled ? "var(--light-300)" : "white")};
   cursor: ${(p) => (p.disabled ? "default" : "pointer")};
 
-  ${(p) => !p.disabled && `:hover { background: #424242; }`}
+  ${(p) => !p.disabled && `:hover { background: var(--dark-500); }`}
 
   position: relative;
   padding: 6px 20px;

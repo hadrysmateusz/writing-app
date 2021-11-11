@@ -47,7 +47,7 @@ export const DocumentsListWithoutHeader: React.FC<{
 const Empty = styled.div`
   text-align: center;
   padding: 20px;
-  color: #aaa;
+  color: var(--light-300);
   user-select: none;
   font-size: 11px;
   font-weight: 500;

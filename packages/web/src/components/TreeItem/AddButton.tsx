@@ -31,8 +31,8 @@ export const AddButton: React.FC<{
 const AddButtonComponent = styled(UnstyledButton).attrs({
   className: "TreeItem_AddDocumentButton",
 })`
-  color: #707070;
-  border: 1px solid #4d4d4d;
+  color: var(--light-100);
+  border: 1px solid var(--dark-500);
   border-radius: 3px;
   width: 18px;
   height: 18px;
@@ -47,7 +47,7 @@ const AddButtonComponent = styled(UnstyledButton).attrs({
   animation: 200ms ease-out both ${ANIMATION_FADEIN};
 
   :hover {
-    color: #838383;
-    background: #343434;
+    color: var(--light-200);
+    background: var(--dark-500);
   }
 `

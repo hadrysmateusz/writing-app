@@ -130,7 +130,7 @@ const ChildrenContainer = styled.div`
 const IconContainer = styled.div<{ isRoot: boolean; isHidden?: boolean }>`
   margin-right: 8px;
   margin-bottom: -4px; /* to help align the icon with the text */
-  color: ${(p) => (p.isRoot ? "#858585" : "#5D5D5D")};
+  color: ${(p) => (p.isRoot ? "var(--light-200)" : "var(--dark-600)")};
   font-size: 1.4em;
   ${(p) => p.isHidden === true && `opacity: 0;`}
 `
@@ -142,7 +142,7 @@ const CaretContainer = styled.div<{ isExpanded: boolean }>`
   left: -23px;
 
   font-size: 0.85em;
-  color: #454545;
+  color: var(--dark-500);
 
   transition: transform 100ms ease-out;
   transform-origin: center;

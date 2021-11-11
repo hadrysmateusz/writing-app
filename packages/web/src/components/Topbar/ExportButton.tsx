@@ -9,14 +9,14 @@ import styled from "styled-components/macro"
 import { CloseModalFn } from "../Modal/types"
 
 const ModalContainer = styled.div`
-  background: #252525;
-  border: 1px solid #363636;
+  background: var(--dark-400);
+  border: 1px solid var(--dark-500);
   padding: 14px 20px;
   border-radius: 4px;
   color: white;
 
   h2 {
-    color: #e8e8e8;
+    color: var(--light-500);
     font-size: 20px;
     line-height: 24px;
     margin-top: 0;

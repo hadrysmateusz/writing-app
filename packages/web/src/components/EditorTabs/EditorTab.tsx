@@ -85,19 +85,24 @@ const EditorTab: FC<{ tabId: string; isOnlyTab?: boolean }> = ({
 }
 
 const EditorTabContainer = styled.div<{ isActive?: boolean }>`
+  --bg-color-default: var(--bg-100);
+  --bg-color-active: var(--bg-200);
+  --bg-color: ${({ isActive }) =>
+    isActive ? "var(--bg-color-active)" : "var(--bg-color-default)"};
+
   border-radius: var(--tab-corner-radius) var(--tab-corner-radius) 0 0;
   height: var(--tab-size);
   padding: 0 16px;
   font-size: 12px;
-  color: ${({ isActive }) => (isActive ? "#f6f6f6" : "#A3A3A3")};
-  background: ${({ isActive }) => (isActive ? "var(--bg-200)" : "#131313")};
+  color: ${({ isActive }) =>
+    isActive ? "var(--light-600)" : "var(--light-300)"};
+  background: var(--bg-color);
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   position: relative;
   max-width: 800px;
-
   min-width: ${({ isActive }) => (isActive ? "fit-content" : "0")};
 
   .tab-title {
@@ -109,7 +114,7 @@ const EditorTabContainer = styled.div<{ isActive?: boolean }>`
     flex-shrink: 5;
     margin-left: 9px;
     font-size: 10px;
-    color: ${({ isActive }) => (isActive ? "#717171" : "#545454")};
+    color: var(--light-100);
     ${ellipsis}
   }
 
@@ -121,11 +126,13 @@ const EditorTabContainer = styled.div<{ isActive?: boolean }>`
     padding: 3px;
     border-radius: 3px;
 
-    background: ${({ isActive }) => (isActive ? "var(--bg-200)" : "#131313")};
+    background: ${({ isActive }) =>
+      isActive ? "var(--bg-200)" : "var(--bg-100)"};
     opacity: 0;
 
     font-size: 14px;
-    color: #7d7d7d;
+
+    color: var(--light-100);
     &:hover {
       color: white;
     }

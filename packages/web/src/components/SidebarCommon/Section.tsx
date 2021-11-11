@@ -36,7 +36,7 @@ const SectionHeaderContainer = styled.div`
   text-transform: uppercase;
 
   user-select: none;
-  color: #a3a3a3;
+  color: var(--light-300);
 
   display: flex;
   padding-top: 16px;

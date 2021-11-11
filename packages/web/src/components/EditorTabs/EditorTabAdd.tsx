@@ -25,27 +25,25 @@ const EditorTabAdd = () => {
 }
 
 const InnerContainer = styled.div`
-  /* width: 100%;
-  height: 100%;
-  padding: 8px; */
-  /* margin-bottom: -4px; */
   padding: 3px;
-
   border-radius: 2px;
-  color: #a3a3a3;
+
+  color: var(--light-300);
   &:hover {
-    color: #f6f6f6;
+    color: var(--light-600);
     background: var(--bg-200);
   }
 `
 
 const EditorTabAddContainer = styled.div<{ isActive?: boolean }>`
   /* border-radius: var(--tab-corner-radius) var(--tab-corner-radius) 0 0; */
+  font-size: 15px;
+
   width: var(--tab-size);
   height: var(--tab-size);
-  font-size: 15px;
-  color: #a3a3a3;
-  background: #131313;
+
+  color: var(--light-300);
+  background: var(--dark-100);
 
   display: flex;
   justify-content: center;

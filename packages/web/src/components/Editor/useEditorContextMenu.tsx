@@ -41,7 +41,7 @@ const InlineFormattingContainer = styled.div`
   justify-content: center;
   /* Accounts for padding of icons */
   padding: 0 14px;
-  color: #a1a1a1;
+  color: var(--light-300);
   min-width: 100%;
 `
 
@@ -271,6 +271,7 @@ const useEditorContextMenu = () => {
             <>
               <ContextMenuItem
                 text="Delete"
+                disabled
                 onMouseDown={() => {
                   console.warn("TODO: implement")
                 }}
@@ -278,19 +279,25 @@ const useEditorContextMenu = () => {
 
               <ContextMenuItem
                 text="Duplicate"
+                disabled
                 onMouseDown={() => {
                   console.warn("TODO: implement")
                 }}
               />
 
               <ContextSubmenu text="Turn into">
-                <TurnIntoContextMenuContent editor={editor} node={node} />
+                <TurnIntoContextMenuContent
+                  editor={editor}
+                  node={node}
+                  slateNode={slateNode}
+                />
               </ContextSubmenu>
 
               <ContextMenuSeparator />
 
               <ContextMenuItem
                 text="Comment"
+                disabled
                 onMouseDown={() => {
                   console.warn("TODO: implement")
                 }}
@@ -301,9 +308,11 @@ const useEditorContextMenu = () => {
               <ContextSubmenu text="Insert">
                 <ContextMenuItem text="Image" onMouseDown={handleInsertImage} />
 
-                {/* <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
-                  Horizontal Rule
-                </ContextMenuItem> */}
+                <ContextMenuItem
+                  text="Horizontal Rule"
+                  disabled
+                  /* onMouseDown={handleInsertHorizontalRule} */
+                />
               </ContextSubmenu>
             </>
           )

@@ -10,8 +10,8 @@ const AppLoadingState = () => (
 )
 
 const breathingColor = keyframes`
-  from { color: #999999; }
-	to { color: #f6f6f6; }
+  from { color: var(--light-200); }
+	to { color: var(--light-600); }
 `
 
 const AppLoadingContainer = styled.div`

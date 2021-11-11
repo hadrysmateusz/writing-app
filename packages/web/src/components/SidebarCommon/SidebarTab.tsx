@@ -31,13 +31,13 @@ const SidebarTabContainer = styled.div<{
   justify-content: center;
   align-items: center;
 
-  color: ${(p) => (p.isActive ? "#7D7D7D" : "#545454")};
-  background: ${(p) => (p.isActive ? "#1E1E1E" : "transparent")};
+  color: ${(p) => (p.isActive ? "var(--light-100)" : "var(--dark-600)")};
+  background: ${(p) => (p.isActive ? "var(--dark-300)" : "transparent")};
   cursor: pointer;
 
   &:hover {
-    color: #7d7d7d;
-    background: #1d1d1d;
+    color: #7d7d7d; // TODO: create color variants for hover and active effects
+    background: #1d1d1d; // TODO: create color variants for hover and active effects
   }
 
   /* TODO: make this work with more than one tab */

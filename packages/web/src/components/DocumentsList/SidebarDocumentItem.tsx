@@ -111,7 +111,7 @@ export const SidebarDocumentItem: React.FC<{
 
 const DateModified = styled.div`
   padding-top: 4px;
-  color: #717171;
+  color: var(--light-100);
   font-size: 10px;
   line-height: 13px;
 `
@@ -120,7 +120,7 @@ const DeleteButton = styled.div`
   cursor: pointer;
   opacity: 0;
   font-size: 11px;
-  color: #afb3b6;
+  color: var(--light-300);
   padding: 8px;
   margin-right: -8px;
   :hover {
@@ -134,7 +134,7 @@ const DeleteButton = styled.div`
 //   line-height: 16px;
 //   text-transform: uppercase;
 //   font-weight: 500;
-//   color: #717171;
+//   color: var(--light-100);
 //   white-space: nowrap;
 //   overflow: hidden;
 //   text-overflow: ellipsis;
@@ -143,7 +143,7 @@ const DeleteButton = styled.div`
 
 const Title = styled.div<{ isUnsynced: boolean }>`
   width: 100%;
-  color: #e4e4e4;
+  color: var(--light-500);
   font-family: Poppins;
   font-weight: 500;
   font-size: 12px;
@@ -170,7 +170,7 @@ const Snippet = styled.div`
   line-break: anywhere;
   line-clamp: 2;
 
-  color: #bebebe;
+  color: var(--light-300);
   font-size: 11px;
   padding-top: 1px;
 `

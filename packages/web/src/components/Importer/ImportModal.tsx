@@ -169,9 +169,9 @@ export const DropdownContainer = styled.div`
   transition-duration: 0.15s;
   transition-timing-function: ease;
 
-  border-color: #383838;
+  border-color: var(--dark-500);
   background: transparent;
-  color: #c8c8c8;
+  color: var(--light-400);
   position: relative;
   cursor: pointer;
   user-select: none;
@@ -190,14 +190,14 @@ export const DropdownContent = styled.div`
 `
 
 const ModalContainer = styled.div`
-  background: #252525;
-  border: 1px solid #363636;
+  background: var(--dark-400);
+  border: 1px solid var(--dark-500);
   padding: 14px 20px;
   border-radius: 4px;
   color: white;
 
   h2 {
-    color: #e8e8e8;
+    color: var(--light-500);
     font-size: 20px;
     line-height: 24px;
     margin-top: 0;
