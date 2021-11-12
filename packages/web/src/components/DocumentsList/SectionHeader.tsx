@@ -89,8 +89,10 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
   )
 }
 
+export default SectionHeader
+
 const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
-  --padding-x: 20px;
+  --padding-x: 12px;
   --padding-y: 8px;
 
   font: bold 10px Poppins;

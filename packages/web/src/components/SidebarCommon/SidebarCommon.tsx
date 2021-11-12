@@ -24,7 +24,7 @@ export const PrimarySidebarViewContainer = styled.div<{ noButton?: boolean }>`
   height: 100%;
   width: 100%;
   display: grid;
-  grid-template-rows: 1fr min-content;
+  grid-template-rows: min-content 1fr min-content;
 
   /* This caused the scrollbar to not appear for no apparent benefit */
   /* Removes the space reserved by grid and grid-template-rows */

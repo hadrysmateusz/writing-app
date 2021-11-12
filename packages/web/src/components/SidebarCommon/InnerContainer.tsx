@@ -50,9 +50,9 @@ export const InnerContainer: React.FC<{
 const InnerContainerSC = styled.div`
   overflow-y: auto;
 
-  padding-left: 12px;
-  padding-right: 6px;
-  padding-bottom: 48px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 40px;
 
   ${customScrollbar}
 `
