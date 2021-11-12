@@ -62,12 +62,7 @@ const OuterContainer = styled.div<OuterContainerProps>`
     display: flex;
   }
 
-  ${(p) =>
-    p.isActive &&
-    `
-    color: white;
-    background: var(--dark-200);
-    `}
+
 
   ${(p) =>
     p.disabled
@@ -81,6 +76,13 @@ const OuterContainer = styled.div<OuterContainerProps>`
         color: white;
         background: var(--dark-200);
       }
+    `}
+  
+  ${(p) =>
+    p.isActive &&
+    `
+    color: white;
+    background: var(--dark-200);
     `}
 `
 

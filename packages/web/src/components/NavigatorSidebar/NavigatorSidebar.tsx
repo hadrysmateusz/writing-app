@@ -16,7 +16,7 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
     const { primarySidebar } = useViewState()
     const { open: openAccountModal, Modal: AccountModal } = useModal(false, {})
 
-    const { currentView } = primarySidebar
+    const { currentView, currentSubviews } = primarySidebar
 
     return (
       <>
@@ -31,7 +31,7 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
                 )
               }
               depth={0}
-              isActive={currentView === CloudViews.ALL}
+              isActive={currentSubviews[currentView] === CloudViews.ALL}
             >
               <div style={{ width: "100%" }}>All Documents</div>
               <AddButton groupId={null} />
@@ -46,7 +46,7 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
                 )
               }
               depth={0}
-              isActive={currentView === CloudViews.INBOX}
+              isActive={currentSubviews[currentView] === CloudViews.INBOX}
             >
               <div style={{ width: "100%" }}>Inbox</div>
               <AddButton groupId={null} />
@@ -77,7 +77,7 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
                 )
               }
               depth={0}
-              isActive={currentView === CloudViews.TRASH}
+              isActive={currentSubviews[currentView] === CloudViews.TRASH}
             >
               Trash
             </TreeItem>
