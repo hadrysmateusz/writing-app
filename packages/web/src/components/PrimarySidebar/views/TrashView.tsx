@@ -4,15 +4,29 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../SidebarCommon"
-import { TrashDocumentsList } from "../../DocumentsList"
-import { useDocumentsAPI } from "../../MainProvider"
+import { DocumentsList, MainHeader } from "../../DocumentsList"
+import { useDocumentsAPI, useMainState } from "../../MainProvider"
 import { PrimarySidebarBottomButton } from "../PrimarySidebarBottomButton"
+import useRxSubscription from "../../../hooks/useRxSubscription"
+import { useDatabase } from "../../Database"
 
 export const TrashView: FunctionComponent = () => {
+  const db = useDatabase()
+  const { sorting } = useMainState()
+
+  const { data: documents, isLoading } = useRxSubscription(
+    db.documents
+      .find()
+      .where("isDeleted")
+      .eq(true)
+      .sort({ [sorting.index]: sorting.direction })
+  )
+
   return (
     <PrimarySidebarViewContainer>
+      <MainHeader title="Trash" />
       <InnerContainer groupId={undefined}>
-        <TrashDocumentsList />
+        {!isLoading ? <DocumentsList documents={documents || []} /> : null}
       </InnerContainer>
       <DeleteAllButton />
     </PrimarySidebarViewContainer>
