@@ -11,24 +11,25 @@ const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
 export const MainHeader: FunctionComponent<{
   title: string
   parentGroupId?: string | null
-}> = ({ title, parentGroupId }) => {
+  numSubgroups?: number
+}> = ({ title, parentGroupId, numSubgroups }) => {
   const { primarySidebar } = useViewState()
-  const { changeSorting } = useMainState()
 
   const {
     openMenu: openSortingMenu,
-    isMenuOpen: isSortingMenuOpen,
     ContextMenu: SortingContextMenu,
   } = useContextMenu()
 
-  console.warn("IMPLEMENT: use real data in MainHeader_Details")
+  console.warn("IMPLEMENT: use real documents data in MainHeader_Details")
 
   return (
     <Wrapper>
       <div className="MainHeader_HorizontalContainer">
         <div>
           <div className="MainHeader_MainText">{title}</div>
-          <div className="MainHeader_Details">5 documents, 1 draft</div>
+          <div className="MainHeader_Details">
+            X documents{numSubgroups ? `, ${numSubgroups} collections` : null}
+          </div>
         </div>
 
         {parentGroupId !== undefined ? (

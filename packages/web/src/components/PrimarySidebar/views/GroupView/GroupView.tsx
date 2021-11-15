@@ -53,6 +53,7 @@ export const GroupView: React.FC = () => {
       <MainHeader
         title={formatOptional(group.name, "Unnamed Collection")}
         parentGroupId={group.parentGroup}
+        numSubgroups={childGroups.length}
       />
       <InnerContainer groupId={groupId}>
         {!isLoading ? (
