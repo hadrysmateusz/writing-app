@@ -10,8 +10,6 @@ import {
 } from "./types"
 import { useStatelessToggleable } from "../../hooks"
 
-// TODO: unify the static and expandable tree items and infer the type based on the presence and length of the childNodes prop
-
 export const ExpandableTreeItem: FC<StatefulExpandableTreeItemProps> = ({
   startExpanded = false,
   ...props

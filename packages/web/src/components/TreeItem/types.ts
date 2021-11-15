@@ -38,3 +38,8 @@ export type StatelessExpandableTreeItemProps = ExpandableTreeItemProps & {
 }
 
 export type StaticTreeItemProps = CoreTreeItemProps & {}
+
+export type GenericTreeItemProps =
+  | StatelessExpandableTreeItemProps
+  | StatefulExpandableTreeItemProps
+  | StaticTreeItemProps
