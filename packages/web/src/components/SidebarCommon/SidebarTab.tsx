@@ -36,8 +36,8 @@ const SidebarTabContainer = styled.div<{
   cursor: pointer;
 
   &:hover {
-    color: #7d7d7d; // TODO: create color variants for hover and active effects
-    background: #1d1d1d; // TODO: create color variants for hover and active effects
+    color: var(--light-100);
+    /* background: var(--dark-300); */
   }
 
   /* TODO: make this work with more than one tab */
