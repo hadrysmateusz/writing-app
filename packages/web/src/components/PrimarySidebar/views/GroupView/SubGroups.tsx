@@ -7,37 +7,40 @@ import { DocumentsList } from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
 import SectionHeader from "../../../DocumentsList/SectionHeader"
 import { createFindDocumentsInGroupQuery } from "./helpers"
+import { useToggleable } from "../../../../hooks"
 
 export const SubGroups: FC<{ groups: GroupTreeBranch[] }> = ({ groups }) => (
   <>
     {groups.map((group) => (
-      <SubGroupDocumentsList
-        key={group.id}
-        groupId={group.id}
-        groupName={group.name}
-      />
+      <SubGroupDocumentsList key={group.id} group={group} />
     ))}
   </>
 )
 
 export const SubGroupDocumentsList: FC<{
-  groupId: string
-  groupName: string
-}> = ({ groupId, groupName }) => {
+  group: GroupTreeBranch
+}> = ({ group }) => {
   const db = useDatabase()
 
-  console.log(groupName, groupId)
+  const { toggle, isOpen } = useToggleable(true)
 
   const { data: documents, isLoading } = useRxSubscription(
-    createFindDocumentsInGroupQuery(db, groupId)
+    createFindDocumentsInGroupQuery(db, group.id)
   )
 
   const shouldRender = !isLoading && documents && documents.length > 0
 
   return shouldRender ? (
     <>
-      <SectionHeader groupId={groupId}>{groupName}</SectionHeader>
-      <DocumentsList documents={documents} groupId={groupId} />
+      <SectionHeader groupId={group.id} onToggle={toggle} isOpen={isOpen}>
+        {group.name}
+      </SectionHeader>
+      {isOpen ? (
+        <>
+          <DocumentsList documents={documents} groupId={group.id} />
+          <SubGroups groups={group.children} />
+        </>
+      ) : null}
     </>
   ) : null
 }

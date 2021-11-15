@@ -1,28 +1,22 @@
-import React, { useMemo } from "react"
+import React from "react"
 import styled from "styled-components/macro"
 
-import { useDocumentsAPI, useMainState } from "../MainProvider"
+import { ANIMATION_FADEIN, ellipsis } from "../../style-utils"
+
+import { useDocumentsAPI } from "../MainProvider"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import Icon from "../Icon"
-import { ANIMATION_FADEIN, ellipsis } from "../../style-utils"
 import { PrimarySidebarViews, useViewState } from "../ViewState"
 
-const SORT_METHODS = { modifiedAt: "Date updated", titleSlug: "Title" }
-
-export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
-  groupId,
-  children,
-}) => {
-  const { changeSorting, sorting } = useMainState()
+export const SectionHeader: React.FC<{
+  groupId?: string | null
+  onToggle: () => void
+  isOpen: boolean
+}> = ({ groupId, onToggle, isOpen, children }) => {
   const { primarySidebar } = useViewState()
   const { createDocument } = useDocumentsAPI()
 
   const { openMenu, closeMenu, ContextMenu } = useContextMenu()
-  const {
-    openMenu: openSortingMenu,
-    isMenuOpen: isSortingMenuOpen,
-    ContextMenu: SortingContextMenu,
-  } = useContextMenu()
 
   const handleNewDocument = () => {
     if (groupId !== undefined) {
@@ -37,19 +31,9 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
     openMenu(e)
   }
 
-  // TODO: make sorting a per-group setting
-  const handleChangeSorting = (e: React.MouseEvent<HTMLDivElement>) => {
-    openSortingMenu(e)
-  }
-
-  const sortByText = useMemo(() => {
-    return SORT_METHODS[sorting.index]
-  }, [sorting.index])
-
   return (
     <>
-      <SectionHeaderContainer isSortingMenuOpen={isSortingMenuOpen}>
-        {/* TODO: fix the context menu */}
+      <SectionHeaderContainer isOpen={isOpen}>
         <div
           className="SectionHeader_Name"
           onContextMenu={handleContextMenu}
@@ -58,16 +42,18 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
               primarySidebar.switchSubview(PrimarySidebarViews.cloud, groupId)
             }
           }}
+          title="Go to collection"
         >
           {children}
         </div>
         <div
-          className="SectionHeader_SortBy"
-          onClick={handleChangeSorting}
-          title="Change sorting method"
+          className="SectionHeader_Toggle"
+          onClick={() => {
+            onToggle()
+          }}
+          title={`${isOpen ? "Collapse" : "Expand"} collection`}
         >
-          {/* TODO: consider replacing this index-based text with a simple "Sort By" and mark the current one as active in the dropdown */}
-          <div>{sortByText}</div> <Icon icon="chevronDown" />
+          <Icon icon="chevronDown" />
         </div>
       </SectionHeaderContainer>
 
@@ -76,22 +62,13 @@ export const SectionHeader: React.FC<{ groupId?: string | null }> = ({
           New Document
         </ContextMenuItem>
       </ContextMenu>
-
-      <SortingContextMenu>
-        <ContextMenuItem onClick={() => changeSorting("titleSlug", "asc")}>
-          {SORT_METHODS.titleSlug}
-        </ContextMenuItem>
-        <ContextMenuItem onClick={() => changeSorting("modifiedAt", "desc")}>
-          {SORT_METHODS.modifiedAt}
-        </ContextMenuItem>
-      </SortingContextMenu>
     </>
   )
 }
 
 export default SectionHeader
 
-const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
+const SectionHeaderContainer = styled.div<{ isOpen: boolean }>`
   --padding-x: 12px;
   --padding-y: 8px;
 
@@ -101,7 +78,7 @@ const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
 
   display: flex;
   user-select: none;
-  color: var(--light-300);
+  color: ${(p) => (p.isOpen ? `var(--light-300)` : `var(--light-100)`)};
 
   .SectionHeader_Name {
     padding: var(--padding-y);
@@ -113,16 +90,16 @@ const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
     ${ellipsis}
 
     &:hover {
-      color: var(--light-400);
+      color: ${(p) => (p.isOpen ? `var(--light-400)` : `var(--light-300)`)};
       cursor: pointer;
     }
   }
 
-  .SectionHeader_SortBy {
+  .SectionHeader_Toggle {
     padding: var(--padding-y);
     padding-right: calc(var(--padding-x) - 3px);
 
-    display: ${(p) => (p.isSortingMenuOpen ? "flex" : "none")};
+    display: none;
     cursor: pointer;
     white-space: nowrap;
     padding-left: 6px;
@@ -132,9 +109,15 @@ const SectionHeaderContainer = styled.div<{ isSortingMenuOpen: boolean }>`
     }
 
     animation: 200ms ease-out both ${ANIMATION_FADEIN};
+
+    ${(p) => p.isOpen && `transform: rotate(180deg);`}
+
+    :hover {
+      color: ${(p) => (p.isOpen ? `var(--light-400)` : `var(--light-300)`)};
+    }
   }
 
-  :hover .SectionHeader_SortBy {
+  :hover .SectionHeader_Toggle {
     display: flex;
   }
 `
