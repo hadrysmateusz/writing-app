@@ -21,7 +21,7 @@ export interface GroupTreeBranch extends GroupDocType {
 // TODO: make a more reusable algorithm with customizable keys (types are gonna be more complicated - there are probably ready-made algorithms for that)
 export const findInTree = (
   nodes: GroupTreeBranch[],
-  searchValue: any
+  searchValue: string
 ): null | GroupTreeBranch => {
   // Check if any of the direct children contains the desired node - if so return it
   for (let node of nodes) {
