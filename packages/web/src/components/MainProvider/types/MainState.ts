@@ -1,6 +1,6 @@
 import { GroupDoc, DocumentDoc, DocumentDocType } from "../../Database"
 
-import { Sorting, SortingIndex, Direction, Updater } from "./Misc"
+import { Sorting, SortingIndex, SortingDirection, Updater } from "./Misc"
 
 export type MainState = {
   // isLoading: boolean
@@ -20,7 +20,7 @@ export type MainState = {
 
 export type ChangeSortingFn = (
   index: SortingIndex,
-  direction: Direction
+  direction: SortingDirection
 ) => void
 
 export type SaveDocumentFn = () => Promise<DocumentDocType | null> // TODO: move

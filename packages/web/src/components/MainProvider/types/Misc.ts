@@ -1,10 +1,10 @@
-export type Direction = "asc" | "desc"
+export type SortingDirection = "asc" | "desc"
 
 export type SortingIndex = "modifiedAt" | "titleSlug"
 
 export type Sorting = {
   index: SortingIndex
-  direction: Direction
+  direction: SortingDirection
 }
 
 export type ConfirmDeleteModalProps =
