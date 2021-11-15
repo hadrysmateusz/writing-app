@@ -1,11 +1,11 @@
 import { FunctionComponent } from "react"
 import styled from "styled-components/macro"
+
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import Icon from "../Icon"
-import { useMainState } from "../MainProvider"
+import { SortingIndex, SortingDirection, useMainState } from "../MainProvider"
 import { CloudViews, PrimarySidebarViews, useViewState } from "../ViewState"
 
-// TODO: remove duplication of sorting context menu code with SectionHeader
 const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
 
 export const MainHeader: FunctionComponent<{
@@ -65,16 +65,46 @@ export const MainHeader: FunctionComponent<{
       </div>
 
       <SortingContextMenu>
-        <ContextMenuItem onClick={() => changeSorting("titleSlug", "asc")}>
-          {SORT_METHODS.title}
-        </ContextMenuItem>
-        <ContextMenuItem onClick={() => changeSorting("modifiedAt", "desc")}>
-          {SORT_METHODS.modifiedAt}
-        </ContextMenuItem>
+        <SortingMenuItem sortingIndex="titleSlug" sortingDirection="asc">
+          {SORT_METHODS.title} A-Z
+        </SortingMenuItem>
+        <SortingMenuItem sortingIndex="titleSlug" sortingDirection="desc">
+          {SORT_METHODS.title} Z-A
+        </SortingMenuItem>
+        <SortingMenuItem sortingIndex="modifiedAt" sortingDirection="asc">
+          {SORT_METHODS.modifiedAt} (Older first)
+        </SortingMenuItem>
+        <SortingMenuItem sortingIndex="modifiedAt" sortingDirection="desc">
+          {SORT_METHODS.modifiedAt} (Newer first)
+        </SortingMenuItem>
       </SortingContextMenu>
     </Wrapper>
   )
 }
+
+const SortingMenuItem: FunctionComponent<{
+  sortingIndex: SortingIndex
+  sortingDirection: SortingDirection
+}> = ({ sortingIndex, sortingDirection, children }) => {
+  const { changeSorting, sorting } = useMainState()
+
+  const isActive =
+    sorting.index === sortingIndex && sorting.direction === sortingDirection
+
+  return (
+    <ContextMenuItem
+      onClick={() => changeSorting(sortingIndex, sortingDirection)}
+    >
+      <SortingMenuItemInnerWrapper isActive={isActive}>
+        {children}
+      </SortingMenuItemInnerWrapper>
+    </ContextMenuItem>
+  )
+}
+
+const SortingMenuItemInnerWrapper = styled.span<{ isActive: boolean }>`
+  font-weight: ${(p) => (p.isActive ? `bold` : `normal`)};
+`
 
 const Wrapper = styled.div`
   --padding-x: 12px;
