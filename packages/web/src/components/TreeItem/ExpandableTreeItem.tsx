@@ -9,6 +9,7 @@ import {
   ExpandableChildrenRenderProps,
 } from "./types"
 import { useStatelessToggleable } from "../../hooks"
+import { TreeItemIcon } from "./TreeItemIcon"
 
 export const ExpandableTreeItem: FC<StatefulExpandableTreeItemProps> = ({
   startExpanded = false,
@@ -25,25 +26,21 @@ export const ExpandableTreeItem: FC<StatefulExpandableTreeItemProps> = ({
   )
 }
 
-export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> = (
-  props
-) => {
-  const {
-    icon,
-    depth = 0,
-    nested,
-    children,
-    isExpanded,
-    isSpecial,
-    isActive,
-    setIsExpanded,
-    onClick,
-    onContextMenu,
-    // Toggleable hooks
-    onBeforeChange,
-    onAfterChange,
-  } = props
-
+export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> = ({
+  icon,
+  depth = 0,
+  nested,
+  children,
+  isExpanded,
+  isSpecial,
+  isActive,
+  setIsExpanded,
+  onClick,
+  onContextMenu,
+  // Toggleable hooks
+  onBeforeChange,
+  onAfterChange,
+}) => {
   const { toggle, open: expand, close: collapse } = useStatelessToggleable(
     isExpanded,
     setIsExpanded,
@@ -86,8 +83,6 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
 
   // TODO: save the toggled state between restarts (this will probably require making this component controlled)
 
-  const isRoot = depth === 0
-
   return (
     <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
       <TreeItem depth={depth} isSpecial={isSpecial} isActive={isActive}>
@@ -95,12 +90,7 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
           <CaretContainer isExpanded={isExpanded} onClick={handleToggle}>
             <Icon icon={"caretRight"} />
           </CaretContainer>
-          {/* TODO: de-duplicate the icon code with the one in TreeItem */}
-          {icon && (
-            <IconContainer isRoot={isRoot}>
-              <Icon icon={icon} />
-            </IconContainer>
-          )}
+          <TreeItemIcon icon={icon} style={{ marginBottom: "-3px" }} />
           <ChildrenContainer>
             {typeof children === "function" ? children(renderProps) : children}
           </ChildrenContainer>
@@ -127,14 +117,6 @@ const ChildrenContainer = styled.div`
   display: flex;
   min-width: 0;
   align-items: center;
-`
-
-const IconContainer = styled.div<{ isRoot: boolean; isHidden?: boolean }>`
-  margin-right: 8px;
-  margin-bottom: -4px; /* to help align the icon with the text */
-  color: ${(p) => (p.isRoot ? "var(--light-200)" : "var(--dark-600)")};
-  font-size: 1.4em;
-  ${(p) => p.isHidden === true && `opacity: 0;`}
 `
 
 const CaretContainer = styled.div<{ isExpanded: boolean }>`

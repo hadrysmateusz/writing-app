@@ -3,6 +3,7 @@ import styled from "styled-components/macro"
 import Icon from "../Icon"
 import { StaticTreeItemProps } from "./types"
 import { TreeItem_AddDocumentButton } from "./AddButton"
+import { TreeItemIcon } from "./TreeItemIcon"
 
 export const TreeItem: React.FC<StaticTreeItemProps> = ({
   icon,
@@ -25,12 +26,7 @@ export const TreeItem: React.FC<StaticTreeItemProps> = ({
       {...rest}
     >
       <MidContainer>
-        {/* TODO: de-duplicated the icon code with the one in StatelessExpandableTreeItem */}
-        {icon && (
-          <IconContainer isSpecial={isSpecial}>
-            <Icon icon={icon} />
-          </IconContainer>
-        )}
+        <TreeItemIcon icon={icon} />
         <InnerContainer isSpecial={isSpecial}>{children}</InnerContainer>
       </MidContainer>
     </OuterContainer>
@@ -107,11 +103,4 @@ const InnerContainer = styled.div<{ isSpecial: boolean }>`
     overflow: hidden;
     text-overflow: ellipsis;
   } */
-`
-
-const IconContainer = styled.div<{ isSpecial: boolean }>`
-  margin-right: 8px;
-  margin-bottom: 1px; /* to help align the icon with the text */
-  color: ${(p) => (p.isSpecial ? "var(--light-200)" : "var(--dark-600)")};
-  font-size: 1.4em;
 `
