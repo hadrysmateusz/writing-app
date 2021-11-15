@@ -107,13 +107,13 @@ const SortingMenuItemInnerWrapper = styled.span<{ isActive: boolean }>`
 `
 
 const Wrapper = styled.div`
-  --padding-x: 12px;
+  --padding-x: 24px;
   --padding-y: 20px;
 
   padding: var(--padding-y) var(--padding-x);
 
   .MainHeader_MainText {
-    color: #f8f8f8;
+    color: var(--light-600);
     font-size: 12px;
     font-weight: bold;
 
@@ -121,7 +121,7 @@ const Wrapper = styled.div`
   }
 
   .MainHeader_Details {
-    color: #cacaca;
+    color: var(--light-400);
     font-size: 10px;
     font-weight: normal;
   }
@@ -143,13 +143,12 @@ const Wrapper = styled.div`
     margin-left: 8px;
 
     font-size: 18px;
-
     cursor: pointer;
 
-    color: #7d7d7d;
+    color: var(--light-100);
 
     :hover {
-      color: #cacaca;
+      color: var(--light-400);
     }
   }
 `
