@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import { SectionHeader, SectionContainer } from "./Common"
 import DocumentTreeItem from "./DocumentTreeItem"
 import { useToggleable } from "../../hooks"
-import { TreeItem } from "../TreeItem"
+import { GenericTreeItem } from "../TreeItem"
 import { DocumentDoc, useDatabase } from "../Database"
 
 /* The number of favorites displayed without toggling */
@@ -49,7 +49,7 @@ export const FavoritesSection: React.FC = React.memo(() => {
                   icon="starFilled"
                 />
               ))}
-              <TreeItem
+              <GenericTreeItem
                 depth={0}
                 onClick={() => {
                   close()
@@ -57,7 +57,7 @@ export const FavoritesSection: React.FC = React.memo(() => {
                 icon="ellipsisHorizontal"
               >
                 Show less
-              </TreeItem>
+              </GenericTreeItem>
             </>
           ) : (
             <>
@@ -70,7 +70,7 @@ export const FavoritesSection: React.FC = React.memo(() => {
                 />
               ))}
               {hasMore ?? (
-                <TreeItem
+                <GenericTreeItem
                   depth={0}
                   onClick={() => {
                     open()
@@ -78,7 +78,7 @@ export const FavoritesSection: React.FC = React.memo(() => {
                   icon="ellipsisHorizontal"
                 >
                   Show More
-                </TreeItem>
+                </GenericTreeItem>
               )}
             </>
           )}

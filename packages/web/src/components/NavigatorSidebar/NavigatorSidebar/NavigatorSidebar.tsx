@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 
 import { customScrollbar } from "../../../style-utils"
 
-import { TreeItem, AddButton } from "../../TreeItem"
+import { GenericTreeItem, AddButton } from "../../TreeItem"
 import { CloudViews } from "../../ViewState"
 import { useModal } from "../../Modal"
 import { AccountModalContent } from "../../AccountModal"
@@ -40,10 +40,10 @@ const AllDocumentsSidebarItem: FC<{}> = () => {
   const getTreeItemProps = useNavigationTreeItem(CloudViews.ALL)
 
   return (
-    <TreeItem icon="cloud" depth={0} {...getTreeItemProps()}>
+    <GenericTreeItem icon="cloud" depth={0} {...getTreeItemProps()}>
       <div style={{ width: "100%" }}>All Documents</div>
       <AddButton groupId={null} />
-    </TreeItem>
+    </GenericTreeItem>
   )
 }
 
@@ -51,10 +51,10 @@ const InboxSidebarItem: FC<{}> = () => {
   const getTreeItemProps = useNavigationTreeItem(CloudViews.INBOX)
 
   return (
-    <TreeItem icon="inbox" depth={0} {...getTreeItemProps()}>
+    <GenericTreeItem icon="inbox" depth={0} {...getTreeItemProps()}>
       <div style={{ width: "100%" }}>Inbox</div>
       <AddButton groupId={null} />
-    </TreeItem>
+    </GenericTreeItem>
   )
 }
 
@@ -62,9 +62,9 @@ const TrashSidebarItem: FC<{}> = () => {
   const getTreeItemProps = useNavigationTreeItem(CloudViews.ALL)
 
   return (
-    <TreeItem icon="trash" depth={0} {...getTreeItemProps()}>
+    <GenericTreeItem icon="trash" depth={0} {...getTreeItemProps()}>
       Trash
-    </TreeItem>
+    </GenericTreeItem>
   )
 }
 
@@ -73,9 +73,13 @@ const SettingsSidebarItem: FC<{}> = () => {
 
   return (
     <>
-      <TreeItem icon="settings" onClick={() => openAccountModal({})} depth={0}>
+      <GenericTreeItem
+        icon="settings"
+        onClick={() => openAccountModal({})}
+        depth={0}
+      >
         Settings
-      </TreeItem>
+      </GenericTreeItem>
       <AccountModal>
         {(props) => <AccountModalContent {...props} />}
       </AccountModal>

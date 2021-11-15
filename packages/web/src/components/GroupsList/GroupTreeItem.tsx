@@ -8,7 +8,7 @@ import {
   useDrop,
 } from "react-dnd"
 
-import { StatelessExpandableTreeItem, AddButton } from "../TreeItem"
+import { GenericTreeItem, AddButton } from "../TreeItem"
 import {
   useContextMenu,
   ContextMenuItem,
@@ -242,7 +242,7 @@ to group ${destinationId} (index ${destinationIndex})`)
                 opacity: isDragging ? "0.2" : "1",
               }}
             >
-              <StatelessExpandableTreeItem
+              <GenericTreeItem
                 key={group.id}
                 depth={depth}
                 onContextMenu={openMenu}
@@ -262,7 +262,7 @@ to group ${destinationId} (index ${destinationIndex})`)
               >
                 <EditableText {...getProps()}>{groupName}</EditableText>
                 {!isRenaming && <AddButton groupId={group.id} />}
-              </StatelessExpandableTreeItem>
+              </GenericTreeItem>
             </div>
           </div>
         </div>
@@ -283,6 +283,7 @@ to group ${destinationId} (index ${destinationIndex})`)
         <ContextMenuSeparator />
         <ContextMenuItem onClick={handleRenameDocument}>Rename</ContextMenuItem>
         {/* TODO: add danger style option to ContextMenuItem */}
+        {/* TODO: add confirmation dialog (emphasise the fact that this action can't be reversed) */}
         <ContextMenuItem onClick={handleDeleteGroup}>Delete</ContextMenuItem>
       </ContextMenu>
     </>

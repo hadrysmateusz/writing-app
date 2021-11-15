@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 
-import { TreeItem } from "../TreeItem"
+import { GenericTreeItem } from "../TreeItem"
 
 import { useModal } from "../Modal"
 import { ImportModalContent } from "../Importer"
@@ -17,9 +17,9 @@ export const SidebarImportButton: React.FC = () => {
 
   return (
     <>
-      <TreeItem icon="import" onClick={handleImport} depth={0}>
+      <GenericTreeItem icon="import" onClick={handleImport} depth={0}>
         Import
-      </TreeItem>
+      </GenericTreeItem>
       <ImportModal>{(props) => <ImportModalContent {...props} />}</ImportModal>
     </>
   )

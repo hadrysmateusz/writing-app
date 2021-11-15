@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from "react"
 import { DocumentDoc } from "../Database"
 import { EditableText } from "../RenamingInput"
 import { useMainState } from "../MainProvider"
-import { TreeItem } from "../TreeItem"
+import { GenericTreeItem } from "../TreeItem"
 import { formatOptional } from "../../utils"
 import { useDocumentContextMenu } from "../DocumentContextMenu"
 
@@ -38,14 +38,14 @@ const DocumentTreeItem: React.FC<{
 
   return (
     <>
-      <TreeItem
+      <GenericTreeItem
         depth={depth}
         onContextMenu={handleContextMenu}
         onClick={handleClick}
         icon={icon}
       >
         <EditableText {...getEditableProps()}>{title}</EditableText>
-      </TreeItem>
+      </GenericTreeItem>
 
       {isMenuOpen && <DocumentContextMenu />}
     </>

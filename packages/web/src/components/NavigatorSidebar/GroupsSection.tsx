@@ -3,7 +3,7 @@ import React, { useMemo, useState, useCallback } from "react"
 import { SectionHeader, SectionContainer } from "./Common"
 import { useMainState } from "../MainProvider"
 import createGroupTree from "../../helpers/createGroupTree"
-import { TreeItem } from "../TreeItem"
+import { GenericTreeItem } from "../TreeItem"
 import { GroupsList } from "../GroupsList"
 
 export const GroupsSection: React.FC = () => {
@@ -30,9 +30,9 @@ export const GroupsSection: React.FC = () => {
       />
 
       {!isCreatingGroup && (
-        <TreeItem icon="plus" onClick={handleNewGroup} depth={0}>
+        <GenericTreeItem icon="plus" onClick={handleNewGroup} depth={0}>
           Add Collection
-        </TreeItem>
+        </GenericTreeItem>
       )}
     </SectionContainer>
   ) : null
