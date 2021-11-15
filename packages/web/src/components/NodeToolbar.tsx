@@ -25,6 +25,32 @@ import {
   ContextMenuSeparator,
   ContextSubmenu,
 } from "./ContextMenu"
+import {
+  getPreventDefaultHandler,
+  toggleMark,
+  toggleNodeType,
+} from "@udecode/plate-common"
+import {
+  ELEMENT_BLOCKQUOTE,
+  ELEMENT_CODE_BLOCK,
+  ELEMENT_H1,
+  ELEMENT_H2,
+  ELEMENT_H3,
+  ELEMENT_UL,
+  ELEMENT_OL,
+  ELEMENT_LINK,
+  ELEMENT_IMAGE,
+  MARK_BOLD,
+  MARK_CODE,
+  MARK_ITALIC,
+  MARK_STRIKETHROUGH,
+  getPlatePluginType,
+  useStoreEditorRef,
+  useEventEditorId,
+  ToolbarElement,
+  ToolbarMark,
+  ToolbarList,
+} from "@udecode/plate"
 
 // The toolbar requires the parent element to have position: relative
 
@@ -94,7 +120,11 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
         </ContextMenuItem>
 
         <ContextSubmenu text="Turn into">
-          <TurnIntoContextMenuContent editor={editor} nodeRef={nodeRef} />
+          <TurnIntoContextMenuContent
+            editor={editor}
+            nodeRef={nodeRef}
+            slateNode={slateNode}
+          />
         </ContextSubmenu>
 
         <ContextMenuSeparator />
@@ -132,7 +162,8 @@ export const TurnIntoContextMenuContent: React.FC<{
    */
   node?: Element
   editor: Editor
-}> = ({ nodeRef, node, editor }) => {
+  slateNode: Node
+}> = ({ nodeRef, node, editor, slateNode }) => {
   const handleSetFormat = (format: string) => () => {
     if (nodeRef === undefined && node === undefined) {
       throw new Error("A node or nodeRef is required")
@@ -160,7 +191,6 @@ export const TurnIntoContextMenuContent: React.FC<{
     Transforms.setNodes(editor, { type: format }, { at: path })
     // closeMenu()
   }
-
   return (
     <>
       {/* <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
@@ -169,10 +199,80 @@ export const TurnIntoContextMenuContent: React.FC<{
 
       <ContextMenuSeparator />
 
-      {/* <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H1)}>
-        Heading 1
-      </ContextMenuItem>
-      <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H2)}>
+      {/* active: !!(editor !== null && editor !== void 0 && editor.selection) && plateCommon.isMarkActive(editor, type),
+    onMouseDown: editor ? plateCommon.getPreventDefaultHandler(plateCommon.toggleMark, editor, type, clear) : undefined, */}
+
+      <ContextMenuItem
+        text="Heading 1"
+        onMouseDown={
+          editor
+            ? (e) => {
+                console.log("Heading 1", editor)
+                console.log("slateNode", slateNode)
+
+                // TODO: check if node is already of this type and other improvements for reliability, especially for nested nodes (make sure it works with lists and code blocks)
+
+                const nodePath = ReactEditor.findPath(editor, slateNode)
+
+                Transforms.setNodes(
+                  editor,
+                  {
+                    type: ELEMENT_H1,
+                  },
+                  { at: nodePath }
+                )
+              }
+            : undefined
+        }
+      />
+      <ContextMenuItem
+        text="Heading 2"
+        onMouseDown={
+          editor
+            ? (e) => {
+                console.log("Heading 2", editor)
+                console.log("slateNode", slateNode)
+
+                // TODO: check if node is already of this type and other improvements for reliability, especially for nested nodes (make sure it works with lists and code blocks)
+
+                const nodePath = ReactEditor.findPath(editor, slateNode)
+
+                Transforms.setNodes(
+                  editor,
+                  {
+                    type: ELEMENT_H2,
+                  },
+                  { at: nodePath }
+                )
+              }
+            : undefined
+        }
+      />
+      {/* <ContextMenuItem
+        text="Heading 3"
+        onMouseDown={
+          editor
+            ? (e) => {
+                console.log("Heading 3", editor)
+                console.log("slateNode", slateNode)
+
+                // TODO: check if node is already of this type and other improvements for reliability, especially for nested nodes (make sure it works with lists and code blocks)
+
+                const nodePath = ReactEditor.findPath(editor, slateNode)
+
+                Transforms.setNodes(
+                  editor,
+                  {
+                    type: ELEMENT_H3,
+                  },
+                  { at: nodePath }
+                )
+              }
+            : undefined
+        }
+      /> */}
+
+      {/* <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H2)}>
         Heading 2
       </ContextMenuItem>
       <ContextMenuItem onMouseDown={handleSetFormat(HeadingType.H3)}>
@@ -191,6 +291,7 @@ export const TurnIntoContextMenuContent: React.FC<{
       <ContextMenuSeparator />
 
       <ContextMenuItem
+        disabled
         onMouseDown={() => {
           console.warn("TODO")
         }}
@@ -198,6 +299,7 @@ export const TurnIntoContextMenuContent: React.FC<{
         Bulleted List
       </ContextMenuItem>
       <ContextMenuItem
+        disabled
         onMouseDown={() => {
           console.warn("TODO")
         }}
@@ -269,15 +371,15 @@ export const TurnIntoContextMenuContent: React.FC<{
 //   )
 // }
 
-const SideToolbarContainer = styled.div<{ listItemIndent: boolean }>`
-  position: absolute;
-  top: 3px;
-  font-size: 17px;
-  color: #41474d;
-  left: ${(p) => (p.listItemIndent ? -49 : -25)}px;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  border-radius: 50%;
-  user-select: none;
-`
+// const SideToolbarContainer = styled.div<{ listItemIndent: boolean }>`
+//   position: absolute;
+//   top: 3px;
+//   font-size: 17px;
+//   color: var(--dark-500);
+//   left: ${(p) => (p.listItemIndent ? -49 : -25)}px;
+//   width: 20px;
+//   height: 20px;
+//   cursor: pointer;
+//   border-radius: 50%;
+//   user-select: none;
+// `
