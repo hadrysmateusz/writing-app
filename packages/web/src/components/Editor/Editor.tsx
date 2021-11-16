@@ -8,6 +8,9 @@ import {
   createPlateOptions,
   usePlateEditorRef,
   usePlateEventId,
+  ELEMENT_CODE_BLOCK,
+  CodeBlockElement,
+  withProps,
 } from "@udecode/plate"
 import { EditableProps } from "slate-react/dist/components/editable"
 
@@ -41,8 +44,17 @@ import { DummyEditor } from "./DummyEditor"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
-const components = createPlateComponents()
-const options = createPlateOptions()
+const components = createPlateComponents({
+  [ELEMENT_CODE_BLOCK]: withProps(CodeBlockElement, {
+    styles: { root: { background: "var(--dark-400)" } },
+  }),
+})
+const options = createPlateOptions({
+  [ELEMENT_CODE_BLOCK]: {
+    syntax: true,
+    syntaxPopularFirst: true,
+  },
+})
 
 /**
  * Renders the editor if there is a document selected
