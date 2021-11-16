@@ -2,8 +2,9 @@ import React from "react"
 
 import useRxSubscription from "../../../hooks/useRxSubscription"
 
+import { useDatabase } from "../../Database"
 import { DocumentsList, MainHeader } from "../../DocumentsList"
-import { useDocumentsAPI, useMainState } from "../../MainProvider"
+import { useMainState } from "../../MainProvider"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -11,15 +12,14 @@ import {
 
 import { NewButton } from "../NewButton"
 
+import { createFindDocumentsAtRootQuery } from "./queries"
+
 export const InboxView: React.FC = () => {
-  const { findDocuments } = useDocumentsAPI()
+  const db = useDatabase()
   const { sorting } = useMainState()
 
   const { data: documents, isLoading } = useRxSubscription(
-    findDocuments(false)
-      .where("parentGroup")
-      .eq(null)
-      .sort({ [sorting.index]: sorting.direction })
+    createFindDocumentsAtRootQuery(db, sorting)
   )
 
   return (

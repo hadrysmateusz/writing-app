@@ -12,14 +12,16 @@ import {
 } from "../../SidebarCommon"
 
 import { NewButton } from "../NewButton"
+
 import { SubGroups } from "./GroupView/SubGroups"
+import { createFindDocumentsAtRootQuery } from "./queries"
 
 export const AllDocumentsView: React.FC = () => {
   const db = useDatabase()
   const { sorting, groups } = useMainState()
 
   const { data: documents, isLoading } = useRxSubscription(
-    db.documents.findNotRemoved().sort({ [sorting.index]: sorting.direction })
+    createFindDocumentsAtRootQuery(db, sorting)
   )
 
   const groupsTree = useMemo(() => createGroupTree(groups), [groups])

@@ -7,15 +7,6 @@ import createGroupTree, {
 
 import { useMainState } from "../../../MainProvider"
 
-import { MyDatabase } from "../../../Database"
-
-export const createFindDocumentsInGroupQuery = (
-  db: MyDatabase,
-  groupId: string
-) => {
-  return db.documents.findNotRemoved().where("parentGroup").eq(groupId)
-}
-
 export const useFindGroupAndChildGroups = (groupId: string) => {
   const { groups } = useMainState()
 

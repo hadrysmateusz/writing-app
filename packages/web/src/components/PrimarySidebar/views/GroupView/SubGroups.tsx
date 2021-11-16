@@ -1,13 +1,15 @@
 import { FC } from "react"
 
 import { GroupTreeBranch } from "../../../../helpers/createGroupTree"
-import useRxSubscription from "../../../../hooks/useRxSubscription"
+import { useToggleable, useRxSubscription } from "../../../../hooks"
 
 import { DocumentsList } from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
 import SectionHeader from "../../../DocumentsList/SectionHeader"
-import { createFindDocumentsInGroupQuery } from "./helpers"
-import { useToggleable } from "../../../../hooks"
+
+import { useMainState } from "../../../MainProvider"
+
+import { createFindDocumentsInGroupQuery } from "../queries"
 
 export const SubGroups: FC<{ groups: GroupTreeBranch[] }> = ({ groups }) => (
   <>
@@ -21,11 +23,12 @@ export const SubGroupDocumentsList: FC<{
   group: GroupTreeBranch
 }> = ({ group }) => {
   const db = useDatabase()
+  const { sorting } = useMainState()
 
   const { toggle, isOpen } = useToggleable(true)
 
   const { data: documents, isLoading } = useRxSubscription(
-    createFindDocumentsInGroupQuery(db, group.id)
+    createFindDocumentsInGroupQuery(db, sorting, group.id)
   )
 
   const shouldRender = !isLoading && documents && documents.length > 0
