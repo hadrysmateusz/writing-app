@@ -15,7 +15,7 @@ import {
   ELEMENT_HEADING_5,
   ELEMENT_HEADING_6,
 } from "../../slateTypes"
-import { Node } from "slate"
+import { Descendant } from "slate"
 
 export const deserializeMarkdown = (content: string) => {
   const tree: any = unified()
@@ -40,5 +40,5 @@ export const deserializeMarkdown = (content: string) => {
     })
     .processSync(content)
 
-  return tree.result as Node[]
+  return tree.result as Descendant[]
 }

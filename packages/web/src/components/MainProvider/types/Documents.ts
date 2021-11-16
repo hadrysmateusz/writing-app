@@ -1,5 +1,5 @@
 import { RxQuery } from "rxdb"
-import { Node } from "slate"
+import { Descendant } from "slate"
 
 import { DocumentDoc, DocumentDocType } from "../../Database"
 import { Updater } from "./Misc"
@@ -43,7 +43,7 @@ export type CreateDocumentFn = (
   parentGroup: string | null,
   values?: {
     title?: string
-    content?: Node[]
+    content?: Descendant[]
   },
   options?: CreateDocumentOptions
 ) => Promise<DocumentDoc>
