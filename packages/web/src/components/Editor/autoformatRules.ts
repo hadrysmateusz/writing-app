@@ -16,7 +16,7 @@ import {
   ELEMENT_UL,
   ELEMENT_OL,
   ELEMENT_HR,
-  SPEditor,
+  PlateEditor,
   insertEmptyCodeBlock,
   ELEMENT_DEFAULT,
   isElement,
@@ -40,7 +40,7 @@ import { Editor } from "slate"
 // Autoformat utils from https://github.com/udecode/plate/blob/e9f1e30e8ae1e35e2d18c3ca01352aa3cc31ed47/docs/src/live/config/autoformat/autoformatUtils.ts#L14 TODO: move to separate file
 
 export const clearBlockFormat: AutoformatBlockRule["preFormat"] = (editor) =>
-  unwrapList(editor as SPEditor)
+  unwrapList(editor as PlateEditor)
 
 export const format = (editor: TEditor, customFormatting: any) => {
   if (editor.selection) {
@@ -49,8 +49,8 @@ export const format = (editor: TEditor, customFormatting: any) => {
     const [node] = parentEntry
     if (
       isElement(node) &&
-      !isType(editor as SPEditor, node, ELEMENT_CODE_BLOCK) &&
-      !isType(editor as SPEditor, node, ELEMENT_CODE_LINE)
+      !isType(editor as PlateEditor, node, ELEMENT_CODE_BLOCK) &&
+      !isType(editor as PlateEditor, node, ELEMENT_CODE_LINE)
     ) {
       customFormatting()
     }
@@ -59,7 +59,7 @@ export const format = (editor: TEditor, customFormatting: any) => {
 
 export const formatList = (editor: TEditor, elementType: string) => {
   format(editor, () =>
-    toggleList(editor as SPEditor, {
+    toggleList(editor as PlateEditor, {
       type: elementType,
     })
   )
@@ -132,8 +132,8 @@ const autoformatRules: AutoformatRule[] = [
     triggerAtBlockStart: false,
     preFormat: clearBlockFormat,
     format: (editor) => {
-      insertEmptyCodeBlock(editor as SPEditor, {
-        defaultType: getPlatePluginType(editor as SPEditor, ELEMENT_DEFAULT),
+      insertEmptyCodeBlock(editor as PlateEditor, {
+        defaultType: getPlatePluginType(editor as PlateEditor, ELEMENT_DEFAULT),
         insertNodesOptions: { select: true },
       })
     },

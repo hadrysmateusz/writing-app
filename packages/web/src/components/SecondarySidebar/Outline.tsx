@@ -1,4 +1,4 @@
-import { useEventEditorId, useStoreEditorValue } from "@udecode/plate-core"
+import { usePlateEventId, usePlateValue } from "@udecode/plate-core"
 import React, { useEffect, useState } from "react"
 import styled from "styled-components/macro"
 
@@ -12,7 +12,7 @@ type OutlineType = {
 type OutlineItemType = { level: number; textContent: string }
 
 export const Outline: React.FC = () => {
-  const editorValue = useStoreEditorValue(useEventEditorId("focus"))
+  const editorValue = usePlateValue(usePlateEventId("focus"))
 
   const [outline, setOutline] = useState<OutlineType>({
     baseLevel: 3,

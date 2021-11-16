@@ -7,13 +7,13 @@ import vfile from "vfile"
 
 import { serializeText } from "../../slate-helpers"
 
-import { useEventEditorId, useStoreEditorValue } from "@udecode/plate-core"
+import { usePlateEventId, usePlateValue } from "@udecode/plate-core"
 
 // TODO: add option to customise WPM reading speed
 const WPM = 275
 
 const TextStats: FC = () => {
-  const editorValue = useStoreEditorValue(useEventEditorId("focus"))
+  const editorValue = usePlateValue(usePlateEventId("focus"))
 
   const [chars, setChars] = useState(0)
   const [words, setWords] = useState(0)

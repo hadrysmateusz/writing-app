@@ -6,8 +6,8 @@ import {
   Plate,
   createPlateComponents,
   createPlateOptions,
-  useStoreEditorRef,
-  useEventEditorId,
+  usePlateEditorRef,
+  usePlateEventId,
 } from "@udecode/plate"
 import { EditableProps } from "slate-react/dist/components/editable"
 
@@ -100,7 +100,7 @@ const EditorComponent: React.FC<{
   currentDocument: DocumentDoc
   saveDocument: SaveDocumentFn
 }> = ({ currentDocument, saveDocument }) => {
-  const editor = useStoreEditorRef(useEventEditorId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   // const { isSpellCheckEnabled } = useUserdata()
   const { onChange } = useEditorState()

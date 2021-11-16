@@ -2,9 +2,9 @@ import React, { useCallback, useState, useMemo } from "react"
 import { isEqual } from "lodash"
 import { Descendant } from "slate"
 import {
-  useEventEditorId,
-  useStoreEditorState,
-  useStoreEditorValue,
+  usePlateEventId,
+  usePlateEditorState,
+  usePlateValue,
 } from "@udecode/plate-core"
 
 import { SaveDocumentFn, useMainState } from "../MainProvider"
@@ -19,8 +19,8 @@ export const [EditorStateContext, useEditorState] = createContext<any>() // TODO
  */
 export const EditorStateProvider: React.FC = ({ children }) => {
   const { currentDocument } = useMainState()
-  const editor = useStoreEditorState(useEventEditorId("focus"))
-  const editorValue = useStoreEditorValue(useEventEditorId("focus"))
+  const editor = usePlateEditorState(usePlateEventId("focus"))
+  const editorValue = usePlateValue(usePlateEventId("focus"))
 
   const [isModified, setIsModified] = useState(false)
 

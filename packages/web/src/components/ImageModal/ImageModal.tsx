@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { useEventEditorId, useStoreEditorRef } from "@udecode/plate-core"
+import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
 
 import { useModal } from "../Modal"
 import { insertImage } from "../Toolbar"
@@ -19,7 +19,7 @@ export const [ImageModalContext, useImageModal] = createContext<
 >()
 
 export const ImageModalProvider: React.FC = ({ children }) => {
-  const editor = useStoreEditorRef(useEventEditorId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
   // const editor = useSlateStatic()
   // const [selection, setSelection] = useState<Range | null>(null)
 

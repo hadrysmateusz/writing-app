@@ -6,18 +6,6 @@ import {
   useFocused,
   useSelected,
 } from "slate-react"
-import styled from "styled-components/macro"
-import { FaEllipsisV } from "react-icons/fa"
-
-// import {
-//   PARAGRAPH,
-//   BLOCKQUOTE,
-//   CODE_BLOCK,
-//   HeadingType,
-//   insertHorizontalRule,
-//   insertImage,
-// } from "../slate-plugins"
-// import { useListItemContext } from "../slate-plugins/elements/list/ListItemContext"
 
 import {
   useContextMenu,
@@ -25,32 +13,8 @@ import {
   ContextMenuSeparator,
   ContextSubmenu,
 } from "./ContextMenu"
-import {
-  getPreventDefaultHandler,
-  toggleMark,
-  toggleNodeType,
-} from "@udecode/plate-common"
-import {
-  ELEMENT_BLOCKQUOTE,
-  ELEMENT_CODE_BLOCK,
-  ELEMENT_H1,
-  ELEMENT_H2,
-  ELEMENT_H3,
-  ELEMENT_UL,
-  ELEMENT_OL,
-  ELEMENT_LINK,
-  ELEMENT_IMAGE,
-  MARK_BOLD,
-  MARK_CODE,
-  MARK_ITALIC,
-  MARK_STRIKETHROUGH,
-  getPlatePluginType,
-  useStoreEditorRef,
-  useEventEditorId,
-  ToolbarElement,
-  ToolbarMark,
-  ToolbarList,
-} from "@udecode/plate"
+
+import { ELEMENT_H1, ELEMENT_H2 } from "@udecode/plate"
 
 // The toolbar requires the parent element to have position: relative
 
@@ -66,12 +30,12 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
   const isSelected = useSelected()
   // const { listItemDirectNode } = useListItemContext()
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.preventDefault()
-    event.stopPropagation()
+  // const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  //   event.preventDefault()
+  //   event.stopPropagation()
 
-    openMenu(event)
-  }
+  //   openMenu(event)
+  // }
 
   // TODO: extract and improve the insert logic (it's duplicated in Toolbar)
 

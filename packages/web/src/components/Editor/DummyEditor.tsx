@@ -4,8 +4,8 @@ import {
   Plate,
   createPlateComponents,
   createPlateOptions,
-  useStoreEditorRef,
-  useEventEditorId,
+  usePlateEditorRef,
+  usePlateEventId,
 } from "@udecode/plate"
 import { Descendant } from "slate"
 
@@ -82,7 +82,7 @@ const DummyTitleInput = () => {
 }
 
 export const DummyEditor = () => {
-  const editor = useStoreEditorRef(useEventEditorId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   const { createDocument } = useDocumentsAPI()
   const { tabsDispatch } = useMainState()

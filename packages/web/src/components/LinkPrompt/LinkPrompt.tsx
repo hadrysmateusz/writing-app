@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
-import { useEventEditorId, useStoreEditorRef } from "@udecode/plate-core"
+import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
 
 import { useModal } from "../Modal"
 import { getAndUpsertLink } from "../Toolbar"
@@ -21,7 +21,7 @@ export const [LinkModalContext, useLinkModal] = createContext<
 // TODO: remove duplication with ImageModal code
 // TODO: support other link operations, like changing url or text
 export const LinkModalProvider: React.FC = ({ children }) => {
-  const editor = useStoreEditorRef(useEventEditorId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
   // const editor = useSlateStatic()
   // const [selection, setSelection] = useState<Range | null>(null)
 

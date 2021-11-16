@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 import { ReactEditor } from "slate-react"
 import { Transforms } from "slate"
 import isHotkey from "is-hotkey"
-import { useStoreEditorRef, useEventEditorId } from "@udecode/plate"
+import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
 import { NamingInput } from "../RenamingInput"
 import { useDocumentsAPI } from "../MainProvider"
@@ -27,7 +27,7 @@ const TitleInput: React.FC<{ currentDocument: DocumentDoc }> = ({
 }) => {
   const { renameDocument } = useDocumentsAPI()
 
-  const editor = useStoreEditorRef(useEventEditorId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   const [value, setValue] = useState<string>(currentDocument.title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)

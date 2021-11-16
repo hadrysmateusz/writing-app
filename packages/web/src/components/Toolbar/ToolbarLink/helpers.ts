@@ -8,14 +8,14 @@ import {
   wrapNodes,
   insertNodes,
 } from "@udecode/plate-common"
-import { getPlatePluginType, SPEditor, TElement } from "@udecode/plate-core"
+import { getPlatePluginType, PlateEditor, TElement } from "@udecode/plate-core"
 import { ELEMENT_LINK } from "@udecode/plate-link"
 
 /**
  * Wrap selected nodes with a link and collapse at the end.
  */
 export const wrapLink = (
-  editor: SPEditor,
+  editor: PlateEditor,
   { at, url }: { url: string; at?: Location }
 ) => {
   wrapNodes(
@@ -35,7 +35,7 @@ export const wrapLink = (
  * Then, wrap the link at the location.
  */
 export const upsertLinkAtSelection = (
-  editor: SPEditor,
+  editor: PlateEditor,
   {
     url,
     wrap,
@@ -73,7 +73,7 @@ export const upsertLinkAtSelection = (
   Transforms.collapse(editor, { edge: "end" })
 }
 
-export const getAndUpsertLink = async <T extends SPEditor>(
+export const getAndUpsertLink = async <T extends PlateEditor>(
   editor: T,
   getLinkUrl: NonNullable<WithLinkOptions["getLinkUrl"]>
 ) => {

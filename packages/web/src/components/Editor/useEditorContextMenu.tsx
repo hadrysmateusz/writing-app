@@ -8,9 +8,9 @@ import {
   MARK_ITALIC,
   MARK_STRIKETHROUGH,
   getPlatePluginType,
-  useStoreEditorRef,
-  useEventEditorId,
-  ToolbarMark,
+  usePlateEditorRef,
+  usePlateEventId,
+  MarkToolbarButton,
   ELEMENT_LINK,
   serializeHTMLFromNodes,
   deserializeHTMLToFragment,
@@ -47,7 +47,7 @@ const InlineFormattingContainer = styled.div`
 
 // TODO: on any context menu that is fully inside a link node, show an option to edit and remove the link
 const useEditorContextMenu = () => {
-  const editor = useStoreEditorRef(useEventEditorId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
   const { insertImageFromModal } = useImageModal()
@@ -185,19 +185,19 @@ const useEditorContextMenu = () => {
           return (
             <>
               <InlineFormattingContainer>
-                <ToolbarMark
+                <MarkToolbarButton
                   type={getPlatePluginType(editor, MARK_BOLD)}
                   icon={<Icon icon={MARK_BOLD} />}
                 />
-                <ToolbarMark
+                <MarkToolbarButton
                   type={getPlatePluginType(editor, MARK_ITALIC)}
                   icon={<Icon icon={MARK_ITALIC} />}
                 />
-                <ToolbarMark
+                <MarkToolbarButton
                   type={getPlatePluginType(editor, MARK_STRIKETHROUGH)}
                   icon={<Icon icon={MARK_STRIKETHROUGH} />}
                 />
-                <ToolbarMark
+                <MarkToolbarButton
                   type={getPlatePluginType(editor, MARK_CODE)}
                   icon={<Icon icon={MARK_CODE} />}
                 />
