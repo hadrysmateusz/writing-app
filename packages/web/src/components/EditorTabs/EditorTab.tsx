@@ -104,8 +104,7 @@ const EditorTabContainer = styled.div<{ isActive?: boolean }>`
   height: var(--tab-size);
   padding: 0 16px;
   font-size: 12px;
-  color: ${({ isActive }) =>
-    isActive ? "var(--light-600)" : "var(--light-300)"};
+
   background: var(--bg-color);
   display: flex;
   justify-content: center;
@@ -116,6 +115,8 @@ const EditorTabContainer = styled.div<{ isActive?: boolean }>`
   min-width: ${({ isActive }) => (isActive ? "fit-content" : "0")};
 
   .tab-title {
+    color: ${({ isActive }) =>
+      isActive ? "var(--light-600)" : "var(--light-300)"};
     flex-shrink: 1;
     ${ellipsis}
   }
@@ -124,7 +125,8 @@ const EditorTabContainer = styled.div<{ isActive?: boolean }>`
     flex-shrink: 5;
     margin-left: 9px;
     font-size: 10px;
-    color: var(--light-100);
+    color: ${({ isActive }) =>
+      isActive ? "var(--light-200)" : "var(--light-100)"};
     ${ellipsis}
   }
 
@@ -151,6 +153,14 @@ const EditorTabContainer = styled.div<{ isActive?: boolean }>`
   &:hover {
     .tab-close-button {
       opacity: 1;
+    }
+    .tab-title {
+      color: ${({ isActive }) =>
+        isActive ? "var(--light-600)" : "var(--light-400)"};
+    }
+    .tab-group {
+      color: ${({ isActive }) =>
+        isActive ? "var(--light-200)" : "var(--light-200)"};
     }
   }
 `
