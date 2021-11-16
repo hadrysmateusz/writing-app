@@ -1,15 +1,13 @@
 import { FC } from "react"
 
-import { GroupTreeBranch } from "../../../../helpers/createGroupTree"
-import { useToggleable, useRxSubscription } from "../../../../hooks"
+import { GroupTreeBranch } from "../../../helpers/createGroupTree"
+import { useToggleable, useRxSubscription } from "../../../hooks"
 
-import { DocumentsList } from "../../../DocumentsList"
-import { useDatabase } from "../../../Database"
-import SectionHeader from "../../../DocumentsList/SectionHeader"
+import { DocumentsList, SectionHeader } from "../../DocumentsList"
+import { useMainState } from "../../MainProvider"
+import { useDatabase } from "../../Database"
 
-import { useMainState } from "../../../MainProvider"
-
-import { createFindDocumentsInGroupQuery } from "../queries"
+import { createFindDocumentsInGroupQuery } from "./queries"
 
 export const SubGroups: FC<{ groups: GroupTreeBranch[] }> = ({ groups }) => (
   <>

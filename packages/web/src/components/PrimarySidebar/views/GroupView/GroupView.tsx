@@ -5,6 +5,7 @@ import { formatOptional } from "../../../../utils"
 
 import { DocumentsList, MainHeader } from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
+import { useMainState } from "../../../MainProvider"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -17,12 +18,10 @@ import {
 
 import { NewButton } from "../../NewButton"
 
-import {
-  createFindDocumentsInGroupQuery,
-  useFindGroupAndChildGroups,
-} from "./helpers"
-import { SubGroups } from "./SubGroups"
-import { useMainState } from "../../../MainProvider"
+import { SubGroups } from "../SubGroups"
+import { createFindDocumentsInGroupQuery } from "../queries"
+
+import { useFindGroupAndChildGroups } from "./helpers"
 
 export const GroupView: React.FC = () => {
   const db = useDatabase()
@@ -43,9 +42,7 @@ export const GroupView: React.FC = () => {
   }, [ok, primarySidebar])
 
   const { data: documents, isLoading } = useRxSubscription(
-    createFindDocumentsInGroupQuery(db, groupId).sort({
-      [sorting.index]: sorting.direction,
-    })
+    createFindDocumentsInGroupQuery(db, sorting, groupId)
   )
 
   return ok ? (

@@ -13,7 +13,7 @@ import {
 
 import { NewButton } from "../NewButton"
 
-import { SubGroups } from "./GroupView/SubGroups"
+import { SubGroups } from "./SubGroups"
 import { createFindDocumentsAtRootQuery } from "./queries"
 
 export const AllDocumentsView: React.FC = () => {
