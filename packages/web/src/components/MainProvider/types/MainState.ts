@@ -1,4 +1,5 @@
 import { GroupDoc, DocumentDoc, DocumentDocType } from "../../Database"
+import { TabsAction } from "../tabsSlice"
 
 import { Sorting, SortingIndex, SortingDirection, Updater } from "./Misc"
 
@@ -16,6 +17,7 @@ export type MainState = {
   updateCurrentDocument: UpdateCurrentDocumentFn
   openDocument: OpenDocumentFn
   closeTab: (tabId: string) => void
+  tabsDispatch: React.Dispatch<TabsAction>
 }
 
 export type ChangeSortingFn = (

@@ -59,19 +59,33 @@ export const LocalSettingsProvider: FC = ({ children }) => {
         if (!("currentTab" in value && "tabs" in value)) return false
 
         // are the properties of correct types
-        const isCurrentTabTypeCorrect =
-          value["currentTab"] === null ||
-          typeof value["currentTab"] === "string"
+        const isCurrentTabTypeCorrect = typeof value["currentTab"] === "string"
         const isTabsTypeCorrect =
           typeof value["tabs"] === "object" &&
-          Object.entries(value["tabs"]).every(
-            ([k, v]) =>
-              typeof k === "string" &&
-              typeof v === "object" &&
-              v !== null &&
-              "documentId" in v &&
-              (v["documentId"] === null || typeof v["documentId"] === "string")
-          )
+          Object.entries(value["tabs"]).every(([k, v]) => {
+            // are key and value of correct types
+            if (
+              !(typeof k === "string" && typeof v === "object" && v !== null)
+            ) {
+              return false
+            }
+            // is tabId property correct
+            if (typeof v["tabId"] !== "string") {
+              return false
+            }
+            // check properties dependent on tab type (could be replaced with a switch)
+            if (v["tabType"] === "cloudDocument") {
+              // is documentId property correct
+              if (typeof v["documentId"] !== "string") {
+                return false
+              }
+            }
+            if (v["tabType"] === "cloudNew") {
+              // this tab type currently has no special properties
+            }
+            // all checks passed
+            return true
+          })
         if (!isCurrentTabTypeCorrect || !isTabsTypeCorrect) return false
 
         // value is valid

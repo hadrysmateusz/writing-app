@@ -1,14 +1,41 @@
 import { Reducer } from "react"
 import { v4 as uuidv4 } from "uuid"
 
-export type TabsStateTab = { documentId: string | null }
+export type TabTypes = "cloudDocument" | "cloudNew"
+
+type CreateTabActionBase = { type: "create-tab"; switch: boolean }
+
+type CreateTabActionVariants =
+  | {
+      tabType: "cloudDocument"
+      documentId: string
+    }
+  | {
+      tabType: "cloudNew"
+    }
+
+export type CreateTabAction = CreateTabActionBase & CreateTabActionVariants
+
+type TabsStateTabBase = {
+  tabId: string
+}
+
+type TabsStateTabVariants =
+  | {
+      tabType: "cloudDocument"
+      documentId: string
+    }
+  | { tabType: "cloudNew" }
+
+// When changing typing of TabsStateTab, remember to update validator in getLocalSetting
+export type TabsStateTab = TabsStateTabBase & TabsStateTabVariants
 export type TabsState = {
   tabs: { [tabId: string]: TabsStateTab }
-  currentTab: string | null
+  currentTab: string
 }
 export type TabsAction =
+  | CreateTabAction
   | { type: "switch-tab"; tabId: string }
-  | { type: "create-tab"; documentId: string; switch: boolean }
   | { type: "close-tab"; tabId: string }
   | { type: "change-document"; tabId: string; documentId: string }
   | { type: "set-state"; newState: TabsState }
@@ -36,12 +63,36 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
       case "create-tab": {
         // TODO: figure out if I should check for the existence of a tab with this document here or whatever function wraps the dispatch
         const newTabId = uuidv4()
-        newState = {
-          tabs: {
-            ...state.tabs,
-            [newTabId]: { documentId: action.documentId },
-          },
-          currentTab: !!action.switch ? newTabId : state.currentTab,
+        const newCurrentTab = !!action.switch ? newTabId : state.currentTab
+
+        switch (action.tabType) {
+          case "cloudDocument": {
+            newState = {
+              tabs: {
+                ...state.tabs,
+                [newTabId]: {
+                  tabId: newTabId,
+                  tabType: "cloudDocument",
+                  documentId: action.documentId,
+                },
+              },
+              currentTab: newCurrentTab,
+            }
+            break
+          }
+          case "cloudNew": {
+            newState = {
+              tabs: {
+                ...state.tabs,
+                [newTabId]: {
+                  tabId: newTabId,
+                  tabType: "cloudNew",
+                },
+              },
+              currentTab: newCurrentTab,
+            }
+            break
+          }
         }
         break
       }
@@ -75,23 +126,27 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
         break
       }
       case "change-document":
-        if (!state.tabs[action.tabId]) {
-          console.warn(
-            "Attempted to change content of a tab that doesn't exist"
-          )
-          break
-        }
-        newState = {
-          ...state,
-          tabs: {
-            ...state.tabs,
-            [action.tabId]: {
-              ...state.tabs[action.tabId],
-              documentId: action.documentId,
-            },
-          },
-        }
-        break
+        throw new Error("unimplemented")
+      // if (!state.tabs[action.tabId]) {
+      //   console.warn(
+      //     "Attempted to change content of a tab that doesn't exist"
+      //   )
+      //   break
+      // }
+      // newState = {
+      //   ...state,
+      //   tabs: {
+      //     ...state.tabs,
+      //     [action.tabId]: {
+      //       ...state.tabs[action.tabId],
+      //       documentId: action.documentId,
+      //     },
+      //   },
+      // }
+      // break
+      default: {
+        newState = state
+      }
     }
     persist(newState)
     return newState
@@ -99,9 +154,15 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
 }
 
 export function tabsInit(): TabsState {
+  const tabId = "__DEFAULT__"
   return {
-    tabs: {},
-    currentTab: null,
+    tabs: {
+      [tabId]: {
+        tabId: tabId,
+        tabType: "cloudNew",
+      },
+    },
+    currentTab: tabId,
   }
 }
 

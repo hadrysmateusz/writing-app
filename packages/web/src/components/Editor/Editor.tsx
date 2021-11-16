@@ -15,7 +15,7 @@ import { EditableProps } from "slate-react/dist/components/editable"
 // import { useUserdata } from "../Userdata"
 // import { useViewState } from "../ViewState"
 import { DocumentDoc } from "../Database"
-import { SaveDocumentFn, useMainState } from "../MainProvider"
+import { SaveDocumentFn, useMainState, useTabsState } from "../MainProvider"
 import TrashBanner from "../TrashBanner"
 import { useEditorState } from "../EditorStateProvider"
 import { Toolbar } from "../Toolbar"
@@ -37,6 +37,7 @@ import useEditorContextMenu from "./useEditorContextMenu"
 import pluginsList from "./pluginsList"
 import { deserialize } from "./serialization"
 import TitleInput from "./TitleInput"
+import { DummyEditor } from "./DummyEditor"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
@@ -54,39 +55,41 @@ export const EditorRenderer: React.FC = () => {
   } = useMainState()
   const { /* isModified, */ saveDocument } = useEditorState()
 
+  const { tabs, currentTab } = useTabsState()
+
+  // Handles rendering the editor based on tab type and loading/error states
+  function renderInner() {
+    let currentTabObj = tabs[currentTab]
+    // TODO: probably precompute this and expose in useTabsStateHook
+    const currentTabType = currentTabObj.tabType
+
+    // cloud document new
+    if (currentTabType === "cloudNew") return <DummyEditor />
+    // cloud document loading
+    if (isDocumentLoading) return <DocumentLoadingState />
+    // cloud document ready
+    if (currentDocument)
+      return (
+        <EditorComponent
+          key={currentDocument.id} // Necessary to reload the component on id change
+          currentDocument={currentDocument}
+          saveDocument={saveDocument}
+        />
+      )
+    // default (error) case
+    return (
+      // This div is here to prevent issues with split pane rendering, TODO: add proper empty state
+      <div style={{ padding: "40px" }}>No document selected</div>
+    )
+  }
+
   return (
     <OutermosterContainer>
       <EditorTabsBar />
       <OutermostContainer>
-        {isDocumentLoading ? (
-          <DocumentLoadingState />
-        ) : currentDocument ? (
-          <>
-            {/* 
-            <div>
-              {isModified
-                ? "MODIFIED"
-                : unsyncedDocs.includes(currentDocument.id)
-                ? "SAVED & UNREPLICATED"
-                : "SYNCED"}
-            </div> 
-            */}
-
-            <ImageModalProvider>
-              <LinkModalProvider>
-                <EditorComponent
-                  key={currentDocument.id} // Necessary to reload the component on id change
-                  currentDocument={currentDocument}
-                  saveDocument={saveDocument}
-                />
-              </LinkModalProvider>
-            </ImageModalProvider>
-          </>
-        ) : (
-          // This div is here to prevent issues with split pane rendering
-          // TODO: add proper empty state
-          <div>No document selected</div>
-        )}
+        <ImageModalProvider>
+          <LinkModalProvider>{renderInner()}</LinkModalProvider>
+        </ImageModalProvider>
       </OutermostContainer>
     </OutermosterContainer>
   )

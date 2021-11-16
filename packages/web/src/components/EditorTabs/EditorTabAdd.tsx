@@ -1,18 +1,13 @@
 import styled from "styled-components/macro"
 
-import { useDocumentsAPI, useMainState } from "../MainProvider"
+import { useMainState } from "../MainProvider"
 import Icon from "../Icon"
 
 const EditorTabAdd = () => {
-  const { createDocument } = useDocumentsAPI()
-  const { openDocument } = useMainState()
+  const { tabsDispatch } = useMainState()
 
   const handleClick = async (e) => {
-    const document = await createDocument(null, undefined, {
-      switchToDocument: false,
-      switchToGroup: false,
-    })
-    openDocument(document.id, { inNewTab: true })
+    tabsDispatch({ type: "create-tab", tabType: "cloudNew", switch: true })
   }
 
   return (

@@ -11,7 +11,7 @@ import { DocumentDoc } from "../Database"
 
 import { createEmptyNode } from "../../helpers/createEmptyNode"
 
-const StyledNamingInput = styled(NamingInput)`
+export const StyledTitleNamingInput = styled(NamingInput)`
   margin-top: 16px;
   margin-bottom: 8px;
   font-weight: bold;
@@ -77,7 +77,7 @@ const TitleInput: React.FC<{ currentDocument: DocumentDoc }> = ({
 
   const getTitleInputProps = () => ({ onKeyDown, onChange, onRename, value })
 
-  return <StyledNamingInput ref={titleRef} {...getTitleInputProps()} />
+  return <StyledTitleNamingInput ref={titleRef} {...getTitleInputProps()} />
 }
 
 export default TitleInput

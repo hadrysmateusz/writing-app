@@ -1,5 +1,5 @@
 import styled from "styled-components/macro"
-import { useState, useEffect, FC, useCallback } from "react"
+import { useState, useEffect, FC, useMemo } from "react"
 
 import { useDatabase } from "../Database"
 import { useGroupsAPI, useMainState, useTabsState } from "../MainProvider"
@@ -17,66 +17,76 @@ const EditorTab: FC<{ tabId: string; isOnlyTab?: boolean }> = ({
   const db = useDatabase()
   const tabsState = useTabsState()
   const { findGroupById } = useGroupsAPI()
-  const { openDocument, closeTab } = useMainState()
+  const { closeTab, tabsDispatch } = useMainState()
 
   const isActive = tabsState.currentTab === tabId
-  const tab = tabsState.tabs[tabId]
+  const tab = useMemo(() => tabsState.tabs[tabId], [tabId, tabsState.tabs])
+
   const [tabData, setTabData] = useState<{
     title: string
     group: string | null
   }>(initialTabData)
 
   useEffect(() => {
-    if (tab.documentId === null) {
-      setTabData(initialTabData)
+    if (tab.tabType === "cloudNew") {
+      setTabData({ title: "Untitled", group: null })
       return undefined
     }
-    const sub = db.documents.findOne(tab.documentId).$.subscribe((doc) => {
-      if (!doc) {
-        closeTab(tabId)
-        // TODO: handle this more gracefully
-        // throw new Error("Document not found")
-        return
-      }
-      const title = formatOptional(doc?.title, "Untitled")
+    if (tab.tabType === "cloudDocument") {
+      const sub = db.documents.findOne(tab.documentId).$.subscribe((doc) => {
+        // Document wasn't found (tab probably has an invalid id, so we close it)
+        if (!doc) {
+          closeTab(tab.tabId)
+          // TODO: handle this more gracefully
+          // throw new Error("Document not found")
+          return undefined
+        }
 
-      if (!doc?.parentGroup) {
-        setTabData({
-          title: title,
-          group: "",
-        })
-      } else {
-        findGroupById(doc.parentGroup).then((group) => {
+        const title = formatOptional(doc?.title, "Untitled")
+
+        // Document has no parent group (is at root)
+        if (!doc?.parentGroup) {
           setTabData({
             title: title,
-            group: group.name,
+            group: "",
           })
-        })
-      }
-    })
-    return () => sub.unsubscribe()
-  }, [closeTab, db.documents, findGroupById, tab.documentId, tabId])
+          return undefined
+        }
+        // Document has a parent group, so we find its name
+        else {
+          findGroupById(doc.parentGroup).then((group) => {
+            setTabData({
+              title: title,
+              group: group.name,
+            })
+          })
+          return undefined
+        }
+      })
+      return () => sub.unsubscribe()
+    }
+    return undefined
+  }, [closeTab, db.documents, findGroupById, tab])
 
-  const handleClick = useCallback(() => {
+  const handleSwitchTab = (_e) => {
     if (isActive) {
       return
     }
-    openDocument(tab.documentId)
-  }, [isActive, openDocument, tab.documentId])
+    tabsDispatch({ type: "switch-tab", tabId })
+  }
+
+  const handleCloseTab = (e) => {
+    e.stopPropagation()
+    closeTab(tabId)
+  }
 
   return (
-    <EditorTabContainer isActive={isActive} onClick={handleClick}>
+    <EditorTabContainer isActive={isActive} onClick={handleSwitchTab}>
       <div className="tab-title">{tabData.title}</div>
       {tabData.group ? <div className="tab-group">{tabData.group}</div> : null}
       {/* TODO: not sure if not showing the close button is the best solution but it's better than nothing (I could remove this when/if I add different tab types and the placeholder tab type so that a new document isn't created every time, even when nothing is written in the new tab) */}
       {!isOnlyTab ? (
-        <div
-          className="tab-close-button"
-          onClick={(e) => {
-            e.stopPropagation()
-            closeTab(tabId)
-          }}
-        >
+        <div className="tab-close-button" onClick={handleCloseTab}>
           <Icon icon="close" />
         </div>
       ) : null}

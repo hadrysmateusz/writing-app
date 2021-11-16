@@ -22,6 +22,7 @@ import {
   MyDatabase,
 } from "../Database"
 import { defaultLocalSettings, useLocalSettings } from "../LocalSettings"
+import { serialize } from "../Editor/serialization"
 
 import { GROUP_TREE_ROOT } from "../../constants"
 import { createContext } from "../../utils"
@@ -57,7 +58,7 @@ import {
   useGroupsAPI,
   useMainState,
 } from "./context"
-import { cancelSubscriptions } from "./helpers"
+import { cancelSubscriptions, getCurrentCloudDocumentId } from "./helpers"
 import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
 import { TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
 import AppLoadingState from "./AppLoadingState"
@@ -75,6 +76,25 @@ const createGroupsQuery = (db: MyDatabase) =>
 
 // TODO: make methods using IDs to find documents/groups/etc accept the actual RxDB document object instead to skip the query
 // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
+
+/**
+ * Checks tabs state for a tab with a cloud document with documentId matching the param
+ * @returns tabId of the tab containing the document or null if such tab wasn't found
+ */
+function findTabWithDocumentId(
+  tabsState: TabsState,
+  documentId: string
+): string | null {
+  let foundTabId: string | null = null
+  Object.entries(tabsState.tabs).some(([tabId, tab]) => {
+    if (tab.tabType === "cloudDocument" && tab.documentId === documentId) {
+      foundTabId = tabId
+      return true
+    }
+    return false
+  })
+  return foundTabId
+}
 
 export const MainProvider: React.FC = memo(({ children }) => {
   const db = useDatabase()
@@ -119,20 +139,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
   console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
 
-  // TODO: figure out if I should keep this or just use tabsState.currentTab
-  const currentDocumentId = useMemo(() => {
-    let currentDocumentId
-    if (tabsState.currentTab === null) {
-      currentDocumentId = null
-    } else {
-      if (tabsState.tabs[tabsState.currentTab]) {
-        currentDocumentId = tabsState.tabs[tabsState.currentTab].documentId
-      } else {
-        currentDocumentId = null
-      }
-    }
-    return currentDocumentId
-  }, [tabsState.currentTab, tabsState.tabs])
+  const currentDocumentId = getCurrentCloudDocumentId(tabsState)
 
   console.log("currentDocumentId", currentDocumentId)
 
@@ -506,41 +513,46 @@ export const MainProvider: React.FC = memo(({ children }) => {
     [findDocumentById]
   )
 
+  /**
+   * Opens a cloud document in the editor
+   */
   const openDocument = useCallback<OpenDocumentFn>(
     async function (documentId, options = {}) {
       const { inNewTab = true } = options
 
       if (documentId !== null) {
-        // check if tab with this documentId already exists
-        let tabId: string | null = null
-        for (let [id, tab] of Object.entries(tabsState.tabs)) {
-          if (tab.documentId === documentId) {
-            tabId = id
-          }
-        }
-
+        // Check if tab with this documentId already exists
+        const tabId = findTabWithDocumentId(tabsState, documentId)
+        // Tab with this document already exists, switch to it
         if (tabId !== null) {
           tabsDispatch({ type: "switch-tab", tabId })
-        } else if (currentDocumentId === null || inNewTab) {
+        }
+        // Open document in new tab
+        else if (currentDocumentId === null || inNewTab) {
           tabsDispatch({
             type: "create-tab",
+            tabType: "cloudDocument",
             documentId: documentId,
             switch: true,
           })
-        } else if (tabsState.currentTab !== null) {
+        }
+        // Open document in current tab
+        else if (tabsState.currentTab !== null) {
           tabsDispatch({
             type: "change-document",
             tabId: tabsState.currentTab,
             documentId: documentId,
           })
-        } else {
+        }
+        // Invalid scenario
+        else {
           throw new Error("Couldn't open document")
         }
       }
 
       return fetchDocument(documentId)
     },
-    [currentDocumentId, fetchDocument, tabsState.currentTab, tabsState.tabs]
+    [currentDocumentId, fetchDocument, tabsState]
   )
 
   /**
@@ -558,13 +570,14 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
       const timestamp = Date.now()
       const docId = uuidv4()
-      // TODO: consider custom serialization / compression / key-compression
-      const serializedContent = JSON.stringify(content)
+
+      const serializedContent = serialize(content)
+      const titleSlug = encodeURI(title.toLowerCase() + Date.now()) // TODO: extract titleSlug computing logic
 
       const newDocument = await db.documents.insert({
         id: docId,
         title, // TODO: consider custom title sanitation / formatting
-        titleSlug: encodeURI(title.toLowerCase() + Date.now()),
+        titleSlug,
         content: serializedContent,
         parentGroup: parentGroup,
         createdAt: timestamp,
@@ -803,19 +816,12 @@ export const MainProvider: React.FC = memo(({ children }) => {
       }
 
       // check if document is open in a tab and close it
-      let foundTabId: string | null = null
-      Object.entries(tabsState.tabs).some(([tabId, tab]) => {
-        if (tab.documentId === documentId) {
-          foundTabId = tabId
-          return true
-        }
-        return false
-      })
+      let foundTabId = findTabWithDocumentId(tabsState, documentId)
       if (foundTabId !== null) {
         closeTab(foundTabId)
       }
     },
-    [closeTab, findDocumentById, tabsState.tabs]
+    [closeTab, findDocumentById, tabsState]
   )
 
   //#endregion
@@ -848,27 +854,29 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
         tabsDispatch({ type: "set-state", newState: initialTabsState })
 
-        // TODO: this reuses code from the currentDocumentId useMemo. Refactor this
-        if (
-          initialTabsState.currentTab === null ||
-          !initialTabsState.tabs[initialTabsState.currentTab] === null
-        ) {
-          const document = await createDocument(null, undefined, {
-            switchToDocument: false,
-            switchToGroup: false,
-          })
-          setCurrentDocument(document)
-          setIsDocumentLoading(false)
-          tabsDispatch({
-            type: "create-tab",
-            documentId: document.id,
-            switch: true,
-          })
-        } else {
-          const docId =
-            initialTabsState.tabs[initialTabsState.currentTab].documentId
-          await fetchDocument(docId)
+        const newCurrentDocId = getCurrentCloudDocumentId(initialTabsState)
+
+        if (newCurrentDocId !== null) {
+          fetchDocument(newCurrentDocId)
         }
+
+        // if (newCurrentDocId === null) {
+        //   const document = await createDocument(null, undefined, {
+        //     switchToDocument: false,
+        //     switchToGroup: false,
+        //   })
+        //   setCurrentDocument(document)
+        //   setIsDocumentLoading(false)
+        //   tabsDispatch({
+        //     type: "create-tab",
+        //     documentId: document.id,
+        //     switch: true,
+        //   })
+        // } else {
+        //   const docId =
+        //     initialTabsState.tabs[initialTabsState.currentTab].documentId
+        //   await fetchDocument(docId)
+        // }
 
         setIsInitialLoad(false)
         setGroups(newGroups)
@@ -881,17 +889,20 @@ export const MainProvider: React.FC = memo(({ children }) => {
     // We check value of isDocument loading to prevent multiple tabs/documents being created at once
     if (Object.keys(tabsState.tabs).length === 0 && !isDocumentLoading) {
       setIsDocumentLoading(true)
-      createDocument(null, undefined, {
-        switchToDocument: false,
-      }).then((document) => {
-        setCurrentDocument(document)
-        tabsDispatch({
-          type: "create-tab",
-          documentId: document.id,
-          switch: true,
-        })
-        setIsDocumentLoading(false)
-      })
+      tabsDispatch({ type: "create-tab", tabType: "cloudNew", switch: true })
+      setIsDocumentLoading(false)
+
+      // createDocument(null, undefined, {
+      //   switchToDocument: false,
+      // }).then((document) => {
+      //   setCurrentDocument(document)
+      //   tabsDispatch({
+      //     type: "create-tab",
+      //     documentId: document.id,
+      //     switch: true,
+      //   })
+      //   setIsDocumentLoading(false)
+      // })
     }
   }, [createDocument, isDocumentLoading, tabsState.tabs])
 
@@ -946,6 +957,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
       changeSorting,
       openDocument,
       closeTab, // TODO: find a better place to expose this
+      tabsDispatch,
     }),
     [
       currentDocumentId,
@@ -958,6 +970,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
       changeSorting,
       openDocument,
       closeTab,
+      tabsDispatch,
     ]
   )
   const documentsAPI = useMemo(
