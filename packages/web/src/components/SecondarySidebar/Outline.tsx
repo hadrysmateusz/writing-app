@@ -70,24 +70,38 @@ export const Outline: React.FC = () => {
     })
   }, [editorValue])
 
+  const isEmpty = outline.tree.length === 0
+
   return (
     <OutlineContainer>
-      {outline.tree.map((item) => (
-        // TODO: replace the key with something that is guaranteed to be unique
-        <OutlineItem
-          key={item.level + item.textContent}
-          level={item.level}
-          baseLevel={outline.baseLevel}
-        >
-          <OutlineIcon>H{item.level}</OutlineIcon>
-          {item.textContent}
-        </OutlineItem>
-      ))}
+      {isEmpty ? (
+        <div className="Outline_EmptyState">
+          No headings in current document
+        </div>
+      ) : (
+        outline.tree.map((item) => (
+          // TODO: replace the key with something that is guaranteed to be unique
+          <OutlineItem
+            key={item.level + item.textContent}
+            level={item.level}
+            baseLevel={outline.baseLevel}
+          >
+            <OutlineIcon>H{item.level}</OutlineIcon>
+            {item.textContent}
+          </OutlineItem>
+        ))
+      )}
     </OutlineContainer>
   )
 }
 
 const OutlineContainer = styled.div`
+  .Outline_EmptyState {
+    font-size: 12px;
+    color: var(--light-200);
+    user-select: none;
+  }
+
   :not(:empty) {
     padding-top: 4px;
   }
