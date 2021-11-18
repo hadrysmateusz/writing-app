@@ -1033,7 +1033,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
   // TODO: make sorting not take uppercase/lowercase into consideration (probably by having a separate 'slugTitle' field)
   const [sorting, setSorting] = useState<Sorting>({
     index: "titleSlug",
-    direction: "desc",
+    direction: "asc",
   })
   /**
    * Changes the sorting options for the documents list
