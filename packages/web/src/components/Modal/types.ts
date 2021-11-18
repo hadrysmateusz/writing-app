@@ -6,18 +6,24 @@ export type OpenModalFn<ReturnValue, ModalProps> = (
 
 export type CloseModalFn<T> = (resolveValue: T) => void
 
-export type Modal<ReturnValue, ModalProps> = {
+export type ModalType<ReturnValue, ModalProps> = {
   isOpen: boolean
   open: OpenModalFn<ReturnValue, ModalProps>
   close: CloseModalFn<ReturnValue>
 }
 
-export type UseModalReturn<ReturnValue, ModalProps> = Modal<
+export type UseModalReturn<ReturnValue, ModalProps> = ModalType<
   ReturnValue,
   ModalProps
 > & {
   Modal: FunctionComponent<ModalRenderProps<ReturnValue, ModalProps>>
 }
+
+export type ModalContextValue<
+  ReturnValue,
+  ModalProps,
+  AdditionalValues
+> = ModalType<ReturnValue, ModalProps> & AdditionalValues
 
 export type ModalContentProps<ReturnValue, ModalProps> = {
   close: CloseModalFn<ReturnValue>

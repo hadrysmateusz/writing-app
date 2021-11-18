@@ -1,22 +1,18 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
+import React, { useCallback, useMemo } from "react"
 import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
-
-import { useModal } from "../Modal"
-import { getAndUpsertLink } from "../Toolbar"
 
 import createContext from "../../utils/createContext"
 
-import {
-  LinkModalContentProps,
-  LinkModalContextValue,
-  LinkModalOpenReturnValue,
-  LinkModalProps,
-} from "./types"
-import { ModalContainer } from "./styledComponents"
+import { getAndUpsertLink } from "../Toolbar"
+import { getPromptModalContent, usePromptModal } from "../PromptModal"
+
+import { LinkModalContextValue } from "./types"
 
 export const [LinkModalContext, useLinkModal] = createContext<
   LinkModalContextValue
 >()
+
+const LinkModalContent = getPromptModalContent("Link url", "Add Link")
 
 // TODO: remove duplication with ImageModal code
 // TODO: support other link operations, like changing url or text
@@ -39,24 +35,14 @@ export const LinkModalProvider: React.FC = ({ children }) => {
   //   }
   // }, [editor, selection])
 
-  const { Modal, ...toggleableProps } = useModal<
-    LinkModalOpenReturnValue,
-    LinkModalProps
-  >(
-    false,
-    { prevUrl: null },
-    {
-      // onBeforeOpen,
-      // onAfterClose,
-    }
-  )
+  const { Modal, ...toggleableProps } = usePromptModal("")
 
   /**
    * Convenience function for opening the modal and getting the url from it
    */
   const getLinkUrl = useCallback(
-    async (prevUrl: string | null) => {
-      const url = await toggleableProps.open({ prevUrl })
+    async (prevUrl: string) => {
+      const url = await toggleableProps.open({ initialValue: prevUrl })
       return typeof url === "string" ? url : null
     },
     [toggleableProps]
@@ -83,35 +69,5 @@ export const LinkModalProvider: React.FC = ({ children }) => {
       <Modal component={LinkModalContent} />
       {children}
     </LinkModalContext.Provider>
-  )
-}
-
-const LinkModalContent: React.FC<LinkModalContentProps> = ({
-  close,
-  prevUrl,
-}) => {
-  const urlInputRef = useRef<HTMLInputElement | null>(null)
-  const [url, setUrl] = useState<string>(prevUrl ?? "")
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUrl(event.target.value)
-  }
-
-  const onSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
-    close(url)
-  }
-
-  useEffect(() => {
-    urlInputRef?.current?.focus()
-  }, [])
-
-  return (
-    <ModalContainer>
-      <form onSubmit={onSubmit}>
-        <input type="text" value={url} onChange={onChange} ref={urlInputRef} />
-        <button type="submit">Add Link</button>
-      </form>
-    </ModalContainer>
   )
 }

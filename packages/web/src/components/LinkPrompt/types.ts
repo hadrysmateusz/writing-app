@@ -1,16 +1,17 @@
-import { CloseModalFn, Modal } from "../Modal/types"
+import { ModalContextValue, ModalContentProps } from "../Modal/types"
+import { PromptModalOpenReturnValue, PromptModalProps } from "../PromptModal"
 
-export type LinkModalProps = { prevUrl: string | null }
-export type LinkModalOpenReturnValue = string
-
-export type LinkModalContextValue = Modal<
+export type LinkModalOpenReturnValue = PromptModalOpenReturnValue
+export type LinkModalProps = PromptModalProps
+export type LinkModalContextValue = ModalContextValue<
+  LinkModalOpenReturnValue,
+  LinkModalProps,
+  {
+    upsertLinkFromModal: () => Promise<void>
+    getLinkUrl: (prevUrl: string) => Promise<string | null>
+  }
+>
+export type LinkModalContentProps = ModalContentProps<
   LinkModalOpenReturnValue,
   LinkModalProps
-> & {
-  upsertLinkFromModal: () => Promise<void>
-  getLinkUrl: (prevUrl: string | null) => Promise<string | null>
-}
-
-export type LinkModalContentProps = LinkModalProps & {
-  close: CloseModalFn<LinkModalOpenReturnValue>
-}
+>

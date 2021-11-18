@@ -1,22 +1,18 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import React, { useMemo, useCallback } from "react"
 import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
-
-import { useModal } from "../Modal"
-import { insertImage } from "../Toolbar"
 
 import createContext from "../../utils/createContext"
 
-import {
-  ImageModalContentProps,
-  ImageModalContextValue,
-  ImageModalOpenReturnValue,
-  ImageModalProps,
-} from "./types"
-import { ModalContainer } from "./styledComponents"
+import { insertImage } from "../Toolbar"
+import { getPromptModalContent, usePromptModal } from "../PromptModal"
+
+import { ImageModalContextValue } from "./types"
 
 export const [ImageModalContext, useImageModal] = createContext<
   ImageModalContextValue
 >()
+
+const ImageModalContent = getPromptModalContent("Image url", "Insert Image")
 
 export const ImageModalProvider: React.FC = ({ children }) => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
@@ -37,23 +33,13 @@ export const ImageModalProvider: React.FC = ({ children }) => {
   //   }
   // }, [editor, selection])
 
-  const { Modal, ...toggleableProps } = useModal<
-    ImageModalOpenReturnValue,
-    ImageModalProps
-  >(
-    false,
-    {},
-    {
-      // onBeforeOpen,
-      // onAfterClose,
-    }
-  )
+  const { Modal, ...toggleableProps } = usePromptModal("")
 
   /**
    * Convenience function for opening the modal and getting the url from it
    */
   const getImageUrl = useCallback(async (): Promise<string | null> => {
-    const url = await toggleableProps.open({})
+    const url = await toggleableProps.open({ initialValue: "" })
     return typeof url === "string" ? url : null
   }, [toggleableProps])
 
@@ -84,41 +70,5 @@ export const ImageModalProvider: React.FC = ({ children }) => {
       <Modal component={ImageModalContent} />
       {children}
     </ImageModalContext.Provider>
-  )
-}
-
-const ImageModalContent: React.FC<ImageModalContentProps> = ({ close }) => {
-  const urlInputRef = useRef<HTMLInputElement | null>(null)
-  // const editor = useSlateStatic()
-  const [url, setUrl] = useState<string>("")
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUrl(event.target.value)
-  }
-
-  const onSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
-    // if (selection !== null) {
-    //   Transforms.select(editor, selection)
-    // }
-    // if (url.trim() !== "") {
-    //   // TODO: url validation (probably inside the insertImage function)
-    //   // TODO: handle a situation where it's not a valid url
-    //   insertImage(editor, url)
-    // }
-    close(url)
-  }
-
-  useEffect(() => {
-    urlInputRef?.current?.focus()
-  }, [])
-
-  return (
-    <ModalContainer>
-      <form onSubmit={onSubmit}>
-        <input type="text" value={url} onChange={onChange} ref={urlInputRef} />
-        <button type="submit">Add Image</button>
-      </form>
-    </ModalContainer>
   )
 }

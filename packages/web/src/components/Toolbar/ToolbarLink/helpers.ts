@@ -75,7 +75,7 @@ export const upsertLinkAtSelection = (
 
 export const getAndUpsertLink = async <T extends PlateEditor>(
   editor: T,
-  getLinkUrl: NonNullable<WithLinkOptions["getLinkUrl"]>
+  getLinkUrl: (prevUrl: string) => Promise<string | null>
 ) => {
   const type = getPlatePluginType(editor, ELEMENT_LINK)
   let prevUrl = ""

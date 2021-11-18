@@ -10,7 +10,7 @@ import { ToolbarButton, ToolbarButtonProps } from "@udecode/plate-toolbar"
 import { getAndUpsertLink } from "./helpers"
 
 export interface ToolbarLinkProps extends ToolbarButtonProps {
-  getLinkUrl: (prevUrl: string | null) => Promise<string | null>
+  getLinkUrl: (prevUrl: string) => Promise<string | null>
 }
 
 export const ToolbarLink = ({ getLinkUrl, ...props }: ToolbarLinkProps) => {
