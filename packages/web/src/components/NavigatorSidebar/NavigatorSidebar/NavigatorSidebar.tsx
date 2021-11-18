@@ -59,7 +59,7 @@ const InboxSidebarItem: FC<{}> = () => {
 }
 
 const TrashSidebarItem: FC<{}> = () => {
-  const getTreeItemProps = useNavigationTreeItem(CloudViews.ALL)
+  const getTreeItemProps = useNavigationTreeItem(CloudViews.TRASH)
 
   return (
     <GenericTreeItem icon="trash" depth={0} {...getTreeItemProps()}>
