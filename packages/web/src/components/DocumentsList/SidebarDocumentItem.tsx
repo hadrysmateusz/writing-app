@@ -66,16 +66,17 @@ export const SidebarDocumentItem: React.FC<{
     return textContent.slice(0, SNIPPET_LENGTH)
   }, [document.content])
 
-  // const groupName = useMemo(() => getGroupName(document.parentGroup, groups), [
-  //   document.parentGroup,
-  //   groups,
-  // ])
-
   const handleClick = useCallback(() => {
     openDocument(document.id)
   }, [document.id, openDocument])
 
-  const modifiedAt = moment(document.modifiedAt).format("LL")
+  // TODO: replace moment with a more lightweight solution
+  const modifiedAt = useMemo(() => moment(document.modifiedAt).format("LL"), [
+    document.modifiedAt,
+  ])
+  const createdAt = useMemo(() => moment(document.createdAt).format("LL"), [
+    document.createdAt,
+  ])
 
   return (
     <>
@@ -93,8 +94,11 @@ export const SidebarDocumentItem: React.FC<{
           <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>
         {snippet.trim().length > 0 && <Snippet>{snippet}</Snippet>}
-        <DateModified>{modifiedAt}</DateModified>
-        {/* TODO: add created at date */}
+        <DateModified
+          title={`Modified at: ${modifiedAt}\nCreated at: ${createdAt}`}
+        >
+          {modifiedAt}
+        </DateModified>
       </MainContainer>
       {isMenuOpen && <DocumentContextMenu />}
     </>
