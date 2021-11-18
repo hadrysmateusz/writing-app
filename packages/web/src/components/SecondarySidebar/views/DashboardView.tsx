@@ -1,8 +1,8 @@
 import React from "react"
 
 import { Section, SecondarySidebarViewContainer } from "../../SidebarCommon"
-import TextStats from "../../TextStats"
 
+import TextStats from "../TextStats"
 import { Outline } from "../Outline"
 
 export const DashboardView: React.FC = () => {
