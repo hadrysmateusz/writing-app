@@ -9,6 +9,7 @@ import { useModal } from "../../Modal"
 import { AccountModalContent } from "../../AccountModal"
 import { SidebarImportButton } from "../../Importer"
 
+import TagsSection from "../TagsSection"
 import { FavoritesSection } from "../FavoritesSection"
 import { GroupsSection } from "../GroupsSection"
 import { SectionContainer } from "../Common"
@@ -27,6 +28,8 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
       <FavoritesSection />
 
       <GroupsSection />
+
+      <TagsSection />
 
       <SectionContainer>
         <SidebarImportButton />
