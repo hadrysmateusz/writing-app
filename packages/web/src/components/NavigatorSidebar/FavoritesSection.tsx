@@ -41,15 +41,17 @@ export const FavoritesSection: React.FC = memo(() => {
         ) : null
       )}
 
-      <GenericTreeItem
-        depth={0}
-        onClick={() => {
-          toggle()
-        }}
-        icon="ellipsisHorizontal"
-      >
-        {isOpen ? MSG_SHOW_LESS : MSG_SHOW_MORE}
-      </GenericTreeItem>
+      {favorites.length > LIMIT_FAVORITES ? (
+        <GenericTreeItem
+          depth={0}
+          onClick={() => {
+            toggle()
+          }}
+          icon="ellipsisHorizontal"
+        >
+          {isOpen ? MSG_SHOW_LESS : MSG_SHOW_MORE}
+        </GenericTreeItem>
+      ) : null}
     </SectionContainer>
   ) : null
 })

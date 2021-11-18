@@ -30,15 +30,17 @@ export const TagsSection: React.FC = () => {
         ) : null
       )}
 
-      <GenericTreeItem
-        depth={0}
-        onClick={() => {
-          toggle()
-        }}
-        icon="ellipsisHorizontal"
-      >
-        {isOpen ? MSG_SHOW_LESS : MSG_SHOW_MORE}
-      </GenericTreeItem>
+      {tags.length > LIMIT_TAGS ? (
+        <GenericTreeItem
+          depth={0}
+          onClick={() => {
+            toggle()
+          }}
+          icon="ellipsisHorizontal"
+        >
+          {isOpen ? MSG_SHOW_LESS : MSG_SHOW_MORE}
+        </GenericTreeItem>
+      ) : null}
     </SectionContainer>
   ) : null
 }
