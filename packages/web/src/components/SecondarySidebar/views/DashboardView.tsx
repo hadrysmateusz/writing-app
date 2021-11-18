@@ -4,6 +4,7 @@ import { Section, SecondarySidebarViewContainer } from "../../SidebarCommon"
 
 import TextStats from "../TextStats"
 import { Outline } from "../Outline"
+import Keywords from "../Keywords"
 
 export const DashboardView: React.FC = () => {
   return (
@@ -15,7 +16,9 @@ export const DashboardView: React.FC = () => {
       </Section>
 
       <Section title="Keywords">
-        <div></div>
+        <div>
+          <Keywords />
+        </div>
       </Section>
 
       <Section title="Outline">
