@@ -80,15 +80,17 @@ export const PrimarySidebarTabs = () => {
         onClick={handleClick(PrimarySidebarViews.tags)}
         icon="tag"
       />
-      <SidebarTab
-        rightSide={true}
-        isActive={false}
-        icon="sidebarNavigator"
-        title="Toggle the navigator sidebar"
-        onClick={() => {
-          navigatorSidebar.toggle()
-        }}
-      />
+      {primarySidebar.isOpen ? (
+        <SidebarTab
+          rightSide={true}
+          isActive={false}
+          icon="sidebarNavigator"
+          title="Toggle the navigator sidebar"
+          onClick={() => {
+            navigatorSidebar.toggle()
+          }}
+        />
+      ) : null}
     </SidebarTabsContainer>
   )
 }

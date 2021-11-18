@@ -2,7 +2,7 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import { useLocalSettings, defaultLocalSettings } from "../LocalSettings"
 
-import { useStatelessToggleable } from "../../hooks"
+import { ToggleableHooks, useStatelessToggleable } from "../../hooks"
 import { createContext } from "../../utils"
 
 import {
@@ -20,7 +20,8 @@ const useSidebarToggleable = (
   settingName:
     | "primarySidebarIsOpen"
     | "secondarySidebarIsOpen"
-    | "navigatorSidebarIsOpen"
+    | "navigatorSidebarIsOpen",
+  hooks?: ToggleableHooks
 ) => {
   const { updateLocalSetting, getLocalSetting } = useLocalSettings()
 
@@ -39,14 +40,30 @@ const useSidebarToggleable = (
     [settingName, updateLocalSetting]
   )
 
-  const sidebarMethods = useStatelessToggleable(isOpen, onChange)
+  const sidebarMethods = useStatelessToggleable(isOpen, onChange, hooks)
 
   return { ...sidebarMethods, isOpen }
 }
 
 export const ViewStateProvider: React.FC<{}> = ({ children }) => {
   const navigatorToggleable = useSidebarToggleable("navigatorSidebarIsOpen")
-  const primaryToggleable = useSidebarToggleable("primarySidebarIsOpen")
+
+  // TODO: maybe move this to become a property of the navigator sidebar
+  const [wasNavigatorOpen, setWasNavigatorOpen] = useState(
+    navigatorToggleable.isOpen
+  )
+
+  const primaryToggleable = useSidebarToggleable("primarySidebarIsOpen", {
+    onBeforeClose: () => {
+      setWasNavigatorOpen(navigatorToggleable.isOpen)
+      navigatorToggleable.close()
+    },
+    onAfterOpen: () => {
+      if (wasNavigatorOpen) {
+        navigatorToggleable.open()
+      }
+    },
+  })
   const secondaryToggleable = useSidebarToggleable("secondarySidebarIsOpen")
 
   const [isLoading, setIsLoading] = useState(true)
