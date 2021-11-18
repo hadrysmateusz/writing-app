@@ -49,11 +49,16 @@ import {
   MoveGroupFn,
   OpenDocumentFn,
   ConfirmDeleteModalProps,
+  ActuallyPermanentlyDeleteTagFn,
+  RenameTagFn,
+  CreateTagFn,
 } from "./types"
 import {
   MainStateContext,
   GroupsAPIContext,
   DocumentsAPIContext,
+  TagsAPIContext,
+  useTagsAPI,
   useDocumentsAPI,
   useGroupsAPI,
   useMainState,
@@ -467,6 +472,101 @@ export const MainProvider: React.FC = memo(({ children }) => {
   // }, [db.documents.$, unsyncedDocs, updateLocalSetting])
 
   //#endregion
+
+  const createTag: CreateTagFn = useCallback(
+    async (values) => {
+      const { name } = values
+
+      // Trim the name to remove unwanted whitespace
+      const trimmedName = name.trim()
+      if (trimmedName === "") {
+        throw new Error("name can't be empty")
+      }
+
+      // Slugify the name (no timestamp added, tag names are supposed to be unique)
+      // TODO: extract tag slug computing logic
+      const nameSlug = encodeURI(trimmedName.toLowerCase())
+
+      // Check for tags with the same name
+      // TODO: fix the likely issue of creating the same tag on different devices, causing errors on sync
+      const foundTag = await db.tags
+        .findOne()
+        .where("nameSlug")
+        .eq(nameSlug)
+        .exec()
+      if (foundTag !== null) {
+        throw new Error("tag with this nameSlug already exists")
+      }
+
+      const tagId = uuidv4()
+
+      const newTag = await db.tags.insert({
+        id: tagId,
+        name: trimmedName,
+        nameSlug,
+      })
+
+      return newTag
+    },
+    [db.tags]
+  )
+
+  const actuallyPermanentlyDeleteTag: ActuallyPermanentlyDeleteTagFn = useCallback(
+    async (id) => {
+      // TODO: add a confirmation dialog step before this
+      const tag = await db.tags.findOne().where("id").eq(id).exec()
+      if (tag === null) {
+        throw new Error(`no tag found matching this id (${id})`)
+      }
+      try {
+        await tag.remove()
+      } catch (e) {
+        // TODO: better surface this error to the user
+        console.log("error while deleting document")
+        throw e
+      }
+
+      // TODO: remove tag from all documents (probably handled with a preRemove hook)
+    },
+    [db.tags]
+  )
+
+  const renameTag: RenameTagFn = useCallback(
+    async (id, name) => {
+      // Trim the name to remove unwanted whitespace
+      // TODO: remove duplication with create tag function (maybe a unified validator/sanitizer function)
+      const trimmedName = name.trim()
+      if (trimmedName === "") {
+        throw new Error("name can't be empty")
+      }
+
+      const originalTag = await db.tags.findOne().where("id").eq(id).exec()
+      if (originalTag === null) {
+        throw new Error(`no tag found matching this id (${id})`)
+      }
+
+      if (trimmedName === originalTag.name) {
+        console.log("Name was the same. Update aborted.")
+        return originalTag
+      }
+
+      // Slugify the name (no timestamp added, tag names are supposed to be unique)
+      // TODO: extract tag slug computing logic
+      const nameSlug = encodeURI(trimmedName.toLowerCase())
+
+      try {
+        const updatedTag = await originalTag.update({
+          $set: { name: trimmedName, nameSlug },
+        })
+        return updatedTag
+      } catch (e) {
+        // TODO: better surface this error to the user
+        console.log("error while editing tag")
+        throw e
+      }
+    },
+    [db.tags]
+  )
 
   /**
    * Finds a single document by id
@@ -1021,15 +1121,21 @@ export const MainProvider: React.FC = memo(({ children }) => {
       updateGroup,
     ]
   )
+  const tagsAPI = useMemo(
+    () => ({ createTag, renameTag, actuallyPermanentlyDeleteTag }),
+    [actuallyPermanentlyDeleteTag, createTag, renameTag]
+  )
 
   return (
     <MainStateContext.Provider value={mainState}>
       <DocumentsAPIContext.Provider value={documentsAPI}>
         <GroupsAPIContext.Provider value={groupsAPI}>
-          <TabsStateContext.Provider value={tabsState}>
-            <ConfirmDeleteModal component={ConfirmDeleteModalContent} />
-            {isInitialLoad ? <AppLoadingState /> : children}
-          </TabsStateContext.Provider>
+          <TagsAPIContext.Provider value={tagsAPI}>
+            <TabsStateContext.Provider value={tabsState}>
+              <ConfirmDeleteModal component={ConfirmDeleteModalContent} />
+              {isInitialLoad ? <AppLoadingState /> : children}
+            </TabsStateContext.Provider>
+          </TagsAPIContext.Provider>
         </GroupsAPIContext.Provider>
       </DocumentsAPIContext.Provider>
     </MainStateContext.Provider>
@@ -1043,6 +1149,7 @@ export {
   MainStateContext,
   useDocumentsAPI,
   useGroupsAPI,
+  useTagsAPI,
   useMainState,
 }
 

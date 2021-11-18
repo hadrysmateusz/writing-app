@@ -5,6 +5,7 @@ import {
   localSettingsSchema,
   userdataSchema,
 } from "./schemas"
+import { tagSchema } from "./schemas/Tag"
 
 // TODO: skip_setup doesn't seem to work as expected and should probably be replaced with manual checks and simply not calling the create functions if they fail
 export const models = {
@@ -77,6 +78,18 @@ export const models = {
   },
   [CollectionNames.groups]: {
     schema: groupSchema,
+    statics: {},
+    methods: {},
+    migrationStrategies: {},
+    // pouchSettings: {
+    //   skip_setup: true,
+    // },
+    options: {
+      sync: true,
+    },
+  },
+  [CollectionNames.tags]: {
+    schema: tagSchema,
     statics: {},
     methods: {},
     migrationStrategies: {},

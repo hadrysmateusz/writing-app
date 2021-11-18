@@ -9,12 +9,14 @@ import { DocumentCollection } from "./Document"
 import { GroupCollection } from "./Group"
 import { LocalSettingsCollection } from "./LocalSettings"
 import { UserdataCollection } from "./Userdata"
+import { TagCollection } from "./Tag"
 
 export enum CollectionNames {
   documents = "documents",
   groups = "groups",
   userdata = "userdata",
   local_settings = "local_settings",
+  tags = "tags",
 }
 
 export type MyDatabaseCollections = {
@@ -22,6 +24,7 @@ export type MyDatabaseCollections = {
   groups: GroupCollection
   userdata: UserdataCollection
   local_settings: LocalSettingsCollection
+  tags: TagCollection
 }
 
 export interface MyModel extends RxCollectionCreator {

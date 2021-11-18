@@ -38,6 +38,10 @@ export enum SnippetsViews {
   // GROUP = "snippets_group",
 }
 
+export enum TagsViews {
+  ALL = "tags_all",
+}
+
 export enum SecondarySidebarViews {
   stats = "stats",
 }
@@ -45,7 +49,8 @@ export enum SecondarySidebarViews {
 export enum PrimarySidebarViews {
   cloud = "cloud",
   local = "local",
-  snippets = "snippts",
+  snippets = "snippets",
+  tags = "tags",
 }
 
 export type PrimarySidebarSubviewsFlat = CloudViews | LocalViews | SnippetsViews
@@ -54,6 +59,7 @@ export type PrimarySidebarSubviews = {
   cloud: CloudViews
   local: LocalViews
   snippets: SnippetsViews | string
+  tags: TagsViews
 }
 
 export type PrimarySidebarSubview<
@@ -77,7 +83,13 @@ export interface NavigatorSidebar extends SingleViewSidebar {
 }
 
 export interface PrimarySidebar extends MultiViewSidebar<PrimarySidebarViews> {
-  currentSubviews: { cloud: string; local: string; snippets: string }
+  // TODO: investigate why this doesn't simply use the PriomarySidebarSubviews enum
+  currentSubviews: {
+    cloud: string
+    local: string
+    snippets: string
+    tags: TagsViews
+  }
   switchSubview: (view: PrimarySidebarViews, subview: string) => void
 }
 

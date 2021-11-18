@@ -6,6 +6,7 @@ import {
   PrimarySidebarViews,
   SecondarySidebarViews,
   SnippetsViews,
+  TagsViews,
 } from "../ViewState/types" // TODO: has to be imported from /types directly to avoid a circular import
 
 export const defaultLocalSettings: LocalSettings = {
@@ -17,6 +18,7 @@ export const defaultLocalSettings: LocalSettings = {
     cloud: CloudViews.ALL,
     local: LocalViews.ALL,
     snippets: SnippetsViews.ALL,
+    tags: TagsViews.ALL,
   },
   secondarySidebarCurrentView: SecondarySidebarViews.stats,
   primarySidebarIsOpen: true,
