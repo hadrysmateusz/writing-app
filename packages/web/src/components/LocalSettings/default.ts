@@ -1,5 +1,5 @@
 import { LocalSettings } from "../Database"
-import { tabsInit } from "../MainProvider/tabsSlice"
+import { TabsState } from "../MainProvider/tabsSlice"
 import {
   CloudViews,
   LocalViews,
@@ -24,6 +24,19 @@ export const defaultLocalSettings: LocalSettings = {
   primarySidebarIsOpen: true,
   secondarySidebarIsOpen: true,
   navigatorSidebarIsOpen: true,
+}
+
+export function tabsInit(): TabsState {
+  const tabId = "__DEFAULT__"
+  return {
+    tabs: {
+      [tabId]: {
+        tabId: tabId,
+        tabType: "cloudNew",
+      },
+    },
+    currentTab: tabId,
+  }
 }
 
 export default defaultLocalSettings

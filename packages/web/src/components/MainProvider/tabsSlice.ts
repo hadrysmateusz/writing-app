@@ -1,5 +1,6 @@
 import { Reducer } from "react"
 import { v4 as uuidv4 } from "uuid"
+import { defaultLocalSettings } from "../LocalSettings"
 
 export type TabTypes = "cloudDocument" | "cloudNew"
 
@@ -115,10 +116,18 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
             removedTabIndex < remainingTabIds.length - 1
               ? removedTabIndex
               : removedTabIndex - 1
-          newState = {
-            // Switch to a different tab if the closed tab was the current one
-            currentTab: remainingTabIds[newCurrentTabIndex] ?? null,
-            tabs: remainingTabs,
+          // The possibility of a null value has to be manually specified as typescript doesn't seem to understand that not all indexes in an array will have a valid value
+          const newCurrentTabId: string | null =
+            remainingTabIds[newCurrentTabIndex] ?? null
+
+          if (newCurrentTabId === null || remainingTabIds.length === 0) {
+            // if tabs would be left in an invalid state, fallback to default
+            newState = defaultLocalSettings.tabs
+          } else {
+            newState = {
+              currentTab: newCurrentTabId,
+              tabs: remainingTabs,
+            }
           }
         } else {
           newState = { ...state, tabs: remainingTabs }

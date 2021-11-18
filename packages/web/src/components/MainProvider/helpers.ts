@@ -24,7 +24,8 @@ export const getCurrentCloudDocumentId = (
       "handle this error more gracefully with some form of fallback",
       tabsState
     )
-    throw new Error("no tab with this id")
+    // throw new Error("no tab with this id")
+    return null
   }
 
   if (currentTab.tabType === "cloudDocument") {

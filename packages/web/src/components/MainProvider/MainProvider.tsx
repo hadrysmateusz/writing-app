@@ -142,7 +142,19 @@ export const MainProvider: React.FC = memo(({ children }) => {
     tabsDispatch({ type: "close-tab", tabId })
   }, [])
 
-  // console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
+  console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
+
+  useEffect(() => {
+    // TODO: check if this actually does something
+    if (tabsState.currentTab === null) {
+      const tabIds = Object.keys(tabsState.tabs)
+      if (tabIds.length >= 1) {
+        tabsDispatch({ type: "switch-tab", tabId: tabIds[0] })
+      } else {
+        tabsDispatch({ type: "create-tab", tabType: "cloudNew", switch: true })
+      }
+    }
+  }, [tabsState.currentTab, tabsState.tabs])
 
   const currentDocumentId = getCurrentCloudDocumentId(tabsState)
 
@@ -620,12 +632,29 @@ export const MainProvider: React.FC = memo(({ children }) => {
     async function (documentId, options = {}) {
       const { inNewTab = true } = options
 
+      console.log("openDocument called", documentId, options)
+
+      // TODO: why is null even allowed?
       if (documentId !== null) {
         // Check if tab with this documentId already exists
         const tabId = findTabWithDocumentId(tabsState, documentId)
         // Tab with this document already exists, switch to it
         if (tabId !== null) {
           tabsDispatch({ type: "switch-tab", tabId })
+        }
+        // If current tab was cloudNew, replace it
+        // TODO: probably create an action type to handle this in one dispatch
+        else if (tabsState.tabs[tabsState.currentTab].tabType === "cloudNew") {
+          tabsDispatch({
+            type: "create-tab",
+            tabType: "cloudDocument",
+            documentId: documentId,
+            switch: true,
+          })
+          tabsDispatch({
+            type: "close-tab",
+            tabId: tabsState.currentTab,
+          })
         }
         // Open document in new tab
         else if (currentDocumentId === null || inNewTab) {
@@ -665,6 +694,8 @@ export const MainProvider: React.FC = memo(({ children }) => {
     async (parentGroup, values = {}, options = {}) => {
       const { switchToDocument = true, switchToGroup = true } = options
       const { title = "", content = DEFAULT_EDITOR_VALUE } = values
+
+      console.log("createDocument called", parentGroup, values, options)
 
       // TODO: consider using null value for content for empty documents
 
@@ -903,25 +934,30 @@ export const MainProvider: React.FC = memo(({ children }) => {
   // TODO: fix naming with this and the function that opens the confirm deletion modal
   const actuallyPermanentlyRemoveDocument = useCallback(
     async (documentId: string) => {
+      console.log("actuallyPermanentlyRemoveDocument", documentId)
+
       const original = await findDocumentById(documentId, true)
       if (original === null) {
         throw new Error(`no document found matching this id (${documentId})`)
       }
 
+      console.log("found document:", original)
+
       try {
         await original.remove()
+        console.log("document was removed")
       } catch (error) {
         // TODO: better surface this error to the user
         console.error("The document was not removed")
       }
-
-      // check if document is open in a tab and close it
-      let foundTabId = findTabWithDocumentId(tabsState, documentId)
-      if (foundTabId !== null) {
-        closeTab(foundTabId)
-      }
+      // // check if document is open in a tab and close it
+      // let foundTabId = findTabWithDocumentId(tabsState, documentId)
+      // console.log(foundTabId)
+      // if (foundTabId !== null) {
+      //   closeTab(foundTabId)
+      // }
     },
-    [closeTab, findDocumentById, tabsState]
+    [findDocumentById]
   )
 
   //#endregion
@@ -983,28 +1019,6 @@ export const MainProvider: React.FC = memo(({ children }) => {
       })()
     }
   }, [createDocument, db, fetchDocument, getLocalSetting, isInitialLoad])
-
-  useEffect(() => {
-    // If there's no tabs create a new one
-    // We check value of isDocument loading to prevent multiple tabs/documents being created at once
-    if (Object.keys(tabsState.tabs).length === 0 && !isDocumentLoading) {
-      setIsDocumentLoading(true)
-      tabsDispatch({ type: "create-tab", tabType: "cloudNew", switch: true })
-      setIsDocumentLoading(false)
-
-      // createDocument(null, undefined, {
-      //   switchToDocument: false,
-      // }).then((document) => {
-      //   setCurrentDocument(document)
-      //   tabsDispatch({
-      //     type: "create-tab",
-      //     documentId: document.id,
-      //     switch: true,
-      //   })
-      //   setIsDocumentLoading(false)
-      // })
-    }
-  }, [createDocument, isDocumentLoading, tabsState.tabs])
 
   useEffect(() => {
     console.log("currentDocumentId changed, refetching document")

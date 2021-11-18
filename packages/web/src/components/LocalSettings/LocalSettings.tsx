@@ -110,13 +110,15 @@ export const LocalSettingsProvider: FC = ({ children }) => {
         let parsedValue: unknown = JSON.parse(stringifiedValue)
 
         // validate if the value was properly parsed
-        if (!isTabsValueValid(parsedValue)) {
-          throw new Error(
+        if (isTabsValueValid(parsedValue)) {
+          return parsedValue as LocalSettings[K]
+        } else {
+          // If there is an issue parsing tabs from local storage, fall back to the default tabs value
+          console.error(
             `Tabs couldn't be parsed properly. Received string: ${localSettingsDoc.tabs}`
           )
+          return defaults.tabs as LocalSettings[K]
         }
-
-        return parsedValue as LocalSettings[K]
       }
 
       throw new Error("Something went wrong")
