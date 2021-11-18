@@ -142,11 +142,11 @@ export const MainProvider: React.FC = memo(({ children }) => {
     tabsDispatch({ type: "close-tab", tabId })
   }, [])
 
-  console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
+  // console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
 
   const currentDocumentId = getCurrentCloudDocumentId(tabsState)
 
-  console.log("currentDocumentId", currentDocumentId)
+  // console.log("currentDocumentId", currentDocumentId)
 
   /**
    * Finds a single group by id.

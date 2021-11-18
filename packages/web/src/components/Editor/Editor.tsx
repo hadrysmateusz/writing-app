@@ -321,6 +321,8 @@ const EditorComponent: React.FC<{
 
   return (
     <>
+      {/* TODO: maybe use an rxdb subscription to the update event to check for deletion to display the banner (maybe keep isDeleted in local state) */}
+      {/* TODO: maybe use an rxdb subscription to the remove event to check for permanent deletion to close the tab (maybe do it higher up) */}
       {currentDocument.isDeleted && (
         <TrashBanner documentId={currentDocument.id} />
       )}

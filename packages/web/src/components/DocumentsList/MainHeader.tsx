@@ -20,7 +20,7 @@ export const MainHeader: FunctionComponent<{
     ContextMenu: SortingContextMenu,
   } = useContextMenu()
 
-  console.warn("IMPLEMENT: use real documents data in MainHeader_Details")
+  // TODO: use real documents data in MainHeader_Detail
 
   return (
     <Wrapper>

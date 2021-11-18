@@ -16,7 +16,9 @@ export const documentSchema: RxJsonSchema<DocumentDocType> = {
     title: {
       type: "string",
     },
-    titleSlug: { type: "string" },
+    titleSlug: {
+      type: "string",
+    },
     content: {
       type: "string",
     },

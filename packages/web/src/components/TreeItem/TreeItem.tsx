@@ -1,6 +1,5 @@
 import React from "react"
 import styled from "styled-components/macro"
-import Icon from "../Icon"
 import { StaticTreeItemProps } from "./types"
 import { TreeItem_AddDocumentButton } from "./AddButton"
 import { TreeItemIcon } from "./TreeItemIcon"

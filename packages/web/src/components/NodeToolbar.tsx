@@ -24,7 +24,7 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
   nodeRef,
   slateNode,
 }) => {
-  const { openMenu, ContextMenu } = useContextMenu()
+  const { ContextMenu } = useContextMenu()
   const editor = useSlateStatic()
   const isFocused = useFocused()
   const isSelected = useSelected()
@@ -128,33 +128,33 @@ export const TurnIntoContextMenuContent: React.FC<{
   editor: Editor
   slateNode: Node
 }> = ({ nodeRef, node, editor, slateNode }) => {
-  const handleSetFormat = (format: string) => () => {
-    if (nodeRef === undefined && node === undefined) {
-      throw new Error("A node or nodeRef is required")
-    }
+  // const handleSetFormat = (format: string) => () => {
+  //   if (nodeRef === undefined && node === undefined) {
+  //     throw new Error("A node or nodeRef is required")
+  //   }
 
-    if (!node && nodeRef) {
-      node = nodeRef.current
-    }
+  //   if (!node && nodeRef) {
+  //     node = nodeRef.current
+  //   }
 
-    if (!node) {
-      throw new Error("Couldn't find a correct DOM node")
-    }
+  //   if (!node) {
+  //     throw new Error("Couldn't find a correct DOM node")
+  //   }
 
-    let slateNode: Node
+  //   let slateNode: Node
 
-    try {
-      slateNode = ReactEditor.toSlateNode(editor, node)
-    } catch (error) {
-      // TODO: when the error boundary for this error is created this might not be necessary (or maybe some custom logic for recovering could be used)
-      console.log("couldn't resolve slate node")
-      return
-    }
+  //   try {
+  //     slateNode = ReactEditor.toSlateNode(editor, node)
+  //   } catch (error) {
+  //     // TODO: when the error boundary for this error is created this might not be necessary (or maybe some custom logic for recovering could be used)
+  //     console.log("couldn't resolve slate node")
+  //     return
+  //   }
 
-    const path = ReactEditor.findPath(editor, slateNode)
-    Transforms.setNodes(editor, { type: format }, { at: path })
-    // closeMenu()
-  }
+  //   const path = ReactEditor.findPath(editor, slateNode)
+  //   Transforms.setNodes(editor, { type: format }, { at: path })
+  //   // closeMenu()
+  // }
   return (
     <>
       {/* <ContextMenuItem onMouseDown={handleSetFormat(PARAGRAPH)}>
