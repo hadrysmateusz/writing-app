@@ -17,12 +17,14 @@ import {
   FaSpinner,
   FaChevronDown,
   FaClipboard,
+  FaPen,
 } from "react-icons/fa"
 import {
   AiFillCloud,
   AiFillFolderOpen,
   AiFillFolder,
   AiOutlineFolder,
+  AiFillTag,
   // AiOutlineDownload,
 } from "react-icons/ai"
 import { IoMdTrash, IoMdSettings } from "react-icons/io"
@@ -104,6 +106,8 @@ const iconLibrary = {
   close: MdClose,
   arrow90DegUp: BsArrow90DegUp,
   sort: BiSort,
+  tag: AiFillTag,
+  pen: FaPen,
 }
 
 export default iconLibrary

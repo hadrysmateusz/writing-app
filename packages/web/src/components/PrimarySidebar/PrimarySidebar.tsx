@@ -14,6 +14,7 @@ import {
 import { Switch, Case } from "../Conditional"
 
 import { Cloud } from "./Cloud"
+import { Tags } from "./Tags"
 
 /**
  * memo is used to prevent huge amounts of rerenders when resizing the sidebar
@@ -30,6 +31,7 @@ export const PrimarySidebar = memo(
 
             <Switch value={primarySidebar.currentView}>
               <Case value={PrimarySidebarViews.cloud} component={<Cloud />} />
+              <Case value={PrimarySidebarViews.tags} component={<Tags />} />
             </Switch>
           </>
         ) : null}
@@ -68,10 +70,15 @@ export const PrimarySidebarTabs = () => {
         onClick={handleClick(PrimarySidebarViews.local)}
         icon="folderClosed"
       />
-      <SidebarTab
+      {/* <SidebarTab
         isActive={isTabActive(PrimarySidebarViews.snippets)}
         onClick={handleClick(PrimarySidebarViews.snippets)}
         icon="clipboard"
+      /> */}
+      <SidebarTab
+        isActive={isTabActive(PrimarySidebarViews.tags)}
+        onClick={handleClick(PrimarySidebarViews.tags)}
+        icon="tag"
       />
       <SidebarTab
         rightSide={true}
