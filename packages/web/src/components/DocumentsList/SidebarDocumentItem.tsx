@@ -8,14 +8,12 @@ import { EditableText } from "../RenamingInput"
 import { useMainState } from "../MainProvider"
 import { formatOptional } from "../../utils"
 import { useDocumentContextMenu } from "../DocumentContextMenu"
-// import { getGroupName } from "../../helpers/getGroupName"
 
 const SNIPPET_LENGTH = 340
 
 export const SidebarDocumentItem: React.FC<{
   document: DocumentDoc
-  groupId?: string | null
-}> = ({ document, groupId }) => {
+}> = ({ document }) => {
   const {
     openMenu,
     isMenuOpen,
@@ -23,17 +21,12 @@ export const SidebarDocumentItem: React.FC<{
     getEditableProps,
   } = useDocumentContextMenu(document)
   const {
-    /*  groups, */ currentDocumentId,
+    currentDocumentId,
     openDocument,
     // unsyncedDocs,
   } = useMainState()
 
   // const isUnsynced = unsyncedDocs.includes(document.id)
-
-  // // TODO: optimize this
-  // const isInCurrentGroup = useMemo(() => {
-  //   return groupId ? document.parentGroup === groupId : false
-  // }, [document.parentGroup, groupId])
 
   const isCurrent = useMemo(() => {
     if (currentDocumentId === null) return false
@@ -96,7 +89,6 @@ export const SidebarDocumentItem: React.FC<{
         }}
         isCurrent={isCurrent}
       >
-        {/* {!isInCurrentGroup && <Group>{groupName}</Group>} */}
         <Title isUnsynced={/* isUnsynced */ false}>
           <EditableText {...getEditableProps()}>{title}</EditableText>
         </Title>
@@ -128,18 +120,6 @@ const DeleteButton = styled.div`
     font-weight: bold;
   }
 `
-
-// const Group = styled.div`
-//   font-size: 10px;
-//   line-height: 16px;
-//   text-transform: uppercase;
-//   font-weight: 500;
-//   color: var(--light-100);
-//   white-space: nowrap;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   margin-bottom: 2px;
-// `
 
 const Title = styled.div<{ isUnsynced: boolean }>`
   width: 100%;

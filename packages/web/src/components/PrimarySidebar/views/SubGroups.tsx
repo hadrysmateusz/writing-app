@@ -38,7 +38,7 @@ export const SubGroupDocumentsList: FC<{
       </SectionHeader>
       {isOpen ? (
         <>
-          <DocumentsList documents={documents} groupId={group.id} />
+          <DocumentsList documents={documents} />
           <SubGroups groups={group.children} />
         </>
       ) : null}

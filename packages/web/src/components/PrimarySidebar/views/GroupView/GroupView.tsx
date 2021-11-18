@@ -55,7 +55,7 @@ export const GroupView: React.FC = () => {
       <InnerContainer groupId={groupId}>
         {!isLoading ? (
           <>
-            <DocumentsList documents={documents || []} groupId={group.id} />
+            <DocumentsList documents={documents || []} />
             {childGroups ? <SubGroups groups={group.children} /> : null}
           </>
         ) : null}

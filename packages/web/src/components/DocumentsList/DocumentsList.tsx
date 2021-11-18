@@ -6,18 +6,13 @@ import { DocumentDoc } from "../Database"
 
 export const DocumentsList: React.FC<{
   documents: DocumentDoc[]
-  groupId?: string | null
-}> = ({ documents, groupId }) => {
+}> = ({ documents }) => {
   return documents.length === 0 ? (
     <Empty>Empty</Empty>
   ) : (
     <>
       {documents.map((document) => (
-        <SidebarDocumentItem
-          key={document.id}
-          document={document}
-          groupId={groupId}
-        />
+        <SidebarDocumentItem key={document.id} document={document} />
       ))}
     </>
   )
