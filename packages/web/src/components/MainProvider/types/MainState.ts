@@ -28,7 +28,7 @@ export type ChangeSortingFn = (
 export type SaveDocumentFn = () => Promise<DocumentDocType | null> // TODO: move
 
 export type OpenDocumentFn = (
-  documentId: string | null,
+  documentId: string,
   options?: { inNewTab?: boolean }
 ) => Promise<DocumentDoc | null>
 

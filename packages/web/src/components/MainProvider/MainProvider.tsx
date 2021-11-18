@@ -634,49 +634,47 @@ export const MainProvider: React.FC = memo(({ children }) => {
 
       console.log("openDocument called", documentId, options)
 
-      // TODO: why is null even allowed?
-      if (documentId !== null) {
-        // Check if tab with this documentId already exists
-        const tabId = findTabWithDocumentId(tabsState, documentId)
-        // Tab with this document already exists, switch to it
-        if (tabId !== null) {
-          tabsDispatch({ type: "switch-tab", tabId })
-        }
-        // If current tab was cloudNew, replace it
-        // TODO: probably create an action type to handle this in one dispatch
-        else if (tabsState.tabs[tabsState.currentTab].tabType === "cloudNew") {
-          tabsDispatch({
-            type: "create-tab",
-            tabType: "cloudDocument",
-            documentId: documentId,
-            switch: true,
-          })
-          tabsDispatch({
-            type: "close-tab",
-            tabId: tabsState.currentTab,
-          })
-        }
-        // Open document in new tab
-        else if (currentDocumentId === null || inNewTab) {
-          tabsDispatch({
-            type: "create-tab",
-            tabType: "cloudDocument",
-            documentId: documentId,
-            switch: true,
-          })
-        }
-        // Open document in current tab
-        else if (tabsState.currentTab !== null) {
-          tabsDispatch({
-            type: "change-document",
-            tabId: tabsState.currentTab,
-            documentId: documentId,
-          })
-        }
-        // Invalid scenario
-        else {
-          throw new Error("Couldn't open document")
-        }
+      // Check if tab with this documentId already exists
+      const tabId = findTabWithDocumentId(tabsState, documentId)
+      // Tab with this document already exists, switch to it
+      if (tabId !== null) {
+        tabsDispatch({ type: "switch-tab", tabId })
+      }
+      // If current tab was cloudNew, replace it
+      // TODO: probably create an action type to handle this in one dispatch
+      else if (tabsState.tabs[tabsState.currentTab].tabType === "cloudNew") {
+        tabsDispatch({
+          type: "create-tab",
+          tabType: "cloudDocument",
+          documentId: documentId,
+          switch: true,
+        })
+        tabsDispatch({
+          type: "close-tab",
+          tabId: tabsState.currentTab,
+        })
+      }
+      // Open document in new tab
+      else if (currentDocumentId === null || inNewTab) {
+        tabsDispatch({
+          type: "create-tab",
+          tabType: "cloudDocument",
+          documentId: documentId,
+          switch: true,
+        })
+      }
+      // Open document in current tab
+      else if (tabsState.currentTab !== null) {
+        // TODO: this currently doesn nothing (figure out what to do with it)
+        tabsDispatch({
+          type: "change-document",
+          tabId: tabsState.currentTab,
+          documentId: documentId,
+        })
+      }
+      // Invalid scenario
+      else {
+        throw new Error("Couldn't open document")
       }
 
       return fetchDocument(documentId)
