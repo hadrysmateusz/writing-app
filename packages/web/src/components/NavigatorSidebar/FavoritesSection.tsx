@@ -1,89 +1,55 @@
-import React, { useEffect, useState } from "react"
+import { memo } from "react"
+
+import { useRxSubscription, useToggleable } from "../../hooks"
+
+import { GenericTreeItem } from "../TreeItem"
+import { useDatabase } from "../Database"
 
 import { SectionHeader, SectionContainer } from "./Common"
 import DocumentTreeItem from "./DocumentTreeItem"
-import { useToggleable } from "../../hooks"
-import { GenericTreeItem } from "../TreeItem"
-import { DocumentDoc, useDatabase } from "../Database"
 
 /* The number of favorites displayed without toggling */
 const LIMIT_FAVORITES = 4
+const MSG_FAVORITES = "Favorites"
+const MSG_SHOW_MORE = "Show More"
+const MSG_SHOW_LESS = "Show Less"
 
-export const FavoritesSection: React.FC = React.memo(() => {
+export const FavoritesSection: React.FC = memo(() => {
   const db = useDatabase()
-  const [favorites, setFavorites] = useState<DocumentDoc[]>([])
 
-  useEffect(() => {
-    const sub = db.documents
-      .findNotRemoved()
-      .where("isFavorite")
-      .eq(true)
-      // .sort({ [index]: direction })
-      .$.subscribe((newFavorites) => {
-        setFavorites(newFavorites)
-      })
-    return () => sub.unsubscribe()
-  }, [db.documents])
-
-  const { isOpen, open, close } = useToggleable(false)
+  const { isOpen, toggle } = useToggleable(false)
+  const { data: favorites, isLoading } = useRxSubscription(
+    db.documents.findNotRemoved().where("isFavorite").eq(true)
+  )
 
   // TODO: limit the number of favorites fetched in the initial query
 
-  const favoritesInitial = favorites.slice(0, LIMIT_FAVORITES)
+  const hasFavorites = !isLoading && favorites && favorites.length > 0
 
-  const hasMore = favorites.length > LIMIT_FAVORITES
-
-  return (
+  return hasFavorites ? (
     <SectionContainer>
-      {favoritesInitial.length > 0 && (
-        <>
-          <SectionHeader>Favorites</SectionHeader>
+      <SectionHeader>{MSG_FAVORITES}</SectionHeader>
 
-          {isOpen ? (
-            <>
-              {favorites.map((document) => (
-                <DocumentTreeItem
-                  key={document.id}
-                  depth={0}
-                  document={document}
-                  icon="starFilled"
-                />
-              ))}
-              <GenericTreeItem
-                depth={0}
-                onClick={() => {
-                  close()
-                }}
-                icon="ellipsisHorizontal"
-              >
-                Show less
-              </GenericTreeItem>
-            </>
-          ) : (
-            <>
-              {favoritesInitial.map((document) => (
-                <DocumentTreeItem
-                  key={document.id}
-                  depth={0}
-                  document={document}
-                  icon="starFilled"
-                />
-              ))}
-              {hasMore ?? (
-                <GenericTreeItem
-                  depth={0}
-                  onClick={() => {
-                    open()
-                  }}
-                  icon="ellipsisHorizontal"
-                >
-                  Show More
-                </GenericTreeItem>
-              )}
-            </>
-          )}
-        </>
+      {favorites.map((document, index) =>
+        isOpen || index < LIMIT_FAVORITES ? (
+          <DocumentTreeItem
+            key={document.id}
+            depth={0}
+            document={document}
+            icon="starFilled"
+          />
+        ) : null
       )}
+
+      <GenericTreeItem
+        depth={0}
+        onClick={() => {
+          toggle()
+        }}
+        icon="ellipsisHorizontal"
+      >
+        {isOpen ? MSG_SHOW_LESS : MSG_SHOW_MORE}
+      </GenericTreeItem>
     </SectionContainer>
-  )
+  ) : null
 })
