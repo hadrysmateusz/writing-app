@@ -11,6 +11,7 @@ import { Descendant } from "slate"
 
 import { useDocumentsAPI, useMainState, useTabsState } from "../MainProvider"
 import { Toolbar } from "../Toolbar"
+import { serialize } from "../Editor/serialization"
 
 import { StyledTitleNamingInput } from "./TitleInput"
 import pluginsList from "./pluginsList"
@@ -97,12 +98,13 @@ export const DummyEditor = () => {
     }
 
     const nodes = editor.children as Descendant[]
+    const serializedContent = serialize(nodes)
 
     // create document and use current content (switch to it in a new tab as well)
     await createDocument(
       null /* TODO: infer group */,
       {
-        content: nodes,
+        content: serializedContent,
       },
       {
         switchToDocument: true,

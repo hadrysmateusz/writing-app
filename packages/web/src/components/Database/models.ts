@@ -68,6 +68,10 @@ export const models = {
         console.log("title:", oldDoc.title, "titleSlug:", oldDoc.titleSlug)
         return oldDoc
       },
+      6: function (oldDoc: DocumentDoc) {
+        oldDoc.tags = []
+        return oldDoc
+      },
     },
     // pouchSettings: {
     //   skip_setup: true,

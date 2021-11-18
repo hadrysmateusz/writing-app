@@ -1,5 +1,4 @@
 import { RxQuery } from "rxdb"
-import { Descendant } from "slate"
 
 import { DocumentDoc, DocumentDocType } from "../../Database"
 import { Updater } from "./Misc"
@@ -39,10 +38,7 @@ export type UpdateDocumentFn = (
 ) => Promise<DocumentDoc>
 export type CreateDocumentFn = (
   parentGroup: string | null,
-  values?: {
-    title?: string
-    content?: Descendant[]
-  },
+  values?: Partial<Pick<DocumentDocType, "title" | "content" | "tags">>,
   options?: CreateDocumentOptions
 ) => Promise<DocumentDoc>
 export type RenameDocumentFn = (

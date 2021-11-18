@@ -29,6 +29,10 @@ export type DocumentDocType = {
    */
   parentGroup: string | null
   /**
+   * Array of tagIds
+   */
+  tags: string[]
+  /**
    * Timestamp of when the document was originally created
    */
   createdAt: number

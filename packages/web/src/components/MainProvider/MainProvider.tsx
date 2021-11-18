@@ -691,7 +691,12 @@ export const MainProvider: React.FC = memo(({ children }) => {
   const createDocument: CreateDocumentFn = useCallback(
     async (parentGroup, values = {}, options = {}) => {
       const { switchToDocument = true, switchToGroup = true } = options
-      const { title = "", content = DEFAULT_EDITOR_VALUE } = values
+      // TODO: rework this functions params and define which properties can and can't be provided at creation
+      const {
+        title = "",
+        content = serialize(DEFAULT_EDITOR_VALUE),
+        tags = [],
+      } = values
 
       console.log("createDocument called", parentGroup, values, options)
 
@@ -700,15 +705,15 @@ export const MainProvider: React.FC = memo(({ children }) => {
       const timestamp = Date.now()
       const docId = uuidv4()
 
-      const serializedContent = serialize(content)
       const titleSlug = encodeURI(title.toLowerCase() + Date.now()) // TODO: extract titleSlug computing logic
 
       const newDocument = await db.documents.insert({
         id: docId,
         title, // TODO: consider custom title sanitation / formatting
         titleSlug,
-        content: serializedContent,
+        content,
         parentGroup: parentGroup,
+        tags,
         createdAt: timestamp,
         modifiedAt: timestamp,
         isFavorite: false,

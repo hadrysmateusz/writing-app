@@ -7,6 +7,10 @@ import { DocumentDoc } from "../Database"
 export const DocumentsList: React.FC<{
   documents: DocumentDoc[]
 }> = ({ documents }) => {
+  console.log(
+    "documents:",
+    documents.map((doc) => doc.toJSON())
+  )
   return documents.length === 0 ? (
     <Empty>Empty</Empty>
   ) : (

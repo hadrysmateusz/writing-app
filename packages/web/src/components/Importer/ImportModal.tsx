@@ -15,6 +15,7 @@ import {
 import { formatOptional } from "../../utils"
 import { useToggleable } from "../../hooks"
 import Icon from "../Icon"
+import { serialize } from "../Editor/serialization"
 
 export const ImportModalContent: React.FC<{
   close: CloseModalFn<undefined>
@@ -50,9 +51,11 @@ export const ImportModalContent: React.FC<{
 
       const documentPromises = parsed.map(({ title, content }) => {
         // If I switch to using the first heading as title, then inferring the title might not be necessary (although if there is no first heading then I should probably use the file name)
+        const serializedContent = serialize(content)
+
         return createDocument(
           targetGroup,
-          { title, content },
+          { title, content: serializedContent },
           { switchToDocument: false }
         )
       })
