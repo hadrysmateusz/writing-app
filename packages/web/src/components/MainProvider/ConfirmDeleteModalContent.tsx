@@ -5,7 +5,6 @@ import { Button } from "../Button"
 import { useDocumentsAPI } from "."
 import { ConfirmDeleteModalProps } from "./types"
 import { CloseModalFn } from "../Modal/types"
-import { useDatabase } from "../Database"
 
 const ModalContainer = styled.div`
   background: var(--dark-400);
@@ -23,29 +22,22 @@ const Container = styled.div`
 
 export type ConfirmDeleteModalReturnValue = boolean
 
+// TODO: extract this into a reusable modal similiar to the PromptModal
 export const ConfirmDeleteModalContent: FC<
   ConfirmDeleteModalProps & {
     close: CloseModalFn<ConfirmDeleteModalReturnValue>
   }
 > = ({ close, children, ...options }) => {
-  const { actuallyPermanentlyRemoveDocument } = useDocumentsAPI()
-  const db = useDatabase()
+  const {
+    actuallyPermanentlyRemoveDocument,
+    actuallyPermanentlyRemoveAllDocuments,
+  } = useDocumentsAPI()
 
   // TODO: add loading state, especially important when deleting all
   const handleConfirm = async () => {
     if (options.all) {
-      const documentsInTrash = await db.documents
-        .find()
-        .where("isDeleted")
-        .eq(true)
-        .exec()
-
-      // TODO: use the builtin batch delete function from rxDB and create an actuallyPermanentlyRemoveAllDocuments function to optimize this, because it's agonizingly slow
-
-      for (let doc of documentsInTrash) {
-        console.log("deleting", doc)
-        await actuallyPermanentlyRemoveDocument(doc.id)
-      }
+      console.log("attempting to delete all documents")
+      await actuallyPermanentlyRemoveAllDocuments()
     } else {
       if (options.documentId) {
         await actuallyPermanentlyRemoveDocument(options.documentId)
@@ -68,6 +60,7 @@ export const ConfirmDeleteModalContent: FC<
     <ModalContainer>
       <p>{msgPrompt}</p>
       <Container>
+        {/* TODO: add progress spinner (that only shows up if the confirmation takes more than X miliseconds) */}
         <Button onClick={handleConfirm} variant={"danger"}>
           {msgConfirm}
         </Button>

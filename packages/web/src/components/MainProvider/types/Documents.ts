@@ -14,6 +14,7 @@ export type DocumentsAPI = {
   removeDocument: RemoveDocumentFn
   permanentlyRemoveDocument: PermanentlyRemoveDocumentFn
   actuallyPermanentlyRemoveDocument: ActuallyPermanentlyRemoveDocumentFn
+  actuallyPermanentlyRemoveAllDocuments: ActuallyPermanentlyRemoveAllDocumentsFn
   permanentlyRemoveAllDocuments: PermanentlyRemoveAllDocumentsFn
   restoreDocument: RestoreDocumentFn
   createDocument: CreateDocumentFn
@@ -28,17 +29,14 @@ export type FindDocumentByIdFn = (
   id: string,
   includeRemoved?: boolean
 ) => Promise<DocumentDoc | null>
-
 export type FindDocumentsFn = (
   includeRemoved?: boolean
 ) => RxQuery<DocumentDocType, DocumentDoc[]>
-
 export type UpdateDocumentFn = (
   id: string,
   updater: Updater<DocumentDoc, DocumentDocType>,
   includeRemoved?: boolean
 ) => Promise<DocumentDoc>
-
 export type CreateDocumentFn = (
   parentGroup: string | null,
   values?: {
@@ -47,29 +45,22 @@ export type CreateDocumentFn = (
   },
   options?: CreateDocumentOptions
 ) => Promise<DocumentDoc>
-
 export type RenameDocumentFn = (
   documentId: string,
   title: string
 ) => Promise<DocumentDoc>
-
 export type RemoveDocumentFn = (documentId: string) => Promise<boolean>
-
 export type PermanentlyRemoveDocumentFn = (documentId: string) => void
-
 export type ActuallyPermanentlyRemoveDocumentFn = (
   documentId: string
 ) => Promise<void>
-
+export type ActuallyPermanentlyRemoveAllDocumentsFn = () => Promise<void>
 export type PermanentlyRemoveAllDocumentsFn = () => void
-
 export type RestoreDocumentFn = (documentId: string) => Promise<DocumentDoc>
-
 export type MoveDocumentToGroupFn = (
   documentId: string,
   groupId: string | null
 ) => Promise<DocumentDoc>
-
 export type ToggleDocumentFavoriteFn = (
   documentId: string
 ) => Promise<DocumentDoc>

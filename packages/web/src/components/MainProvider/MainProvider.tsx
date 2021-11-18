@@ -958,6 +958,35 @@ export const MainProvider: React.FC = memo(({ children }) => {
     [findDocumentById]
   )
 
+  // TODO: permanently removing documents seems to have stopped working and actually restores the documents (this might be caused by the new tags database creating sync issues and deleted documents being pushed from cloud db to client db, but I doubt that)
+  // TODO: rename to something like clearTrashDocuments or sth
+  const actuallyPermanentlyRemoveAllDocuments = useCallback(async () => {
+    const documentsInTrash = await db.documents
+      .find()
+      .where("isDeleted")
+      .eq(true)
+      .exec()
+
+    const docIds = documentsInTrash.map((doc) => doc.id)
+
+    console.log("documents to delete", documentsInTrash, docIds)
+
+    const { error, success } = await db.documents.bulkRemove(docIds)
+
+    error.forEach((doc) => {
+      console.warn("failed to remove document", doc)
+    })
+
+    success.forEach((doc) => {
+      console.log("removed document", doc)
+      // check if document is open in a tab and close it
+      let foundTabId = findTabWithDocumentId(tabsState, doc.id)
+      if (foundTabId !== null) {
+        closeTab(foundTabId)
+      }
+    })
+  }, [closeTab, db.documents, tabsState])
+
   //#endregion
 
   /**
@@ -1092,6 +1121,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
       removeDocument,
       permanentlyRemoveDocument,
       actuallyPermanentlyRemoveDocument,
+      actuallyPermanentlyRemoveAllDocuments,
       permanentlyRemoveAllDocuments,
       restoreDocument,
       renameDocument,
@@ -1107,6 +1137,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
       moveDocumentToGroup,
       permanentlyRemoveDocument,
       actuallyPermanentlyRemoveDocument,
+      actuallyPermanentlyRemoveAllDocuments,
       permanentlyRemoveAllDocuments,
       removeDocument,
       renameDocument,
