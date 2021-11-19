@@ -30,7 +30,7 @@ export const TagsView: React.FC = () => {
     const name = await toggleableProps.open({ initialValue: "" })
 
     if (name?.trim()) {
-      createTag({ name })
+      await createTag({ name })
     }
   }, [createTag, toggleableProps])
 
