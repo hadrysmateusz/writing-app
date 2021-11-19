@@ -3,7 +3,9 @@ import { Subscription } from "rxjs"
 import { RxQuery } from "rxdb"
 
 import { cleanUpSubscriptions } from "../utils"
+import { cloneDeep } from "lodash"
 
+// TODO: add variant with a transformer function to transform query results into the stored and returned data
 export function useRxSubscription<RxDocumentType, RxQueryResult>(
   query: RxQuery<RxDocumentType, RxQueryResult>
 ) {
@@ -22,10 +24,12 @@ export function useRxSubscription<RxDocumentType, RxQueryResult>(
       try {
         const newData = await query.exec()
 
-        setData(newData)
+        // console.log("initial: query", JSON.stringify(query.toJSON(), null, 2))
+        setData(cloneDeep(newData))
 
         subscription = query.$.subscribe((newData) => {
-          setData(newData)
+          // console.log("sub: query", JSON.stringify(query.toJSON(), null, 2))
+          setData(cloneDeep(newData))
         })
       } catch (error) {
         throw error // TODO: handle better in prod
