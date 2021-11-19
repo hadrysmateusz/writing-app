@@ -67,6 +67,7 @@ import { cancelSubscriptions, getCurrentCloudDocumentId } from "./helpers"
 import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
 import { TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
 import AppLoadingState from "./AppLoadingState"
+import { cloneDeep } from "lodash"
 
 const m = mudder.base62
 
@@ -619,7 +620,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
         // TODO: maybe handle this more gracefully
         throw new Error(`Document with id: ${documentId} wasn't found`)
       }
-      setCurrentDocument(documentDoc)
+      setCurrentDocument(cloneDeep(documentDoc))
       return documentDoc
     },
     [findDocumentById]
