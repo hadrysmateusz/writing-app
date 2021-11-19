@@ -19,8 +19,12 @@ export type ConfirmDeleteModalProps =
 
 /**
  * The generic type has to be an RxDB Document
+ *
+ * Generics:
+ * - D RxDB Document
+ * - T RxDB DocType
  */
-export type UpdateQueryConstructor<D> = (original: D) => any
+export type UpdateQueryConstructor<D, T> = (original: D) => Partial<T>
 
 /**
  * Can be either:
@@ -31,4 +35,4 @@ export type UpdateQueryConstructor<D> = (original: D) => any
  * - D RxDB Document
  * - T RxDB DocType
  */
-export type Updater<D, T> = UpdateQueryConstructor<D> | Partial<T>
+export type Updater<D, T> = UpdateQueryConstructor<D, T> | Partial<T>
