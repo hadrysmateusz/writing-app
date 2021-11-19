@@ -6,6 +6,8 @@ export type TagsAPI = {
   actuallyPermanentlyDeleteTag: ActuallyPermanentlyDeleteTagFn
 }
 
-export type CreateTagFn = (values: Pick<TagDocType, "name">) => Promise<TagDoc>
+export type CreateTagFn = (
+  values: Pick<TagDocType, "name">
+) => Promise<TagDoc | null>
 export type RenameTagFn = (id: string, name: string) => Promise<TagDoc>
 export type ActuallyPermanentlyDeleteTagFn = (id: string) => void

@@ -143,7 +143,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
     tabsDispatch({ type: "close-tab", tabId })
   }, [])
 
-  console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
+  // console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
 
   useEffect(() => {
     // TODO: check if this actually does something
@@ -508,18 +508,20 @@ export const MainProvider: React.FC = memo(({ children }) => {
         .eq(nameSlug)
         .exec()
       if (foundTag !== null) {
-        throw new Error("tag with this nameSlug already exists")
+        // throw new Error("tag with this nameSlug already exists")
+        console.warn("tag with this nameSlug already exists")
+        return null
+      } else {
+        const tagId = uuidv4()
+
+        const newTag = await db.tags.insert({
+          id: tagId,
+          name: trimmedName,
+          nameSlug,
+        })
+
+        return newTag
       }
-
-      const tagId = uuidv4()
-
-      const newTag = await db.tags.insert({
-        id: tagId,
-        name: trimmedName,
-        nameSlug,
-      })
-
-      return newTag
     },
     [db.tags]
   )
