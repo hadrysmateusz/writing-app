@@ -11,15 +11,20 @@ import { RxDBLeaderElectionPlugin } from "rxdb/plugins/leader-election"
 import PouchDbAdapterIdb from "pouchdb-adapter-idb"
 import PouchDbAdapterHttp from "pouchdb-adapter-http"
 
+import { withDelayRender } from "../../withDelayRender"
+
 import { useCurrentUser } from "../Auth"
 
+import { dbNameBase, initialSyncState, usernameStartWord } from "./constants"
 import { MyDatabase, SyncStates, MyDatabaseCollections } from "./types"
 import { encodeLocalDbName, initializeSync } from "./helpers"
 import { DatabaseContext, SyncStateContext } from "./context"
-import { dbNameBase, initialSyncState, usernameStartWord } from "./constants"
 import models from "./models"
-import { createDocumentPreSaveHook, createGroupPreInsertHook } from "."
-import { withDelayRender } from "../../withDelayRender"
+import {
+  createDocumentPreSaveHook,
+  createGroupPreRemoveHook,
+  // createTagPreRemoveHook,
+} from "./schemas"
 
 addPouchPlugin(PouchDbAdapterIdb)
 addPouchPlugin(PouchDbAdapterHttp) // enable syncing over http
@@ -71,8 +76,9 @@ export const DatabaseProvider: React.FC = ({ children }) => {
 
         initializeSync(db, models, username, (val) => setSyncState(val))
 
-        db.groups.preRemove(createGroupPreInsertHook(db), false)
+        db.groups.preRemove(createGroupPreRemoveHook(db), false)
         db.documents.preSave(createDocumentPreSaveHook(), false)
+        // db.tags.preRemove(createTagPreRemoveHook(db), false)
 
         db.waitForLeadership().then(() => {
           console.log("Long lives the king!") // <- runs when db becomes leader

@@ -28,10 +28,10 @@ export const groupSchema: RxJsonSchema<GroupDocType> = {
 }
 
 // Hook to remove nested groups and documents when a group is removed
-export const createGroupPreInsertHook = (db: MyDatabase) => async (
+export const createGroupPreRemoveHook = (db: MyDatabase) => async (
   groupData
 ) => {
-  // Because the listeners are filed only after all hooks run, we await on all async actions to avoid de-sync issues
+  // Because the listeners are fired only after all hooks run, we await on all async actions to avoid de-sync issues
   // TODO: try moving all promises into a single Promise.all to parallelize for possible performance gains
 
   // Find all documents that are a direct child of this group
