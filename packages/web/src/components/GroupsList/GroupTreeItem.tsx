@@ -245,12 +245,13 @@ to group ${destinationId} (index ${destinationIndex})`)
               <GenericTreeItem
                 key={group.id}
                 depth={depth}
-                onContextMenu={openMenu}
-                onClick={handleClick}
                 isExpanded={isExpanded}
-                setIsExpanded={setIsExpanded}
                 isActive={isActive}
                 icon={icon}
+                title={groupName}
+                onContextMenu={openMenu}
+                onClick={handleClick}
+                setIsExpanded={setIsExpanded}
                 nested={(depth) => (
                   <GroupsList
                     depth={depth}
