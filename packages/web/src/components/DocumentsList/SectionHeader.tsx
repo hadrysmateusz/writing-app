@@ -70,7 +70,7 @@ export default SectionHeader
 
 const SectionHeaderContainer = styled.div<{ isOpen: boolean }>`
   --padding-x: 12px;
-  --padding-y: 8px;
+  --padding-y: 12px;
 
   font: bold 10px Poppins;
   letter-spacing: 0.02em;
