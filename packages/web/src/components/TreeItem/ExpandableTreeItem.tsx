@@ -29,17 +29,18 @@ export const ExpandableTreeItem: FC<StatefulExpandableTreeItemProps> = ({
 export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> = ({
   icon,
   depth = 0,
-  nested,
   children,
   isExpanded,
   isSpecial,
   isActive,
+  nested,
   setIsExpanded,
   onClick,
   onContextMenu,
   // Toggleable hooks
   onBeforeChange,
   onAfterChange,
+  ...rest
 }) => {
   const { toggle, open: expand, close: collapse } = useStatelessToggleable(
     isExpanded,
@@ -85,7 +86,12 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
 
   return (
     <OuterContainer onClick={handleClick} onContextMenu={handleContextMenu}>
-      <TreeItem depth={depth} isSpecial={isSpecial} isActive={isActive}>
+      <TreeItem
+        depth={depth}
+        isSpecial={isSpecial}
+        isActive={isActive}
+        {...rest}
+      >
         <InnerContainer>
           <CaretContainer isExpanded={isExpanded} onClick={handleToggle}>
             <Icon icon={"caretRight"} />

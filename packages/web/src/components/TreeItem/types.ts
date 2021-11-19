@@ -8,6 +8,7 @@ export type ExpandableChildrenRenderProps = {
 }
 
 export type CoreTreeItemProps = {
+  title?: string
   icon?: string
   depth?: number
   disabled?: boolean
