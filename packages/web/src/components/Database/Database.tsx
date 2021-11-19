@@ -23,7 +23,7 @@ import models from "./models"
 import {
   createDocumentPreSaveHook,
   createGroupPreRemoveHook,
-  // createTagPreRemoveHook,
+  createTagPreRemoveHook,
 } from "./schemas"
 
 addPouchPlugin(PouchDbAdapterIdb)
@@ -78,7 +78,7 @@ export const DatabaseProvider: React.FC = ({ children }) => {
 
         db.groups.preRemove(createGroupPreRemoveHook(db), false)
         db.documents.preSave(createDocumentPreSaveHook(), false)
-        // db.tags.preRemove(createTagPreRemoveHook(db), false)
+        db.tags.preRemove(createTagPreRemoveHook(db), false)
 
         db.waitForLeadership().then(() => {
           console.log("Long lives the king!") // <- runs when db becomes leader
