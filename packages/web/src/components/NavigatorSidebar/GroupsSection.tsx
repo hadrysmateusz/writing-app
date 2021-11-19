@@ -29,11 +29,11 @@ export const GroupsSection: React.FC = () => {
         setIsCreatingGroup={setIsCreatingGroup}
       />
 
-      {!isCreatingGroup && (
+      {!isCreatingGroup ? (
         <GenericTreeItem icon="plus" onClick={handleNewGroup} depth={0}>
           Add Collection
         </GenericTreeItem>
-      )}
+      ) : null}
     </SectionContainer>
   ) : null
 }
