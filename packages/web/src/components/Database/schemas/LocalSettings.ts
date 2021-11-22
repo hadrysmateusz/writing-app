@@ -2,10 +2,16 @@ import { RxJsonSchema } from "rxdb"
 
 import { LocalSettingsDocType } from "../types"
 
+const sidebarCommon = {
+  // id: { type: "string" },
+  isOpen: { type: "boolean" },
+  currentView: { type: "string" },
+}
+
 export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
   title: "local settings schema",
   description: "describes a set of local settings",
-  version: 0,
+  version: 3,
   primaryKey: "userId",
   type: "object",
   properties: {
@@ -17,17 +23,13 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
       type: "array",
       // TODO: consider removing the uniqueItems constraint as it shouldn't be a problem and it might cause the app to crash on an improper update
       uniqueItems: true,
-      items: {
-        type: "string",
-      },
+      items: { type: "string" },
     },
     unsyncedDocs: {
       type: "array",
       // TODO: consider removing the uniqueItems constraint as it shouldn't be a problem and it might cause the app to crash on an improper update
       uniqueItems: true,
-      items: {
-        type: "string",
-      },
+      items: { type: "string" },
     },
     // tabs: {
     //   type: "object",
@@ -40,28 +42,46 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
     //   },
     // },
     tabs: { type: "string" },
-    primarySidebarCurrentView: {
-      type: "string",
-    },
-    primarySidebarCurrentSubviews: {
+    sidebars: {
       type: "object",
       properties: {
-        cloud: { type: "string" },
-        local: { type: "string" },
-        snippets: { type: "string" },
+        navigator: {
+          type: "object",
+          properties: {
+            ...sidebarCommon,
+            currentPaths: {
+              type: "object",
+              properties: {
+                default: { type: "string" },
+              },
+            },
+          },
+        },
+        primary: {
+          type: "object",
+          properties: {
+            ...sidebarCommon,
+            currentPaths: {
+              type: "object",
+              properties: {
+                cloud: { type: "string" },
+                local: { type: "string" },
+                tags: { type: "string" },
+              },
+            },
+          },
+        },
+        secondary: {
+          type: "object",
+          properties: {
+            ...sidebarCommon,
+            currentPaths: {
+              type: "object",
+              properties: { stats: { type: "string" } },
+            },
+          },
+        },
       },
-    },
-    secondarySidebarCurrentView: {
-      type: "string",
-    },
-    primarySidebarIsOpen: {
-      type: "boolean",
-    },
-    secondarySidebarIsOpen: {
-      type: "boolean",
-    },
-    navigatorSidebarIsOpen: {
-      type: "boolean",
     },
   },
   required: ["userId"],

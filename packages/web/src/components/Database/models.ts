@@ -1,4 +1,9 @@
-import { CollectionNames, DocumentCollection, DocumentDoc } from "./types"
+import {
+  CollectionNames,
+  DocumentCollection,
+  DocumentDoc,
+  LocalSettingsDoc,
+} from "./types"
 import {
   documentSchema,
   groupSchema,
@@ -6,6 +11,7 @@ import {
   userdataSchema,
 } from "./schemas"
 import { tagSchema } from "./schemas/Tag"
+import { defaultLocalSettings } from "../LocalSettings"
 
 // TODO: skip_setup doesn't seem to work as expected and should probably be replaced with manual checks and simply not calling the create functions if they fail
 export const models = {
@@ -120,7 +126,25 @@ export const models = {
     schema: localSettingsSchema,
     statics: {},
     methods: {},
-    migrationStrategies: {},
+    migrationStrategies: {
+      1: function (oldDoc: LocalSettingsDoc) {
+        // TODO: improve the way titleSlugs are created with some additional encoding/sanitization
+        oldDoc.sidebars = defaultLocalSettings.sidebars
+        return oldDoc
+      },
+      2: function (oldDoc: LocalSettingsDoc) {
+        return {
+          ...defaultLocalSettings,
+          userId: oldDoc.userId,
+        }
+      },
+      3: function (oldDoc: LocalSettingsDoc) {
+        return {
+          ...defaultLocalSettings,
+          userId: oldDoc.userId,
+        }
+      },
+    },
     // pouchSettings: {
     //   skip_setup: true,
     // },

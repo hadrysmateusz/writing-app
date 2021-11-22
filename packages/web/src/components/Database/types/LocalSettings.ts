@@ -1,12 +1,13 @@
 import { RxDocument, RxCollection } from "rxdb"
 import { TabsState } from "../../MainProvider/tabsSlice"
-import {
-  PrimarySidebarSubviews,
-  PrimarySidebarViews,
-  SecondarySidebarViews,
-} from "../../ViewState"
+import { SidebarSidebar, SidebarView } from "../../ViewState"
 
-// type TabsKey
+type NewSidebarType<S extends SidebarSidebar> = {
+  // id: string
+  isOpen: boolean
+  currentView: SidebarView<S>
+  currentPaths: Record<SidebarView<S>, string>
+}
 
 /**
  * Contains only the actual user preferences/settings, for use elsewhere
@@ -25,29 +26,13 @@ export type LocalSettings = {
    */
   tabs: TabsState
   /**
-   * Current view for the primary sidebar
+   * New combined sidebars state
    */
-  primarySidebarCurrentView: PrimarySidebarViews
-  /**
-   * Current subview for the primary sidebar
-   */
-  primarySidebarCurrentSubviews: PrimarySidebarSubviews
-  /**
-   * Current view for the secondary sidebar
-   */
-  secondarySidebarCurrentView: SecondarySidebarViews
-  /**
-   * Is primary sidebar open
-   */
-  primarySidebarIsOpen: boolean
-  /**
-   * Is secondary sidebar open
-   */
-  secondarySidebarIsOpen: boolean
-  /**
-   * Is navigator sidebar open
-   */
-  navigatorSidebarIsOpen: boolean
+  sidebars: {
+    navigator: NewSidebarType<"navigator">
+    primary: NewSidebarType<"primary">
+    secondary: NewSidebarType<"secondary">
+  }
 }
 
 export type LocalSettingsDocType = Omit<LocalSettings, "tabs"> & {

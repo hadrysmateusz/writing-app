@@ -1,6 +1,89 @@
-import React from "@udecode/plate-dnd/node_modules/@types/react"
 import { Toggleable } from "../../hooks"
 import { LocalSettings } from "../Database/types"
+
+// TODO: move this to a more logical place
+export function parseSidebarPath(path: string) {
+  const pathParts = path.split("_")
+  console.log(pathParts)
+
+  const sidebar = Object.keys(SIDEBAR_VAR).find((s) => s === pathParts[0])
+  if (!sidebar) return null
+  console.log(sidebar)
+
+  const view = Object.keys(SIDEBAR_VAR[sidebar]).find((s) => s === pathParts[1])
+  if (!view) return null
+  console.log(view)
+
+  const subview = Object.keys(SIDEBAR_VAR[sidebar][view]).find(
+    (s) => s === pathParts[2]
+  )
+  if (!subview) return null
+  console.log(subview)
+
+  console.log(SIDEBAR_VAR[sidebar][view][subview], path)
+
+  return { sidebar, view, subview, id: pathParts[3] }
+
+  // TODO: figure out how to make this check work with the last part being the id
+  // if (SIDEBAR_VAR[sidebar][view][subview] === path) {
+  //   return { sidebar, view, subview, id: pathParts[3] }
+  // }
+  // return null
+}
+
+export const SIDEBAR_VAR = Object.freeze({
+  navigator: {
+    default: {
+      all: "navigator_default_all" as "navigator_default_all",
+    },
+  },
+  primary: {
+    cloud: {
+      all: "primary_cloud_all" as "primary_cloud_all",
+      trash: "primary_cloud_trash" as "primary_cloud_trash",
+      inbox: "primary_cloud_inbox" as "primary_cloud_inbox",
+      group: "primary_cloud_group" as "primary_cloud_group",
+    },
+    local: {
+      all: "primary_local_all" as "primary_local_all",
+    },
+    tags: {
+      all: "primary_tags_all" as "primary_tags_all",
+    },
+  },
+  secondary: {
+    stats: {
+      all: "secondary_stats_all" as "secondary_stats_all",
+    },
+  },
+})
+
+console.log(parseSidebarPath("navigator_default_all"))
+console.log(parseSidebarPath("primary_cloud_all"))
+console.log(parseSidebarPath("primary_cloud_trash"))
+console.log(parseSidebarPath("primary_cloud_inbox"))
+console.log(parseSidebarPath("primary_cloud_group"))
+console.log(parseSidebarPath("primary_local_all"))
+console.log(parseSidebarPath("primary_tags_all"))
+console.log(parseSidebarPath("secondary_stats_all"))
+
+export type SidebarType = typeof SIDEBAR_VAR
+export type SidebarSidebar = keyof SidebarType
+export type SidebarView<S extends SidebarSidebar> = keyof SidebarType[S]
+export type SidebarSubview<
+  S extends SidebarSidebar,
+  V extends SidebarView<S>
+> = keyof SidebarType[S][V]
+export type SidebarPath<
+  S extends SidebarSidebar,
+  V extends SidebarView<S>,
+  SV extends SidebarSubview<S, V>
+> = SidebarType[S][V][SV]
+
+export type SidebarPaths<S extends SidebarSidebar> = Record<
+  SidebarView<S>,
+  string // TODO: consider using a template literal type like `${sidebar}_${view}_${subview}_${string}`
+>
 
 export enum Side {
   left = "left",
@@ -20,57 +103,12 @@ export interface SidebarBase extends Toggleable<undefined> {
   minWidth: number
 }
 
-export enum CloudViews {
-  ALL = "cloud_all",
-  TRASH = "cloud_trash",
-  INBOX = "cloud_inbox",
-  GROUP = "cloud_group",
-}
+// TODO: make all sidebars multiview to simplify and unify the methods and components working with them
 
-export enum LocalViews {
-  ALL = "local_all",
-}
-
-export enum SnippetsViews {
-  ALL = "snippets_all",
-  GLOBAL = "snippets_global",
-  CURRENT_DOC = "snippets_currentDoc",
-  // GROUP = "snippets_group",
-}
-
-export enum TagsViews {
-  ALL = "tags_all",
-}
-
-export enum SecondarySidebarViews {
-  stats = "stats",
-}
-
-export enum PrimarySidebarViews {
-  cloud = "cloud",
-  local = "local",
-  snippets = "snippets",
-  tags = "tags",
-}
-
-export type PrimarySidebarSubviewsFlat = CloudViews | LocalViews | SnippetsViews
-
-export type PrimarySidebarSubviews = {
-  cloud: CloudViews
-  local: LocalViews
-  snippets: SnippetsViews | string
-  tags: TagsViews
-}
-
-export type PrimarySidebarSubview<
-  Subview extends keyof PrimarySidebarSubviews
-> = PrimarySidebarSubviews[Subview]
-
-export interface MultiViewSidebar<
-  Views = PrimarySidebarViews | SecondarySidebarViews
-> extends SidebarBase {
-  currentView: string
-  switchView: (view: Views) => void
+export interface MultiViewSidebar<S extends SidebarSidebar>
+  extends SidebarBase {
+  currentView: SidebarView<S>
+  switchView: (view: SidebarView<S>) => Promise<void>
 }
 
 export interface SingleViewSidebar extends SidebarBase {}
@@ -82,19 +120,18 @@ export interface NavigatorSidebar extends SingleViewSidebar {
   >
 }
 
-export interface PrimarySidebar extends MultiViewSidebar<PrimarySidebarViews> {
-  // TODO: investigate why this doesn't simply use the PriomarySidebarSubviews enum
-  currentSubviews: {
-    cloud: string
-    local: string
-    snippets: string
-    tags: TagsViews
-  }
-  switchSubview: (view: PrimarySidebarViews, subview: string) => void
+export type SwitchPrimarySidebarViewFn = <View extends SidebarView<"primary">>(
+  view: View,
+  subview: SidebarSubview<"primary", View>,
+  id?: string // optional id used for some paths like groups
+) => Promise<void>
+
+export interface PrimarySidebar extends MultiViewSidebar<"primary"> {
+  currentSubviews: SidebarPaths<"primary">
+  switchSubview: SwitchPrimarySidebarViewFn
 }
 
-export interface SecondarySidebar
-  extends MultiViewSidebar<SecondarySidebarViews> {}
+export interface SecondarySidebar extends MultiViewSidebar<"secondary"> {}
 
 export type Sidebar = NavigatorSidebar | PrimarySidebar | SecondarySidebar
 
