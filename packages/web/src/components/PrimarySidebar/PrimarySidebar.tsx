@@ -6,11 +6,7 @@ import {
   SidebarToggleButton,
   SidebarTab,
 } from "../SidebarCommon"
-import {
-  useViewState,
-  PrimarySidebarViews,
-  MultiViewSidebar,
-} from "../ViewState"
+import { useViewState, MultiViewSidebar, SidebarView } from "../ViewState"
 import { Switch, Case } from "../Conditional"
 
 import { Cloud } from "./Cloud"
@@ -30,8 +26,8 @@ export const PrimarySidebar = memo(
             <PrimarySidebarTabs />
 
             <Switch value={primarySidebar.currentView}>
-              <Case value={PrimarySidebarViews.cloud} component={<Cloud />} />
-              <Case value={PrimarySidebarViews.tags} component={<Tags />} />
+              <Case value={"cloud"} component={<Cloud />} />
+              <Case value={"tags"} component={<Tags />} />
             </Switch>
           </>
         ) : null}
@@ -45,7 +41,7 @@ export const PrimarySidebar = memo(
 export const PrimarySidebarTabs = () => {
   const { primarySidebar, navigatorSidebar } = useViewState()
 
-  const handleClick = (view: PrimarySidebarViews) => () => {
+  const handleClick = (view: SidebarView<"primary">) => () => {
     if (primarySidebar.currentView === view && primarySidebar.isOpen) {
       primarySidebar.close()
     } else {
@@ -54,30 +50,30 @@ export const PrimarySidebarTabs = () => {
     }
   }
 
-  const isTabActive = (view: PrimarySidebarViews) => {
+  const isTabActive = (view: SidebarView<"primary">) => {
     return primarySidebar.isOpen && primarySidebar.currentView === view
   }
 
   return (
     <SidebarTabsContainer>
       <SidebarTab
-        isActive={isTabActive(PrimarySidebarViews.cloud)}
-        onClick={handleClick(PrimarySidebarViews.cloud)}
+        isActive={isTabActive("cloud")}
+        onClick={handleClick("cloud")}
         icon="cloud"
       />
       <SidebarTab
-        isActive={isTabActive(PrimarySidebarViews.local)}
-        onClick={handleClick(PrimarySidebarViews.local)}
+        isActive={isTabActive("local")}
+        onClick={handleClick("local")}
         icon="folderClosed"
       />
       {/* <SidebarTab
-        isActive={isTabActive(PrimarySidebarViews.snippets)}
-        onClick={handleClick(PrimarySidebarViews.snippets)}
+        isActive={isTabActive("snippets")}
+        onClick={handleClick("snippets")}
         icon="clipboard"
       /> */}
       <SidebarTab
-        isActive={isTabActive(PrimarySidebarViews.tags)}
-        onClick={handleClick(PrimarySidebarViews.tags)}
+        isActive={isTabActive("tags")}
+        onClick={handleClick("tags")}
         icon="tag"
       />
       {primarySidebar.isOpen ? (
@@ -96,7 +92,7 @@ export const PrimarySidebarTabs = () => {
 }
 
 export const PrimarySidebarToggle: FC<{
-  sidebar: MultiViewSidebar<PrimarySidebarViews>
+  sidebar: MultiViewSidebar<"primary">
 }> = ({ sidebar }) => {
   return (
     <SidebarToggleButton

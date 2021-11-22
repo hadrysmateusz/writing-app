@@ -4,7 +4,6 @@ import styled from "styled-components/macro"
 import { customScrollbar } from "../../../style-utils"
 
 import { GenericTreeItem, AddButton } from "../../TreeItem"
-import { CloudViews } from "../../ViewState"
 import { useModal } from "../../Modal"
 import { AccountModalContent } from "../../AccountModal"
 import { SidebarImportButton } from "../../Importer"
@@ -40,7 +39,7 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
 )
 
 const AllDocumentsSidebarItem: FC<{}> = () => {
-  const getTreeItemProps = useNavigationTreeItem(CloudViews.ALL)
+  const getTreeItemProps = useNavigationTreeItem("cloud", "all")
 
   return (
     <GenericTreeItem icon="cloud" depth={0} {...getTreeItemProps()}>
@@ -51,7 +50,7 @@ const AllDocumentsSidebarItem: FC<{}> = () => {
 }
 
 const InboxSidebarItem: FC<{}> = () => {
-  const getTreeItemProps = useNavigationTreeItem(CloudViews.INBOX)
+  const getTreeItemProps = useNavigationTreeItem("cloud", "inbox")
 
   return (
     <GenericTreeItem icon="inbox" depth={0} {...getTreeItemProps()}>
@@ -62,7 +61,7 @@ const InboxSidebarItem: FC<{}> = () => {
 }
 
 const TrashSidebarItem: FC<{}> = () => {
-  const getTreeItemProps = useNavigationTreeItem(CloudViews.TRASH)
+  const getTreeItemProps = useNavigationTreeItem("cloud", "trash")
 
   return (
     <GenericTreeItem icon="trash" depth={0} {...getTreeItemProps()}>

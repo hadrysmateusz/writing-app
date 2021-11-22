@@ -7,10 +7,12 @@ import createGroupTree, {
 
 import { useMainState } from "../../../MainProvider"
 
-export const useFindGroupAndChildGroups = (groupId: string) => {
+export const useFindGroupAndChildGroups = (groupId: string | undefined) => {
   const { groups } = useMainState()
 
   const group = useMemo(() => {
+    if (groupId === undefined) return null
+
     const groupTree = createGroupTree(groups)
     const group = findInTree(groupTree.children, groupId)
 
@@ -18,9 +20,8 @@ export const useFindGroupAndChildGroups = (groupId: string) => {
   }, [groupId, groups])
 
   const childGroups = useMemo(() => {
-    if (group === null) {
-      return null
-    }
+    if (group === null) return null
+
     return findChildGroups(group)
   }, [group])
 

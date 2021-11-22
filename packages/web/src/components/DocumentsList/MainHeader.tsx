@@ -4,7 +4,7 @@ import styled from "styled-components/macro"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import Icon from "../Icon"
 import { SortingIndex, SortingDirection, useMainState } from "../MainProvider"
-import { CloudViews, PrimarySidebarViews, useViewState } from "../ViewState"
+import { useViewState } from "../ViewState"
 
 const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
 
@@ -37,15 +37,9 @@ export const MainHeader: FunctionComponent<{
             className="MainHeader_ButtonContainer"
             onClick={() => {
               if (parentGroupId === null) {
-                primarySidebar.switchSubview(
-                  PrimarySidebarViews.cloud,
-                  CloudViews.ALL
-                )
+                primarySidebar.switchSubview("cloud", "all")
               } else {
-                primarySidebar.switchSubview(
-                  PrimarySidebarViews.cloud,
-                  parentGroupId
-                )
+                primarySidebar.switchSubview("cloud", "group", parentGroupId)
               }
             }}
             title="Go to parent collection"

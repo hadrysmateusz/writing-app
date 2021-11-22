@@ -1,5 +1,5 @@
 import React, { memo } from "react"
-import { TagsViews, useViewState } from "../ViewState"
+import { useViewState } from "../ViewState"
 import { Switch, Case } from "../Conditional"
 import { TagsView } from "./views"
 
@@ -8,7 +8,7 @@ export const Tags: React.FC = memo(() => {
 
   return (
     <Switch value={primarySidebar.currentSubviews.tags}>
-      <Case value={TagsViews.ALL} component={<TagsView />} />
+      <Case value={"all"} component={<TagsView />} />
     </Switch>
   )
 })

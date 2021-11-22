@@ -132,7 +132,7 @@ export const LocalSettingsProvider: FC = ({ children }) => {
    * @param key the key of the attribute to be modified. The key can be nested
    * by using the dot syntax, like this: nested.attribute
    *
-   * @todo this typing doesn't support nested properties
+   * @todo this typing doesn't support nested properties (use either a dotted syntax for changing nested properties or an updater function)
    */
   const updateLocalSetting = useCallback(
     async <K extends keyof LocalSettings>(

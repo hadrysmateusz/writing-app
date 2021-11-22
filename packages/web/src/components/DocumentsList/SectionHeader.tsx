@@ -6,7 +6,7 @@ import { ANIMATION_FADEIN, ellipsis } from "../../style-utils"
 import { useDocumentsAPI } from "../MainProvider"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import Icon from "../Icon"
-import { PrimarySidebarViews, useViewState } from "../ViewState"
+import { useViewState } from "../ViewState"
 
 export const SectionHeader: React.FC<{
   groupId?: string | null
@@ -39,7 +39,7 @@ export const SectionHeader: React.FC<{
           onContextMenu={handleContextMenu}
           onClick={() => {
             if (typeof groupId === "string") {
-              primarySidebar.switchSubview(PrimarySidebarViews.cloud, groupId)
+              primarySidebar.switchSubview("cloud", "group", groupId)
             }
           }}
           title="Go to collection"
