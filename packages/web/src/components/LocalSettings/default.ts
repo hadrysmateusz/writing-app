@@ -1,29 +1,36 @@
 import { LocalSettings } from "../Database"
 import { TabsState } from "../MainProvider/tabsSlice"
-import {
-  CloudViews,
-  LocalViews,
-  PrimarySidebarViews,
-  SecondarySidebarViews,
-  SnippetsViews,
-  TagsViews,
-} from "../ViewState/types" // TODO: has to be imported from /types directly to avoid a circular import
+import { SIDEBAR_VAR } from "../ViewState/types"
 
 export const defaultLocalSettings: LocalSettings = {
   expandedKeys: [],
   unsyncedDocs: [],
   tabs: tabsInit(),
-  primarySidebarCurrentView: PrimarySidebarViews.cloud,
-  primarySidebarCurrentSubviews: {
-    cloud: CloudViews.ALL,
-    local: LocalViews.ALL,
-    snippets: SnippetsViews.ALL,
-    tags: TagsViews.ALL,
+  sidebars: {
+    navigator: {
+      isOpen: true,
+      currentView: "default",
+      currentPaths: {
+        default: SIDEBAR_VAR.navigator.default.all,
+      },
+    },
+    primary: {
+      isOpen: true,
+      currentView: "cloud",
+      currentPaths: {
+        cloud: SIDEBAR_VAR.primary.cloud.all,
+        local: SIDEBAR_VAR.primary.local.all,
+        tags: SIDEBAR_VAR.primary.tags.all,
+      },
+    },
+    secondary: {
+      isOpen: true,
+      currentView: "stats",
+      currentPaths: {
+        stats: SIDEBAR_VAR.secondary.stats.all,
+      },
+    },
   },
-  secondarySidebarCurrentView: SecondarySidebarViews.stats,
-  primarySidebarIsOpen: true,
-  secondarySidebarIsOpen: true,
-  navigatorSidebarIsOpen: true,
 }
 
 export function tabsInit(): TabsState {
