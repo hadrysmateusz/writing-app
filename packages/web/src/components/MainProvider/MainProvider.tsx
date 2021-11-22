@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from "uuid"
 import mudder from "mudder"
 import isElectron from "is-electron"
 
-import { useViewState, PrimarySidebarViews, CloudViews } from "../ViewState"
+import { useViewState, parseSidebarPath } from "../ViewState"
 import { useModal } from "../Modal"
 import {
   useDatabase,
@@ -232,7 +232,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
         // TODO: that behavior should probably be replaced by a normal query for the group id (maybe with an additional cache layer) and this should eliminate the need for this timeout
         // TODO: to make it even smoother I could make it so that the switch is instant (even before the collection is created) and the sidebar waits for it to be created, this would require the sidebar to not default to all documents view on an unfound group id and for groups to be soft deleted so that if it's deleted it can go to the all documents view and maybe show a notification saying that the group you were looking for was deleted (or simply an empty state saying the same requiring the user to take another action) and if it wasn't deleted but isn't found to simply wait for it to be created (there should be a timeout of course if something went wrong and maybe even internal state that could show an error/empty state if there was an issue with creating the group)
         setTimeout(() => {
-          primarySidebar.switchSubview(PrimarySidebarViews.cloud, newGroupId)
+          primarySidebar.switchSubview("cloud", "group", newGroupId)
         }, 100)
       }
 
@@ -728,17 +728,21 @@ export const MainProvider: React.FC = memo(({ children }) => {
       }
 
       if (switchToGroup) {
-        // If current view is all documents and the document is created at the root, don't switch
-        if (
-          !(
-            primarySidebar.currentView === CloudViews.ALL &&
-            parentGroup === null
+        if (parentGroup) {
+          // If parent group was provided we switch to that group's subview
+          primarySidebar.switchSubview("cloud", "group", parentGroup)
+        } else {
+          const parsedCurrentPath = parseSidebarPath(
+            primarySidebar.currentSubviews[primarySidebar.currentView]
           )
-        ) {
-          primarySidebar.switchSubview(
-            PrimarySidebarViews.cloud,
-            parentGroup ?? CloudViews.INBOX
-          )
+          // If current view is all documents and the document is created at the root, don't switch
+          if (
+            parsedCurrentPath?.view === "cloud" &&
+            parsedCurrentPath?.subview === "all"
+          ) {
+            // Otherwise we switch to inbox
+            primarySidebar.switchSubview("cloud", "inbox")
+          }
         }
       }
 

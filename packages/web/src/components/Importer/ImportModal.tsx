@@ -4,7 +4,7 @@ import styled from "styled-components/macro"
 import { Button } from "../Button"
 import { useDocumentsAPI } from "../MainProvider"
 import { deserializeMarkdown } from "../../slate-helpers/deserialize"
-import { useViewState, PrimarySidebarViews, CloudViews } from "../ViewState"
+import { useViewState } from "../ViewState"
 import { useMainState } from "../MainProvider"
 import { CloseModalFn } from "../Modal/types"
 import {
@@ -75,7 +75,7 @@ export const ImportModalContent: React.FC<{
       openDocument(docId)
 
       // TODO: when selecting target collection for imports is implemented this should be replaced with the groupId
-      primarySidebar.switchSubview(PrimarySidebarViews.cloud, CloudViews.INBOX)
+      primarySidebar.switchSubview("cloud", "inbox")
     },
     [openDocument, primarySidebar, createDocument, targetGroup]
   )

@@ -6,11 +6,7 @@ import {
   SidebarTab,
   SidebarToggleButton,
 } from "../SidebarCommon"
-import {
-  MultiViewSidebar,
-  SecondarySidebarViews,
-  useViewState,
-} from "../ViewState"
+import { MultiViewSidebar, SidebarView, useViewState } from "../ViewState"
 import { Switch, Case } from "../Conditional"
 
 import { DashboardView } from "./views"
@@ -29,10 +25,7 @@ export const SecondarySidebar = memo(
             <SecondarySidebarTabs />
 
             <Switch value={secondarySidebar.currentView}>
-              <Case
-                value={SecondarySidebarViews.stats}
-                component={<DashboardView />}
-              />
+              <Case value={"stats"} component={<DashboardView />} />
             </Switch>
           </>
         ) : null}
@@ -46,7 +39,7 @@ export const SecondarySidebar = memo(
 export const SecondarySidebarTabs = () => {
   const { secondarySidebar } = useViewState()
 
-  const handleClick = (view: SecondarySidebarViews) => () => {
+  const handleClick = (view: SidebarView<"secondary">) => () => {
     if (secondarySidebar.currentView === view && secondarySidebar.isOpen) {
       secondarySidebar.close()
     } else {
@@ -55,15 +48,15 @@ export const SecondarySidebarTabs = () => {
     }
   }
 
-  const isTabActive = (view: SecondarySidebarViews) => {
+  const isTabActive = (view: SidebarView<"secondary">) => {
     return secondarySidebar.isOpen && secondarySidebar.currentView === view
   }
 
   return (
     <SidebarTabsContainer>
       <SidebarTab
-        isActive={isTabActive(SecondarySidebarViews.stats)}
-        onClick={handleClick(SecondarySidebarViews.stats)}
+        isActive={isTabActive("stats")}
+        onClick={handleClick("stats")}
         icon="stats"
       />
     </SidebarTabsContainer>
@@ -71,7 +64,7 @@ export const SecondarySidebarTabs = () => {
 }
 
 export const SecondarySidebarToggle: FC<{
-  sidebar: MultiViewSidebar<SecondarySidebarViews>
+  sidebar: MultiViewSidebar<"secondary">
 }> = ({ sidebar }) => {
   return (
     <SidebarToggleButton
