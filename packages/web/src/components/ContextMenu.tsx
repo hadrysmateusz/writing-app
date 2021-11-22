@@ -4,6 +4,8 @@ import React, {
   useCallback,
   useLayoutEffect,
   useEffect,
+  memo,
+  useMemo,
 } from "react"
 import styled, { css } from "styled-components/macro"
 import usePortal from "react-useportal"
@@ -16,7 +18,10 @@ type ContextMenuHookOptions = ToggleableHooks & {
   renderWhenClosed?: boolean
   toggleOnNestedDOMNodes?: boolean
   stopPropagation?: boolean
+  closeAfterClick?: boolean
 }
+
+// TODO: replace this with the new context menu
 
 // TODO: unify how context menus are opened, because some are opened on mousedown and some on click, which leads to very different behaviors, especially when opening a menu with another already open
 // TODO: prevent submenus from going-offscreen. Probably by positioning them with js like regular menus. Prevent the main menu from being closed when a submenu is open.
@@ -31,6 +36,7 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
     renderWhenClosed = false,
     toggleOnNestedDOMNodes = true,
     stopPropagation = true,
+    closeAfterClick = true,
   } = options
 
   // TODO: capture focus inside the context menu and restore it when it closes
@@ -73,7 +79,7 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
     ]
   )
 
-  const closeMenu = () => {
+  const closeMenu = useCallback(() => {
     onBeforeClose && onBeforeClose()
 
     closePortal()
@@ -83,23 +89,29 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
     setEventY(0)
 
     onAfterClose && onAfterClose()
-  }
+  }, [closePortal, onAfterClose, onBeforeClose])
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     /* Stops click events inside the context menu from propagating down the DOM tree 
     TODO: see if this can be done without using event.stopPropagation */
     event.stopPropagation()
-    /* Close the menu after a click inside
-    TODO: a way to not trigger this will probably be required for more complex menus*/
-    closeMenu()
+
+    /* Close the menu after a click inside */
+    if (closeAfterClick) {
+      closeMenu()
+    }
   }
 
   /**
    * A component returned from the hook that will render the context menu inside a portal at the correct position
    */
-  const ContextMenu: React.FC<{}> = ({ children }) => {
+  const ContextMenu: React.FC<{}> = memo(({ children }) => {
     const [x, setX] = useState(eventX)
     const [y, setY] = useState(eventY)
+
+    useEffect(() => {
+      console.log("mount")
+    }, [])
 
     useOnClickOutside(containerRef, () => {
       closeMenu()
@@ -143,7 +155,7 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
       }
     }, [x, y])
 
-    return (
+    return isOpen || renderWhenClosed ? (
       <Portal>
         <MenuContainer
           xPos={x}
@@ -154,21 +166,25 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
           {children}
         </MenuContainer>
       </Portal>
-    )
-  }
+    ) : null
+  })
 
-  const withConditionalRender = (C: React.FC): React.FC => {
-    return isOpen || renderWhenClosed
-      ? (props: React.PropsWithChildren<{}>) => <C {...props} />
-      : (_props: React.PropsWithChildren<{}>) => null
-  }
+  // const withConditionalRender = (C: React.FC): React.FC => {
+  //   return isOpen || renderWhenClosed
+  //     ? (props: React.PropsWithChildren<{}>) => <C {...props} />
+  //     : (_props: React.PropsWithChildren<{}>) => null
+  // }
 
-  return {
-    openMenu,
-    closeMenu,
-    isMenuOpen: isOpen,
-    ContextMenu: withConditionalRender(ContextMenu),
-  }
+  const returnValue = useMemo(() => {
+    return {
+      openMenu,
+      closeMenu,
+      isMenuOpen: isOpen,
+      ContextMenu: ContextMenu,
+    }
+  }, [ContextMenu, closeMenu, isOpen, openMenu])
+
+  return returnValue
 }
 
 export const ContextSubmenu: React.FC<{ text: string }> = ({
