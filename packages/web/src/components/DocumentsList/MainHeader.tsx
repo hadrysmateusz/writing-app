@@ -16,9 +16,22 @@ export const MainHeader: FunctionComponent<{
   const { primarySidebar } = useViewState()
 
   const {
+    isMenuOpen: isSortingMenuOpen,
     openMenu: openSortingMenu,
     ContextMenu: SortingContextMenu,
   } = useContextMenu()
+
+  const handleGoUpButtonClick = () => {
+    if (parentGroupId === null) {
+      primarySidebar.switchSubview("cloud", "all")
+    } else {
+      primarySidebar.switchSubview("cloud", "group", parentGroupId)
+    }
+  }
+
+  const handleOnSortingButtonClick = (e) => {
+    openSortingMenu(e)
+  }
 
   // TODO: use real documents data in MainHeader_Detail
 
@@ -35,13 +48,7 @@ export const MainHeader: FunctionComponent<{
         {parentGroupId !== undefined ? (
           <div
             className="MainHeader_ButtonContainer"
-            onClick={() => {
-              if (parentGroupId === null) {
-                primarySidebar.switchSubview("cloud", "all")
-              } else {
-                primarySidebar.switchSubview("cloud", "group", parentGroupId)
-              }
-            }}
+            onClick={handleGoUpButtonClick}
             title="Go to parent collection"
           >
             <Icon icon="arrow90DegUp" />
@@ -50,29 +57,29 @@ export const MainHeader: FunctionComponent<{
 
         <div
           className="MainHeader_ButtonContainer"
-          onClick={(e) => {
-            openSortingMenu(e)
-          }}
+          onClick={handleOnSortingButtonClick}
           title="Change sorting method"
         >
           <Icon icon="sort" />
         </div>
       </div>
 
-      <SortingContextMenu>
-        <SortingMenuItem sortingIndex="titleSlug" sortingDirection="asc">
-          {SORT_METHODS.title} A-Z
-        </SortingMenuItem>
-        <SortingMenuItem sortingIndex="titleSlug" sortingDirection="desc">
-          {SORT_METHODS.title} Z-A
-        </SortingMenuItem>
-        <SortingMenuItem sortingIndex="modifiedAt" sortingDirection="asc">
-          {SORT_METHODS.modifiedAt} (Older first)
-        </SortingMenuItem>
-        <SortingMenuItem sortingIndex="modifiedAt" sortingDirection="desc">
-          {SORT_METHODS.modifiedAt} (Newer first)
-        </SortingMenuItem>
-      </SortingContextMenu>
+      {isSortingMenuOpen ? (
+        <SortingContextMenu>
+          <SortingMenuItem sortingIndex="titleSlug" sortingDirection="asc">
+            {SORT_METHODS.title} A-Z
+          </SortingMenuItem>
+          <SortingMenuItem sortingIndex="titleSlug" sortingDirection="desc">
+            {SORT_METHODS.title} Z-A
+          </SortingMenuItem>
+          <SortingMenuItem sortingIndex="modifiedAt" sortingDirection="asc">
+            {SORT_METHODS.modifiedAt} (Older first)
+          </SortingMenuItem>
+          <SortingMenuItem sortingIndex="modifiedAt" sortingDirection="desc">
+            {SORT_METHODS.modifiedAt} (Newer first)
+          </SortingMenuItem>
+        </SortingContextMenu>
+      ) : null}
     </Wrapper>
   )
 }
