@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useCallback, useMemo } from "react"
 
 import { ReactEditor } from "slate-react"
 import isHotkey from "is-hotkey"
@@ -17,7 +17,7 @@ import { EditableProps } from "slate-react/dist/components/editable"
 // import HoveringToolbar from "../HoveringToolbar"
 // import { useUserdata } from "../Userdata"
 // import { useViewState } from "../ViewState"
-import { DocumentDoc } from "../Database"
+import { DocumentDoc, useDatabase } from "../Database"
 import { SaveDocumentFn, useMainState, useTabsState } from "../MainProvider"
 import TrashBanner from "../TrashBanner"
 import { useEditorState } from "../EditorStateProvider"
@@ -41,6 +41,7 @@ import pluginsList from "./pluginsList"
 import { deserialize } from "./serialization"
 import TitleInput from "./TitleInput"
 import { DummyEditor } from "./DummyEditor"
+import { useRxSubscription } from "../../hooks"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
@@ -60,14 +61,23 @@ const options = createPlateOptions({
  * Renders the editor if there is a document selected
  */
 export const EditorRenderer: React.FC = () => {
+  const db = useDatabase()
   const {
-    currentDocument,
-    isDocumentLoading,
+    currentDocumentId,
+    // isDocumentLoading,
     // unsyncedDocs,
   } = useMainState()
   const { /* isModified, */ saveDocument } = useEditorState()
 
   const { tabs, currentTab } = useTabsState()
+
+  // TODO: maybe make the main state provider use the rx subscription hook
+  const {
+    data: currentDocument,
+    isLoading: isDocumentLoading,
+  } = useRxSubscription(
+    db.documents.findOne().where("id").eq(currentDocumentId)
+  )
 
   // Handles rendering the editor based on tab type and loading/error states
   function renderInner() {

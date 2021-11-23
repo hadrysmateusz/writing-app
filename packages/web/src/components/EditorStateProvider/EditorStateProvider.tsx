@@ -1,16 +1,13 @@
 import React, { useCallback, useState, useMemo } from "react"
 import { isEqual } from "lodash"
 import { Descendant } from "slate"
-import {
-  usePlateEventId,
-  usePlateEditorState,
-  usePlateValue,
-} from "@udecode/plate-core"
+import { usePlateEventId, usePlateEditorRef } from "@udecode/plate-core"
 
 import { SaveDocumentFn, useMainState } from "../MainProvider"
 import { serialize } from "../Editor"
 
 import { createContext } from "../../utils"
+import { useDatabase } from "../Database"
 
 export const [EditorStateContext, useEditorState] = createContext<any>() // TODO: fix the typings when I stabilize the api
 
@@ -18,9 +15,10 @@ export const [EditorStateContext, useEditorState] = createContext<any>() // TODO
  * State provider for editor and secondary sidebar
  */
 export const EditorStateProvider: React.FC = ({ children }) => {
-  const { currentDocument } = useMainState()
-  const editor = usePlateEditorState(usePlateEventId("focus"))
-  const editorValue = usePlateValue(usePlateEventId("focus"))
+  const db = useDatabase()
+  const { currentDocumentId } = useMainState()
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
+  // const editorValue = usePlateValue(usePlateEventId("focus"))
 
   const [isModified, setIsModified] = useState(false)
 
@@ -30,16 +28,15 @@ export const EditorStateProvider: React.FC = ({ children }) => {
   const onChange = useCallback(
     async (value: Descendant[]) => {
       // TODO: I could debounced-save in here (or maybe using a setInterval)
-
       // if the content has changed, set the modified flag (skip the expensive check if it's already true)
       if (!isModified) {
-        const hasChanged = !isEqual(editorValue, value)
+        const hasChanged = !isEqual(editor?.value, value)
         if (hasChanged) {
           setIsModified(true)
         }
       }
     },
-    [editorValue, isModified]
+    [editor?.value, isModified]
   )
 
   /**
@@ -47,7 +44,12 @@ export const EditorStateProvider: React.FC = ({ children }) => {
    *
    * Works on the current document
    */
-  const saveDocument: SaveDocumentFn = useCallback(async () => {
+  const saveDocument: SaveDocumentFn = useCallback(() => {
+    console.log("saveDocument", editor, /* isModified, */ editor?.children)
+    if (!isModified) {
+      console.log("skipping save, document wasn't changed")
+      return null
+    }
     if (editor === undefined) {
       console.error("Can't save, the editor is undefined")
       return null
@@ -55,18 +57,36 @@ export const EditorStateProvider: React.FC = ({ children }) => {
 
     const nodes = editor.children as Descendant[]
 
-    if (isModified) {
-      const updatedDocument =
-        (await currentDocument?.atomicUpdate((doc) => {
+    db.documents
+      .findOne()
+      .where("id")
+      .eq(currentDocumentId)
+      .exec()
+      .then((doc) => {
+        if (!doc) {
+          return
+        }
+        doc.atomicUpdate((doc) => {
+          console.log("updating with", JSON.stringify(nodes, null, 2))
           doc.content = serialize(nodes)
           return doc
-        })) || null
+        })
+      })
 
-      setIsModified(false)
-      return updatedDocument
-    }
     return null
-  }, [currentDocument, editor, isModified])
+
+    // if (isModified) {
+    //   const updatedDocument =
+    //     (await currentDocument?.atomicUpdate((doc) => {
+    //       console.log("updating with", JSON.stringify(nodes, null, 2))
+    //       doc.content = serialize(nodes)
+    //       return doc
+    //     })) || null
+
+    //   setIsModified(false)
+    //   return updatedDocument
+    // }
+  }, [currentDocumentId, db.documents, editor, isModified])
 
   const editorState = useMemo(
     () => ({
