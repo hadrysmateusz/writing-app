@@ -338,6 +338,16 @@ const EditorComponent: React.FC<{
     [editor, openMenu, saveDocument]
   )
 
+  const handleContainerKeyDown = useCallback(
+    (e) => {
+      if (isHotkey("mod+s", e)) {
+        e.preventDefault()
+        saveDocument()
+      }
+    },
+    [saveDocument]
+  )
+
   return (
     <>
       {/* TODO: maybe use an rxdb subscription to the update event to check for deletion to display the banner (maybe keep isDeleted in local state) */}
@@ -345,14 +355,7 @@ const EditorComponent: React.FC<{
       {currentDocument.isDeleted && (
         <TrashBanner documentId={currentDocument.id} />
       )}
-      <OuterContainer
-        onKeyDown={(e) => {
-          if (isHotkey("mod+s", e)) {
-            e.preventDefault()
-            saveDocument()
-          }
-        }}
-      >
+      <OuterContainer onKeyDown={handleContainerKeyDown}>
         <InnerContainer>
           <EditableContainer>
             <Plate
