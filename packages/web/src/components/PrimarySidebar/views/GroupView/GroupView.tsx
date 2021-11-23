@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 import { formatOptional } from "../../../../utils"
@@ -22,7 +22,7 @@ import { useFindGroupAndChildGroups } from "./helpers"
 export const GroupView: React.FC = () => {
   const { primarySidebar } = useViewState()
 
-  // calculated this in ViewStateProvider along with other path properties
+  // calculate this in ViewStateProvider along with other path properties
   const groupId = useMemo(
     () => parseSidebarPath(primarySidebar.currentSubviews.cloud)?.id,
     [primarySidebar.currentSubviews.cloud]
@@ -37,19 +37,19 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
   groupId,
 }) => {
   const db = useDatabase()
-  const { primarySidebar } = useViewState()
+  // const { primarySidebar } = useViewState()
   const { sorting } = useMainState()
 
   const { group, childGroups } = useFindGroupAndChildGroups(groupId)
 
   const ok = !!group && !!childGroups
 
-  // If the group wasn't found, switch to more general sidebar view
-  useEffect(() => {
-    if (!ok) {
-      primarySidebar.switchSubview("cloud", "all")
-    }
-  }, [ok, primarySidebar])
+  // // If the group wasn't found, switch to more general sidebar view
+  // useEffect(() => {
+  //   if (!ok) {
+  //     primarySidebar.switchSubview("cloud", "all")
+  //   }
+  // }, [ok, primarySidebar])
 
   const { data: documents, isLoading } = useRxSubscription(
     createFindDocumentsInGroupQuery(db, sorting, groupId)
