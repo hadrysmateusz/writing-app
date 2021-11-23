@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from "react"
+import styled from "styled-components/macro"
 
 import { ReactEditor } from "slate-react"
 import isHotkey from "is-hotkey"
@@ -8,9 +9,10 @@ import {
   createPlateOptions,
   usePlateEditorRef,
   usePlateEventId,
-  ELEMENT_CODE_BLOCK,
-  CodeBlockElement,
   withProps,
+  ELEMENT_CODE_BLOCK,
+  ELEMENT_PARAGRAPH,
+  CodeBlockElement,
 } from "@udecode/plate"
 import { EditableProps } from "slate-react/dist/components/editable"
 
@@ -45,10 +47,17 @@ import { useRxSubscription } from "../../hooks"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
+const ParagraphElement = styled.p`
+  margin: 8px 0;
+  /* margin: 16px 0; */
+`
+
 const components = createPlateComponents({
   [ELEMENT_CODE_BLOCK]: withProps(CodeBlockElement, {
     styles: { root: { background: "var(--dark-400)" } },
   }),
+  [ELEMENT_PARAGRAPH]: ParagraphElement,
+  // [ELEMENT_BLOCKQUOTE]: withProps(BlockquoteElement, { styles: { root: {} } }),
 })
 const options = createPlateOptions({
   [ELEMENT_CODE_BLOCK]: {
