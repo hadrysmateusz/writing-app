@@ -169,20 +169,23 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
     ) : null
   })
 
-  // const withConditionalRender = (C: React.FC): React.FC => {
-  //   return isOpen || renderWhenClosed
-  //     ? (props: React.PropsWithChildren<{}>) => <C {...props} />
-  //     : (_props: React.PropsWithChildren<{}>) => null
-  // }
+  const withConditionalRender = useCallback(
+    (C: React.FC): React.FC => {
+      return isOpen || renderWhenClosed
+        ? (props: React.PropsWithChildren<{}>) => <C {...props} />
+        : (_props: React.PropsWithChildren<{}>) => null
+    },
+    [isOpen, renderWhenClosed]
+  )
 
   const returnValue = useMemo(() => {
     return {
       openMenu,
       closeMenu,
       isMenuOpen: isOpen,
-      ContextMenu: ContextMenu,
+      ContextMenu: withConditionalRender(ContextMenu),
     }
-  }, [ContextMenu, closeMenu, isOpen, openMenu])
+  }, [ContextMenu, closeMenu, isOpen, openMenu, withConditionalRender])
 
   return returnValue
 }
