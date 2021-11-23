@@ -7,6 +7,7 @@ import { TagView } from "./views/TagView"
 export const Cloud: React.FC = memo(() => {
   const { primarySidebar } = useViewState()
 
+  // TODO: probably calculate this in primarySidebar provider (also: split sidebar providers)
   const subview = useMemo(
     () => parseSidebarPath(primarySidebar.currentSubviews.cloud)?.subview,
     [primarySidebar.currentSubviews.cloud]
