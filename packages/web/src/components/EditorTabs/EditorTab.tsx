@@ -1,12 +1,15 @@
 import styled from "styled-components/macro"
-import { useState, useEffect, FC, useMemo } from "react"
+import React, { useState, useEffect, FC, useMemo } from "react"
 
-import { useDatabase } from "../Database"
+import { DocumentDoc, useDatabase } from "../Database"
 import { useGroupsAPI, useMainState, useTabsState } from "../MainProvider"
 import Icon from "../Icon"
 
 import { formatOptional } from "../../utils"
 import { ellipsis } from "../../style-utils"
+import { useRxSubscription } from "../../hooks"
+import { useDocumentContextMenu } from "../DocumentContextMenu"
+import { EditableText } from "../RenamingInput"
 
 const initialTabData = { title: "", group: null }
 
@@ -14,84 +17,164 @@ const EditorTab: FC<{ tabId: string; isOnlyTab?: boolean }> = ({
   tabId,
   isOnlyTab = false,
 }) => {
-  const db = useDatabase()
   const tabsState = useTabsState()
-  const { findGroupById } = useGroupsAPI()
   const { closeTab, tabsDispatch } = useMainState()
 
   const isActive = tabsState.currentTab === tabId
   const tab = useMemo(() => tabsState.tabs[tabId], [tabId, tabsState.tabs])
 
-  const [tabData, setTabData] = useState<{
-    title: string
-    group: string | null
-  }>(initialTabData)
-
-  useEffect(() => {
-    if (tab.tabType === "cloudNew") {
-      setTabData({ title: "Untitled", group: null })
-      return undefined
-    }
-    if (tab.tabType === "cloudDocument") {
-      const sub = db.documents.findOne(tab.documentId).$.subscribe((doc) => {
-        // Document wasn't found (tab probably has an invalid id, so we close it)
-        if (!doc) {
-          closeTab(tab.tabId)
-          // TODO: handle this more gracefully
-          // throw new Error("Document not found")
-          return undefined
-        }
-
-        const title = formatOptional(doc?.title, "Untitled")
-
-        // Document has no parent group (is at root)
-        if (!doc?.parentGroup) {
-          setTabData({
-            title: title,
-            group: "",
-          })
-          return undefined
-        }
-        // Document has a parent group, so we find its name
-        else {
-          findGroupById(doc.parentGroup).then((group) => {
-            setTabData({
-              title: title,
-              group: group.name,
-            })
-          })
-          return undefined
-        }
-      })
-      return () => sub.unsubscribe()
-    }
-    return undefined
-  }, [closeTab, db.documents, findGroupById, tab])
-
-  const handleSwitchTab = (_e) => {
+  const handleSwitchTab = (_e: React.MouseEvent) => {
     if (isActive) {
       return
     }
     tabsDispatch({ type: "switch-tab", tabId })
   }
 
-  const handleCloseTab = (e) => {
+  const handleCloseTab = (e: React.MouseEvent) => {
     e.stopPropagation()
-    closeTab(tabId)
+    closeTab(tab.tabId)
   }
 
+  const renderTab = () => {
+    switch (tab.tabType) {
+      case "cloudDocument": {
+        return (
+          <CloudDocumentEditorTab
+            tabId={tab.tabId}
+            documentId={tab.documentId}
+            isActive={isActive}
+            isOnlyTab={isOnlyTab}
+            handleSwitchTab={handleSwitchTab}
+            handleCloseTab={handleCloseTab}
+          />
+        )
+      }
+      case "cloudNew": {
+        return (
+          <CloudNewEditorTab
+            isActive={isActive}
+            isOnlyTab={isOnlyTab}
+            handleSwitchTab={handleSwitchTab}
+            handleCloseTab={handleCloseTab}
+          />
+        )
+      }
+    }
+  }
+
+  return renderTab()
+}
+
+const CloudDocumentEditorTab: React.FC<{
+  tabId: string
+  documentId: string
+  isActive: boolean
+  isOnlyTab: boolean
+  handleSwitchTab: (e: React.MouseEvent) => void
+  handleCloseTab: (e: React.MouseEvent) => void
+}> = ({ tabId, documentId, ...rest }) => {
+  const db = useDatabase()
+  const { closeTab } = useMainState()
+
+  const { data: document, isLoading: isDocumentLoading } = useRxSubscription(
+    db.documents.findOne(documentId)
+  )
+
+  useEffect(() => {
+    // Document wasn't found (tab probably has an invalid id, so we close it)
+    if (!document && !isDocumentLoading) {
+      closeTab(tabId)
+      // TODO: handle this more gracefully
+      // throw new Error("Document not found")
+    }
+  }, [closeTab, document, isDocumentLoading, tabId])
+
+  return !!document ? (
+    <CloudDocumentEditorTabWithFoundDocument document={document} {...rest} />
+  ) : null
+}
+
+const CloudDocumentEditorTabWithFoundDocument: React.FC<{
+  document: DocumentDoc
+  isActive: boolean
+  isOnlyTab: boolean
+  handleSwitchTab: (e: React.MouseEvent) => void
+  handleCloseTab: (e: React.MouseEvent) => void
+}> = ({ document, isActive, isOnlyTab, handleSwitchTab, handleCloseTab }) => {
+  const { findGroupById } = useGroupsAPI()
+
+  const [tabData, setTabData] = useState<{
+    title: string
+    group: string | null
+  }>(initialTabData)
+
+  const {
+    isMenuOpen,
+    DocumentContextMenu,
+    getEditableProps,
+    getContainerProps,
+  } = useDocumentContextMenu(document)
+
+  useEffect(() => {
+    const title = formatOptional(document.title, "Untitled")
+
+    // Document has no parent group (is at root)
+    if (!document?.parentGroup) {
+      setTabData({
+        title: title,
+        group: "",
+      })
+    } else {
+      // Document has a parent group, so we find its name
+      findGroupById(document.parentGroup).then((group) => {
+        setTabData({
+          title: title,
+          group: group.name,
+        })
+      })
+    }
+  }, [document.parentGroup, document.title, findGroupById])
+
   return (
-    <EditorTabContainer isActive={isActive} onClick={handleSwitchTab}>
-      <div className="tab-title">{tabData.title}</div>
+    <EditorTabContainer
+      isActive={isActive}
+      onClick={handleSwitchTab}
+      {...getContainerProps()}
+    >
+      <div className="tab-title">
+        <EditableText {...getEditableProps()}>{tabData.title}</EditableText>
+      </div>
       {tabData.group ? <div className="tab-group">{tabData.group}</div> : null}
-      {/* TODO: not sure if not showing the close button is the best solution but it's better than nothing (I could remove this when/if I add different tab types and the placeholder tab type so that a new document isn't created every time, even when nothing is written in the new tab) */}
-      {!isOnlyTab ? (
-        <div className="tab-close-button" onClick={handleCloseTab}>
-          <Icon icon="close" />
-        </div>
-      ) : null}
+      <TabCloseButton isOnlyTab={isOnlyTab} handleCloseTab={handleCloseTab} />
+      {isMenuOpen && <DocumentContextMenu />}
     </EditorTabContainer>
   )
+}
+
+const CloudNewEditorTab: React.FC<{
+  isActive: boolean
+  isOnlyTab: boolean
+  handleSwitchTab: (e: React.MouseEvent) => void
+  handleCloseTab: (e: React.MouseEvent) => void
+}> = ({ isActive, isOnlyTab, handleSwitchTab, handleCloseTab }) => {
+  return (
+    <EditorTabContainer isActive={isActive} onClick={handleSwitchTab}>
+      <div className="tab-title">Untitled</div>
+      <TabCloseButton isOnlyTab={isOnlyTab} handleCloseTab={handleCloseTab} />
+    </EditorTabContainer>
+  )
+}
+
+const TabCloseButton: React.FC<{
+  isOnlyTab: boolean
+  handleCloseTab: (e: React.MouseEvent) => void
+}> = ({ isOnlyTab, handleCloseTab }) => {
+  /* TODO: not sure if not showing the close button is the best solution but it's better than nothing (I could remove this when/if I add different tab types and the placeholder tab type so that a new document isn't created every time, even when nothing is written in the new tab) */
+  return !isOnlyTab ? (
+    <div className="tab-close-button" onClick={handleCloseTab}>
+      <Icon icon="close" />
+    </div>
+  ) : null
 }
 
 const EditorTabContainer = styled.div<{ isActive?: boolean }>`
