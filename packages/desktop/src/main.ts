@@ -1,4 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from "electron"
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+} from "electron-devtools-installer"
 import fs from "fs-extra"
 import path from "path"
 import os from "os"
@@ -31,12 +34,12 @@ const filters = {
 }
 
 async function createWindow() {
-  // if (IS_DEV) {
-  //   // TODO: switch to the new way of loading extensions https://www.electronjs.org/docs/api/extensions
-  //   BrowserWindow.addDevToolsExtension(
-  //     "C:\\Users\\ja\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\4.8.2_0"
-  //   )
-  // }
+  // Load react devtools extension
+  if (IS_DEV) {
+    installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log("An error occurred: ", err))
+  }
 
   // Create the browser window.
   const win = new BrowserWindow({
