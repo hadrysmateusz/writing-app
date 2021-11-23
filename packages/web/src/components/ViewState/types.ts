@@ -43,6 +43,7 @@ export const SIDEBAR_VAR = Object.freeze({
       trash: "primary_cloud_trash" as "primary_cloud_trash",
       inbox: "primary_cloud_inbox" as "primary_cloud_inbox",
       group: "primary_cloud_group" as "primary_cloud_group",
+      tag: "primary_cloud_tag" as "primary_cloud_tag",
     },
     local: {
       all: "primary_local_all" as "primary_local_all",

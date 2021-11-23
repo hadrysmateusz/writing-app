@@ -2,6 +2,7 @@ import React, { memo, useMemo } from "react"
 import { parseSidebarPath, useViewState } from "../ViewState"
 import { Switch, Case } from "../Conditional"
 import { AllDocumentsView, InboxView, TrashView, GroupView } from "./views"
+import { TagView } from "./views/TagView"
 
 export const Cloud: React.FC = memo(() => {
   const { primarySidebar } = useViewState()
@@ -21,6 +22,7 @@ export const Cloud: React.FC = memo(() => {
       <Case value={"inbox"} component={<InboxView />} />
       <Case value={"trash"} component={<TrashView />} />
       <Case value={"group"} component={<GroupView />} />
+      <Case value={"tag"} component={<TagView />} />
       <Case default>
         <div>Invalid path</div>
       </Case>
