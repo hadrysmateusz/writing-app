@@ -15,10 +15,10 @@ const DocumentTreeItem: React.FC<{
   const { openDocument } = useMainState()
 
   const {
-    openMenu,
     isMenuOpen,
     DocumentContextMenu,
     getEditableProps,
+    getContainerProps,
   } = useDocumentContextMenu(document)
 
   // TODO: consider extracting the specific document renaming logic into another hook
@@ -31,18 +31,13 @@ const DocumentTreeItem: React.FC<{
     openDocument(document.id)
   }, [document.id, openDocument])
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation()
-    openMenu(event)
-  }
-
   return (
     <>
       <GenericTreeItem
         depth={depth}
-        onContextMenu={handleContextMenu}
         onClick={handleClick}
         icon={icon}
+        {...getContainerProps()}
       >
         <EditableText {...getEditableProps()}>{title}</EditableText>
       </GenericTreeItem>
