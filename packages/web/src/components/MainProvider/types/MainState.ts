@@ -25,7 +25,7 @@ export type ChangeSortingFn = (
   direction: SortingDirection
 ) => void
 
-export type SaveDocumentFn = () => Promise<DocumentDocType | null> // TODO: move
+export type SaveDocumentFn = () => DocumentDocType | null
 
 export type OpenDocumentFn = (
   documentId: string,
