@@ -115,13 +115,6 @@ const Keywords = () => {
 
   return (
     <TagsContainer isPopupOpen={isOpen}>
-      {currentDocument !== null
-        ? tagsOnDoc.map((tag) => (
-            <TagSmall key={tag.id} tagId={tag.id}>
-              {tag.name}
-            </TagSmall>
-          ))
-        : null}
       {isReady ? (
         <AddTagButton
           onClick={(e) => {
@@ -131,6 +124,13 @@ const Keywords = () => {
           {tagsOnDoc.length > 0 ? "+" : "+ Add tag"}
         </AddTagButton>
       ) : null}
+      {currentDocument !== null
+        ? tagsOnDoc.map((tag) => (
+            <TagSmall key={tag.id} tagId={tag.id}>
+              {tag.name}
+            </TagSmall>
+          ))
+        : null}
       <div className="Tags_Popup" ref={containerRef}>
         <Autocomplete
           ref={autocompleteInputRef}
@@ -385,6 +385,7 @@ const TagsContainer = styled.div<{ isPopupOpen: boolean }>`
 
 const TagSmallStyled = styled.div`
   cursor: pointer;
+  user-select: none;
 
   padding: 3px 6px;
   border: 1px solid;
