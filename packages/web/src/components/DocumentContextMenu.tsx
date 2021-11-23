@@ -70,6 +70,18 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     [document.id, moveDocumentToGroup]
   )
 
+  const handleContextMenu = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.stopPropagation()
+      openMenu(event)
+    },
+    [openMenu]
+  )
+
+  const getContainerProps = useCallback(() => {
+    return { onContextMenu: handleContextMenu }
+  }, [handleContextMenu])
+
   // const isCurrent = useMemo(() => {
   //   if (currentDocumentId === null) return false
   //   return document.id === currentDocumentId
@@ -138,6 +150,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     openMenu,
     closeMenu,
     getEditableProps,
+    getContainerProps,
   }
 }
 
