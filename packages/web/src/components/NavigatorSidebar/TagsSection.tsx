@@ -6,6 +6,7 @@ import { GenericTreeItem } from "../TreeItem"
 import { EditableText, useEditableText } from "../RenamingInput"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import { useTagsAPI } from "../MainProvider/context"
+import { useViewState } from "../ViewState"
 
 /* The number of tags displayed without toggling */
 const LIMIT_TAGS = 4
@@ -47,6 +48,7 @@ export const TagsSection: React.FC = () => {
 
 const TagTreeItem: React.FC<{ tag: TagDoc }> = ({ tag }) => {
   const { actuallyPermanentlyDeleteTag, renameTag } = useTagsAPI()
+  const { primarySidebar } = useViewState()
 
   const { openMenu, closeMenu, ContextMenu } = useContextMenu()
 
@@ -73,13 +75,17 @@ const TagTreeItem: React.FC<{ tag: TagDoc }> = ({ tag }) => {
     }
   }
 
+  const handleClick = () => {
+    primarySidebar.switchSubview("cloud", "tag", tag.id)
+  }
+
   return (
     <>
       <GenericTreeItem
         key={tag.id}
         depth={0}
         onContextMenu={openMenu}
-        // onClick={handleClick}
+        onClick={handleClick}
         // isActive={isActive}
         icon="tag"
       >
