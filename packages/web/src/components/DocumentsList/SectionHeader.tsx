@@ -6,14 +6,14 @@ import { ANIMATION_FADEIN, ellipsis } from "../../style-utils"
 import { useDocumentsAPI } from "../MainProvider"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import Icon from "../Icon"
-import { useViewState } from "../ViewState"
+import { usePrimarySidebar } from "../ViewState"
 
 export const SectionHeader: React.FC<{
   groupId?: string | null
   onToggle: () => void
   isOpen: boolean
 }> = ({ groupId, onToggle, isOpen, children }) => {
-  const { primarySidebar } = useViewState()
+  const { switchSubview } = usePrimarySidebar()
   const { createDocument } = useDocumentsAPI()
 
   const { openMenu, closeMenu, ContextMenu } = useContextMenu()
@@ -31,26 +31,30 @@ export const SectionHeader: React.FC<{
     openMenu(e)
   }
 
+  const handleClick = () => {
+    if (typeof groupId === "string") {
+      switchSubview("cloud", "group", groupId)
+    }
+  }
+
+  const handleToggleClick = () => {
+    onToggle()
+  }
+
   return (
     <>
       <SectionHeaderContainer isOpen={isOpen}>
         <div
           className="SectionHeader_Name"
           onContextMenu={handleContextMenu}
-          onClick={() => {
-            if (typeof groupId === "string") {
-              primarySidebar.switchSubview("cloud", "group", groupId)
-            }
-          }}
+          onClick={handleClick}
           title="Go to collection"
         >
           {children}
         </div>
         <div
           className="SectionHeader_Toggle"
-          onClick={() => {
-            onToggle()
-          }}
+          onClick={handleToggleClick}
           title={`${isOpen ? "Collapse" : "Expand"} collection`}
         >
           <Icon icon="chevronDown" />

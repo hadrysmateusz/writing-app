@@ -6,7 +6,11 @@ import {
   SidebarTab,
   SidebarToggleButton,
 } from "../SidebarCommon"
-import { MultiViewSidebar, SidebarView, useViewState } from "../ViewState"
+import {
+  MultiViewSidebar,
+  SidebarView,
+  useSecondarySidebar,
+} from "../ViewState"
 import { Switch, Case } from "../Conditional"
 
 import { DashboardView } from "./views"
@@ -16,7 +20,7 @@ import { DashboardView } from "./views"
  */
 export const SecondarySidebar = memo(
   forwardRef<HTMLDivElement, {}>((_props, ref) => {
-    const { secondarySidebar } = useViewState()
+    const secondarySidebar = useSecondarySidebar()
 
     return (
       <SidebarContainer ref={ref} collapsed={!secondarySidebar.isOpen}>
@@ -37,7 +41,7 @@ export const SecondarySidebar = memo(
 )
 
 export const SecondarySidebarTabs = () => {
-  const { secondarySidebar } = useViewState()
+  const secondarySidebar = useSecondarySidebar()
 
   const handleClick = (view: SidebarView<"secondary">) => () => {
     if (secondarySidebar.currentView === view && secondarySidebar.isOpen) {

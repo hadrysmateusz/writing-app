@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useMemo, useCallback, useState, useRef, memo } from "react"
 import styled, { css } from "styled-components/macro"
 import { throttle } from "lodash"
@@ -14,7 +15,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "../ContextMenu"
-import { useViewState } from "../ViewState"
+import { useNavigatorSidebar, usePrimarySidebar } from "../ViewState"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { GroupsList } from "../GroupsList"
@@ -44,20 +45,20 @@ const GroupTreeItem: React.FC<{
   const { openMenu, closeMenu, ContextMenu } = useContextMenu()
   const { createDocument } = useDocumentsAPI()
   const { renameGroup, removeGroup, moveGroup } = useGroupsAPI()
-  const { primarySidebar } = useViewState()
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
   const [hoverState, setHoverState] = useState<HoverState>(HoverState.outside)
   const droppableRef = useRef<HTMLDivElement | null>(null)
-  const { navigatorSidebar } = useViewState()
   const { updateLocalSetting } = useLocalSettings()
+  const { switchSubview, currentSubviews } = usePrimarySidebar()
+  const { expandedKeys, setExpandedKeys } = useNavigatorSidebar()
 
-  const isExpanded = useMemo(() => {
-    return navigatorSidebar.expandedKeys.includes(group.id)
-  }, [group.id, navigatorSidebar.expandedKeys])
+  const isExpanded = expandedKeys.includes(group.id)
+  const isEmpty = group.children.length === 0
+  const groupName = formatOptional(group.name, "Unnamed Collection")
 
   const setIsExpanded = useCallback(
     (value: boolean) => {
-      let oldExpandedKeys = navigatorSidebar.expandedKeys
+      let oldExpandedKeys = expandedKeys
       let newExpandedKeys: LocalSettings["expandedKeys"]
 
       if (value === true) {
@@ -72,15 +73,11 @@ const GroupTreeItem: React.FC<{
       }
 
       // TODO: merge updating local setting into the setExpandedKeys function
-      navigatorSidebar.setExpandedKeys(newExpandedKeys)
+      setExpandedKeys(newExpandedKeys)
       updateLocalSetting("expandedKeys", newExpandedKeys)
     },
-    [group.id, isExpanded, navigatorSidebar, updateLocalSetting]
+    [expandedKeys, group.id, isExpanded, setExpandedKeys, updateLocalSetting]
   )
-
-  const isEmpty = useMemo(() => {
-    return group.children.length === 0
-  }, [group.children.length])
 
   const { startRenaming, getProps, isRenaming } = useEditableText(
     formatOptional(group.name, ""),
@@ -108,15 +105,10 @@ const GroupTreeItem: React.FC<{
   }, [group.id, removeGroup])
 
   const handleClick = useCallback(() => {
-    primarySidebar.switchSubview("cloud", "group", group.id)
-  }, [group.id, primarySidebar])
+    switchSubview("cloud", "group", group.id)
+  }, [group.id])
 
-  const groupName = useMemo(
-    () => formatOptional(group.name, "Unnamed Collection"),
-    [group.name]
-  )
-
-  const isActive = primarySidebar.currentSubviews.cloud === group.id
+  const isActive = currentSubviews.cloud === group.id
   const icon = isExpanded
     ? "folderOpen"
     : isEmpty

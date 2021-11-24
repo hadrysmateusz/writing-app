@@ -6,7 +6,13 @@ import {
   SidebarToggleButton,
   SidebarTab,
 } from "../SidebarCommon"
-import { useViewState, MultiViewSidebar, SidebarView } from "../ViewState"
+import {
+  useViewState,
+  MultiViewSidebar,
+  SidebarView,
+  usePrimarySidebar,
+  useNavigatorSidebar,
+} from "../ViewState"
 import { Switch, Case } from "../Conditional"
 
 import { Cloud } from "./Cloud"
@@ -17,7 +23,7 @@ import { Tags } from "./Tags"
  */
 export const PrimarySidebar = memo(
   forwardRef<HTMLDivElement, {}>((_props, ref) => {
-    const { primarySidebar } = useViewState()
+    const primarySidebar = usePrimarySidebar()
 
     return (
       <SidebarContainer ref={ref} collapsed={!primarySidebar.isOpen}>
@@ -39,7 +45,8 @@ export const PrimarySidebar = memo(
 )
 
 export const PrimarySidebarTabs = () => {
-  const { primarySidebar, navigatorSidebar } = useViewState()
+  const primarySidebar = usePrimarySidebar()
+  const navigatorSidebar = useNavigatorSidebar()
 
   const handleClick = (view: SidebarView<"primary">) => () => {
     if (primarySidebar.currentView === view && primarySidebar.isOpen) {

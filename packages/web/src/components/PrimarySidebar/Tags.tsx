@@ -1,15 +1,15 @@
 import React, { memo, useMemo } from "react"
-import { parseSidebarPath, useViewState } from "../ViewState"
+import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 import { Switch, Case } from "../Conditional"
 import { TagsView } from "./views"
 
 export const Tags: React.FC = memo(() => {
-  const { primarySidebar } = useViewState()
+  const { currentSubviews } = usePrimarySidebar()
 
-  // TODO: probably calculate this in primarySidebar provider (also: split sidebar providers)
+  // TODO: probably calculate this in primarySidebar provider
   const subview = useMemo(
-    () => parseSidebarPath(primarySidebar.currentSubviews.tags)?.subview,
-    [primarySidebar.currentSubviews.tags]
+    () => parseSidebarPath(currentSubviews.tags)?.subview,
+    [currentSubviews.tags]
   )
 
   return subview ? (

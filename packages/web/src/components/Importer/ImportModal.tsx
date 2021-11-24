@@ -4,7 +4,7 @@ import styled from "styled-components/macro"
 import { Button } from "../Button"
 import { useDocumentsAPI } from "../MainProvider"
 import { deserializeMarkdown } from "../../slate-helpers/deserialize"
-import { useViewState } from "../ViewState"
+import { usePrimarySidebar } from "../ViewState"
 import { useMainState } from "../MainProvider"
 import { CloseModalFn } from "../Modal/types"
 import {
@@ -21,11 +21,12 @@ export const ImportModalContent: React.FC<{
   close: CloseModalFn<undefined>
 }> = ({ close }) => {
   const { createDocument } = useDocumentsAPI()
-  const { primarySidebar } = useViewState()
+  const { switchSubview, currentSubviews } = usePrimarySidebar()
+
   const { openDocument, groups } = useMainState()
 
   const [targetGroup, setTargetGroup] = useState(() => {
-    const subview = primarySidebar.currentSubviews.cloud
+    const subview = currentSubviews.cloud
     if (groups.map((group) => group.id).includes(subview)) {
       return subview
     } else {
@@ -75,9 +76,9 @@ export const ImportModalContent: React.FC<{
       openDocument(docId)
 
       // TODO: when selecting target collection for imports is implemented this should be replaced with the groupId
-      primarySidebar.switchSubview("cloud", "inbox")
+      switchSubview("cloud", "inbox")
     },
-    [openDocument, primarySidebar, createDocument, targetGroup]
+    [createDocument, openDocument, switchSubview, targetGroup]
   )
 
   // TODO: figure out why importing takes such an insanely long time
@@ -107,6 +108,11 @@ export const ImportModalContent: React.FC<{
 
   const { toggle, isOpen } = useToggleable(false)
 
+  const groupName = formatOptional(
+    groups.find((group) => group.id === targetGroup)?.name,
+    "Inbox"
+  )
+
   // TODO: add a selector for the target collection
   return (
     <ModalContainer>
@@ -118,10 +124,7 @@ export const ImportModalContent: React.FC<{
             toggle()
           }}
         >
-          {formatOptional(
-            groups.find((group) => group.id === targetGroup)?.name,
-            "Inbox"
-          )}
+          {groupName}
           <Icon icon="caretDown" />
           {isOpen ? (
             <DropdownContent>

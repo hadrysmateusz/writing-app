@@ -1,16 +1,16 @@
 import React, { memo, useMemo } from "react"
-import { parseSidebarPath, useViewState } from "../ViewState"
+import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 import { Switch, Case } from "../Conditional"
 import { AllDocumentsView, InboxView, TrashView, GroupView } from "./views"
 import { TagView } from "./views/TagView"
 
 export const Cloud: React.FC = memo(() => {
-  const { primarySidebar } = useViewState()
+  const { currentSubviews } = usePrimarySidebar()
 
   // TODO: probably calculate this in primarySidebar provider (also: split sidebar providers)
   const subview = useMemo(
-    () => parseSidebarPath(primarySidebar.currentSubviews.cloud)?.subview,
-    [primarySidebar.currentSubviews.cloud]
+    () => parseSidebarPath(currentSubviews.cloud)?.subview,
+    [currentSubviews.cloud]
   )
   // console.log(primarySidebar)
   // console.log(primarySidebar.currentSubviews.cloud)

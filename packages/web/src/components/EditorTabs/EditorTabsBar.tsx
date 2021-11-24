@@ -4,7 +4,7 @@ import styled from "styled-components/macro"
 import { useDocumentsAPI, useMainState, useTabsState } from "../MainProvider"
 import { PrimarySidebarTabs } from "../PrimarySidebar"
 import { SecondarySidebarTabs } from "../SecondarySidebar"
-import { useViewState } from "../ViewState"
+import { usePrimarySidebar, useSecondarySidebar } from "../ViewState"
 
 import EditorTab from "./EditorTab"
 import EditorTabAdd from "./EditorTabAdd"
@@ -13,7 +13,8 @@ const EditorTabsBar: FC = () => {
   const { openDocument } = useMainState()
   const tabsState = useTabsState()
   const { createDocument } = useDocumentsAPI()
-  const { primarySidebar, secondarySidebar } = useViewState()
+  const { isOpen: isPrimarySidebarOpen } = usePrimarySidebar()
+  const { isOpen: isSecondarySidebarOpen } = useSecondarySidebar()
 
   const handleDoubleClick = async (e) => {
     if (e.target === e.currentTarget) {
@@ -29,15 +30,18 @@ const EditorTabsBar: FC = () => {
 
   return (
     <EditorTabsContainer>
-      {!primarySidebar.isOpen ? <PrimarySidebarTabs /> : null}
+      {!isPrimarySidebarOpen ? <PrimarySidebarTabs /> : null}
       <EditorTabsInnerContainer>
         {Object.keys(tabsState.tabs).map((tabId) => (
           <EditorTab key={tabId} tabId={tabId} isOnlyTab={onlyHasOneTab} />
         ))}
-        <EditorTabAdd />
-        <EditorTabsFiller onDoubleClick={handleDoubleClick} />
+        <EditorTabAdd key={"tab-add-button"} />
+        <EditorTabsFiller
+          onDoubleClick={handleDoubleClick}
+          key={"tabs-filler"}
+        />
       </EditorTabsInnerContainer>
-      {!secondarySidebar.isOpen ? <SecondarySidebarTabs /> : null}
+      {!isSecondarySidebarOpen ? <SecondarySidebarTabs /> : null}
     </EditorTabsContainer>
   )
 }

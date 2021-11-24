@@ -9,17 +9,16 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../SidebarCommon"
-import { parseSidebarPath, useViewState } from "../../ViewState"
+import { parseSidebarPath, usePrimarySidebar } from "../../ViewState"
 
 import { NewButton } from "../NewButton"
 
 export const TagView: React.FC = () => {
-  const { primarySidebar } = useViewState()
+  const { currentSubviews } = usePrimarySidebar()
 
-  const tagId = useMemo(
-    () => parseSidebarPath(primarySidebar.currentSubviews.cloud)?.id,
-    [primarySidebar.currentSubviews.cloud]
-  )
+  const tagId = useMemo(() => parseSidebarPath(currentSubviews.cloud)?.id, [
+    currentSubviews.cloud,
+  ])
 
   return tagId ? <TagViewWithFoundTagId tagId={tagId} /> : null
 }

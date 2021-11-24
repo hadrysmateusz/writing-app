@@ -10,7 +10,7 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
-import { parseSidebarPath, useViewState } from "../../../ViewState"
+import { parseSidebarPath, usePrimarySidebar } from "../../../ViewState"
 
 import { NewButton } from "../../NewButton"
 
@@ -20,13 +20,12 @@ import { createFindDocumentsInGroupQuery } from "../queries"
 import { useFindGroupAndChildGroups } from "./helpers"
 
 export const GroupView: React.FC = () => {
-  const { primarySidebar } = useViewState()
+  const { currentSubviews } = usePrimarySidebar()
 
   // calculate this in ViewStateProvider along with other path properties
-  const groupId = useMemo(
-    () => parseSidebarPath(primarySidebar.currentSubviews.cloud)?.id,
-    [primarySidebar.currentSubviews.cloud]
-  )
+  const groupId = useMemo(() => parseSidebarPath(currentSubviews.cloud)?.id, [
+    currentSubviews.cloud,
+  ])
 
   console.log("groupId", groupId)
 

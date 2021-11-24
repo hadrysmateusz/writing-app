@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from "uuid"
 import mudder from "mudder"
 import isElectron from "is-electron"
 
-import { useViewState, parseSidebarPath } from "../ViewState"
+import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 import { useModal } from "../Modal"
 import {
   useDatabase,
@@ -109,7 +109,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
     getLocalSetting,
     updateLocalSetting,
   } = useLocalSettings()
-  const { primarySidebar } = useViewState()
+  const primarySidebar = usePrimarySidebar()
   // const syncState = useSyncState()
 
   // TODO: remove the central groups list and replace with querying the local database where needed

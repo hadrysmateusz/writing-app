@@ -4,7 +4,7 @@ import styled from "styled-components/macro"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import Icon from "../Icon"
 import { SortingIndex, SortingDirection, useMainState } from "../MainProvider"
-import { useViewState } from "../ViewState"
+import { usePrimarySidebar } from "../ViewState"
 
 const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
 
@@ -13,7 +13,7 @@ export const MainHeader: FunctionComponent<{
   parentGroupId?: string | null
   numSubgroups?: number
 }> = ({ title, parentGroupId, numSubgroups }) => {
-  const { primarySidebar } = useViewState()
+  const { switchSubview } = usePrimarySidebar()
 
   const {
     isMenuOpen: isSortingMenuOpen,
@@ -23,9 +23,9 @@ export const MainHeader: FunctionComponent<{
 
   const handleGoUpButtonClick = () => {
     if (parentGroupId === null) {
-      primarySidebar.switchSubview("cloud", "all")
+      switchSubview("cloud", "all")
     } else {
-      primarySidebar.switchSubview("cloud", "group", parentGroupId)
+      switchSubview("cloud", "group", parentGroupId)
     }
   }
 

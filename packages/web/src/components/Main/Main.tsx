@@ -5,7 +5,11 @@ import Split from "react-split-grid"
 import { SecondarySidebar } from "../SecondarySidebar"
 import { NavigatorSidebar } from "../NavigatorSidebar"
 import { PrimarySidebar } from "../PrimarySidebar"
-import { useViewState } from "../ViewState"
+import {
+  useNavigatorSidebar,
+  usePrimarySidebar,
+  useSecondarySidebar,
+} from "../ViewState"
 import { useSidebar } from "../SidebarCommon"
 import { EditorStateProvider } from "../EditorStateProvider"
 
@@ -19,7 +23,7 @@ import { EditorRenderer } from "../Editor/Editor"
  * Renders the editor and secondary sidebar in split panes
  */
 const EditorAndSecondarySidebar: React.FC = () => {
-  const { secondarySidebar } = useViewState()
+  const secondarySidebar = useSecondarySidebar()
   const { getSplitProps, ref, width, isDragging } = useSidebar(secondarySidebar)
 
   return (
@@ -46,7 +50,7 @@ const EditorAndSecondarySidebar: React.FC = () => {
  * Renders the primary sidebar and the (editor + secondary sidebar) in split panes
  */
 const InnerSidebarsAndEditor: React.FC = () => {
-  const { primarySidebar } = useViewState()
+  const primarySidebar = usePrimarySidebar()
   const { getSplitProps, ref, width, isDragging } = useSidebar(primarySidebar)
 
   return (
@@ -71,7 +75,7 @@ const InnerSidebarsAndEditor: React.FC = () => {
  * Renders the navigator sidebar and everything else in split panes
  */
 const Main: React.FC = () => {
-  const { navigatorSidebar } = useViewState()
+  const navigatorSidebar = useNavigatorSidebar()
   const { getSplitProps, ref, width, isDragging } = useSidebar(navigatorSidebar)
 
   return (
