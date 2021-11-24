@@ -135,9 +135,3 @@ export interface PrimarySidebar extends MultiViewSidebar<"primary"> {
 export interface SecondarySidebar extends MultiViewSidebar<"secondary"> {}
 
 export type Sidebar = NavigatorSidebar | PrimarySidebar | SecondarySidebar
-
-export type ViewState = {
-  navigatorSidebar: NavigatorSidebar
-  primarySidebar: PrimarySidebar
-  secondarySidebar: SecondarySidebar
-}

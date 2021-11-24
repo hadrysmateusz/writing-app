@@ -6,7 +6,7 @@ import { GenericTreeItem } from "../TreeItem"
 import { EditableText, useEditableText } from "../RenamingInput"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import { useTagsAPI } from "../MainProvider/context"
-import { usePrimarySidebar, useViewState } from "../ViewState"
+import { usePrimarySidebar } from "../ViewState"
 
 /* The number of tags displayed without toggling */
 const LIMIT_TAGS = 4

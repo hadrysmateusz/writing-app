@@ -7,7 +7,6 @@ import {
   SidebarTab,
 } from "../SidebarCommon"
 import {
-  useViewState,
   MultiViewSidebar,
   SidebarView,
   usePrimarySidebar,
