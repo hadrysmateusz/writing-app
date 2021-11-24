@@ -29,6 +29,7 @@ export const useSidebarToggleable = (
 
   const onChange = useCallback(
     async (value: boolean): Promise<LocalSettingsDoc> => {
+      console.log("onChange", value, sidebarId)
       setIsOpen(value)
       const sidebarsSetting = await getLocalSetting("sidebars")
 
@@ -39,6 +40,8 @@ export const useSidebarToggleable = (
           isOpen: value,
         },
       }
+
+      console.log(newSideabarsValue)
 
       return await updateLocalSetting("sidebars", newSideabarsValue)
     },

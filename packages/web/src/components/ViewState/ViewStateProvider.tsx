@@ -1,8 +1,56 @@
-import { FC } from "react"
+import { FC, Reducer, useReducer } from "react"
+import { SidebarSidebar } from "."
+
+import { withDelayRender } from "../../withDelayRender"
 
 import { NavigatorSidebarProvider } from "./NavigatorSidebarContext"
 import { PrimarySidebarProvider } from "./PrimarySidebarContext"
 import { SecondarySidebarProvider } from "./SecondarySidebarContext"
+
+export type SidebarsLoadingState = Record<SidebarSidebar, boolean>
+export type SidebarsLoadingAction = {
+  type: "sidebar-ready"
+  sidebarId: SidebarSidebar
+}
+type SidebarsLoadingReducer = Reducer<
+  SidebarsLoadingState,
+  SidebarsLoadingAction
+>
+
+const reducer: SidebarsLoadingReducer = (state, action) => {
+  switch (action.type) {
+    case "sidebar-ready": {
+      return { ...state, [action.sidebarId]: true }
+    }
+  }
+}
+
+const initialState: SidebarsLoadingState = {
+  navigator: false,
+  primary: false,
+  secondary: false,
+}
+
+export const ViewStateProvider: FC = ({ children }) => {
+  const [state, dispatch] = useReducer<SidebarsLoadingReducer>(
+    reducer,
+    initialState
+  )
+
+  const isReady = state.navigator && state.primary && state.secondary
+
+  return (
+    <NavigatorSidebarProvider loadingStateDispatch={dispatch}>
+      <PrimarySidebarProvider loadingStateDispatch={dispatch}>
+        <SecondarySidebarProvider loadingStateDispatch={dispatch}>
+          {isReady ? children : <LoadingState />}
+        </SecondarySidebarProvider>
+      </PrimarySidebarProvider>
+    </NavigatorSidebarProvider>
+  )
+}
+
+const LoadingState: FC = withDelayRender(1000)(() => <div>Loading...</div>)
 
 // enum SidebarSidebars {
 //   "navigator" = "navigator",
@@ -32,43 +80,3 @@ import { SecondarySidebarProvider } from "./SecondarySidebarContext"
 //   primary_tags_all = "primary_tags_all",
 //   secondary_stats = "secondary_stats",
 // }
-
-export const ViewStateProvider: FC<{}> = ({ children }) => {
-  // const [isLoading, setIsLoading] = useState(true)
-
-  // const { updateLocalSetting, getLocalSetting } = useLocalSettings()
-
-  // useEffect(() => {
-  //   ;(async () => {
-  //     const sidebars = await getLocalSetting("sidebars")
-  //     const expandedKeys = await getLocalSetting("expandedKeys")
-
-  //     setPrimarySidebarCurrentView(sidebars.primary.currentView)
-  //     setSecondarySidebarCurrentView(sidebars.secondary.currentView)
-
-  //     setPrimarySidebarCurrentSubviews(sidebars.primary.currentPaths)
-
-  //     setExpandedKeys(expandedKeys)
-
-  //     setIsLoading(false)
-  //   })()
-  // }, [getLocalSetting])
-
-  // TODO: instead of many separate state variables use a single complex state (that better matches the one saved in LocalSettings) with a reducer
-
-  return (
-    <NavigatorSidebarProvider>
-      <PrimarySidebarProvider>
-        <SecondarySidebarProvider>{children}</SecondarySidebarProvider>
-      </PrimarySidebarProvider>
-    </NavigatorSidebarProvider>
-  )
-
-  // return (
-
-  //     {isLoading ? <LoadingState /> : children}
-
-  // )
-}
-
-// const LoadingState: FC = withDelayRender(1000)(() => <div>Loading...</div>)

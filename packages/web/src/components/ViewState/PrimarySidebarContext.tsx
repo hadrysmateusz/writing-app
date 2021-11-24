@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react"
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import { useLocalSettings, defaultLocalSettings } from "../LocalSettings"
 import { LocalSettings } from "../Database"
@@ -12,6 +12,7 @@ import {
   SwitchPrimarySidebarViewFn,
 } from "./types"
 import { useSidebarToggleable } from "./helpers"
+import { SidebarsLoadingAction } from "."
 
 type PrimarySidebarContextValue = PrimarySidebar
 
@@ -19,8 +20,12 @@ const PrimarySidebarContext = React.createContext<
   PrimarySidebarContextValue | undefined
 >(undefined)
 
-export const PrimarySidebarProvider = ({ children }) => {
+export const PrimarySidebarProvider: FC<{
+  loadingStateDispatch: React.Dispatch<SidebarsLoadingAction>
+}> = ({ children, loadingStateDispatch }) => {
   const { updateLocalSetting, getLocalSetting } = useLocalSettings()
+
+  // TODO: for some reason isOpen state for the primary sidebar doesn't get persisted (or restored correctly)
 
   // // TODO: maybe move this to become a property of the navigator sidebar
   // const [wasNavigatorOpen, setWasNavigatorOpen] = useState(
@@ -38,6 +43,15 @@ export const PrimarySidebarProvider = ({ children }) => {
     //   }
     // },
   })
+
+  useEffect(() => {
+    ;(async () => {
+      const sidebars = await getLocalSetting("sidebars")
+      setPrimarySidebarCurrentView(sidebars.primary.currentView)
+      setPrimarySidebarCurrentSubviews(sidebars.primary.currentPaths)
+      loadingStateDispatch({ type: "sidebar-ready", sidebarId: "primary" })
+    })()
+  }, [getLocalSetting, loadingStateDispatch])
 
   const [primarySidebarCurrentView, setPrimarySidebarCurrentView] = useState(
     defaultLocalSettings.sidebars.primary.currentView

@@ -1,10 +1,11 @@
-import React, { useCallback, useMemo, useState } from "react"
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import { useLocalSettings, defaultLocalSettings } from "../LocalSettings"
 
 import { LocalSettings } from "../Database"
 import { SecondarySidebar, SidebarView, SidebarID, Side } from "./types"
 import { useSidebarToggleable } from "./helpers"
+import { SidebarsLoadingAction } from "."
 
 type SecondarySidebarContextValue = SecondarySidebar
 
@@ -12,7 +13,9 @@ const SecondarySidebarContext = React.createContext<
   SecondarySidebarContextValue | undefined
 >(undefined)
 
-export const SecondarySidebarProvider = ({ children }) => {
+export const SecondarySidebarProvider: FC<{
+  loadingStateDispatch: React.Dispatch<SidebarsLoadingAction>
+}> = ({ children, loadingStateDispatch }) => {
   const { updateLocalSetting, getLocalSetting } = useLocalSettings()
 
   const toggleable = useSidebarToggleable("secondary")
@@ -21,6 +24,14 @@ export const SecondarySidebarProvider = ({ children }) => {
     secondarySidebarCurrentView,
     setSecondarySidebarCurrentView,
   ] = useState(defaultLocalSettings.sidebars.secondary.currentView)
+
+  useEffect(() => {
+    ;(async () => {
+      const sidebars = await getLocalSetting("sidebars")
+      setSecondarySidebarCurrentView(sidebars.secondary.currentView)
+      loadingStateDispatch({ type: "sidebar-ready", sidebarId: "secondary" })
+    })()
+  }, [getLocalSetting, loadingStateDispatch])
 
   // TODO: create a view switch wrapper for primary sidebar that can handle both views, and subviews
 

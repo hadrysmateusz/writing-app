@@ -91,6 +91,7 @@ export enum Side {
   right = "right",
 }
 
+// TODO: change usages with SidebarSidebar
 export enum SidebarID {
   primary = "primarySidebar",
   secondary = "secondarySidebar",
