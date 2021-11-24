@@ -12,7 +12,7 @@ import {
   SwitchPrimarySidebarViewFn,
 } from "./types"
 import { useSidebarToggleable } from "./helpers"
-import { SidebarsLoadingAction } from "."
+import { SidebarsLoadingAction, useNavigatorSidebar } from "."
 
 type PrimarySidebarContextValue = PrimarySidebar
 
@@ -24,24 +24,24 @@ export const PrimarySidebarProvider: FC<{
   loadingStateDispatch: React.Dispatch<SidebarsLoadingAction>
 }> = ({ children, loadingStateDispatch }) => {
   const { updateLocalSetting, getLocalSetting } = useLocalSettings()
+  const navigatorSidebar = useNavigatorSidebar()
 
-  // TODO: for some reason isOpen state for the primary sidebar doesn't get persisted (or restored correctly)
-
-  // // TODO: maybe move this to become a property of the navigator sidebar
-  // const [wasNavigatorOpen, setWasNavigatorOpen] = useState(
-  //   navigatorToggleable.isOpen
-  // )
+  // TODO: this depends on the NavigatorSidebarProvider being an ancestor of the PrimarySidebarProvider and might cause issues in the future, find a different solution (maybe an effect in the navigator or primary sidebar component but that seems hacky)
+  // TODO: maybe move this to become a property of the navigator sidebar
+  const [wasNavigatorOpen, setWasNavigatorOpen] = useState(
+    navigatorSidebar.isOpen
+  )
 
   const toggleable = useSidebarToggleable("primary", {
-    // onBeforeClose: () => {
-    //   setWasNavigatorOpen(navigatorToggleable.isOpen)
-    //   navigatorToggleable.close()
-    // },
-    // onAfterOpen: () => {
-    //   if (wasNavigatorOpen) {
-    //     navigatorToggleable.open()
-    //   }
-    // },
+    onBeforeClose: () => {
+      setWasNavigatorOpen(navigatorSidebar.isOpen)
+      navigatorSidebar.close()
+    },
+    onAfterOpen: () => {
+      if (wasNavigatorOpen) {
+        navigatorSidebar.open()
+      }
+    },
   })
 
   useEffect(() => {
@@ -66,24 +66,33 @@ export const PrimarySidebarProvider: FC<{
 
   const switchPrimaryView = useCallback(
     async (view: SidebarView<"primary">) => {
-      setPrimarySidebarCurrentView(view)
+      let viewHasChanged: boolean = false
+
+      setPrimarySidebarCurrentView((oldView) => {
+        viewHasChanged = oldView !== view
+        return view
+      })
 
       if (!toggleable.isOpen) {
         toggleable.open()
       }
 
-      // TODO: remove duplication (probably by reworking updateLocalSetting method)
-      const sidebarsSetting = await getLocalSetting("sidebars")
+      // TODO: this might not work, it's still not persisted correctly
+      // we persist the view change only if it has changed for performance and to avoid race conditions in certain scenarios
+      if (viewHasChanged) {
+        // TODO: remove duplication (probably by reworking updateLocalSetting method)
+        const sidebarsSetting = await getLocalSetting("sidebars")
 
-      const newSideabarsValue: LocalSettings["sidebars"] = {
-        ...sidebarsSetting,
-        primary: {
-          ...sidebarsSetting["primary"],
-          currentView: view,
-        },
+        const newSidebarsValue: LocalSettings["sidebars"] = {
+          ...sidebarsSetting,
+          primary: {
+            ...sidebarsSetting["primary"],
+            currentView: view,
+          },
+        }
+
+        await updateLocalSetting("sidebars", newSidebarsValue)
       }
-
-      await updateLocalSetting("sidebars", newSideabarsValue)
       return
     },
     [getLocalSetting, toggleable, updateLocalSetting]
@@ -94,7 +103,7 @@ export const PrimarySidebarProvider: FC<{
     async (view, subview, id) => {
       const sidebarsSetting = await getLocalSetting("sidebars")
 
-      let newSideabarsValue: LocalSettings["sidebars"] =
+      let newSidebarsValue: LocalSettings["sidebars"] =
         defaultLocalSettings.sidebars
 
       setPrimarySidebarCurrentSubviews((prevValue) => {
@@ -109,7 +118,7 @@ export const PrimarySidebarProvider: FC<{
           [view]: newPath,
         }
 
-        newSideabarsValue = {
+        newSidebarsValue = {
           ...sidebarsSetting,
           primary: {
             ...sidebarsSetting["primary"],
@@ -120,9 +129,7 @@ export const PrimarySidebarProvider: FC<{
         return newValue
       })
 
-      // TODO: make sure that the newSideabarsValue assignment inside setState gets called first and the correct value is persisted
-      console.log("newSidebarsValue to be persisted", newSideabarsValue)
-      updateLocalSetting("sidebars", newSideabarsValue)
+      updateLocalSetting("sidebars", newSidebarsValue)
 
       switchPrimaryView(view)
     },

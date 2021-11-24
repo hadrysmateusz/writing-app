@@ -51,8 +51,8 @@ export const PrimarySidebarTabs = () => {
     if (primarySidebar.currentView === view && primarySidebar.isOpen) {
       primarySidebar.close()
     } else {
-      primarySidebar.open()
-      primarySidebar.switchView(view)
+      // primarySidebar.open()
+      primarySidebar.switchView(view) // opening the sidebar is handled internall by switchView
     }
   }
 

@@ -1,51 +1,62 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 
-import { useLocalSettings, defaultLocalSettings } from "../LocalSettings"
-
 import { ToggleableHooks, useStatelessToggleable } from "../../hooks"
 
-import { LocalSettings, LocalSettingsDoc } from "../Database"
-import { SidebarSidebar } from "."
+import { defaultLocalSettings } from "../LocalSettings"
+import { LocalSettingsDoc, useDatabase } from "../Database"
+import { useCurrentUser } from "../Auth"
+
+import { SidebarSidebar } from "./types"
 
 export const useSidebarToggleable = (
   sidebarId: SidebarSidebar,
   hooks?: ToggleableHooks
 ) => {
-  const { updateLocalSetting, getLocalSetting } = useLocalSettings()
+  const db = useDatabase()
+  const currentUser = useCurrentUser()
 
   const [isOpen, setIsOpen] = useState(
-    () => defaultLocalSettings.sidebars[sidebarId].isOpen
+    defaultLocalSettings.sidebars[sidebarId].isOpen
   )
 
+  // TODO: for some reason getLocalSetting and updateLocalSetting methods result in stale data and bugs
+
   useEffect(() => {
-    getLocalSetting("sidebars").then((sidebars) => {
-      // TODO: check this for possible performance drawbacks
-      console.log(
-        "changing sidebar open state because of persistent storage change"
-      )
-      setIsOpen(sidebars[sidebarId].isOpen)
+    setTimeout(() => {
+      db.local_settings
+        .findOne(currentUser.username)
+        .exec()
+        .then((localSettingsDoc) => {
+          if (localSettingsDoc === null) {
+            throw new Error(
+              `Couldn't find a local settings doc for user: ${currentUser.username}`
+            )
+          }
+          setIsOpen(localSettingsDoc.sidebars[sidebarId].isOpen)
+        })
     })
-  }, [getLocalSetting, sidebarId])
+  }, [currentUser.username, db.local_settings, sidebarId])
 
   const onChange = useCallback(
-    async (value: boolean): Promise<LocalSettingsDoc> => {
-      console.log("onChange", value, sidebarId)
+    async (value: boolean): Promise<LocalSettingsDoc | void> => {
       setIsOpen(value)
-      const sidebarsSetting = await getLocalSetting("sidebars")
 
-      const newSideabarsValue: LocalSettings["sidebars"] = {
-        ...sidebarsSetting,
-        [sidebarId]: {
-          ...sidebarsSetting[sidebarId],
-          isOpen: value,
-        },
-      }
+      db.local_settings
+        .findOne(currentUser.username)
+        .exec()
+        .then((localSettingsDoc) => {
+          if (localSettingsDoc === null) {
+            throw new Error(
+              `Couldn't find a local settings doc for user: ${currentUser.username}`
+            )
+          }
 
-      console.log(newSideabarsValue)
-
-      return await updateLocalSetting("sidebars", newSideabarsValue)
+          localSettingsDoc.update({
+            $set: { [`sidebars.${sidebarId}.isOpen`]: value },
+          })
+        })
     },
-    [getLocalSetting, sidebarId, updateLocalSetting]
+    [currentUser.username, db.local_settings, sidebarId]
   )
 
   const sidebarMethods = useStatelessToggleable(isOpen, onChange, hooks)
