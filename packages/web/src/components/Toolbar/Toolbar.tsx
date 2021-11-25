@@ -12,7 +12,7 @@ import {
   // MARK_CODE,
   // MARK_ITALIC,
   // MARK_STRIKETHROUGH,
-  getPlatePluginType,
+  getPluginType,
   usePlateEditorRef,
   usePlateEventId,
   // MarkToolbarButton,
@@ -33,22 +33,22 @@ export const Toolbar = () => {
   // const { getLinkUrl } = useLinkModal()
   const { getImageUrl } = useImageModal()
 
-  return (
+  return editor ? (
     <ToolbarContainer>
       {/* <MarkToolbarButton
-        type={getPlatePluginType(editor, MARK_BOLD)}
+        type={getPluginType(editor, MARK_BOLD)}
         icon={<Icon icon={MARK_BOLD} />}
       />
       <MarkToolbarButton
-        type={getPlatePluginType(editor, MARK_ITALIC)}
+        type={getPluginType(editor, MARK_ITALIC)}
         icon={<Icon icon={MARK_ITALIC} />}
       />
       <MarkToolbarButton
-        type={getPlatePluginType(editor, MARK_STRIKETHROUGH)}
+        type={getPluginType(editor, MARK_STRIKETHROUGH)}
         icon={<Icon icon={MARK_STRIKETHROUGH} />}
       />
       <MarkToolbarButton
-        type={getPlatePluginType(editor, MARK_CODE)}
+        type={getPluginType(editor, MARK_CODE)}
         icon={<Icon icon={MARK_CODE} />}
       />
       <ToolbarLink
@@ -59,22 +59,22 @@ export const Toolbar = () => {
       <ToolbarSpacer small /> */}
 
       <BlockToolbarButton
-        type={getPlatePluginType(editor, ELEMENT_H1)}
+        type={getPluginType(editor, ELEMENT_H1)}
         icon={<Icon icon={ELEMENT_H1} />}
       />
       <BlockToolbarButton
-        type={getPlatePluginType(editor, ELEMENT_H2)}
+        type={getPluginType(editor, ELEMENT_H2)}
         icon={<Icon icon={ELEMENT_H2} />}
+      />
+      <BlockToolbarButton
+        type={getPluginType(editor, ELEMENT_BLOCKQUOTE)}
+        icon={<Icon icon={ELEMENT_BLOCKQUOTE} />}
       />
 
       <ToolbarSpacer small />
 
-      <BlockToolbarButton
-        type={getPlatePluginType(editor, ELEMENT_BLOCKQUOTE)}
-        icon={<Icon icon={ELEMENT_BLOCKQUOTE} />}
-      />
       <CodeBlockToolbarButton
-        type={getPlatePluginType(editor, ELEMENT_CODE_BLOCK)}
+        type={getPluginType(editor, ELEMENT_CODE_BLOCK)}
         icon={<Icon icon={ELEMENT_CODE_BLOCK} />}
       />
       <ToolbarImage
@@ -86,15 +86,15 @@ export const Toolbar = () => {
 
       {/* TODO: fix toggling lists */}
       <ListToolbarButton
-        type={getPlatePluginType(editor, ELEMENT_UL)}
+        type={getPluginType(editor, ELEMENT_UL)}
         icon={<Icon icon={ELEMENT_UL} />}
       />
       <ListToolbarButton
-        type={getPlatePluginType(editor, ELEMENT_OL)}
+        type={getPluginType(editor, ELEMENT_OL)}
         icon={<Icon icon={ELEMENT_OL} />}
       />
     </ToolbarContainer>
-  )
+  ) : null
 }
 
 const ToolbarSpacer = styled.div<{

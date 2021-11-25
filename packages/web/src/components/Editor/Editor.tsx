@@ -1,20 +1,9 @@
 import React, { useCallback, useMemo } from "react"
-import styled from "styled-components/macro"
 
 import { ReactEditor } from "slate-react"
 import { EditableProps } from "slate-react/dist/components/editable"
 import isHotkey from "is-hotkey"
-import {
-  Plate,
-  createPlateComponents,
-  createPlateOptions,
-  usePlateEditorRef,
-  usePlateEventId,
-  withProps,
-  ELEMENT_CODE_BLOCK,
-  ELEMENT_PARAGRAPH,
-  CodeBlockElement,
-} from "@udecode/plate"
+import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
 // import HoveringToolbar from "../HoveringToolbar"
 // import { useUserdata } from "../Userdata"
@@ -48,24 +37,19 @@ import { BalloonToolbar } from "./BalloonToolbar"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
-const ParagraphElement = styled.p`
-  margin: 8px 0;
-  /* margin: 16px 0; */
-`
-
-const components = createPlateComponents({
-  [ELEMENT_CODE_BLOCK]: withProps(CodeBlockElement, {
-    styles: { root: { background: "var(--dark-400)" } },
-  }),
-  [ELEMENT_PARAGRAPH]: ParagraphElement,
-  // [ELEMENT_BLOCKQUOTE]: withProps(BlockquoteElement, { styles: { root: {} } }),
-})
-const options = createPlateOptions({
-  [ELEMENT_CODE_BLOCK]: {
-    syntax: true,
-    syntaxPopularFirst: true,
-  },
-})
+// const components = createPlateUI({
+//   [ELEMENT_CODE_BLOCK]: withProps(CodeBlockElement, {
+//     styles: { root: { background: "var(--dark-400)" } },
+//   }),
+//   [ELEMENT_PARAGRAPH]: ParagraphElement,
+//   // [ELEMENT_BLOCKQUOTE]: withProps(BlockquoteElement, { styles: { root: {} } }),
+// })
+// const options = createPlateOptions({
+//   [ELEMENT_CODE_BLOCK]: {
+//     syntax: true,
+//     syntaxPopularFirst: true,
+//   },
+// })
 
 /**
  * Renders the editor if there is a document selected
@@ -362,8 +346,6 @@ const EditorComponent: React.FC<{
             <Plate
               id="main"
               plugins={pluginsList}
-              components={components}
-              options={options}
               editableProps={editableProps}
               initialValue={deserialize(currentDocument.content)}
               onChange={onChange}

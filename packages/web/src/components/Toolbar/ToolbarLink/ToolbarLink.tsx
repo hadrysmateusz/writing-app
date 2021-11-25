@@ -1,6 +1,6 @@
-import { someNode } from "@udecode/plate-common"
 import {
-  getPlatePluginType,
+  someNode,
+  getPluginType,
   usePlateEventId,
   usePlateEditorState,
 } from "@udecode/plate-core"
@@ -17,10 +17,10 @@ export interface ToolbarLinkProps extends ToolbarButtonProps {
 export const ToolbarLink = ({ getLinkUrl, ...props }: ToolbarLinkProps) => {
   const editor = usePlateEditorState(usePlateEventId("focus"))
 
-  const type = getPlatePluginType(editor, ELEMENT_LINK)
+  const type = editor ? getPluginType(editor, ELEMENT_LINK) : null
   const isLink = !!editor?.selection && someNode(editor, { match: { type } })
 
-  return (
+  return editor ? (
     <ToolbarButton
       active={isLink}
       onMouseDown={async (event) => {
@@ -31,7 +31,7 @@ export const ToolbarLink = ({ getLinkUrl, ...props }: ToolbarLinkProps) => {
       }}
       {...props}
     />
-  )
+  ) : null
 }
 
 export default ToolbarLink

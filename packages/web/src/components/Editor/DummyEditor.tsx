@@ -1,12 +1,6 @@
 import React, { useRef, useState } from "react"
 import isHotkey from "is-hotkey"
-import {
-  Plate,
-  createPlateComponents,
-  createPlateOptions,
-  usePlateEditorRef,
-  usePlateEventId,
-} from "@udecode/plate"
+import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 import { Descendant } from "slate"
 
 import { useDocumentsAPI, useMainState, useTabsState } from "../MainProvider"
@@ -22,9 +16,6 @@ import {
 } from "./styledComponents"
 
 // TODO: remove remaining duplication with Editor
-
-const components = createPlateComponents()
-const options = createPlateOptions()
 
 const DummyTitleInput = () => {
   const [value, setValue] = useState<string>("")
@@ -138,8 +129,6 @@ export const DummyEditor = () => {
           <Plate
             id="main"
             plugins={pluginsList}
-            components={components}
-            options={options}
             editableProps={editableProps}
             // onChange={onChange} TODO: maybe use this to trigger document creation (or any click inside the editor)
           >

@@ -30,15 +30,18 @@ import {
   isBlockAboveEmpty,
   isSelectionAtBlockStart,
   ELEMENT_TODO_LI,
-  ResetBlockTypePluginOptions,
-  SoftBreakPluginOptions,
-  ExitBreakPluginOptions,
   KEYS_HEADING,
-  createDeserializeCSVPlugin,
-  createDeserializeMDPlugin,
-  createDeserializeHTMLPlugin,
   createDeserializeAstPlugin,
+  createDeserializeDocxPlugin,
+  createDeserializeHtmlPlugin,
+  createDeserializeMdPlugin,
+  createPlugins,
+  createPlateUI,
+  withProps,
+  CodeBlockElement,
+  BlockquoteElement,
 } from "@udecode/plate"
+import styled from "styled-components/macro"
 
 import autoformatRules from "./autoformatRules"
 
@@ -47,101 +50,141 @@ const resetBlockTypesCommonRule = {
   defaultType: ELEMENT_PARAGRAPH,
 }
 
-export const optionsResetBlockTypePlugin: ResetBlockTypePluginOptions = {
-  rules: [
-    {
-      ...resetBlockTypesCommonRule,
-      hotkey: "Enter",
-      predicate: isBlockAboveEmpty,
-    },
-    {
-      ...resetBlockTypesCommonRule,
-      hotkey: "Backspace",
-      predicate: isSelectionAtBlockStart,
-    },
-  ],
-}
+const ParagraphElement = styled.p`
+  margin: 8px 0;
+  /* margin: 16px 0; */
+`
 
-export const optionsSoftBreakPlugin: SoftBreakPluginOptions = {
-  rules: [
-    { hotkey: "shift+enter" },
-    {
-      hotkey: "enter",
-      query: {
-        allow: [ELEMENT_CODE_BLOCK, ELEMENT_BLOCKQUOTE /* , ELEMENT_TD */],
+export const plugins = createPlugins(
+  [
+    createReactPlugin(),
+    createHistoryPlugin(),
+
+    // marks
+    createBoldPlugin(),
+    createItalicPlugin(),
+    createCodePlugin(),
+    createLinkPlugin(),
+    createUnderlinePlugin(), // TODO: think whether I should remove it or not
+    createStrikethroughPlugin(),
+
+    // elements
+    createParagraphPlugin(),
+    createBlockquotePlugin(),
+    createCodeBlockPlugin({
+      options: { syntax: true, syntaxPopularFirst: true },
+    }),
+    createHeadingPlugin(),
+    createListPlugin(),
+    createTodoListPlugin(),
+    createImagePlugin(),
+    createHorizontalRulePlugin(),
+
+    // createTablePlugin(),
+    // createMediaEmbedPlugin(),
+    // createAlignPlugin(),
+    // createHighlightPlugin(),
+    // createSubscriptPlugin(),
+    // createSuperscriptPlugin(),
+    // createFontColorPlugin(),
+    // createFontBackgroundColorPlugin(),
+    // createFontSizePlugin(),
+    // createKbdPlugin(),
+    createNodeIdPlugin(),
+    createAutoformatPlugin({
+      options: {
+        rules: autoformatRules,
       },
-    },
-  ],
-}
-
-export const optionsExitBreakPlugin: ExitBreakPluginOptions = {
-  rules: [
-    {
-      hotkey: "mod+enter",
-    },
-    {
-      hotkey: "mod+shift+enter",
-      before: true,
-    },
-    {
-      hotkey: "enter",
-      query: {
-        start: true,
-        end: true,
-        allow: KEYS_HEADING,
+    }),
+    createResetNodePlugin({
+      options: {
+        rules: [
+          {
+            ...resetBlockTypesCommonRule,
+            hotkey: "Enter",
+            predicate: isBlockAboveEmpty,
+          },
+          {
+            ...resetBlockTypesCommonRule,
+            hotkey: "Backspace",
+            predicate: isSelectionAtBlockStart,
+          },
+        ],
       },
-    },
+    }),
+    createSoftBreakPlugin({
+      options: {
+        rules: [
+          { hotkey: "shift+enter" },
+          {
+            hotkey: "enter",
+            query: {
+              allow: [
+                ELEMENT_CODE_BLOCK /* , ELEMENT_BLOCKQUOTE */ /* , ELEMENT_TD */,
+              ],
+            },
+          },
+        ],
+      },
+    }),
+    createExitBreakPlugin({
+      options: {
+        rules: [
+          {
+            hotkey: "mod+enter",
+          },
+          {
+            hotkey: "mod+shift+enter",
+            before: true,
+          },
+          {
+            hotkey: "enter",
+            query: {
+              start: true,
+              end: true,
+              allow: KEYS_HEADING,
+            },
+          },
+        ],
+      },
+    }), // TODO: this doesn't seem to work in e.g. an image caption
+    // createNormalizeTypesPlugin({
+    //   rules: [{ path: [0], strictType: ELEMENT_H1 }],
+    // }),
+    createTrailingBlockPlugin({ type: ELEMENT_PARAGRAPH }),
+    createSelectOnBackspacePlugin({
+      options: { query: { allow: [ELEMENT_IMAGE, ELEMENT_HR] } },
+    }),
+    createDeserializeDocxPlugin(),
+    createDeserializeHtmlPlugin(),
+    createDeserializeMdPlugin(),
+    createDeserializeAstPlugin(),
   ],
-}
-
-export const plugins = [
-  createReactPlugin(),
-  createHistoryPlugin(),
-  createParagraphPlugin(),
-  createBlockquotePlugin(),
-  createTodoListPlugin(),
-  createHeadingPlugin(),
-  createImagePlugin(),
-  createHorizontalRulePlugin(),
-  createLinkPlugin(),
-  createListPlugin(),
-  // createTablePlugin(),
-  // createMediaEmbedPlugin(),
-  createCodeBlockPlugin(),
-  // createAlignPlugin(),
-  createBoldPlugin(),
-  createCodePlugin(),
-  createItalicPlugin(),
-  // createHighlightPlugin(),
-  createUnderlinePlugin(),
-  createStrikethroughPlugin(),
-  // createSubscriptPlugin(),
-  // createSuperscriptPlugin(),
-  // createFontColorPlugin(),
-  // createFontBackgroundColorPlugin(),
-  // createFontSizePlugin(),
-  // createKbdPlugin(),
-  createNodeIdPlugin(),
-  createAutoformatPlugin({
-    rules: autoformatRules,
-  }),
-  createResetNodePlugin(optionsResetBlockTypePlugin),
-  createSoftBreakPlugin(optionsSoftBreakPlugin),
-  createExitBreakPlugin(optionsExitBreakPlugin), // TODO: this doesn't seem to work in e.g. an image caption
-  // createNormalizeTypesPlugin({
-  //   rules: [{ path: [0], strictType: ELEMENT_H1 }],
-  // }),
-  createTrailingBlockPlugin({ type: ELEMENT_PARAGRAPH }), // TODO: this doesn't seem to always work
-  createSelectOnBackspacePlugin({ allow: [ELEMENT_IMAGE, ELEMENT_HR] }),
-]
-
-plugins.push(
-  ...[
-    createDeserializeMDPlugin({ plugins }),
-    createDeserializeCSVPlugin({ plugins }),
-    createDeserializeHTMLPlugin({ plugins }),
-    createDeserializeAstPlugin({ plugins }),
-  ]
+  {
+    components: createPlateUI({
+      [ELEMENT_CODE_BLOCK]: withProps(CodeBlockElement, {
+        styles: { root: { background: "var(--dark-400)" } },
+      }),
+      [ELEMENT_PARAGRAPH]: ParagraphElement,
+      [ELEMENT_BLOCKQUOTE]: withProps(BlockquoteElement, {
+        styles: {
+          root: {
+            borderLeft: "3px solid var(--dark-600)",
+            /* background: "var(--light-100)", */ color: "var(--light-300)",
+          },
+        },
+      }),
+    }),
+  }
 )
+
+// plugins.push(
+//   ...[
+//     createDeserializeDocxPlugin({ plugins }),
+//     createDeserializeHtmlPlugin({ plugins }),
+//     createDeserializeMdPlugin({ plugins }),
+//     createDeserializeAstPlugin({ plugins }),
+//   ]
+// )
 
 export default plugins

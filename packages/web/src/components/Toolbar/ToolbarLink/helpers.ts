@@ -1,14 +1,15 @@
 import { Editor, Transforms, Location } from "slate"
 import { cloneDeep } from "lodash"
-import { WithLinkOptions } from "@udecode/plate"
 import {
+  getPluginType,
+  PlateEditor,
+  TElement,
   getAbove,
   isCollapsed,
   unwrapNodes,
   wrapNodes,
   insertNodes,
-} from "@udecode/plate-common"
-import { getPlatePluginType, PlateEditor, TElement } from "@udecode/plate-core"
+} from "@udecode/plate-core"
 import { ELEMENT_LINK } from "@udecode/plate-link"
 
 /**
@@ -21,7 +22,7 @@ export const wrapLink = (
   wrapNodes(
     editor,
     {
-      type: getPlatePluginType(editor, ELEMENT_LINK),
+      type: getPluginType(editor, ELEMENT_LINK),
       url,
       children: [],
     },
@@ -49,7 +50,7 @@ export const upsertLinkAtSelection = (
 ) => {
   if (!editor.selection) return
 
-  const type = getPlatePluginType(editor, ELEMENT_LINK)
+  const type = getPluginType(editor, ELEMENT_LINK)
 
   if (!wrap && isCollapsed(editor.selection)) {
     return insertNodes<TElement>(editor, {
@@ -77,7 +78,7 @@ export const getAndUpsertLink = async <T extends PlateEditor>(
   editor: T,
   getLinkUrl: (prevUrl: string) => Promise<string | null>
 ) => {
-  const type = getPlatePluginType(editor, ELEMENT_LINK)
+  const type = getPluginType(editor, ELEMENT_LINK)
   let prevUrl = ""
 
   const linkNode = getAbove(editor, {
@@ -100,7 +101,7 @@ export const getAndUpsertLink = async <T extends PlateEditor>(
       editor.selection &&
       unwrapNodes(editor, {
         at: editor.selection,
-        match: { type: getPlatePluginType(editor, ELEMENT_LINK) },
+        match: { type: getPluginType(editor, ELEMENT_LINK) },
       })
 
     return

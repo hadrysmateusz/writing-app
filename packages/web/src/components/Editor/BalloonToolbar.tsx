@@ -2,12 +2,12 @@ import {
   usePlateEditorRef,
   BalloonToolbar as PlateBalloonToolbar,
   MarkToolbarButton,
-  getPlatePluginType,
   MARK_BOLD,
   MARK_ITALIC,
   MARK_CODE,
   MARK_STRIKETHROUGH,
   ELEMENT_LINK,
+  getPluginType,
 } from "@udecode/plate"
 
 import { ToolbarLink } from "../Toolbar"
@@ -25,46 +25,46 @@ export const BalloonToolbar = () => {
   const popperOptions = {
     placement: "top" as "top",
   }
-  const tooltip = {
-    arrow: true,
-    delay: 0,
-    duration: [200, 0] as [number, number],
-    hideOnClick: false,
-    offset: [0, 17] as [number, number],
-    placement: "top" as "top",
-  }
+  // const tooltip = {
+  //   arrow: true,
+  //   delay: 0,
+  //   duration: [200, 0] as [number, number],
+  //   hideOnClick: false,
+  //   offset: [0, 17] as [number, number],
+  //   placement: "top" as "top",
+  // }
 
   // TODO: use styling matching the rest of the app
-  return (
+  return editor ? (
     <PlateBalloonToolbar
       popperOptions={popperOptions}
       theme={theme}
       arrow={arrow}
     >
       <MarkToolbarButton
-        type={getPlatePluginType(editor, MARK_BOLD)}
+        type={getPluginType(editor, MARK_BOLD)}
         icon={<Icon icon={MARK_BOLD} />}
-        tooltip={{ content: "Bold", ...tooltip }}
+        // tooltip={{ content: "Bold", ...tooltip }}
       />
       <MarkToolbarButton
-        type={getPlatePluginType(editor, MARK_ITALIC)}
+        type={getPluginType(editor, MARK_ITALIC)}
         icon={<Icon icon={MARK_ITALIC} />}
-        tooltip={{ content: "Italic", ...tooltip }}
+        // tooltip={{ content: "Italic", ...tooltip }}
       />
       <MarkToolbarButton
-        type={getPlatePluginType(editor, MARK_STRIKETHROUGH)}
+        type={getPluginType(editor, MARK_STRIKETHROUGH)}
         icon={<Icon icon={MARK_STRIKETHROUGH} />}
-        tooltip={{ content: "Strikethrough", ...tooltip }}
+        // tooltip={{ content: "Strikethrough", ...tooltip }}
       />
       <MarkToolbarButton
-        type={getPlatePluginType(editor, MARK_CODE)}
+        type={getPluginType(editor, MARK_CODE)}
         icon={<Icon icon={MARK_CODE} />}
-        tooltip={{ content: "Code", ...tooltip }}
+        // tooltip={{ content: "Code", ...tooltip }}
       />
       <ToolbarLink
         getLinkUrl={getLinkUrl}
         icon={<Icon icon={ELEMENT_LINK} />}
       />
     </PlateBalloonToolbar>
-  )
+  ) : null
 }

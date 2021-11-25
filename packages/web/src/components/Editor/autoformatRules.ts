@@ -12,7 +12,7 @@ import {
   MARK_CODE,
   MARK_ITALIC,
   MARK_STRIKETHROUGH,
-  getPlatePluginType,
+  getPluginType,
   ELEMENT_UL,
   ELEMENT_OL,
   ELEMENT_HR,
@@ -133,7 +133,7 @@ const autoformatRules: AutoformatRule[] = [
     preFormat: clearBlockFormat,
     format: (editor) => {
       insertEmptyCodeBlock(editor as PlateEditor, {
-        defaultType: getPlatePluginType(editor as PlateEditor, ELEMENT_DEFAULT),
+        defaultType: getPluginType(editor as PlateEditor, ELEMENT_DEFAULT),
         insertNodesOptions: { select: true },
       })
     },

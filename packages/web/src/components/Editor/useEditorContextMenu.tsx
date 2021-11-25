@@ -7,13 +7,13 @@ import {
   MARK_CODE,
   MARK_ITALIC,
   MARK_STRIKETHROUGH,
-  getPlatePluginType,
   usePlateEditorRef,
   usePlateEventId,
   MarkToolbarButton,
   ELEMENT_LINK,
-  serializeHTMLFromNodes,
-  deserializeHTMLToFragment,
+  serializeHtml,
+  deserializeHtml,
+  getPluginType,
 } from "@udecode/plate"
 
 import {
@@ -27,8 +27,6 @@ import { useImageModal } from "../ImageModal"
 import { useLinkModal } from "../LinkPrompt"
 import Icon from "../Icon"
 import { ToolbarLink } from "../Toolbar" // TODO: refactor those components to make them more general
-
-import plugins from "./pluginsList"
 
 type ContextMenuType = {
   base: "collapsed" | "expanded" | "node"
@@ -63,8 +61,7 @@ const useEditorContextMenu = () => {
     if (editor && editor.selection) {
       const fragment = Editor.fragment(editor, editor.selection)
 
-      const html = serializeHTMLFromNodes(editor, {
-        plugins: plugins,
+      const html = serializeHtml(editor, {
         nodes: fragment,
       })
 
@@ -118,9 +115,10 @@ const useEditorContextMenu = () => {
 
         console.log(preparedHTMLObject)
 
-        const fragment = deserializeHTMLToFragment(preparedHTMLObject)
-
-        console.log(fragment)
+        if (editor) {
+          const fragment = deserializeHtml(editor, preparedHTMLObject)
+          console.log(fragment)
+        }
       }
     }
   }
@@ -186,19 +184,19 @@ const useEditorContextMenu = () => {
             <>
               <InlineFormattingContainer>
                 <MarkToolbarButton
-                  type={getPlatePluginType(editor, MARK_BOLD)}
+                  type={getPluginType(editor, MARK_BOLD)}
                   icon={<Icon icon={MARK_BOLD} />}
                 />
                 <MarkToolbarButton
-                  type={getPlatePluginType(editor, MARK_ITALIC)}
+                  type={getPluginType(editor, MARK_ITALIC)}
                   icon={<Icon icon={MARK_ITALIC} />}
                 />
                 <MarkToolbarButton
-                  type={getPlatePluginType(editor, MARK_STRIKETHROUGH)}
+                  type={getPluginType(editor, MARK_STRIKETHROUGH)}
                   icon={<Icon icon={MARK_STRIKETHROUGH} />}
                 />
                 <MarkToolbarButton
-                  type={getPlatePluginType(editor, MARK_CODE)}
+                  type={getPluginType(editor, MARK_CODE)}
                   icon={<Icon icon={MARK_CODE} />}
                 />
                 <ToolbarLink
