@@ -32,6 +32,8 @@ addRxPlugin(RxDBMigrationPlugin)
 addRxPlugin(RxDBReplicationCouchDBPlugin)
 addRxPlugin(RxDBLeaderElectionPlugin)
 
+// TODO: consider switching to LokiJS storage for improved performance, with GraphQL replication to something like AWS appsync (with Amplify) or other graphql solution
+
 // TODO: figure out the cause of the "invalid adapter: http" error and if it can impact the production environment IT MIGHT BE BECAUSE IT SHOULDN'T USE HTTP IN PROD BUT RATHER HTTPS, MAYBE BECAUSE THE APP IS RUNNING ON HTTPS AND CORS IS AN ISSUE, OR MAYBE SOMETHING ELSE. IF THIS FAILS, TRY SEARCHING POUCHDB SOURCE FOR THE ERROR AND SEE WHY IT'S THROWN
 
 // TODO: make sure that the user is online and the database server is responding and all remote databases have been created and configured properly before creating local databases - throw an error otherwise because the frontend is unable to create databases with proper permissions and this will lead to many issues. Instead, if the user is online call a special api endpoint that will attempt to fix the remote database setup and if successful, the frontend should continue creating local databases and starting the app
