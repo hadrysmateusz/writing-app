@@ -13,6 +13,7 @@ export interface ToolbarLinkProps extends ToolbarButtonProps {
   getLinkUrl: (prevUrl: string) => Promise<string | null>
 }
 
+// TODO: change name to be in line with plate's new ui elements naming style
 export const ToolbarLink = ({ getLinkUrl, ...props }: ToolbarLinkProps) => {
   const editor = usePlateEditorState(usePlateEventId("focus"))
 

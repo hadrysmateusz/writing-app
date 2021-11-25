@@ -6,36 +6,36 @@ import {
   ELEMENT_H2,
   ELEMENT_UL,
   ELEMENT_OL,
-  ELEMENT_LINK,
   ELEMENT_IMAGE,
-  MARK_BOLD,
-  MARK_CODE,
-  MARK_ITALIC,
-  MARK_STRIKETHROUGH,
+  // ELEMENT_LINK,
+  // MARK_BOLD,
+  // MARK_CODE,
+  // MARK_ITALIC,
+  // MARK_STRIKETHROUGH,
   getPlatePluginType,
   usePlateEditorRef,
   usePlateEventId,
-  MarkToolbarButton,
+  // MarkToolbarButton,
   BlockToolbarButton,
   CodeBlockToolbarButton,
   ListToolbarButton,
 } from "@udecode/plate"
 
 import { useImageModal } from "../ImageModal"
-import { useLinkModal } from "../LinkPrompt"
+// import { useLinkModal } from "../LinkPrompt"
 import Icon from "../Icon"
 
-import { ToolbarLink } from "./ToolbarLink"
+// import { ToolbarLink } from "./ToolbarLink"
 import { ToolbarImage } from "./ToolbarImage"
 
 export const Toolbar = () => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
-  const { getLinkUrl } = useLinkModal()
+  // const { getLinkUrl } = useLinkModal()
   const { getImageUrl } = useImageModal()
 
   return (
     <ToolbarContainer>
-      <MarkToolbarButton
+      {/* <MarkToolbarButton
         type={getPlatePluginType(editor, MARK_BOLD)}
         icon={<Icon icon={MARK_BOLD} />}
       />
@@ -56,7 +56,7 @@ export const Toolbar = () => {
         icon={<Icon icon={ELEMENT_LINK} />}
       />
 
-      <ToolbarSpacer small />
+      <ToolbarSpacer small /> */}
 
       <BlockToolbarButton
         type={getPlatePluginType(editor, ELEMENT_H1)}

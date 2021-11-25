@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from "react"
 import styled from "styled-components/macro"
 
 import { ReactEditor } from "slate-react"
+import { EditableProps } from "slate-react/dist/components/editable"
 import isHotkey from "is-hotkey"
 import {
   Plate,
@@ -14,7 +15,6 @@ import {
   ELEMENT_PARAGRAPH,
   CodeBlockElement,
 } from "@udecode/plate"
-import { EditableProps } from "slate-react/dist/components/editable"
 
 // import HoveringToolbar from "../HoveringToolbar"
 // import { useUserdata } from "../Userdata"
@@ -44,6 +44,7 @@ import { deserialize } from "./serialization"
 import TitleInput from "./TitleInput"
 import { DummyEditor } from "./DummyEditor"
 import { useRxSubscription } from "../../hooks"
+import { BalloonToolbar } from "./BalloonToolbar"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
@@ -369,8 +370,8 @@ const EditorComponent: React.FC<{
             >
               <TitleInput currentDocument={currentDocument} />
               <Toolbar />
+              <BalloonToolbar />
               {/* <ToolbarSearchHighlight icon={Search} setSearch={setSearch} /> */}
-              {/* <BallonToolbarMarks /> */}
               {/* <MentionSelect
                     {...getMentionSelectProps()}
                     renderLabel={renderMentionLabel}
