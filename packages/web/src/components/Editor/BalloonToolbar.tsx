@@ -22,23 +22,16 @@ export const BalloonToolbar = () => {
   const theme = "dark"
 
   // TODO: rework these types
-  const popperOptions: { placement: "top" } = {
-    placement: "top",
+  const popperOptions = {
+    placement: "top" as "top",
   }
-  const tooltip: {
-    arrow: boolean
-    delay: number
-    duration: [number, number]
-    hideOnClick: false
-    offset: [number, number]
-    placement: "top"
-  } = {
+  const tooltip = {
     arrow: true,
     delay: 0,
-    duration: [200, 0],
+    duration: [200, 0] as [number, number],
     hideOnClick: false,
-    offset: [0, 17],
-    placement: "top",
+    offset: [0, 17] as [number, number],
+    placement: "top" as "top",
   }
 
   // TODO: use styling matching the rest of the app
