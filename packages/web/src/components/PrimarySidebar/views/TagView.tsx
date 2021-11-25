@@ -54,7 +54,7 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
 
   return ok ? (
     <PrimarySidebarViewContainer>
-      <MainHeader title={tag.name} />
+      <MainHeader title={tag.name} parentGroupId={null} />
       {/* TODO:  Rework InnerContainer to work with tags as well as groups */}
       <InnerContainer groupId={undefined}>
         {!isTagLoading && !isDocumentsLoading ? (
