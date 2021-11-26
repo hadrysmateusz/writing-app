@@ -643,40 +643,45 @@ export const MainProvider: React.FC = memo(({ children }) => {
       // Tab with this document already exists, switch to it
       if (tabId !== null) {
         tabsDispatch({ type: "switch-tab", tabId })
-      }
-      // if current tab's keep property was false, reuse the current tab
-      else if (tabsState.tabs[tabsState.currentTab].keep === false) {
-        tabsDispatch({
-          type: "replace-tab",
-          tab: {
-            tabId: tabsState.currentTab,
+      } else {
+        const tempTab = Object.values(tabsState.tabs).find(
+          (tab) => tab.keep === false
+        )
+        // if there is a tab with keep === false, we reuse that tab
+        if (!!tempTab) {
+          tabsDispatch({
+            type: "replace-tab",
+            tab: {
+              tabId: tempTab.tabId,
+              tabType: "cloudDocument",
+              documentId: documentId,
+              keep: false,
+            },
+            switch: true,
+          })
+        }
+        // Open document in new tab
+        else if (currentDocumentId === null || inNewTab) {
+          tabsDispatch({
+            type: "create-tab",
             tabType: "cloudDocument",
             documentId: documentId,
-            keep: false,
-          },
-        })
-      }
-      // Open document in new tab
-      else if (currentDocumentId === null || inNewTab) {
-        tabsDispatch({
-          type: "create-tab",
-          tabType: "cloudDocument",
-          documentId: documentId,
-          switch: true,
-        })
-      }
-      // Open document in current tab
-      else if (tabsState.currentTab !== null) {
-        // TODO: this currently doesn nothing (figure out what to do with it)
-        tabsDispatch({
-          type: "change-document",
-          tabId: tabsState.currentTab,
-          documentId: documentId,
-        })
-      }
-      // Invalid scenario
-      else {
-        throw new Error("Couldn't open document")
+            switch: true,
+          })
+        }
+        // Open document in current tab
+        else if (tabsState.currentTab !== null) {
+          // TODO: this currently doesn nothing (figure out what to do with it)
+          tabsDispatch({
+            type: "change-document",
+            tabId: tabsState.currentTab,
+            documentId: documentId,
+          })
+        }
+        // Invalid scenario
+        else {
+          throw new Error("Couldn't open document")
+        }
       }
 
       return fetchDocument(documentId)
@@ -734,10 +739,12 @@ export const MainProvider: React.FC = memo(({ children }) => {
           const parsedCurrentPath = parseSidebarPath(
             primarySidebar.currentSubviews[primarySidebar.currentView]
           )
-          // If current view is all documents and the document is created at the root, don't switch
+          // Switch to inbox view unless current view is all documents view, in which case we stay there
           if (
-            parsedCurrentPath?.view === "cloud" &&
-            parsedCurrentPath?.subview === "all"
+            !(
+              parsedCurrentPath?.view === "cloud" &&
+              parsedCurrentPath?.subview === "all"
+            )
           ) {
             // Otherwise we switch to inbox
             primarySidebar.switchSubview("cloud", "inbox")

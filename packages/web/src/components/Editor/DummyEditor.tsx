@@ -6,7 +6,6 @@ import { Descendant } from "slate"
 import {
   CreateDocumentFn,
   useDocumentsAPI,
-  useMainState,
   useTabsState,
 } from "../MainProvider"
 import { Toolbar } from "../Toolbar"
@@ -97,6 +96,7 @@ export const DummyEditor = () => {
         documentId: newDocument.id,
         keep: true,
       },
+      switch: true,
     })
   }
 

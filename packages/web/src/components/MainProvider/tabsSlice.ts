@@ -45,6 +45,7 @@ export type TabsAction =
   | {
       type: "replace-tab"
       tab: TabsStateTab
+      switch: boolean
     }
 
 export type TabsReducer = Reducer<TabsState, TabsAction>
@@ -128,6 +129,7 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
       // given a tab object, replaces a tab with its id with the new tab object, overwriting its properties
       case "replace-tab": {
         const { tab } = action
+        const newCurrentTab = !!action.switch ? tab.tabId : state.currentTab
 
         if (!Object.keys(state.tabs).includes(tab.tabId)) {
           console.warn("Attempted to close a tab that doesn't exist")
@@ -141,6 +143,7 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
             ...state.tabs,
             [tab.tabId]: tab,
           },
+          currentTab: newCurrentTab,
         }
         break
       }
