@@ -101,7 +101,7 @@ const GroupTreeItem: React.FC<{
   }, [setIsExpanded])
 
   const handleNewDocument = useCallback(() => {
-    createDocument(group.id)
+    createDocument({ parentGroup: group.id })
   }, [createDocument, group.id])
 
   const handleDeleteGroup = useCallback(() => {

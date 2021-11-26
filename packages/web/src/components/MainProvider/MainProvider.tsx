@@ -693,17 +693,16 @@ export const MainProvider: React.FC = memo(({ children }) => {
    * Handles creating a new document
    * TODO: switchToDocument (and especially their defaults) cause a lot of hard to spot bugs, figure out a way to better handle this (maybe remove this functionality from here or create a separate wrapper function to handle these functionalities or at least make them required instead of optional)
    * TODO: think about how this function should co-exist with the openDocument function and how their functionalities overlap
-   * TODO: maybe
    */
   const createDocument: CreateDocumentFn = useCallback(
-    async (parentGroup, values = {}, options = {}) => {
-      const { switchToDocument = true, switchToGroup = true } = options
-      // TODO: rework this functions params and define which properties can and can't be provided at creation
+    async (values, options = {}) => {
       const {
+        parentGroup,
         title = "",
         content = serialize(DEFAULT_EDITOR_VALUE),
         tags = [],
       } = values
+      const { switchToDocument = true, switchToGroup = true } = options
 
       console.log("createDocument called", parentGroup, values, options)
 
@@ -719,7 +718,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
         title, // TODO: consider custom title sanitation / formatting
         titleSlug,
         content,
-        parentGroup: parentGroup,
+        parentGroup,
         tags,
         createdAt: timestamp,
         modifiedAt: timestamp,
@@ -1098,7 +1097,7 @@ export const MainProvider: React.FC = memo(({ children }) => {
         window.getSelection()?.removeAllRanges()
         // Create the new document
         // TODO: maybe infer the collection somehow from the current document or something else
-        createDocument(null)
+        createDocument({ parentGroup: null })
       })
     }
     return undefined

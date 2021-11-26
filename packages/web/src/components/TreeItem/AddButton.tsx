@@ -18,7 +18,7 @@ export const AddButton: React.FC<{
   const { createDocument } = useDocumentsAPI()
 
   const handleClick = () => {
-    createDocument(groupId)
+    createDocument({ parentGroup: groupId })
   }
 
   return (

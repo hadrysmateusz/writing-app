@@ -20,7 +20,7 @@ export const SectionHeader: React.FC<{
 
   const handleNewDocument = () => {
     if (groupId !== undefined) {
-      createDocument(groupId)
+      createDocument({ parentGroup: groupId })
     }
     closeMenu()
   }

@@ -24,7 +24,7 @@ import {
 
 const DummyTitleInput: React.FC<{
   createDocumentAndReplaceTab: (
-    values: Parameters<CreateDocumentFn>[1]
+    values: Parameters<CreateDocumentFn>[0]
   ) => Promise<void>
 }> = ({ createDocumentAndReplaceTab }) => {
   const [value, setValue] = useState<string>("")
@@ -59,7 +59,7 @@ const DummyTitleInput: React.FC<{
 
   const onRename = async (newValue: string) => {
     if (newValue.trim() !== "") {
-      createDocumentAndReplaceTab({ title: newValue })
+      createDocumentAndReplaceTab({ parentGroup: null, title: newValue })
     }
   }
 
@@ -76,17 +76,13 @@ export const DummyEditor = () => {
   const tabsDispatch = useTabsDispatch()
 
   const createDocumentAndReplaceTab = async (
-    values: Parameters<CreateDocumentFn>[1]
+    values: Parameters<CreateDocumentFn>[0]
   ) => {
     // create document and use current content (switch to it in a new tab as well)
-    const newDocument = await createDocument(
-      null /* TODO: infer group */,
-      values,
-      {
-        switchToDocument: false,
-        switchToGroup: true,
-      }
-    )
+    const newDocument = await createDocument(values, {
+      switchToDocument: false,
+      switchToGroup: true,
+    })
     // replace old placeholder tab
     tabsDispatch({
       type: "replace-tab",
@@ -112,7 +108,10 @@ export const DummyEditor = () => {
     const serializedContent = serialize(nodes)
 
     if (nodes.length > 0) {
-      createDocumentAndReplaceTab({ content: serializedContent })
+      createDocumentAndReplaceTab({
+        parentGroup: null /* TODO: infer group */,
+        content: serializedContent,
+      })
     }
   }
 

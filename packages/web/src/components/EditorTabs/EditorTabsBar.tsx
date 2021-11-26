@@ -18,10 +18,13 @@ const EditorTabsBar: FC = () => {
 
   const handleDoubleClick = async (e) => {
     if (e.target === e.currentTarget) {
-      const document = await createDocument(null, undefined, {
-        switchToDocument: false,
-        switchToGroup: false,
-      })
+      const document = await createDocument(
+        { parentGroup: null },
+        {
+          switchToDocument: false,
+          switchToGroup: false,
+        }
+      )
       openDocument(document.id, { inNewTab: true })
     }
   }

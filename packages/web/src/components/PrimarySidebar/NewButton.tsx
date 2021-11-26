@@ -10,7 +10,7 @@ export const NewButton: React.FC<{ groupId: string | null }> = ({
   const { createDocument } = useDocumentsAPI()
 
   const handleNew = useCallback(() => {
-    createDocument(groupId)
+    createDocument({ parentGroup: groupId })
   }, [createDocument, groupId])
 
   return (

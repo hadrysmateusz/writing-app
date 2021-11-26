@@ -37,8 +37,17 @@ export type UpdateDocumentFn = (
   includeRemoved?: boolean
 ) => Promise<DocumentDoc>
 export type CreateDocumentFn = (
-  parentGroup: string | null,
-  values?: Partial<Pick<DocumentDocType, "title" | "content" | "tags">>,
+  /**
+   * Initial values for the document
+   */
+  values: {
+    // Required
+    parentGroup: DocumentDocType["parentGroup"]
+    // Optional
+    title?: DocumentDocType["title"]
+    content?: DocumentDocType["content"]
+    tags?: DocumentDocType["tags"]
+  },
   options?: CreateDocumentOptions
 ) => Promise<DocumentDoc>
 export type RenameDocumentFn = (

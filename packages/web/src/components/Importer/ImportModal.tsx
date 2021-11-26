@@ -55,9 +55,8 @@ export const ImportModalContent: React.FC<{
         const serializedContent = serialize(content)
 
         return createDocument(
-          targetGroup,
-          { title, content: serializedContent },
-          { switchToDocument: false }
+          { parentGroup: targetGroup, title, content: serializedContent },
+          { switchToDocument: false, switchToGroup: true }
         )
       })
 
