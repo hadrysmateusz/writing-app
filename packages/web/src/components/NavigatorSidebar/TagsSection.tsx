@@ -1,12 +1,39 @@
-import { SectionHeader, SectionContainer } from "./Common"
+import { useMemo } from "react"
 
 import { useRxSubscription, useToggleable } from "../../hooks"
-import { TagDoc, useDatabase } from "../Database"
+
+import { DocumentDoc, TagDoc, useDatabase } from "../Database"
 import { GenericTreeItem } from "../TreeItem"
 import { EditableText, useEditableText } from "../RenamingInput"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import { useTagsAPI } from "../MainProvider/context"
 import { usePrimarySidebar } from "../ViewState"
+
+import { SectionHeader, SectionContainer } from "./Common"
+
+function countTaggedDocs(tags: TagDoc[], documents: DocumentDoc[]) {
+  // simplify tag docs to only the necessary data and add a docCount field for later
+  const newTags = tags.map((tag) => ({ ...tag.toJSON(), docCount: 0 }))
+  // iterate over all docs and count the number of occurences of each tag
+  const tagsCounter = {}
+  documents.forEach((doc) => {
+    doc.tags.forEach((tagOnDoc) => {
+      // if tagId is already present on object increment its count, otherwise initialize it to 0
+      if (tagsCounter[tagOnDoc] === undefined) {
+        tagsCounter[tagOnDoc] = 0
+      } else {
+        tagsCounter[tagOnDoc] += 1
+      }
+    })
+  })
+  // assign docCount to each tag in array
+  newTags.forEach((tag) => {
+    tag.docCount = tagsCounter[tag.id]
+  })
+  // sort tags array by docCount ASC
+  newTags.sort((a, b) => b.docCount - a.docCount)
+  return newTags
+}
 
 /* The number of tags displayed without toggling */
 const LIMIT_TAGS = 4
@@ -17,21 +44,31 @@ export const TagsSection: React.FC = () => {
   const db = useDatabase()
 
   const { isOpen, toggle } = useToggleable(false)
-  const { data: tags, isLoading } = useRxSubscription(db.tags.find())
 
-  const hasTags = !isLoading && tags && tags.length > 0
+  const { data: tags } = useRxSubscription(db.tags.find())
+  const { data: documents } = useRxSubscription(db.documents.findNotRemoved())
 
-  return hasTags ? (
+  const numTags: number = tags?.length ?? 0
+  const hasTags: boolean = numTags > 0
+
+  const sortedTags = useMemo(() => {
+    if (!tags || !documents) return null
+    return countTaggedDocs(tags, documents)
+  }, [documents, tags])
+
+  const isReady = hasTags && sortedTags
+
+  return isReady ? (
     <SectionContainer>
-      <SectionHeader>{MSG_TAGS}</SectionHeader>
+      <TagsSectionHeader />
 
-      {tags.map((tag, index) =>
+      {sortedTags.map((tag, index) =>
         isOpen || index < LIMIT_TAGS ? (
-          <TagTreeItem key={tag.id} tag={tag} />
+          <TagTreeItem key={tag.id} tagId={tag.id} tagName={tag.name} />
         ) : null
       )}
 
-      {tags.length > LIMIT_TAGS ? (
+      {numTags > LIMIT_TAGS ? (
         <GenericTreeItem
           depth={0}
           onClick={() => {
@@ -46,16 +83,33 @@ export const TagsSection: React.FC = () => {
   ) : null
 }
 
-const TagTreeItem: React.FC<{ tag: TagDoc }> = ({ tag }) => {
+const TagsSectionHeader = () => {
+  const primarySidebar = usePrimarySidebar()
+
+  const handleClick = (_e) => {
+    primarySidebar.switchSubview("tags", "all")
+  }
+
+  return (
+    <SectionHeader withHover={true} onClick={handleClick}>
+      {MSG_TAGS}
+    </SectionHeader>
+  )
+}
+
+const TagTreeItem: React.FC<{ tagId: string; tagName: string }> = ({
+  tagId,
+  tagName,
+}) => {
   const { actuallyPermanentlyDeleteTag, renameTag } = useTagsAPI()
   const { switchSubview } = usePrimarySidebar()
 
   const { openMenu, closeMenu, ContextMenu } = useContextMenu()
 
   const { startRenaming, getProps: getRenamingInputProps } = useEditableText(
-    tag.name,
+    tagName,
     (value: string) => {
-      renameTag(tag.id, value)
+      renameTag(tagId, value)
     }
   )
 
@@ -67,29 +121,29 @@ const TagTreeItem: React.FC<{ tag: TagDoc }> = ({ tag }) => {
   const handleDelete = async () => {
     // TODO: add a confirmation dialog
     try {
-      await actuallyPermanentlyDeleteTag(tag.id)
+      await actuallyPermanentlyDeleteTag(tagId)
     } catch (e) {
       // TODO: better surface this error to the user
-      console.log("error while deleting document")
+      console.log("error while deleting tag")
       throw e
     }
   }
 
   const handleClick = () => {
-    switchSubview("cloud", "tag", tag.id)
+    switchSubview("cloud", "tag", tagId)
   }
 
   return (
     <>
       <GenericTreeItem
-        key={tag.id}
+        key={tagId}
         depth={0}
         onContextMenu={openMenu}
         onClick={handleClick}
         // isActive={isActive}
         icon="tag"
       >
-        <EditableText {...getRenamingInputProps()}>{tag.name}</EditableText>
+        <EditableText {...getRenamingInputProps()}>{tagName}</EditableText>
       </GenericTreeItem>
 
       <ContextMenu>
