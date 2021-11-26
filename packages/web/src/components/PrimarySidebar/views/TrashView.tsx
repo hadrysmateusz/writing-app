@@ -25,7 +25,7 @@ export const TrashView: FunctionComponent = () => {
   return (
     <PrimarySidebarViewContainer>
       <MainHeader title="Trash" />
-      <InnerContainer groupId={undefined}>
+      <InnerContainer>
         {!isLoading ? <DocumentsList documents={documents || []} /> : null}
       </InnerContainer>
       <DeleteAllButton />

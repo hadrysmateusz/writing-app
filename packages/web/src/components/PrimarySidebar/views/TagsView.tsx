@@ -1,8 +1,8 @@
-import { useCallback } from "react"
+import React, { FC, useCallback } from "react"
 
 import useRxSubscription from "../../../hooks/useRxSubscription"
 
-import { useDatabase } from "../../Database"
+import { TagDoc, useDatabase } from "../../Database"
 import { MainHeader } from "../../DocumentsList"
 import { useTagsAPI } from "../../MainProvider/context"
 import { getPromptModalContent, usePromptModal } from "../../PromptModal"
@@ -37,20 +37,27 @@ export const TagsView: React.FC = () => {
   return (
     <>
       <PrimarySidebarViewContainer>
-        {/* Rework header to support other views than cloud */}
+        {/* TODO: Rework header to support other views than cloud */}
         <MainHeader title="Tags" />
-        <InnerContainer groupId={null}>
-          {!isLoading && tags
-            ? tags.map((tag) => (
-                <TagListItem key={tag.id} id={tag.id} name={tag.name} />
-              ))
-            : null}
+        {/* TODO: Rework inner container to support tags */}
+        <InnerContainer>
+          {!isLoading && tags ? <TagsList tags={tags || []} /> : null}
         </InnerContainer>
         <PrimarySidebarBottomButton icon="plus" handleClick={handleNew}>
           New Tag
         </PrimarySidebarBottomButton>
       </PrimarySidebarViewContainer>
       <Modal component={TagAddModalContent} />
+    </>
+  )
+}
+
+const TagsList: FC<{ tags: TagDoc[] }> = ({ tags }) => {
+  return (
+    <>
+      {tags.map((tag) => (
+        <TagListItem key={tag.id} id={tag.id} name={tag.name} />
+      ))}
     </>
   )
 }

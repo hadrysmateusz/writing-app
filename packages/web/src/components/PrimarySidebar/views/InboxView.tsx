@@ -25,7 +25,7 @@ export const InboxView: React.FC = () => {
   return (
     <PrimarySidebarViewContainer>
       <MainHeader title="Inbox" />
-      <InnerContainer groupId={null}>
+      <InnerContainer>
         {!isLoading ? <DocumentsList documents={documents || []} /> : null}
       </InnerContainer>
       <NewButton groupId={null} />

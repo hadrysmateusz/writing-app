@@ -61,7 +61,7 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
         parentGroupId={group.parentGroup}
         numSubgroups={childGroups.length}
       />
-      <InnerContainer groupId={groupId}>
+      <InnerContainer>
         {!isLoading ? (
           <>
             <DocumentsList documents={documents || []} />

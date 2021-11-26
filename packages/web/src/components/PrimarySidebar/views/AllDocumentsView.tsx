@@ -31,7 +31,7 @@ export const AllDocumentsView: React.FC = () => {
   return (
     <PrimarySidebarViewContainer>
       <MainHeader title="All Documents" />
-      <InnerContainer groupId={null}>
+      <InnerContainer>
         {!isLoading ? (
           <>
             <DocumentsList documents={documents || []} />
