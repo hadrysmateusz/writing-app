@@ -38,20 +38,6 @@ import { useTabsDispatch } from "../MainProvider"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
-// const components = createPlateUI({
-//   [ELEMENT_CODE_BLOCK]: withProps(CodeBlockElement, {
-//     styles: { root: { background: "var(--dark-400)" } },
-//   }),
-//   [ELEMENT_PARAGRAPH]: ParagraphElement,
-//   // [ELEMENT_BLOCKQUOTE]: withProps(BlockquoteElement, { styles: { root: {} } }),
-// })
-// const options = createPlateOptions({
-//   [ELEMENT_CODE_BLOCK]: {
-//     syntax: true,
-//     syntaxPopularFirst: true,
-//   },
-// })
-
 /**
  * Renders the editor if there is a document selected
  */
@@ -327,7 +313,7 @@ const EditorComponent: React.FC<{
         }
       },
     }),
-    [editor, openMenu, saveDocument]
+    [editor, openMenu, saveDocument, tabsDispatch]
   )
 
   const handleContainerKeyDown = useCallback(
