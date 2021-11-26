@@ -7,14 +7,18 @@ export const SectionContainer = styled.div`
     margin-top: var(--navigator-sidebar-spacing);
   }
 `
-export const SectionHeader = styled.div`
+export const SectionHeader = styled.div<{ withHover?: boolean }>`
   font-family: Poppins;
   font-weight: bold;
   font-size: 10px;
-  color: var(--light-300);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   padding: 0 18px 5px;
-
   user-select: none;
+
+  color: var(--light-300);
+
+  :hover {
+    ${(p) => (p.withHover ? "color: var(--light-400); cursor:pointer;" : null)}
+  }
 `
