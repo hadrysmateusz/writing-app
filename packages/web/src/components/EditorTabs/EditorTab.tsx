@@ -13,10 +13,7 @@ import { EditableText } from "../RenamingInput"
 
 const initialTabData = { title: "", group: null }
 
-const EditorTab: FC<{ tabId: string; isOnlyTab?: boolean }> = ({
-  tabId,
-  isOnlyTab = false,
-}) => {
+const EditorTab: FC<{ tabId: string }> = ({ tabId }) => {
   const tabsState = useTabsState()
   const { closeTab, tabsDispatch } = useMainState()
 
@@ -43,7 +40,6 @@ const EditorTab: FC<{ tabId: string; isOnlyTab?: boolean }> = ({
             tabId={tab.tabId}
             documentId={tab.documentId}
             isActive={isActive}
-            isOnlyTab={isOnlyTab}
             keep={tab.keep}
             handleSwitchTab={handleSwitchTab}
             handleCloseTab={handleCloseTab}
@@ -54,7 +50,6 @@ const EditorTab: FC<{ tabId: string; isOnlyTab?: boolean }> = ({
         return (
           <CloudNewEditorTab
             isActive={isActive}
-            isOnlyTab={isOnlyTab}
             keep={tab.keep}
             handleSwitchTab={handleSwitchTab}
             handleCloseTab={handleCloseTab}
@@ -71,7 +66,6 @@ const CloudDocumentEditorTab: React.FC<{
   tabId: string
   documentId: string
   isActive: boolean
-  isOnlyTab: boolean
   keep: boolean
   handleSwitchTab: (e: React.MouseEvent) => void
   handleCloseTab: (e: React.MouseEvent) => void
@@ -100,18 +94,10 @@ const CloudDocumentEditorTab: React.FC<{
 const CloudDocumentEditorTabWithFoundDocument: React.FC<{
   document: DocumentDoc
   isActive: boolean
-  isOnlyTab: boolean
   keep: boolean
   handleSwitchTab: (e: React.MouseEvent) => void
   handleCloseTab: (e: React.MouseEvent) => void
-}> = ({
-  document,
-  isActive,
-  isOnlyTab,
-  keep,
-  handleSwitchTab,
-  handleCloseTab,
-}) => {
+}> = ({ document, isActive, keep, handleSwitchTab, handleCloseTab }) => {
   const { findGroupById } = useGroupsAPI()
 
   const [tabData, setTabData] = useState<{
@@ -157,7 +143,7 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
         <EditableText {...getEditableProps()}>{tabData.title}</EditableText>
       </div>
       {tabData.group ? <div className="tab-group">{tabData.group}</div> : null}
-      <TabCloseButton isOnlyTab={isOnlyTab} handleCloseTab={handleCloseTab} />
+      <TabCloseButton handleCloseTab={handleCloseTab} />
       {isMenuOpen && <DocumentContextMenu />}
     </EditorTabContainer>
   )
@@ -165,11 +151,10 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
 
 const CloudNewEditorTab: React.FC<{
   isActive: boolean
-  isOnlyTab: boolean
   keep: boolean
   handleSwitchTab: (e: React.MouseEvent) => void
   handleCloseTab: (e: React.MouseEvent) => void
-}> = ({ isActive, isOnlyTab, keep, handleSwitchTab, handleCloseTab }) => {
+}> = ({ isActive, keep, handleSwitchTab, handleCloseTab }) => {
   return (
     <EditorTabContainer
       isActive={isActive}
@@ -177,21 +162,20 @@ const CloudNewEditorTab: React.FC<{
       onClick={handleSwitchTab}
     >
       <div className="tab-title">Untitled</div>
-      <TabCloseButton isOnlyTab={isOnlyTab} handleCloseTab={handleCloseTab} />
+      <TabCloseButton handleCloseTab={handleCloseTab} />
     </EditorTabContainer>
   )
 }
 
 const TabCloseButton: React.FC<{
-  isOnlyTab: boolean
   handleCloseTab: (e: React.MouseEvent) => void
-}> = ({ isOnlyTab, handleCloseTab }) => {
+}> = ({ handleCloseTab }) => {
   /* TODO: not sure if not showing the close button is the best solution but it's better than nothing (I could remove this when/if I add different tab types and the placeholder tab type so that a new document isn't created every time, even when nothing is written in the new tab) */
-  return !isOnlyTab ? (
+  return (
     <div className="tab-close-button" onClick={handleCloseTab}>
       <Icon icon="close" />
     </div>
-  ) : null
+  )
 }
 
 const EditorTabContainer = styled.div<{ isActive?: boolean; keep: boolean }>`

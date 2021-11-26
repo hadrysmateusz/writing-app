@@ -26,14 +26,12 @@ const EditorTabsBar: FC = () => {
     }
   }
 
-  const onlyHasOneTab = Object.keys(tabsState.tabs).length === 1
-
   return (
     <EditorTabsContainer>
       {!isPrimarySidebarOpen ? <PrimarySidebarTabs /> : null}
       <EditorTabsInnerContainer>
         {Object.keys(tabsState.tabs).map((tabId) => (
-          <EditorTab key={tabId} tabId={tabId} isOnlyTab={onlyHasOneTab} />
+          <EditorTab key={tabId} tabId={tabId} />
         ))}
         <EditorTabAdd key={"tab-add-button"} />
         <EditorTabsFiller
