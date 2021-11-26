@@ -1,4 +1,5 @@
 import { createContext } from "../../utils"
+import { TabsAction } from "./tabsSlice"
 
 import { DocumentsAPI, GroupsAPI, TagsAPI, MainState } from "./types"
 
@@ -11,3 +12,7 @@ export const [DocumentsAPIContext, useDocumentsAPI] = createContext<
 >()
 
 export const [TagsAPIContext, useTagsAPI] = createContext<TagsAPI>()
+
+export const [TabsDispatchContext, useTabsDispatch] = createContext<
+  React.Dispatch<TabsAction>
+>()

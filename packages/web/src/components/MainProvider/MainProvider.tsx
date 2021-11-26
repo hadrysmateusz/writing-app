@@ -62,6 +62,7 @@ import {
   useDocumentsAPI,
   useGroupsAPI,
   useMainState,
+  TabsDispatchContext,
 } from "./context"
 import { cancelSubscriptions, getCurrentCloudDocumentId } from "./helpers"
 import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
@@ -1187,8 +1188,10 @@ export const MainProvider: React.FC = memo(({ children }) => {
         <GroupsAPIContext.Provider value={groupsAPI}>
           <TagsAPIContext.Provider value={tagsAPI}>
             <TabsStateContext.Provider value={tabsState}>
-              <ConfirmDeleteModal component={ConfirmDeleteModalContent} />
-              {isInitialLoad ? <AppLoadingState /> : children}
+              <TabsDispatchContext.Provider value={tabsDispatch}>
+                <ConfirmDeleteModal component={ConfirmDeleteModalContent} />
+                {isInitialLoad ? <AppLoadingState /> : children}
+              </TabsDispatchContext.Provider>
             </TabsStateContext.Provider>
           </TagsAPIContext.Provider>
         </GroupsAPIContext.Provider>
