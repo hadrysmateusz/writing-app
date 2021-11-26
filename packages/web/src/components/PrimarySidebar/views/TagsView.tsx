@@ -10,7 +10,7 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../SidebarCommon"
-import { Tag } from "../../Tag"
+import { TagListItem } from "../../TagListItem"
 
 import { PrimarySidebarBottomButton } from "../PrimarySidebarBottomButton"
 
@@ -42,7 +42,7 @@ export const TagsView: React.FC = () => {
         <InnerContainer groupId={null}>
           {!isLoading && tags
             ? tags.map((tag) => (
-                <Tag key={tag.id} id={tag.id} name={tag.name} />
+                <TagListItem key={tag.id} id={tag.id} name={tag.name} />
               ))
             : null}
         </InnerContainer>

@@ -8,7 +8,10 @@ import { EditableText, useEditableText } from "../RenamingInput"
 
 // const TagEditModalContent = getPromptModalContent("Tag name", "Save")
 
-export const Tag: React.FC<{ id: string; name: string }> = ({ id, name }) => {
+export const TagListItem: React.FC<{ id: string; name: string }> = ({
+  id,
+  name,
+}) => {
   const { actuallyPermanentlyDeleteTag, renameTag } = useTagsAPI()
 
   const { startRenaming, getProps: getRenamingInputProps } = useEditableText(
