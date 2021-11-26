@@ -72,7 +72,8 @@ export const plugins = createPlugins(
     createParagraphPlugin(),
     createBlockquotePlugin(),
     createCodeBlockPlugin({
-      options: { syntax: true, syntaxPopularFirst: true },
+      // TODO: turn syntax highlighting back on when I figure out why it's having issues
+      options: { syntax: false, syntaxPopularFirst: true },
     }),
     createHeadingPlugin(),
     createListPlugin(),
