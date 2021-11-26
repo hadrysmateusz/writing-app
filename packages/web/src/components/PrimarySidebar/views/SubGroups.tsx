@@ -9,6 +9,8 @@ import { useDatabase } from "../../Database"
 
 import { createFindDocumentsInGroupQuery } from "./queries"
 
+// TODO: use stateless toggleables and keep state higher up, persisting it between path changes (either as a global collection of group.ids that are open or closed, or a per-path one)
+
 export const SubGroups: FC<{ groups: GroupTreeBranch[] }> = ({ groups }) => (
   <>
     {groups.map((group) => (
