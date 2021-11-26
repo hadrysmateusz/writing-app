@@ -1,18 +1,18 @@
-import { FunctionComponent } from "react"
+import React, { FunctionComponent } from "react"
 import styled from "styled-components/macro"
 
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import Icon from "../Icon"
 import { SortingIndex, SortingDirection, useMainState } from "../MainProvider"
-import { usePrimarySidebar } from "../ViewState"
+import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 
 const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
 
 export const MainHeader: FunctionComponent<{
   title: string
-  parentGroupId?: string | null
   numSubgroups?: number
-}> = ({ title, parentGroupId, numSubgroups }) => {
+  goUpPath?: string
+}> = ({ title, numSubgroups, goUpPath }) => {
   const { switchSubview } = usePrimarySidebar()
 
   const {
@@ -21,12 +21,38 @@ export const MainHeader: FunctionComponent<{
     ContextMenu: SortingContextMenu,
   } = useContextMenu()
 
+  // function qwer<S extends SidebarSidebar>() {
+  //   return function asdf<
+  //     V extends SidebarView<S>,
+  //     SV extends SidebarSubview<S, V>,
+  //     ID extends string
+  //   >(v: V, sv: SV, id: ID) {}
+  // }
+
+  // function asdf2<
+  //   S extends SidebarSidebar,
+  //   V extends SidebarView<S>,
+  //   SV extends SidebarSubview<S, V>,
+  //   ID extends string
+  // >(s: S, v: V, sv: SV, id: ID) {}
+
   const handleGoUpButtonClick = () => {
-    if (parentGroupId === null) {
-      switchSubview("cloud", "all")
-    } else {
-      switchSubview("cloud", "group", parentGroupId)
+    if (!goUpPath) {
+      return
     }
+
+    console.log("handleGoUpButtonClick")
+
+    const parsedSidebarPath = parseSidebarPath(goUpPath)
+
+    if (!parsedSidebarPath) {
+      return
+    }
+
+    const { view, subview, id } = parsedSidebarPath
+
+    // TODO: figure out some fallbacks in case the arguments are invalid
+    switchSubview(view as any, subview as any, id)
   }
 
   const handleOnSortingButtonClick = (e) => {
@@ -45,23 +71,19 @@ export const MainHeader: FunctionComponent<{
           </div>
         </div>
 
-        {parentGroupId !== undefined ? (
-          <div
-            className="MainHeader_ButtonContainer"
-            onClick={handleGoUpButtonClick}
-            title="Go to parent collection"
-          >
-            <Icon icon="arrow90DegUp" />
-          </div>
+        {goUpPath !== undefined ? (
+          <MainHeaderButton
+            tooltip="Go to parent collection"
+            icon="arrow90DegUp"
+            action={handleGoUpButtonClick}
+          />
         ) : null}
 
-        <div
-          className="MainHeader_ButtonContainer"
-          onClick={handleOnSortingButtonClick}
-          title="Change sorting method"
-        >
-          <Icon icon="sort" />
-        </div>
+        <MainHeaderButton
+          tooltip="Change sorting method"
+          icon="sort"
+          action={handleOnSortingButtonClick}
+        />
       </div>
 
       {isSortingMenuOpen ? (
@@ -81,6 +103,22 @@ export const MainHeader: FunctionComponent<{
         </SortingContextMenu>
       ) : null}
     </Wrapper>
+  )
+}
+
+const MainHeaderButton: FunctionComponent<{
+  icon: string
+  tooltip: string
+  action: (e: React.MouseEvent<HTMLDivElement>) => void
+}> = ({ icon, action, tooltip }) => {
+  return (
+    <div
+      className="MainHeader_ButtonContainer"
+      onClick={action}
+      title={tooltip}
+    >
+      <Icon icon={icon} />
+    </div>
   )
 }
 

@@ -9,6 +9,7 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../SidebarCommon"
+import { SIDEBAR_VAR } from "../../ViewState"
 
 import { NewButton } from "../NewButton"
 
@@ -24,7 +25,7 @@ export const InboxView: React.FC = () => {
 
   return (
     <PrimarySidebarViewContainer>
-      <MainHeader title="Inbox" />
+      <MainHeader title="Inbox" goUpPath={SIDEBAR_VAR.primary.cloud.all} />
       <InnerContainer>
         {!isLoading ? <DocumentsList documents={documents || []} /> : null}
       </InnerContainer>

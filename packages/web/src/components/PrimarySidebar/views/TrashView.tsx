@@ -13,6 +13,7 @@ import { useDatabase } from "../../Database"
 import { PrimarySidebarBottomButton } from "../PrimarySidebarBottomButton"
 
 import { createFindDeletedDocumentsQuery } from "./queries"
+import { SIDEBAR_VAR } from "../../ViewState"
 
 export const TrashView: FunctionComponent = () => {
   const db = useDatabase()
@@ -24,7 +25,7 @@ export const TrashView: FunctionComponent = () => {
 
   return (
     <PrimarySidebarViewContainer>
-      <MainHeader title="Trash" />
+      <MainHeader title="Trash" goUpPath={SIDEBAR_VAR.primary.cloud.all} />
       <InnerContainer>
         {!isLoading ? <DocumentsList documents={documents || []} /> : null}
       </InnerContainer>

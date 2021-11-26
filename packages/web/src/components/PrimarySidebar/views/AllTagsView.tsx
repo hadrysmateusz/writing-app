@@ -10,6 +10,7 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../SidebarCommon"
+import { SIDEBAR_VAR } from "../../ViewState"
 
 import { PrimarySidebarBottomButton } from "../PrimarySidebarBottomButton"
 
@@ -52,8 +53,7 @@ export const AllTagsView: React.FC = () => {
   return (
     <>
       <PrimarySidebarViewContainer>
-        {/* TODO: Rework header to support other views than cloud */}
-        <MainHeader title="All Tags" />
+        <MainHeader title="All Tags" goUpPath={SIDEBAR_VAR.primary.cloud.all} />
         <InnerContainer>
           {sortedTags?.map((tag) => (
             <TagDocumentsList tagName={tag.name} documents={tag.docs} />

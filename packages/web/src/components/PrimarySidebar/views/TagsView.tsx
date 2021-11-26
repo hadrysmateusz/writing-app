@@ -11,6 +11,7 @@ import {
   InnerContainer,
 } from "../../SidebarCommon"
 import { TagListItem } from "../../TagListItem"
+import { SIDEBAR_VAR } from "../../ViewState"
 
 import { PrimarySidebarBottomButton } from "../PrimarySidebarBottomButton"
 
@@ -37,8 +38,7 @@ export const TagsView: React.FC = () => {
   return (
     <>
       <PrimarySidebarViewContainer>
-        {/* TODO: Rework header to support other views than cloud */}
-        <MainHeader title="Tags" />
+        <MainHeader title="Tags" goUpPath={SIDEBAR_VAR.primary.cloud.all} />
         {/* TODO: Rework inner container to support tags */}
         <InnerContainer>
           {!isLoading && tags ? <TagsList tags={tags || []} /> : null}

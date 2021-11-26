@@ -56,7 +56,7 @@ export const InnerContainer: React.FC<{}> = ({ children }) => {
           }
           case "tag": {
             await createDocument(
-              { parentGroup: null, tags: [id] },
+              { parentGroup: null, tags: id ? [id] : undefined },
               createDocumentOptions
             )
             break

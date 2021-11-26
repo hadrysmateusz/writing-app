@@ -10,7 +10,11 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
-import { parseSidebarPath, usePrimarySidebar } from "../../../ViewState"
+import {
+  parseSidebarPath,
+  SIDEBAR_VAR,
+  usePrimarySidebar,
+} from "../../../ViewState"
 
 import { NewButton } from "../../NewButton"
 
@@ -54,11 +58,15 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
     createFindDocumentsInGroupQuery(db, sorting, groupId)
   )
 
+  const goUpPath = group?.parentGroup
+    ? `${SIDEBAR_VAR.primary.cloud.group}_${group.parentGroup}`
+    : SIDEBAR_VAR.primary.cloud.all
+
   return ok ? (
     <PrimarySidebarViewContainer>
       <MainHeader
         title={formatOptional(group.name, "Unnamed Collection")}
-        parentGroupId={group.parentGroup}
+        goUpPath={goUpPath}
         numSubgroups={childGroups.length}
       />
       <InnerContainer>

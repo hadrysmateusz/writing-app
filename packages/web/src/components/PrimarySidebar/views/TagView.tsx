@@ -9,7 +9,11 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../SidebarCommon"
-import { parseSidebarPath, usePrimarySidebar } from "../../ViewState"
+import {
+  parseSidebarPath,
+  SIDEBAR_VAR,
+  usePrimarySidebar,
+} from "../../ViewState"
 
 import { NewButton } from "../NewButton"
 
@@ -54,7 +58,7 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
 
   return ok ? (
     <PrimarySidebarViewContainer>
-      <MainHeader title={tag.name} parentGroupId={null} />
+      <MainHeader title={tag.name} goUpPath={SIDEBAR_VAR.primary.tags.all} />
       <InnerContainer>
         {!isTagLoading && !isDocumentsLoading ? (
           <DocumentsList documents={documents || []} />
