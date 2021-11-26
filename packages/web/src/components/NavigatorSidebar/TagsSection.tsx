@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 import { useRxSubscription, useToggleable } from "../../hooks"
 
@@ -7,7 +7,7 @@ import { GenericTreeItem } from "../TreeItem"
 import { EditableText, useEditableText } from "../RenamingInput"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu"
 import { useTagsAPI } from "../MainProvider/context"
-import { usePrimarySidebar } from "../ViewState"
+import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 
 import { SectionHeader, SectionContainer } from "./Common"
 
@@ -102,7 +102,7 @@ const TagTreeItem: React.FC<{ tagId: string; tagName: string }> = ({
   tagName,
 }) => {
   const { actuallyPermanentlyDeleteTag, renameTag } = useTagsAPI()
-  const { switchSubview } = usePrimarySidebar()
+  const { switchSubview, currentSubviews, currentView } = usePrimarySidebar()
 
   const { openMenu, closeMenu, ContextMenu } = useContextMenu()
 
@@ -113,12 +113,12 @@ const TagTreeItem: React.FC<{ tagId: string; tagName: string }> = ({
     }
   )
 
-  const handleRename = () => {
+  const handleRename = useCallback(() => {
     closeMenu()
     startRenaming()
-  }
+  }, [closeMenu, startRenaming])
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     // TODO: add a confirmation dialog
     try {
       await actuallyPermanentlyDeleteTag(tagId)
@@ -127,11 +127,13 @@ const TagTreeItem: React.FC<{ tagId: string; tagName: string }> = ({
       console.log("error while deleting tag")
       throw e
     }
-  }
+  }, [actuallyPermanentlyDeleteTag, tagId])
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     switchSubview("cloud", "tag", tagId)
-  }
+  }, [switchSubview, tagId])
+
+  const isActive = parseSidebarPath(currentSubviews[currentView])?.id === tagId
 
   return (
     <>
@@ -140,7 +142,7 @@ const TagTreeItem: React.FC<{ tagId: string; tagName: string }> = ({
         depth={0}
         onContextMenu={openMenu}
         onClick={handleClick}
-        // isActive={isActive}
+        isActive={isActive}
         icon="tag"
       >
         <EditableText {...getRenamingInputProps()}>{tagName}</EditableText>
