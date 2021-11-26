@@ -22,7 +22,7 @@ export function parseSidebarPath(path: string) {
 
   console.log(SIDEBAR_VAR[sidebar][view][subview], path)
 
-  return { sidebar, view, subview, id: pathParts[3] }
+  return { sidebar, view, subview, id: pathParts[3] as string | undefined }
 
   // TODO: figure out how to make this check work with the last part being the id
   // if (SIDEBAR_VAR[sidebar][view][subview] === path) {
