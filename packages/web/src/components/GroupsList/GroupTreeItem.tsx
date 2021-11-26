@@ -15,7 +15,11 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "../ContextMenu"
-import { useNavigatorSidebar, usePrimarySidebar } from "../ViewState"
+import {
+  parseSidebarPath,
+  useNavigatorSidebar,
+  usePrimarySidebar,
+} from "../ViewState"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { GroupsList } from "../GroupsList"
@@ -49,7 +53,7 @@ const GroupTreeItem: React.FC<{
   const [hoverState, setHoverState] = useState<HoverState>(HoverState.outside)
   const droppableRef = useRef<HTMLDivElement | null>(null)
   const { updateLocalSetting } = useLocalSettings()
-  const { switchSubview, currentSubviews } = usePrimarySidebar()
+  const { switchSubview, currentSubviews, currentView } = usePrimarySidebar()
   const { expandedKeys, setExpandedKeys } = useNavigatorSidebar()
 
   const isExpanded = expandedKeys.includes(group.id)
@@ -108,7 +112,10 @@ const GroupTreeItem: React.FC<{
     switchSubview("cloud", "group", group.id)
   }, [group.id])
 
-  const isActive = currentSubviews.cloud === group.id
+  // TODO: calculate this once for the entire groups section, taking into consideration which group tree items are expanded etc. (calculate a single group.id which should be highlighted)
+  const isActive =
+    parseSidebarPath(currentSubviews[currentView])?.id === group.id
+
   const icon = isExpanded
     ? "folderOpen"
     : isEmpty
