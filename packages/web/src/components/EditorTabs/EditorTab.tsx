@@ -44,6 +44,7 @@ const EditorTab: FC<{ tabId: string; isOnlyTab?: boolean }> = ({
             documentId={tab.documentId}
             isActive={isActive}
             isOnlyTab={isOnlyTab}
+            keep={tab.keep}
             handleSwitchTab={handleSwitchTab}
             handleCloseTab={handleCloseTab}
           />
@@ -54,6 +55,7 @@ const EditorTab: FC<{ tabId: string; isOnlyTab?: boolean }> = ({
           <CloudNewEditorTab
             isActive={isActive}
             isOnlyTab={isOnlyTab}
+            keep={tab.keep}
             handleSwitchTab={handleSwitchTab}
             handleCloseTab={handleCloseTab}
           />
@@ -70,6 +72,7 @@ const CloudDocumentEditorTab: React.FC<{
   documentId: string
   isActive: boolean
   isOnlyTab: boolean
+  keep: boolean
   handleSwitchTab: (e: React.MouseEvent) => void
   handleCloseTab: (e: React.MouseEvent) => void
 }> = ({ tabId, documentId, ...rest }) => {
@@ -98,9 +101,17 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
   document: DocumentDoc
   isActive: boolean
   isOnlyTab: boolean
+  keep: boolean
   handleSwitchTab: (e: React.MouseEvent) => void
   handleCloseTab: (e: React.MouseEvent) => void
-}> = ({ document, isActive, isOnlyTab, handleSwitchTab, handleCloseTab }) => {
+}> = ({
+  document,
+  isActive,
+  isOnlyTab,
+  keep,
+  handleSwitchTab,
+  handleCloseTab,
+}) => {
   const { findGroupById } = useGroupsAPI()
 
   const [tabData, setTabData] = useState<{
@@ -138,6 +149,7 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
   return (
     <EditorTabContainer
       isActive={isActive}
+      keep={keep}
       onClick={handleSwitchTab}
       {...getContainerProps()}
     >
@@ -154,11 +166,16 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
 const CloudNewEditorTab: React.FC<{
   isActive: boolean
   isOnlyTab: boolean
+  keep: boolean
   handleSwitchTab: (e: React.MouseEvent) => void
   handleCloseTab: (e: React.MouseEvent) => void
-}> = ({ isActive, isOnlyTab, handleSwitchTab, handleCloseTab }) => {
+}> = ({ isActive, isOnlyTab, keep, handleSwitchTab, handleCloseTab }) => {
   return (
-    <EditorTabContainer isActive={isActive} onClick={handleSwitchTab}>
+    <EditorTabContainer
+      isActive={isActive}
+      keep={keep}
+      onClick={handleSwitchTab}
+    >
       <div className="tab-title">Untitled</div>
       <TabCloseButton isOnlyTab={isOnlyTab} handleCloseTab={handleCloseTab} />
     </EditorTabContainer>
@@ -177,11 +194,13 @@ const TabCloseButton: React.FC<{
   ) : null
 }
 
-const EditorTabContainer = styled.div<{ isActive?: boolean }>`
+const EditorTabContainer = styled.div<{ isActive?: boolean; keep: boolean }>`
   --bg-color-default: var(--bg-100);
   --bg-color-active: var(--bg-200);
   --bg-color: ${({ isActive }) =>
     isActive ? "var(--bg-color-active)" : "var(--bg-color-default)"};
+
+  ${(p) => (!p.keep ? "font-style: italic;" : null)}
 
   border-radius: var(--tab-corner-radius) var(--tab-corner-radius) 0 0;
   height: var(--tab-size);

@@ -34,6 +34,7 @@ import TitleInput from "./TitleInput"
 import { DummyEditor } from "./DummyEditor"
 import { useRxSubscription } from "../../hooks"
 import { BalloonToolbar } from "./BalloonToolbar"
+import { useTabsDispatch } from "../MainProvider"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
 
@@ -95,7 +96,9 @@ export const EditorRenderer: React.FC = () => {
     // default (error) case
     return (
       // This div is here to prevent issues with split pane rendering, TODO: add proper empty state
-      <div style={{ padding: "40px" }}>No document selected</div>
+      withDelayRender(1000, () => (
+        <div style={{ padding: "40px" }}>No document selected</div>
+      ))
     )
   }
 
@@ -117,6 +120,7 @@ const EditorComponent: React.FC<{
   saveDocument: SaveDocumentFn
 }> = ({ currentDocument, saveDocument }) => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
+  const tabsDispatch = useTabsDispatch()
 
   // const { isSpellCheckEnabled } = useUserdata()
   const { onChange } = useEditorState()
@@ -211,6 +215,9 @@ const EditorComponent: React.FC<{
       onBlur: (e) => {
         // TODO: if you close the window or reload without clicking on something else the blur doesn't trigger and the content doesn't get saved
         saveDocument()
+      },
+      onFocus: (e) => {
+        tabsDispatch({ type: "keep-tab", tabId: null })
       },
       onMouseDown: (
         event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>

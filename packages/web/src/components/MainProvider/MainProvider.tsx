@@ -644,18 +644,16 @@ export const MainProvider: React.FC = memo(({ children }) => {
       if (tabId !== null) {
         tabsDispatch({ type: "switch-tab", tabId })
       }
-      // If current tab was cloudNew, replace it
-      // TODO: probably create an action type to handle this in one dispatch
-      else if (tabsState.tabs[tabsState.currentTab].tabType === "cloudNew") {
+      // if current tab's keep property was false, reuse the current tab
+      else if (tabsState.tabs[tabsState.currentTab].keep === false) {
         tabsDispatch({
-          type: "create-tab",
-          tabType: "cloudDocument",
-          documentId: documentId,
-          switch: true,
-        })
-        tabsDispatch({
-          type: "close-tab",
-          tabId: tabsState.currentTab,
+          type: "replace-tab",
+          tab: {
+            tabId: tabsState.currentTab,
+            tabType: "cloudDocument",
+            documentId: documentId,
+            keep: false,
+          },
         })
       }
       // Open document in new tab

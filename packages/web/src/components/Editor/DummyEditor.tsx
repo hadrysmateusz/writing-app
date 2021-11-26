@@ -3,9 +3,15 @@ import isHotkey from "is-hotkey"
 import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 import { Descendant } from "slate"
 
-import { useDocumentsAPI, useMainState, useTabsState } from "../MainProvider"
+import {
+  CreateDocumentFn,
+  useDocumentsAPI,
+  useMainState,
+  useTabsState,
+} from "../MainProvider"
 import { Toolbar } from "../Toolbar"
 import { serialize } from "../Editor/serialization"
+import { useTabsDispatch } from "../MainProvider"
 
 import { StyledTitleNamingInput } from "./TitleInput"
 import pluginsList from "./pluginsList"
@@ -17,13 +23,13 @@ import {
 
 // TODO: remove remaining duplication with Editor
 
-const DummyTitleInput = () => {
+const DummyTitleInput: React.FC<{
+  createDocumentAndReplaceTab: (
+    values: Parameters<CreateDocumentFn>[1]
+  ) => Promise<void>
+}> = ({ createDocumentAndReplaceTab }) => {
   const [value, setValue] = useState<string>("")
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
-
-  const { createDocument } = useDocumentsAPI()
-  const { tabsDispatch } = useMainState()
-  const { currentTab } = useTabsState()
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     // Use the saving keyboard shortcut to apply title change
@@ -53,19 +59,9 @@ const DummyTitleInput = () => {
   }
 
   const onRename = async (newValue: string) => {
-    // create document and use current title
-    await createDocument(
-      null /* TODO: infer group */,
-      {
-        title: newValue,
-      },
-      {
-        switchToDocument: true,
-        switchToGroup: false,
-      }
-    )
-    // close old placeholder tab
-    tabsDispatch({ type: "close-tab", tabId: currentTab })
+    if (newValue.trim() !== "") {
+      createDocumentAndReplaceTab({ title: newValue })
+    }
   }
 
   const getTitleInputProps = () => ({ onKeyDown, onChange, onRename, value })
@@ -77,8 +73,32 @@ export const DummyEditor = () => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   const { createDocument } = useDocumentsAPI()
-  const { tabsDispatch } = useMainState()
   const { currentTab } = useTabsState()
+  const tabsDispatch = useTabsDispatch()
+
+  const createDocumentAndReplaceTab = async (
+    values: Parameters<CreateDocumentFn>[1]
+  ) => {
+    // create document and use current content (switch to it in a new tab as well)
+    const newDocument = await createDocument(
+      null /* TODO: infer group */,
+      values,
+      {
+        switchToDocument: false,
+        switchToGroup: true,
+      }
+    )
+    // replace old placeholder tab
+    tabsDispatch({
+      type: "replace-tab",
+      tab: {
+        tabId: currentTab,
+        tabType: "cloudDocument",
+        documentId: newDocument.id,
+        keep: true,
+      },
+    })
+  }
 
   // TODO: remove duplication with onRename in DummyTitleInput
   const onSave = async () => {
@@ -91,19 +111,9 @@ export const DummyEditor = () => {
     const nodes = editor.children as Descendant[]
     const serializedContent = serialize(nodes)
 
-    // create document and use current content (switch to it in a new tab as well)
-    await createDocument(
-      null /* TODO: infer group */,
-      {
-        content: serializedContent,
-      },
-      {
-        switchToDocument: true,
-        switchToGroup: false,
-      }
-    )
-    // close old placeholder tab
-    tabsDispatch({ type: "close-tab", tabId: currentTab })
+    if (nodes.length > 0) {
+      createDocumentAndReplaceTab({ content: serializedContent })
+    }
   }
 
   const editableProps = {
@@ -132,7 +142,9 @@ export const DummyEditor = () => {
             editableProps={editableProps}
             // onChange={onChange} TODO: maybe use this to trigger document creation (or any click inside the editor)
           >
-            <DummyTitleInput />
+            <DummyTitleInput
+              createDocumentAndReplaceTab={createDocumentAndReplaceTab}
+            />
             <Toolbar />
           </Plate>
         </EditableContainer>

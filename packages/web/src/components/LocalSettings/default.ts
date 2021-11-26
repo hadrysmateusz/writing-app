@@ -40,6 +40,7 @@ export function tabsInit(): TabsState {
       [tabId]: {
         tabId: tabId,
         tabType: "cloudNew",
+        keep: false,
       },
     },
     currentTab: tabId,

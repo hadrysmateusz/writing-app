@@ -19,6 +19,7 @@ export type CreateTabAction = CreateTabActionBase & CreateTabActionVariants
 
 type TabsStateTabBase = {
   tabId: string
+  keep: boolean
 }
 
 type TabsStateTabVariants =
@@ -40,6 +41,11 @@ export type TabsAction =
   | { type: "close-tab"; tabId: string }
   | { type: "change-document"; tabId: string; documentId: string }
   | { type: "set-state"; newState: TabsState }
+  | { type: "keep-tab"; tabId: string | null }
+  | {
+      type: "replace-tab"
+      tab: TabsStateTab
+    }
 
 export type TabsReducer = Reducer<TabsState, TabsAction>
 
@@ -48,10 +54,12 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
     console.log("tabs action:", action.type, action)
     let newState: TabsState = state
     switch (action.type) {
+      // replaces full state with any valid state object
       case "set-state": {
         newState = action.newState
         break
       }
+      // switches to another tab by id
       case "switch-tab": {
         if (!state.tabs[action.tabId]) {
           throw new Error(
@@ -61,6 +69,24 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
         newState = { ...state, currentTab: action.tabId }
         break
       }
+      // changes a given tab's keep property to true
+      case "keep-tab": {
+        // If provided tabId is null, use current tab
+        const tabId = action.tabId === null ? state.currentTab : action.tabId
+
+        newState = {
+          ...state,
+          tabs: {
+            ...state.tabs,
+            [tabId]: {
+              ...state.tabs[tabId],
+              keep: true,
+            },
+          },
+        }
+        break
+      }
+      // creates a new tab with given properties
       case "create-tab": {
         // TODO: figure out if I should check for the existence of a tab with this document here or whatever function wraps the dispatch
         const newTabId = uuidv4()
@@ -75,6 +101,7 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
                   tabId: newTabId,
                   tabType: "cloudDocument",
                   documentId: action.documentId,
+                  keep: false,
                 },
               },
               currentTab: newCurrentTab,
@@ -88,6 +115,7 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
                 [newTabId]: {
                   tabId: newTabId,
                   tabType: "cloudNew",
+                  keep: false,
                 },
               },
               currentTab: newCurrentTab,
@@ -97,6 +125,26 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
         }
         break
       }
+      // given a tab object, replaces a tab with its id with the new tab object, overwriting its properties
+      case "replace-tab": {
+        const { tab } = action
+
+        if (!Object.keys(state.tabs).includes(tab.tabId)) {
+          console.warn("Attempted to close a tab that doesn't exist")
+          // TODO: handle this better, maybe by simply creating a new tab with this data
+          break
+        }
+
+        newState = {
+          ...state,
+          tabs: {
+            ...state.tabs,
+            [tab.tabId]: tab,
+          },
+        }
+        break
+      }
+      // closes a tab by id
       case "close-tab": {
         const { tabId } = action
 
@@ -134,25 +182,6 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
         }
         break
       }
-      case "change-document":
-        throw new Error("unimplemented")
-      // if (!state.tabs[action.tabId]) {
-      //   console.warn(
-      //     "Attempted to change content of a tab that doesn't exist"
-      //   )
-      //   break
-      // }
-      // newState = {
-      //   ...state,
-      //   tabs: {
-      //     ...state.tabs,
-      //     [action.tabId]: {
-      //       ...state.tabs[action.tabId],
-      //       documentId: action.documentId,
-      //     },
-      //   },
-      // }
-      // break
       default: {
         newState = state
       }
@@ -161,78 +190,3 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
     return newState
   }
 }
-
-export function tabsInit(): TabsState {
-  const tabId = "__DEFAULT__"
-  return {
-    tabs: {
-      [tabId]: {
-        tabId: tabId,
-        tabType: "cloudNew",
-      },
-    },
-    currentTab: tabId,
-  }
-}
-
-// export const tabsInitialState: TabsState = tabsInit()
-
-// import { Reducer } from "react"
-// import { v4 as uuidv4 } from "uuid"
-
-// export type TabsStateTab = { type: "document"; title } | { type: "empty" }
-// export type TabsState = {
-//   tabs: { [documentId: string]: TabsStateTab }
-//   currentTab: string
-// }
-// export type TabsAction =
-//   | { type: "switch-tab"; tabId: string }
-//   | { type: "create-tab"; tabId: string; title: string; switch: boolean }
-//   | { type: "close-tab"; tabId: string }
-
-// export type TabsReducer = Reducer<TabsState, TabsAction>
-
-// export const tabsReducer: TabsReducer = function (
-//   state: TabsState,
-//   action: TabsAction
-// ): TabsState {
-//   switch (action.type) {
-//     case "switch-tab":
-//       if (!state.tabs[action.tabId]) {
-//         throw new Error(
-//           `Can't switch tab. Reason: Tab with id: ${action.tabId} doesn't exist`
-//         )
-//       }
-//       return { ...state, currentTab: action.tabId }
-//     case "create-tab":
-//       if (!!state.tabs[action.tabId]) {
-//         throw new Error(
-//           `Can't create tab. Reason: Tab with id: ${action.tabId} already exists`
-//         )
-//       }
-//       return {
-//         tabs: {
-//           ...state.tabs,
-//           [action.tabId]: { type: "document", title: action.title },
-//         },
-//         currentTab: !!action.switch ? action.tabId : state.currentTab,
-//       }
-//     case "close-tab":
-//       if (!state.tabs[action.tabId]) {
-//         console.warn("Attempted to close a tab that doesn't exist")
-//         return state
-//       }
-//       const { [action.tabId]: removedTab, ...remainingTabs } = state.tabs
-//       return { ...state, tabs: remainingTabs }
-//   }
-// }
-
-// function tabsInit(): TabsState {
-//   const tabId = uuidv4()
-//   return {
-//     tabs: { [tabId]: { type: "empty" } },
-//     currentTab: tabId,
-//   }
-// }
-
-// export const tabsInitialState: TabsState = tabsInit()
