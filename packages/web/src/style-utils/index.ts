@@ -20,6 +20,7 @@ export const resetButtonStyles = css`
 export const customScrollbar = css`
   ::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
 
   &:hover {
