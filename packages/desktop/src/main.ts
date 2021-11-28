@@ -207,4 +207,133 @@ ipcMain.handle("READ_FILE", async (_event, payload) => {
   return { status: DialogStatus.SUCCESS, error: null, data: files }
 })
 
+// TODO: rework naming of the events/channels
+
+ipcMain.handle("ADD_PATH", async (_event, _payload) => {
+  // TODO: better default path
+  // TODO: save the last used path for later
+  let defaultPath = path.join(os.homedir())
+
+  try {
+    await fs.ensureDir(defaultPath)
+  } catch (error) {
+    // TODO: better error handling
+    console.log(error)
+    throw error
+  }
+
+  // TODO: investigate if I should use the browserWindow argument to make the dialog modal
+  const dialogRes = await dialog.showOpenDialog({
+    title: "Add Path",
+    defaultPath,
+    buttonLabel: "Select",
+    properties: ["openDirectory"],
+  })
+
+  // TODO: consider making canceled and empty separate statuses
+  if (dialogRes.canceled || dialogRes.filePaths.length === 0) {
+    return { status: DialogStatus.CANCELED, error: null, data: null }
+  }
+
+  const dirPath = dialogRes.filePaths[0]
+
+  return {
+    status: DialogStatus.SUCCESS,
+    error: null,
+    data: {
+      dirPath: dirPath,
+      baseName: path.basename(dirPath),
+    },
+  }
+})
+
+type DirObject = {
+  path: string
+  name: string
+  dirs: DirObject[]
+  files: FileObject[]
+}
+type FileObject = { path: string; name: string }
+
+const createDirObject = async (pathStr: string): Promise<DirObject> => {
+  try {
+    await fs.ensureDir(pathStr)
+  } catch (error) {
+    // TODO: better error handling
+    console.log(error)
+    throw error
+  }
+
+  const entries = fs.readdirSync(pathStr, { withFileTypes: true })
+
+  const files: FileObject[] = []
+  const dirs: DirObject[] = []
+
+  for (let entry of entries) {
+    if (entry.isFile()) {
+      const filePath = path.resolve(pathStr, entry.name)
+      files.push({ path: filePath, name: entry.name })
+    } else if (entry.isDirectory()) {
+      const dirPath = path.resolve(pathStr, entry.name)
+      const newDir = await createDirObject(dirPath)
+      dirs.push(newDir)
+    } else {
+      // skip
+    }
+  }
+
+  return {
+    path: pathStr,
+    name: path.basename(pathStr),
+    dirs,
+    files,
+  }
+}
+
+ipcMain.handle("GET_FILES_AT_PATH", async (_event, payload) => {
+  try {
+    const dirObj = await createDirObject(payload.path)
+    return {
+      status: DialogStatus.SUCCESS,
+      error: null,
+      data: {
+        dirObj: dirObj,
+      },
+    }
+  } catch (err) {
+    return { status: DialogStatus.ERROR, error: err, data: null }
+  }
+})
+
+type ValidatePathsObj = { path: string; name: string | null; exists: boolean }
+
+ipcMain.handle("VALIDATE_PATHS", async (_event, payload) => {
+  try {
+    const dirs: ValidatePathsObj[] = []
+    for (let pathStr of payload.paths) {
+      // check if the path exists and is a directory
+      const dirExists =
+        fs.pathExistsSync(pathStr) && fs.lstatSync(pathStr).isDirectory()
+      if (!dirExists) {
+        dirs.push({ path: pathStr, name: null, exists: false })
+        continue
+      }
+      dirs.push({
+        path: pathStr,
+        name: path.basename(pathStr),
+        exists: true,
+      })
+    }
+    return {
+      status: DialogStatus.SUCCESS,
+      error: null,
+      data: {
+        dirs,
+      },
+    }
+  } catch (err) {
+    return { status: DialogStatus.ERROR, error: err, data: null }
+  }
+})
+
 export {}

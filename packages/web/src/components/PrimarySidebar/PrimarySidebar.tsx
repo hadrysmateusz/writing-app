@@ -16,6 +16,7 @@ import { Switch, Case } from "../Conditional"
 
 import { Cloud } from "./Cloud"
 import { Tags } from "./Tags"
+import { Local } from "./Local"
 
 /**
  * memo is used to prevent huge amounts of rerenders when resizing the sidebar
@@ -32,6 +33,7 @@ export const PrimarySidebar = memo(
 
             <Switch value={primarySidebar.currentView}>
               <Case value={"cloud"} component={<Cloud />} />
+              <Case value={"local"} component={<Local />} />
               <Case value={"tags"} component={<Tags />} />
             </Switch>
           </>

@@ -1,5 +1,11 @@
 // Figure out a way to make this a shared enum
-type ElectronIpcChannel = "NEW_CLOUD_DOCUMENT" | "READ_FILE" | "SAVE_FILE"
+type ElectronIpcChannel =
+  | "NEW_CLOUD_DOCUMENT"
+  | "READ_FILE"
+  | "SAVE_FILE"
+  | "ADD_PATH"
+  | "GET_FILES_AT_PATH"
+  | "VALIDATE_PATHS"
 
 declare global {
   interface Window {

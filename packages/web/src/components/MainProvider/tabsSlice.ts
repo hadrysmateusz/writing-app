@@ -2,7 +2,7 @@ import { Reducer } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { defaultLocalSettings } from "../LocalSettings"
 
-export type TabTypes = "cloudDocument" | "cloudNew"
+export type TabTypes = "cloudDocument" | "cloudNew" | "localDocument"
 
 type CreateTabActionBase = { type: "create-tab"; switch: boolean }
 
@@ -23,11 +23,11 @@ type TabsStateTabBase = {
 }
 
 type TabsStateTabVariants =
-  | {
-      tabType: "cloudDocument"
-      documentId: string
-    }
+  | { tabType: "cloudDocument"; documentId: string }
   | { tabType: "cloudNew" }
+  | { tabType: "localDocument"; path: string }
+
+// TODO: for  local documents, use path instead of documentId and either open/close the file every time the tab gets opened/closed or use an in-state cache of file contents turned into slate documents with some metadata although this would probably require a pubsub between main and render processes to let the render process know when the file gets updated elsewhere
 
 // When changing typing of TabsStateTab, remember to update validator in getLocalSetting
 export type TabsStateTab = TabsStateTabBase & TabsStateTabVariants

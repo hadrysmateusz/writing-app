@@ -56,6 +56,10 @@ const EditorTab: FC<{ tabId: string }> = ({ tabId }) => {
           />
         )
       }
+      case "localDocument": {
+        // TODO: local document tabs
+        return null
+      }
     }
   }
 
