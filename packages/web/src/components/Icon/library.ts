@@ -16,6 +16,7 @@ import {
   FaUser,
   FaSpinner,
   FaChevronDown,
+  FaChevronUp,
   FaClipboard,
   FaPen,
 } from "react-icons/fa"
@@ -86,6 +87,7 @@ const iconLibrary = {
   caretRight: BsCaretRightFill,
   caretDown: BsCaretDownFill,
   chevronDown: FaChevronDown,
+  chevronUp: FaChevronUp,
   starFilled: MdStar,
   starOutline: FaRegStar,
   sidebarLeft: BsLayoutSidebar,
