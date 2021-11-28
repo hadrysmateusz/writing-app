@@ -26,6 +26,10 @@ export type LocalSettings = {
    */
   tabs: TabsState
   /**
+   * Saved local directory paths
+   */
+  localDocPaths: string[]
+  /**
    * New combined sidebars state
    */
   sidebars: {
@@ -42,6 +46,7 @@ export type LocalSettingsDocType = Omit<LocalSettings, "tabs"> & {
   userId: string
   /**
    * For the databse doc we replace the type of the tabs object with string as it has to be stringified
+   * TODO: it's almost certainly possible to use the same data structure for the database, just figure out the correct JSONSchema
    */
   tabs: string
 }

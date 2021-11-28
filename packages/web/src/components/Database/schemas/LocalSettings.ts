@@ -11,7 +11,7 @@ const sidebarCommon = {
 export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
   title: "local settings schema",
   description: "describes a set of local settings",
-  version: 3,
+  version: 4,
   primaryKey: "userId",
   type: "object",
   properties: {
@@ -42,6 +42,12 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
     //   },
     // },
     tabs: { type: "string" },
+    // TODO: rename this to localDirPaths or something along those lines
+    localDocPaths: {
+      type: "array",
+      uniqueItems: true,
+      items: { type: "string" },
+    },
     sidebars: {
       type: "object",
       properties: {

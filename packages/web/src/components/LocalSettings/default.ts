@@ -6,6 +6,7 @@ export const defaultLocalSettings: LocalSettings = {
   expandedKeys: [],
   unsyncedDocs: [],
   tabs: tabsInit(),
+  localDocPaths: [],
   sidebars: {
     navigator: {
       isOpen: true,

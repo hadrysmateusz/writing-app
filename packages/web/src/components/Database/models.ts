@@ -144,6 +144,12 @@ export const models = {
           userId: oldDoc.userId,
         }
       },
+      4: function (oldDoc: LocalSettingsDoc) {
+        return {
+          ...oldDoc,
+          localDocPaths: [],
+        }
+      },
     },
     // pouchSettings: {
     //   skip_setup: true,
