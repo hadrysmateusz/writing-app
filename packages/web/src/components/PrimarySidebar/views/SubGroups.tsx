@@ -33,6 +33,8 @@ export const SubGroupDocumentsList: FC<{
 
   const shouldRender = !isLoading && documents && documents.length > 0
 
+  // TODO: "dim" all child components when the section toggler is hovered to quickly indicate which things are descendants of this branch and will be hidden
+
   return shouldRender ? (
     <>
       <SectionHeader groupId={group.id} onToggle={toggle} isOpen={isOpen}>
