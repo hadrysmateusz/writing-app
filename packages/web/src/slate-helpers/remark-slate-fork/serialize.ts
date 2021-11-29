@@ -1,12 +1,11 @@
-import escapeHtml from "escape-html"
-
 import { defaultNodeTypes, NodeTypes } from "./deserialize"
 
 export interface LeafType {
   text: string
-  strikeThrough?: boolean
+  strikethrough?: boolean
   bold?: boolean
   italic?: boolean
+  code?: boolean
   parentType?: string
 }
 
@@ -14,6 +13,7 @@ export interface BlockType {
   type: string
   parentType?: string
   link?: string
+  caption?: string
   language?: string
   break?: boolean
   children: Array<BlockType | LeafType>
@@ -23,11 +23,16 @@ interface Options {
   nodeTypes: NodeTypes
   listDepth?: number
   ignoreParagraphNewline?: boolean
+  linkDestinationKey?: string
+  imageSourceKey?: string
+  imageCaptionKey?: string
 }
 
 const isLeafNode = (node: BlockType | LeafType): node is LeafType => {
   return typeof (node as LeafType).text === "string"
 }
+
+const VOID_ELEMENTS: Array<keyof NodeTypes> = ["thematic_break", "image"]
 
 const BREAK_TAG = "<br>"
 
@@ -40,11 +45,14 @@ export default function serialize(
     ignoreParagraphNewline = false,
     listDepth = 0,
   } = opts
+  const linkDestinationKey = opts?.linkDestinationKey ?? "link"
+  const imageSourceKey = opts?.imageSourceKey ?? "link"
+  const imageCaptionKey = opts?.imageCaptionKey ?? "caption"
 
   let text = (chunk as LeafType).text || ""
   let type = (chunk as BlockType).type || ""
 
-  const nodeTypes = {
+  const nodeTypes: NodeTypes = {
     ...defaultNodeTypes,
     ...userNodeTypes,
     heading: {
@@ -81,7 +89,7 @@ export default function serialize(
 
         if (!isLeafNode(chunk) && Array.isArray(chunk.children)) {
           childrenHasLink = chunk.children.some(
-            (f) => !isLeafNode(f) && f.type === "link"
+            (f) => !isLeafNode(f) && f.type === nodeTypes.link
           )
         }
 
@@ -108,6 +116,10 @@ export default function serialize(
             listDepth: LIST_TYPES.includes((c as BlockType).type || "")
               ? listDepth + 1
               : listDepth,
+
+            linkDestinationKey,
+            imageSourceKey,
+            imageCaptionKey,
           }
         )
       })
@@ -120,11 +132,12 @@ export default function serialize(
     (text === "" || text === "\n") &&
     chunk.parentType === nodeTypes.paragraph
   ) {
-    type = "paragraph"
+    type = nodeTypes.paragraph
     children = BREAK_TAG
   }
 
-  if (children === "") return
+  if (children === "" && !VOID_ELEMENTS.find((k) => nodeTypes[k] === type))
+    return
 
   // Never allow decorating break tags with rich text formatting,
   // this can malform generated markdown
@@ -134,7 +147,9 @@ export default function serialize(
   // "Text foo bar **baz**" resulting in "**Text foo bar **baz****"
   // which is invalid markup and can mess everything up
   if (children !== BREAK_TAG && isLeafNode(chunk)) {
-    if (chunk.bold && chunk.italic) {
+    if (chunk.strikethrough && chunk.bold && chunk.italic) {
+      children = retainWhitespaceAndFormat(children, "~~***")
+    } else if (chunk.bold && chunk.italic) {
       children = retainWhitespaceAndFormat(children, "***")
     } else {
       if (chunk.bold) {
@@ -144,10 +159,14 @@ export default function serialize(
       if (chunk.italic) {
         children = retainWhitespaceAndFormat(children, "_")
       }
-    }
 
-    if (chunk.strikeThrough) {
-      children = `~~${children}~~`
+      if (chunk.strikethrough) {
+        children = retainWhitespaceAndFormat(children, "~~")
+      }
+
+      if (chunk.code) {
+        children = retainWhitespaceAndFormat(children, "`")
+      }
     }
   }
 
@@ -177,14 +196,77 @@ export default function serialize(
       }\n${children}\n\`\`\`\n`
 
     case nodeTypes.link:
-      return `[${children}](${(chunk as BlockType).link || ""})`
+      return `[${children}](${(chunk as BlockType)[linkDestinationKey] || ""})`
+    case nodeTypes.image:
+      console.log("image", chunk, chunk[imageSourceKey], imageSourceKey)
+      return `![${(chunk as BlockType)[imageCaptionKey]
+        // TODO: refactor and understand this code
+        .map((c: BlockType | LeafType) => {
+          const isList = !isLeafNode(c)
+            ? LIST_TYPES.includes(c.type || "")
+            : false
+
+          const selfIsList = LIST_TYPES.includes(
+            (chunk as BlockType).type || ""
+          )
+
+          // Links can have the following shape
+          // In which case we don't want to surround
+          // with break tags
+          // {
+          //  type: 'paragraph',
+          //  children: [
+          //    { text: '' },
+          //    { type: 'link', children: [{ text: foo.com }]}
+          //    { text: '' }
+          //  ]
+          // }
+          let childrenHasLink = false
+
+          if (!isLeafNode(chunk) && Array.isArray(chunk.children)) {
+            childrenHasLink = chunk.children.some(
+              (f) => !isLeafNode(f) && f.type === nodeTypes.link
+            )
+          }
+
+          return serialize(
+            { ...c, parentType: type },
+            {
+              nodeTypes,
+              // WOAH.
+              // what we're doing here is pretty tricky, it relates to the block below where
+              // we check for ignoreParagraphNewline and set type to paragraph.
+              // We want to strip out empty paragraphs sometimes, but other times we don't.
+              // If we're the descendant of a list, we know we don't want a bunch
+              // of whitespace. If we're parallel to a link we also don't want
+              // to respect neighboring paragraphs
+              ignoreParagraphNewline:
+                (ignoreParagraphNewline ||
+                  isList ||
+                  selfIsList ||
+                  childrenHasLink) &&
+                // if we have c.break, never ignore empty paragraph new line
+                !(c as BlockType).break,
+
+              // track depth of nested lists so we can add proper spacing
+              listDepth: LIST_TYPES.includes((c as BlockType).type || "")
+                ? listDepth + 1
+                : listDepth,
+
+              linkDestinationKey,
+              imageSourceKey,
+              imageCaptionKey,
+            }
+          )
+        })
+        .join("")}](${(chunk as BlockType)[imageSourceKey] || ""})`
 
     case nodeTypes.ul_list:
     case nodeTypes.ol_list:
       return `\n${children}\n`
 
     case nodeTypes.listItem:
-      const isOL = chunk && chunk.parentType === "ol_list"
+      const isOL = chunk && chunk.parentType === nodeTypes.ol_list
 
       let spacer = ""
       for (let k = 0; listDepth > k; k++) {
@@ -200,8 +282,11 @@ export default function serialize(
     case nodeTypes.paragraph:
       return `${children}\n`
 
+    case nodeTypes.thematic_break:
+      return `---\n`
+
     default:
-      return escapeHtml(children)
+      return children
   }
 }
 
@@ -216,7 +301,9 @@ function retainWhitespaceAndFormat(string: string, format: string) {
   // children will be mutated
   let children = frozenString
 
-  const fullFormat = `${format}${children}${format}`
+  // We reverse the right side formatting, to properly handle bold/italic and strikethrough
+  // formats, so we can create ~~***FooBar***~~
+  const fullFormat = `${format}${children}${reverseStr(format)}`
 
   // This conditions accounts for no whitespace in our string
   // if we don't have any, we can return early.
@@ -224,10 +311,13 @@ function retainWhitespaceAndFormat(string: string, format: string) {
     return fullFormat
   }
 
-  // if we do have whitespace, let's add our formatting
-  // around our trimmed string
-  const formattedString = format + children + format
+  // if we do have whitespace, let's add our formatting around our trimmed string
+  // We reverse the right side formatting, to properly handle bold/italic and strikethrough
+  // formats, so we can create ~~***FooBar***~~
+  const formattedString = format + children + reverseStr(format)
 
   // and replace the non-whitespace content of the string
   return string.replace(frozenString, formattedString)
 }
+
+const reverseStr = (string: string) => string.split("").reverse().join("")

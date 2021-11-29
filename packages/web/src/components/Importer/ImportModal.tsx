@@ -3,7 +3,7 @@ import styled from "styled-components/macro"
 
 import { Button } from "../Button"
 import { useDocumentsAPI } from "../MainProvider"
-import { deserializeMarkdown } from "../../slate-helpers/deserialize"
+import { myDeserializeMd } from "../../slate-helpers/deserialize"
 import { usePrimarySidebar } from "../ViewState"
 import { useMainState } from "../MainProvider"
 import { CloseModalFn } from "../Modal/types"
@@ -36,7 +36,7 @@ export const ImportModalContent: React.FC<{
 
   const handleSuccess = useCallback(
     async (result: any, format: "md") => {
-      const deserializer = { md: deserializeMarkdown }[format]
+      const deserializer = { md: myDeserializeMd }[format]
 
       const files = result.data as { fileName: string; content: string }[]
 

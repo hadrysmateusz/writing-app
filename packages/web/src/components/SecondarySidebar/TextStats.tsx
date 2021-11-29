@@ -1,9 +1,8 @@
 import { FC, useEffect, useState } from "react"
 import styled from "styled-components"
-import unified from "unified"
+import { unified } from "unified"
 import latin from "retext-latin"
 import size from "unist-util-size"
-import vfile from "vfile"
 
 import { serializeText } from "../../slate-helpers"
 
@@ -26,7 +25,7 @@ const TextStats: FC = () => {
 
     const text = serializeText(editorValue)
 
-    var tree = unified().use(latin).parse(vfile(text))
+    var tree = unified().use(latin).parse(text)
 
     const _chars = text.length // TODO: filter newlines (will need to account for different line endings)
     const _words = size(tree, "WordNode")

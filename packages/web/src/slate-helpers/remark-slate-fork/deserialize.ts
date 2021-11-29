@@ -1,23 +1,36 @@
 export interface NodeTypes {
-  paragraph?: string
-  block_quote?: string
-  code_block?: string
-  link?: string
-  ul_list?: string
-  ol_list?: string
-  listItem?: string
-  heading?: {
-    1?: string
-    2?: string
-    3?: string
-    4?: string
-    5?: string
-    6?: string
+  paragraph: string
+  block_quote: string
+  code_block: string
+  link: string
+  image: string
+  ul_list: string
+  ol_list: string
+  listItem: string
+  heading: {
+    1: string
+    2: string
+    3: string
+    4: string
+    5: string
+    6: string
   }
+  emphasis_mark: string
+  strong_mark: string
+  delete_mark: string
+  inline_code_mark: string
+  thematic_break: string
+}
+
+type RecursivePartial<T> = {
+  [P in keyof T]?: RecursivePartial<T[P]>
 }
 
 export interface OptionType {
-  nodeTypes: NodeTypes
+  nodeTypes?: RecursivePartial<NodeTypes>
+  linkDestinationKey?: string
+  imageSourceKey?: string
+  imageCaptionKey?: string
 }
 
 export interface MdastNode {
@@ -28,6 +41,7 @@ export interface MdastNode {
   children?: Array<MdastNode>
   depth?: 1 | 2 | 3 | 4 | 5 | 6
   url?: string
+  alt?: string
   lang?: string
   // mdast metadata
   position?: any
@@ -36,7 +50,7 @@ export interface MdastNode {
   indent?: any
 }
 
-export const defaultNodeTypes = {
+export const defaultNodeTypes: NodeTypes = {
   paragraph: "paragraph",
   block_quote: "block_quote",
   code_block: "code_block",
@@ -52,20 +66,27 @@ export const defaultNodeTypes = {
     5: "heading_five",
     6: "heading_six",
   },
+  emphasis_mark: "italic",
+  strong_mark: "bold",
+  delete_mark: "strikethrough",
+  inline_code_mark: "code",
+  thematic_break: "thematic_break",
+  image: "image",
 }
 
-export default function deserialize(
-  node: MdastNode,
-  opts: OptionType = { nodeTypes: {} }
-) {
+export default function deserialize(node: MdastNode, opts?: OptionType) {
   const types = {
     ...defaultNodeTypes,
-    ...opts.nodeTypes,
+    ...opts?.nodeTypes,
     heading: {
       ...defaultNodeTypes.heading,
       ...opts?.nodeTypes?.heading,
     },
   }
+
+  const linkDestinationKey = opts?.linkDestinationKey ?? "link"
+  const imageSourceKey = opts?.imageSourceKey ?? "link"
+  const imageCaptionKey = opts?.imageCaptionKey ?? "caption"
 
   let children = [{ text: "" }]
 
@@ -86,6 +107,8 @@ export default function deserialize(
     )
   }
 
+  console.log(node)
+
   switch (node.type) {
     case "heading":
       return { type: types.heading[node.depth || 1], children }
@@ -96,7 +119,14 @@ export default function deserialize(
     case "paragraph":
       return { type: types.paragraph, children }
     case "link":
-      return { type: types.link, link: node.url, children }
+      return { type: types.link, [linkDestinationKey]: node.url, children }
+    case "image":
+      return {
+        type: types.image,
+        children: [{ text: "" }],
+        [imageSourceKey]: node.url,
+        [imageCaptionKey]: [{ children: [{ text: node.alt }] }],
+      }
     case "blockquote":
       return { type: types.block_quote, children }
     case "code":
@@ -114,26 +144,36 @@ export default function deserialize(
           children: [{ text: node.value?.replace(/<br>/g, "") || "" }],
         }
       }
-      // TODO: Handle other HTML?
-      return { type: "parapgraph", children: [{ text: "" }] }
-
+      return { type: "paragraph", children: [{ text: node.value || "" }] }
+    // TODO: this style of processing leaf nodes is almost certainly incompatible with how remark structures their MDASTs, namely they don't mind wrapping a link in a strong tag as I think they handle links like any other leaf/decoration (e.g. strong, emphasis etc.) and this (forceLeafNode(children) strips the link of its type which finally results in the link and decoration getting merged into one node with bold/italic/etc: true, text: '', url: 'LINK_URL' --- TODO: this probably requires a significant rewrite of the deserializer (the node would probably have to be split into three (part before link, link part, part after link), parts outside of link would retain the same decoration but the link part would contain the leaf node with decoration as a child)
     case "emphasis":
       return {
-        italic: true,
+        [types.emphasis_mark]: true,
         ...forceLeafNode(children),
         ...persistLeafFormats(children),
       }
     case "strong":
       return {
-        bold: true,
+        [types.strong_mark]: true,
         ...forceLeafNode(children),
         ...persistLeafFormats(children),
       }
     case "delete":
       return {
-        strikeThrough: true,
+        [types.delete_mark]: true,
         ...forceLeafNode(children),
         ...persistLeafFormats(children),
+      }
+    case "inlineCode":
+      return {
+        [types.inline_code_mark]: true,
+        text: node.value,
+        ...persistLeafFormats(children),
+      }
+    case "thematicBreak":
+      return {
+        type: types.thematic_break,
+        children: [{ text: "" }],
       }
 
     case "text":
