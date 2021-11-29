@@ -92,6 +92,8 @@ app.on("activate", () => {
   }
 })
 
+// TODO: rename to something like EXPORT_FILE
+// TODO: extract some common logic to share between exporting and saving local files
 ipcMain.handle(
   "SAVE_FILE",
   async (
@@ -208,6 +210,76 @@ ipcMain.handle("READ_FILE", async (_event, payload) => {
 })
 
 // TODO: rework naming of the events/channels
+
+ipcMain.handle("OPEN_FILE", async (_event, payload) => {
+  const { filePath } = payload
+
+  const fileExists =
+    fs.pathExistsSync(filePath) && fs.lstatSync(filePath).isFile()
+
+  if (!fileExists) {
+    return {
+      status: DialogStatus.ERROR,
+      error: "File doesn't exists",
+      data: null,
+    }
+  }
+
+  try {
+    // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
+    const content = fs.readFileSync(filePath, { encoding: "utf-8" })
+    const fileName = path.basename(filePath, path.extname(filePath))
+    return {
+      status: DialogStatus.SUCCESS,
+      error: null,
+      data: {
+        file: {
+          content,
+          fileName,
+        },
+      },
+    }
+  } catch (error) {
+    return {
+      status: DialogStatus.ERROR,
+      error: "An error ocurred reading the file :" + error.message,
+      data: null,
+    }
+  }
+})
+
+// TODO: rename to SAVE_FILE after I rename the previous handler with that name
+ipcMain.handle("WRITE_FILE", async (_event, payload) => {
+  const { filePath, content } = payload
+
+  const fileExists =
+    fs.pathExistsSync(filePath) && fs.lstatSync(filePath).isFile()
+
+  if (!fileExists) {
+    // TODO: better handling, maybe create the file, or let the user know using a prompt to either create the file or not
+    return {
+      status: DialogStatus.ERROR,
+      error: "File doesn't exists",
+      data: null,
+    }
+  }
+
+  try {
+    // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
+    await fs.writeFile(filePath, content)
+    return {
+      status: DialogStatus.SUCCESS,
+      error: null,
+      data: {},
+    }
+  } catch (error) {
+    return {
+      status: DialogStatus.ERROR,
+      error: "An error ocurred writing to file :" + error.message,
+      data: null,
+    }
+  }
+})
 
 ipcMain.handle("ADD_PATH", async (_event, _payload) => {
   // TODO: better default path
