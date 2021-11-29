@@ -9,7 +9,6 @@ import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 import { withDelayRender } from "../../withDelayRender"
 
 import { useTabsState } from "../MainProvider"
-import TrashBanner from "../TrashBanner"
 import { useEditorState } from "../EditorStateProvider"
 import { Toolbar } from "../Toolbar"
 import { EditorTabsBar } from "../EditorTabs"
@@ -86,9 +85,6 @@ type EditorComponentProps = {
   renameDocument: (value: string) => void
   title: string
   content: Descendant[]
-  // TODO: probably move the dependency on isDeleted and documentId up and outside of this component
-  isDeleted: boolean
-  documentId: string
 }
 
 /**
@@ -99,8 +95,6 @@ const EditorComponent: React.FC<EditorComponentProps> = ({
   title,
   content,
   renameDocument,
-  isDeleted,
-  documentId,
 }) => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
   const tabsDispatch = useTabsDispatch()
@@ -286,31 +280,27 @@ const EditorComponent: React.FC<EditorComponentProps> = ({
     [saveDocument]
   )
 
+  /* TODO: maybe use an rxdb subscription to the remove event to check for permanent deletion to close the tab (maybe do it higher up) */
   return (
-    <>
-      {/* TODO: maybe use an rxdb subscription to the update event to check for deletion to display the banner (maybe keep isDeleted in local state) */}
-      {/* TODO: maybe use an rxdb subscription to the remove event to check for permanent deletion to close the tab (maybe do it higher up) */}
-      {isDeleted && <TrashBanner documentId={documentId} />}
-      <OuterContainer onKeyDown={handleContainerKeyDown}>
-        <div className="Editor_TopShadow" />
-        <InnerContainer>
-          <EditableContainer>
-            <Plate
-              id="main"
-              plugins={pluginsList}
-              editableProps={editableProps}
-              initialValue={content}
-              onChange={onChange}
-            >
-              <TitleInput title={title} onRename={renameDocument} />
-              <Toolbar />
-              <BalloonToolbar />
-            </Plate>
-            {isMenuOpen && renderContextMenu()}
-          </EditableContainer>
-        </InnerContainer>
-      </OuterContainer>
-    </>
+    <OuterContainer onKeyDown={handleContainerKeyDown}>
+      <div className="Editor_TopShadow" />
+      <InnerContainer>
+        <EditableContainer>
+          <Plate
+            id="main"
+            plugins={pluginsList}
+            editableProps={editableProps}
+            initialValue={content}
+            onChange={onChange}
+          >
+            <TitleInput title={title} onRename={renameDocument} />
+            <Toolbar />
+            <BalloonToolbar />
+          </Plate>
+          {isMenuOpen && renderContextMenu()}
+        </EditableContainer>
+      </InnerContainer>
+    </OuterContainer>
   )
 }
 

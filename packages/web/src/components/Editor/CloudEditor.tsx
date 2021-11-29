@@ -5,6 +5,7 @@ import { useRxSubscription } from "../../hooks"
 import { useEditorState } from "../EditorStateProvider"
 import { useDatabase } from "../Database"
 import { useDocumentsAPI } from "../MainProvider"
+import TrashBanner from "../TrashBanner"
 
 import { deserialize } from "./serialization"
 import { EditorComponent } from "."
@@ -38,15 +39,18 @@ export const CloudEditor: React.FC<{ currentDocumentId: string }> = ({
   )
 
   return currentDocument ? (
-    <EditorComponent
-      key={currentDocument.id} // Necessary to reload the component on id change
-      saveDocument={saveDocument}
-      renameDocument={handleRename}
-      title={currentDocument.title}
-      content={content}
-      isDeleted={currentDocument.isDeleted}
-      documentId={currentDocumentId}
-    />
+    <>
+      {currentDocument.isDeleted && (
+        <TrashBanner documentId={currentDocument.id} />
+      )}
+      <EditorComponent
+        key={currentDocument.id} // Necessary to reload the component on id change
+        saveDocument={saveDocument}
+        renameDocument={handleRename}
+        title={currentDocument.title}
+        content={content}
+      />
+    </>
   ) : isDocumentLoading ? (
     <DocumentLoadingState />
   ) : (

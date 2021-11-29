@@ -30,11 +30,8 @@ export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
       if (ipcResponse.status === "success") {
         // TODO: handle possible data-shape errors
         setTitle(ipcResponse.data.file.fileName)
-        // TODO: support other deserializers
-        // I'm using my custom deserializer as it's practically identical to the plate one and doesn't require the editor object which would require a big restructuring of this code
-        // const deserializer = { md: deserializeMarkdown }["md"]
+        // TODO: support other deserializers (maybe, or probably just for importing to cloud documents)
 
-        // TODO: this is the previous working thingy
         let deserialized = myDeserializeMd(ipcResponse.data.file.content)
         if (deserialized.length === 0) {
           deserialized = DEFAULT_EDITOR_VALUE
@@ -81,10 +78,8 @@ export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
       key={currentDocumentPath}
       saveDocument={saveDocument}
       renameDocument={renameDocument}
-      title={title || ""}
-      content={content || DEFAULT_EDITOR_VALUE}
-      isDeleted={false}
-      documentId="" // TODO: make the editor component more flexible to remove the need for this prop on local editor
+      title={title}
+      content={content}
     />
   ) : isLoading ? (
     <DocumentLoadingState />
