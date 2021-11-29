@@ -3,8 +3,9 @@ import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
 
 import createContext from "../../../utils/createContext"
 
-import { insertImage } from "../Toolbars"
 import { getPromptModalContent, usePromptModal } from "../../PromptModal"
+
+import { insertImage } from "../Toolbars"
 
 import { ImageModalContextValue } from "./types"
 

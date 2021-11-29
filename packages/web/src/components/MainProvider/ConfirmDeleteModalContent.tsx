@@ -1,24 +1,11 @@
 import { FC } from "react"
-import styled from "styled-components/macro"
 
 import { Button } from "../Button"
+import { CloseModalFn } from "../Modal/types"
+import { ModalButtonsContainer, ModalContainer } from "../Modal"
+
 import { useDocumentsAPI } from "."
 import { ConfirmDeleteModalProps } from "./types"
-import { CloseModalFn } from "../Modal/types"
-
-const ModalContainer = styled.div`
-  background: var(--dark-400);
-  border: 1px solid var(--dark-500);
-  padding: 4px 20px 0;
-  border-radius: 4px;
-  color: white;
-`
-
-const Container = styled.div`
-  margin-bottom: 20px;
-  display: flex;
-  gap: 16px;
-`
 
 export type ConfirmDeleteModalReturnValue = boolean
 
@@ -58,14 +45,14 @@ export const ConfirmDeleteModalContent: FC<
 
   return (
     <ModalContainer>
-      <p>{msgPrompt}</p>
-      <Container>
+      <p style={{ marginTop: "4px" }}>{msgPrompt}</p>
+      <ModalButtonsContainer>
         {/* TODO: add progress spinner (that only shows up if the confirmation takes more than X miliseconds) */}
         <Button onClick={handleConfirm} variant={"danger"}>
           {msgConfirm}
         </Button>
         <Button onClick={handleCancel}>Cancel</Button>
-      </Container>
+      </ModalButtonsContainer>
     </ModalContainer>
   )
 }

@@ -2,24 +2,9 @@ import React, { useState } from "react"
 import styled from "styled-components/macro"
 
 import { LogoutButton } from "../Auth"
+import { ModalContainer } from "../Modal"
 import { CloseModalFn } from "../Modal/types"
 import { useUserdata } from "../Userdata"
-
-const ModalContainer = styled.div`
-  padding: 20px;
-  border-radius: 4px;
-
-  color: white;
-  background: var(--dark-400);
-  border: 1px solid var(--dark-500);
-
-  h2 {
-    color: var(--light-500);
-    font-size: 20px;
-    line-height: 24px;
-    margin-top: 0;
-  }
-`
 
 const Container = styled.div`
   width: 350px;

@@ -1,34 +1,15 @@
 import React, { useCallback } from "react"
+import { useSlateStatic } from "slate-react"
+import { mySerializeMd } from "../../slate-helpers/deserialize"
 // import { useSlateStatic } from "slate-react"
 
-import { Button } from "../Button"
 // import { serializeHTML, serializeMarkdown } from "../../slate-helpers"
-import { useModal } from "../Modal"
-import styled from "styled-components/macro"
+
 // import { useMainState } from "../MainProvider"
+import { Button } from "../Button"
+import { useMainState } from "../MainProvider"
+import { ModalButtonsContainer, ModalContainer, useModal } from "../Modal"
 import { CloseModalFn } from "../Modal/types"
-
-const ModalContainer = styled.div`
-  background: var(--dark-400);
-  border: 1px solid var(--dark-500);
-  padding: 14px 20px;
-  border-radius: 4px;
-  color: white;
-
-  h2 {
-    color: var(--light-500);
-    font-size: 20px;
-    line-height: 24px;
-    margin-top: 0;
-  }
-`
-
-const ButtonsContainer = styled.div`
-  display: flex;
-  > * + * {
-    margin-left: 12px;
-  }
-`
 
 export const ExportModalContent: React.FC<{
   close: CloseModalFn<void>
@@ -68,12 +49,12 @@ export const ExportModalContent: React.FC<{
   return (
     <ModalContainer>
       <h2>Export as</h2>
-      <ButtonsContainer>
+      <ModalButtonsContainer>
         <Button onClick={handleExportMarkdown} autoFocus>
           Markdown
         </Button>
         <Button onClick={handleExportHTML}>HTML</Button>
-      </ButtonsContainer>
+      </ModalButtonsContainer>
     </ModalContainer>
   )
 }
