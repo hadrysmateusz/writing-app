@@ -59,14 +59,14 @@ export const SIDEBAR_VAR = Object.freeze({
   },
 })
 
-console.log(parseSidebarPath("navigator_default_all"))
-console.log(parseSidebarPath("primary_cloud_all"))
-console.log(parseSidebarPath("primary_cloud_trash"))
-console.log(parseSidebarPath("primary_cloud_inbox"))
-console.log(parseSidebarPath("primary_cloud_group"))
-console.log(parseSidebarPath("primary_local_all"))
-console.log(parseSidebarPath("primary_tags_all"))
-console.log(parseSidebarPath("secondary_stats_all"))
+// console.log(parseSidebarPath("navigator_default_all"))
+// console.log(parseSidebarPath("primary_cloud_all"))
+// console.log(parseSidebarPath("primary_cloud_trash"))
+// console.log(parseSidebarPath("primary_cloud_inbox"))
+// console.log(parseSidebarPath("primary_cloud_group"))
+// console.log(parseSidebarPath("primary_local_all"))
+// console.log(parseSidebarPath("primary_tags_all"))
+// console.log(parseSidebarPath("secondary_stats_all"))
 
 export type SidebarType = typeof SIDEBAR_VAR
 export type SidebarSidebar = keyof SidebarType
