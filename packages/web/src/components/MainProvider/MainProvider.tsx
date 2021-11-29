@@ -11,6 +11,8 @@ import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 import mudder from "mudder"
 import isElectron from "is-electron"
+import { cloneDeep } from "lodash"
+import { ELEMENT_DEFAULT } from "@udecode/plate"
 
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 import { useModal } from "../Modal"
@@ -68,12 +70,11 @@ import { cancelSubscriptions, getCurrentCloudDocumentId } from "./helpers"
 import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
 import { TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
 import AppLoadingState from "./AppLoadingState"
-import { cloneDeep } from "lodash"
 
 const m = mudder.base62
 
-const DEFAULT_EDITOR_VALUE: Descendant[] = [
-  { type: "paragraph", children: [{ text: "" }] },
+export const DEFAULT_EDITOR_VALUE: Descendant[] = [
+  { type: ELEMENT_DEFAULT, children: [{ text: "" }] },
 ]
 
 export const [TabsStateContext, useTabsState] = createContext<TabsState>()
