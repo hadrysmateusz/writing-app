@@ -1,15 +1,15 @@
 import React, { useCallback, useMemo } from "react"
 
-import { useRxSubscription } from "../../hooks"
+import { useRxSubscription } from "../../../hooks"
 
-import { useEditorState } from "../EditorStateProvider"
-import { useDatabase } from "../Database"
-import { useDocumentsAPI } from "../MainProvider"
-import TrashBanner from "../TrashBanner"
+import { useEditorState } from "../../EditorStateProvider"
+import { useDatabase } from "../../Database"
+import { useDocumentsAPI } from "../../MainProvider"
+import TrashBanner from "../../TrashBanner"
 
-import { deserialize } from "./serialization"
-import { EditorComponent } from "."
-import { DocumentEmptyState, DocumentLoadingState } from "./Editor"
+import { deserialize } from "../helpers"
+import { DocumentEmptyState, DocumentLoadingState } from "../HelperStates"
+import EditorComponent from "../EditorComponent"
 
 export const CloudEditor: React.FC<{ currentDocumentId: string }> = ({
   currentDocumentId,

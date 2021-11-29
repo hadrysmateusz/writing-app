@@ -24,7 +24,7 @@ import {
   MyDatabase,
 } from "../Database"
 import { defaultLocalSettings, useLocalSettings } from "../LocalSettings"
-import { serialize } from "../Editor/serialization"
+import { serialize } from "../Editor"
 
 import { GROUP_TREE_ROOT } from "../../constants"
 import { createContext } from "../../utils"

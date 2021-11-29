@@ -55,7 +55,7 @@ const ParagraphElement = styled.p`
   /* margin: 16px 0; */
 `
 
-export const plugins = createPlugins(
+export const pluginsList = createPlugins(
   [
     createReactPlugin(),
     createHistoryPlugin(),
@@ -188,4 +188,4 @@ export const plugins = createPlugins(
 //   ]
 // )
 
-export default plugins
+export default pluginsList

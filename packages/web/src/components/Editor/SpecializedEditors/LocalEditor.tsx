@@ -2,11 +2,15 @@ import React, { useCallback, useEffect, useState } from "react"
 import { Descendant } from "slate"
 import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
-import { myDeserializeMd, mySerializeMd } from "../../slate-helpers/deserialize"
+import {
+  myDeserializeMd,
+  mySerializeMd,
+} from "../../../slate-helpers/deserialize"
 
-import { DEFAULT_EDITOR_VALUE } from "../MainProvider"
-import { EditorComponent } from "."
-import { DocumentEmptyState, DocumentLoadingState } from "./Editor"
+import { DEFAULT_EDITOR_VALUE } from "../../MainProvider"
+
+import { DocumentEmptyState, DocumentLoadingState } from "../HelperStates"
+import EditorComponent from "../EditorComponent"
 
 export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
   currentDocumentPath,

@@ -13,7 +13,7 @@ import {
 import { useSidebar } from "../SidebarCommon"
 import { EditorStateProvider } from "../EditorStateProvider"
 
-import { EditorRenderer } from "../Editor/Editor"
+import { EditorRenderer } from "../Editor"
 
 // TODO: consider creating an ErrorBoundary that will select the start of the document if slate throws an error regarding the selection
 

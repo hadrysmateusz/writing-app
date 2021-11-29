@@ -15,7 +15,7 @@ import {
 import { formatOptional } from "../../utils"
 import { useToggleable } from "../../hooks"
 import Icon from "../Icon"
-import { serialize } from "../Editor/serialization"
+import { serialize } from "../Editor"
 
 export const ImportModalContent: React.FC<{
   close: CloseModalFn<undefined>

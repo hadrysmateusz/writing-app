@@ -7,11 +7,11 @@ import {
   DEFAULT_EDITOR_VALUE,
   useDocumentsAPI,
   useTabsState,
-} from "../MainProvider"
-import { serialize } from "../Editor/serialization"
-import { useTabsDispatch } from "../MainProvider"
+} from "../../MainProvider"
+import { useTabsDispatch } from "../../MainProvider"
 
-import { EditorComponent } from "."
+import { serialize } from "../helpers"
+import EditorComponent from "../EditorComponent"
 
 export const DummyEditor = () => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))

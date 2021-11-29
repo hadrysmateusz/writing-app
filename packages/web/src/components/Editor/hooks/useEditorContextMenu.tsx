@@ -21,30 +21,20 @@ import {
   useContextMenu,
   ContextMenuSeparator,
   ContextSubmenu,
-} from "../ContextMenu"
-import { TurnIntoContextMenuContent } from "../NodeToolbar"
-import { useImageModal } from "../ImageModal"
-import { useLinkModal } from "../LinkPrompt"
-import Icon from "../Icon"
-import { ToolbarLink } from "../Toolbar" // TODO: refactor those components to make them more general
+} from "../../ContextMenu"
+import { TurnIntoContextMenuContent } from "../../NodeToolbar"
+import { useImageModal } from "../../ImageModal"
+import { useLinkModal } from "../../LinkPrompt"
+import Icon from "../../Icon"
+import { ToolbarLink } from "../../Toolbar" // TODO: refactor those components to make them more general
 
 type ContextMenuType = {
   base: "collapsed" | "expanded" | "node"
   node: Element
 }
 
-const InlineFormattingContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Accounts for padding of icons */
-  padding: 0 14px;
-  color: var(--light-300);
-  min-width: 100%;
-`
-
 // TODO: on any context menu that is fully inside a link node, show an option to edit and remove the link
-const useEditorContextMenu = () => {
+export const useEditorContextMenu = () => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
@@ -341,5 +331,15 @@ const useEditorContextMenu = () => {
     isMenuOpen,
   }
 }
+
+const InlineFormattingContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Accounts for padding of icons */
+  padding: 0 14px;
+  color: var(--light-300);
+  min-width: 100%;
+`
 
 export default useEditorContextMenu

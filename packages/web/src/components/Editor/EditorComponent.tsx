@@ -6,79 +6,19 @@ import { EditableProps } from "slate-react/dist/components/editable"
 import isHotkey from "is-hotkey"
 import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
-import { withDelayRender } from "../../withDelayRender"
-
-import { useTabsState } from "../MainProvider"
 import { useEditorState } from "../EditorStateProvider"
 import { Toolbar } from "../Toolbar"
-import { EditorTabsBar } from "../EditorTabs"
-import { ImageModalProvider } from "../ImageModal"
-import { LinkModalProvider } from "../LinkPrompt"
 import { useTabsDispatch } from "../MainProvider"
 
 import {
   EditableContainer,
   OuterContainer,
-  OutermostContainer,
-  // InsertBlockField,
   InnerContainer,
-  OutermosterContainer,
-} from "./styledComponents"
-import useEditorContextMenu from "./useEditorContextMenu"
-import pluginsList from "./pluginsList"
+} from "./EditorComponent.styles"
+import { useEditorContextMenu } from "./hooks"
+import { pluginsList } from "./config"
 import TitleInput from "./TitleInput"
-import { DummyEditor } from "./DummyEditor"
-import { BalloonToolbar } from "./BalloonToolbar"
-
-import CloudEditor from "./CloudEditor"
-import LocalEditor from "./LocalEditor"
-
-// TODO: style the loading and empty states
-
-export const DocumentLoadingState = withDelayRender(1000)(() => (
-  <div>Loading...</div>
-))
-
-export const DocumentEmptyState = withDelayRender(1000)(() => (
-  // This div is here to prevent issues with split pane rendering, TODO: add proper empty state
-  <div style={{ padding: "40px" }}>No document selected</div>
-))
-
-/**
- * Renders the editor if there is a document selected
- */
-export const EditorRenderer: React.FC = () => {
-  const { tabs, currentTab } = useTabsState()
-
-  // Handles rendering the editor based on tab type
-  function renderCorrectEditor() {
-    let currentTabObj = tabs[currentTab]
-    // TODO: probably precompute this and expose in useTabsState hook
-    const currentTabType = currentTabObj.tabType
-
-    if (currentTabType === "cloudNew") {
-      return <DummyEditor />
-    }
-    if (currentTabType === "cloudDocument") {
-      return <CloudEditor currentDocumentId={currentTabObj.documentId} />
-    }
-    if (currentTabType === "localDocument") {
-      return <LocalEditor currentDocumentPath={currentTabObj.path} />
-    }
-    return <DocumentEmptyState />
-  }
-
-  return (
-    <OutermosterContainer>
-      <EditorTabsBar />
-      <OutermostContainer>
-        <ImageModalProvider>
-          <LinkModalProvider>{renderCorrectEditor()}</LinkModalProvider>
-        </ImageModalProvider>
-      </OutermostContainer>
-    </OutermosterContainer>
-  )
-}
+import { BalloonToolbar } from "./Toolbars"
 
 type EditorComponentProps = {
   saveDocument: () => void
@@ -90,7 +30,7 @@ type EditorComponentProps = {
 /**
  * The editor component itself. Handles rendering an editor for any type of document
  */
-const EditorComponent: React.FC<EditorComponentProps> = ({
+export const EditorComponent: React.FC<EditorComponentProps> = ({
   saveDocument,
   title,
   content,
