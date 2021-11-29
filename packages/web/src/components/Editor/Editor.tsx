@@ -1,27 +1,21 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useMemo } from "react"
 
+import { Descendant } from "slate"
 import { ReactEditor } from "slate-react"
 import { EditableProps } from "slate-react/dist/components/editable"
 import isHotkey from "is-hotkey"
 import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
-// import HoveringToolbar from "../HoveringToolbar"
-// import { useUserdata } from "../Userdata"
-// import { useViewState } from "../ViewState"
-import { useDatabase } from "../Database"
-import {
-  DEFAULT_EDITOR_VALUE,
-  useDocumentsAPI,
-  useTabsState,
-} from "../MainProvider"
+import { withDelayRender } from "../../withDelayRender"
+
+import { useTabsState } from "../MainProvider"
 import TrashBanner from "../TrashBanner"
 import { useEditorState } from "../EditorStateProvider"
 import { Toolbar } from "../Toolbar"
 import { EditorTabsBar } from "../EditorTabs"
 import { ImageModalProvider } from "../ImageModal"
 import { LinkModalProvider } from "../LinkPrompt"
-
-import { withDelayRender } from "../../withDelayRender"
+import { useTabsDispatch } from "../MainProvider"
 
 import {
   EditableContainer,
@@ -33,18 +27,20 @@ import {
 } from "./styledComponents"
 import useEditorContextMenu from "./useEditorContextMenu"
 import pluginsList from "./pluginsList"
-import { deserialize } from "./serialization"
 import TitleInput from "./TitleInput"
 import { DummyEditor } from "./DummyEditor"
-import { useRxSubscription } from "../../hooks"
 import { BalloonToolbar } from "./BalloonToolbar"
-import { useTabsDispatch } from "../MainProvider"
-import { Descendant } from "slate"
-import { myDeserializeMd, mySerializeMd } from "../../slate-helpers/deserialize"
 
-const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
+import CloudEditor from "./CloudEditor"
+import LocalEditor from "./LocalEditor"
 
-const DocumentEmptyState = withDelayRender(1000)(() => (
+// TODO: style the loading and empty states
+
+export const DocumentLoadingState = withDelayRender(1000)(() => (
+  <div>Loading...</div>
+))
+
+export const DocumentEmptyState = withDelayRender(1000)(() => (
   // This div is here to prevent issues with split pane rendering, TODO: add proper empty state
   <div style={{ padding: "40px" }}>No document selected</div>
 ))
@@ -60,11 +56,16 @@ export const EditorRenderer: React.FC = () => {
     let currentTabObj = tabs[currentTab]
     // TODO: probably precompute this and expose in useTabsState hook
     const currentTabType = currentTabObj.tabType
-    if (currentTabType === "cloudNew") return <DummyEditor />
-    if (currentTabType === "cloudDocument")
+
+    if (currentTabType === "cloudNew") {
+      return <DummyEditor />
+    }
+    if (currentTabType === "cloudDocument") {
       return <CloudEditor currentDocumentId={currentTabObj.documentId} />
-    if (currentTabType === "localDocument")
+    }
+    if (currentTabType === "localDocument") {
       return <LocalEditor currentDocumentPath={currentTabObj.path} />
+    }
     return <DocumentEmptyState />
   }
 
@@ -80,137 +81,7 @@ export const EditorRenderer: React.FC = () => {
   )
 }
 
-const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
-  currentDocumentPath,
-}) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [title, setTitle] = useState<string>()
-  const [content, setContent] = useState<Descendant[]>()
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
-
-  useEffect(() => {
-    ;(async () => {
-      console.log("LOCAL EDITOR USEEFFECT")
-      setIsLoading(true)
-
-      const ipcResponse = await window.electron.invoke("OPEN_FILE", {
-        filePath: currentDocumentPath,
-      })
-
-      console.log(ipcResponse)
-
-      if (ipcResponse.status === "success") {
-        // TODO: handle possible data-shape errors
-        setTitle(ipcResponse.data.file.fileName)
-        // TODO: support other deserializers
-        // I'm using my custom deserializer as it's practically identical to the plate one and doesn't require the editor object which would require a big restructuring of this code
-        // const deserializer = { md: deserializeMarkdown }["md"]
-
-        // TODO: this is the previous working thingy
-        let deserialized = myDeserializeMd(ipcResponse.data.file.content)
-        if (deserialized.length === 0) {
-          deserialized = DEFAULT_EDITOR_VALUE
-        }
-
-        console.log("deserialized:", deserialized)
-        setContent(deserialized)
-      } else {
-        // TODO: handle this
-        console.warn("something went wrong")
-      }
-
-      setIsLoading(false)
-    })()
-  }, [currentDocumentPath])
-
-  console.log(title, content)
-
-  return !isLoading && content && title ? (
-    <EditorComponent
-      key={currentDocumentPath}
-      saveDocument={async () => {
-        if (!editor) {
-          console.warn("no editor")
-          return
-        }
-
-        console.log(editor.children)
-
-        const serializedContent = mySerializeMd(editor.children)
-
-        console.log("serialized:", serializedContent)
-
-        const ipcResponse = await window.electron.invoke("WRITE_FILE", {
-          filePath: currentDocumentPath,
-          content: serializedContent,
-        })
-        console.log(ipcResponse)
-      }}
-      renameDocument={() => {
-        console.log("TODO: implement")
-      }}
-      title={title}
-      content={content}
-      isDeleted={false}
-      documentId=""
-    />
-  ) : isLoading ? (
-    <DocumentLoadingState />
-  ) : (
-    <DocumentEmptyState />
-  )
-}
-
-const CloudEditor: React.FC<{ currentDocumentId: string }> = ({
-  currentDocumentId,
-}) => {
-  const db = useDatabase()
-  const { saveDocument } = useEditorState()
-  const { renameDocument } = useDocumentsAPI()
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
-
-  // TODO: maybe make the main state provider use the rx subscription hook
-  const {
-    data: currentDocument,
-    isLoading: isDocumentLoading,
-  } = useRxSubscription(
-    db.documents.findOne().where("id").eq(currentDocumentId)
-  )
-
-  const content = useMemo(
-    () => (currentDocument ? deserialize(currentDocument.content) : []),
-    [currentDocument]
-  )
-
-  const handleRename = useCallback(
-    (value: string) => {
-      renameDocument(currentDocumentId, value)
-    },
-    [currentDocumentId, renameDocument]
-  )
-
-  return currentDocument ? (
-    <EditorComponent
-      key={currentDocument.id} // Necessary to reload the component on id change
-      saveDocument={() => {
-        console.log("children", editor?.children)
-
-        saveDocument()
-      }}
-      renameDocument={handleRename}
-      title={currentDocument.title}
-      content={content}
-      isDeleted={currentDocument.isDeleted}
-      documentId={currentDocumentId}
-    />
-  ) : isDocumentLoading ? (
-    <DocumentLoadingState />
-  ) : (
-    <DocumentEmptyState />
-  )
-}
-
-const EditorComponent: React.FC<{
+type EditorComponentProps = {
   saveDocument: () => void
   renameDocument: (value: string) => void
   title: string
@@ -218,7 +89,12 @@ const EditorComponent: React.FC<{
   // TODO: probably move the dependency on isDeleted and documentId up and outside of this component
   isDeleted: boolean
   documentId: string
-}> = ({
+}
+
+/**
+ * The editor component itself. Handles rendering an editor for any type of document
+ */
+const EditorComponent: React.FC<EditorComponentProps> = ({
   saveDocument,
   title,
   content,
@@ -232,43 +108,6 @@ const EditorComponent: React.FC<{
   // const { isSpellCheckEnabled } = useUserdata()
 
   const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
-
-  // TODO: check if this is still needed
-  // const fixSelection = () => {
-  //   // This workaround aims to fix the issue with the cursor being visually stuck inside the node toolbar or other custom elements inside the editable area.
-  //   // Fun fact: the caret seems to actually be inside the editable parent component and not the toolbar as it would seem
-  //   // TODO: It is a quick and dirty solution and might not work sometimes and be triggered when it shouldn't - this should be addressed
-  //   // TODO: find the root cause of this issue, it might be related to some internal slate bug that could be fixed upstream
-  //   // TODO: there is still an issue where the selection is messed up after clicking at the InsertNodeBlock
-  //   setTimeout(() => {
-  //     if (!ReactEditor.isFocused) return
-  //     const selection = document.getSelection()
-  //     // if there is no slate selection there is nothing to restore it from
-  //     if (!editor.selection) {
-  //       selection?.empty()
-  //       return
-  //     }
-  //     // this checks if both anchor and focus nodes of the DOM selection are in a node that is not a TEXT_NODE (which suggests that the selection is invalid)
-  //     if (selection && selection.focusNode && selection.anchorNode) {
-  //       // restore the DOM selection from slate selection
-  //       const slateNode = Node.get(editor, editor.selection.anchor.path)
-  //       const domNode = ReactEditor.toDOMNode(editor, slateNode)
-  //       const editorEl = ReactEditor.toDOMNode(editor, editor)
-  //       if (
-  //         domNode.closest(`[data-slate-editor]`) === editorEl &&
-  //         domNode.closest(`[data-slate-node]`) === editorEl
-  //       ) {
-  //         selection.setPosition(domNode)
-  //       }
-  //     }
-  //   }, 0)
-  // }
-
-  // const handleFixSelection = (event: React.KeyboardEvent) => {
-  //   if (isHotkey(["Del"], event)) {
-  //     fixSelection()
-  //   }
-  // }
 
   // /**
   //  * Focus the correct element on mount
@@ -335,6 +174,7 @@ const EditorComponent: React.FC<{
         }
 
         // If the right-mouse-button is clicked, prevent the selection from being changed and trigger the correct context menu
+        // TODO: this code seems to have some issues now
         if (event.button === 2) {
           const domSelection = document.getSelection()
 
@@ -465,16 +305,9 @@ const EditorComponent: React.FC<{
               <TitleInput title={title} onRename={renameDocument} />
               <Toolbar />
               <BalloonToolbar />
-              {/* <ToolbarSearchHighlight icon={Search} setSearch={setSearch} /> */}
-              {/* <MentionSelect
-                    {...getMentionSelectProps()}
-                    renderLabel={renderMentionLabel}
-                  /> 
-              */}
             </Plate>
             {isMenuOpen && renderContextMenu()}
           </EditableContainer>
-          {/* <HoveringToolbar /> */}
         </InnerContainer>
       </OuterContainer>
     </>
