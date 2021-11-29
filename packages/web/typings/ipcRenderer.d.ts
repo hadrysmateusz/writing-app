@@ -6,6 +6,8 @@ type ElectronIpcChannel =
   | "ADD_PATH"
   | "GET_FILES_AT_PATH"
   | "VALIDATE_PATHS"
+  | "OPEN_FILE"
+  | "WRITE_FILE"
 
 declare global {
   interface Window {

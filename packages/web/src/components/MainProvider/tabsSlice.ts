@@ -14,6 +14,7 @@ type CreateTabActionVariants =
   | {
       tabType: "cloudNew"
     }
+  | { tabType: "localDocument"; path: string }
 
 export type CreateTabAction = CreateTabActionBase & CreateTabActionVariants
 
@@ -116,6 +117,21 @@ export const tabsReducer = function (persist: (value: TabsState) => void) {
                 [newTabId]: {
                   tabId: newTabId,
                   tabType: "cloudNew",
+                  keep: false,
+                },
+              },
+              currentTab: newCurrentTab,
+            }
+            break
+          }
+          case "localDocument": {
+            newState = {
+              tabs: {
+                ...state.tabs,
+                [newTabId]: {
+                  tabId: newTabId,
+                  tabType: "localDocument",
+                  path: action.path,
                   keep: false,
                 },
               },

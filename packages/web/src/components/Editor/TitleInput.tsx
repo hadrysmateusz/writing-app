@@ -6,8 +6,6 @@ import isHotkey from "is-hotkey"
 import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
 import { NamingInput } from "../RenamingInput"
-import { useDocumentsAPI } from "../MainProvider"
-import { DocumentDoc } from "../Database"
 
 import { createEmptyNode } from "../../helpers/createEmptyNode"
 
@@ -22,20 +20,19 @@ export const StyledTitleNamingInput = styled(NamingInput)`
   color: var(--light-600);
 `
 
-const TitleInput: React.FC<{ currentDocument: DocumentDoc }> = ({
-  currentDocument,
-}) => {
-  const { renameDocument } = useDocumentsAPI()
-
+const TitleInput: React.FC<{
+  title: string
+  onRename: (value: string) => void
+}> = ({ title, onRename }) => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
 
-  const [value, setValue] = useState<string>(currentDocument.title)
+  const [value, setValue] = useState<string>(title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
 
   // When the document title changes elsewhere, update the state here
   useEffect(() => {
-    setValue(currentDocument.title)
-  }, [currentDocument.title])
+    setValue(title)
+  }, [title])
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     if (editor === undefined) {
@@ -69,10 +66,6 @@ const TitleInput: React.FC<{ currentDocument: DocumentDoc }> = ({
 
   const onChange = (newValue: string) => {
     setValue(newValue)
-  }
-
-  const onRename = (newValue: string) => {
-    renameDocument(currentDocument.id, newValue)
   }
 
   const getTitleInputProps = () => ({ onKeyDown, onChange, onRename, value })

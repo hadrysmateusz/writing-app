@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 
 import { ReactEditor } from "slate-react"
 import { EditableProps } from "slate-react/dist/components/editable"
@@ -8,8 +8,12 @@ import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 // import HoveringToolbar from "../HoveringToolbar"
 // import { useUserdata } from "../Userdata"
 // import { useViewState } from "../ViewState"
-import { DocumentDoc, useDatabase } from "../Database"
-import { SaveDocumentFn, useMainState, useTabsState } from "../MainProvider"
+import { useDatabase } from "../Database"
+import {
+  DEFAULT_EDITOR_VALUE,
+  useDocumentsAPI,
+  useTabsState,
+} from "../MainProvider"
 import TrashBanner from "../TrashBanner"
 import { useEditorState } from "../EditorStateProvider"
 import { Toolbar } from "../Toolbar"
@@ -35,22 +39,135 @@ import { DummyEditor } from "./DummyEditor"
 import { useRxSubscription } from "../../hooks"
 import { BalloonToolbar } from "./BalloonToolbar"
 import { useTabsDispatch } from "../MainProvider"
+import { Descendant } from "slate"
+import { myDeserializeMd, mySerializeMd } from "../../slate-helpers/deserialize"
 
 const DocumentLoadingState = withDelayRender(1000)(() => <div>Loading...</div>)
+
+const DocumentEmptyState = withDelayRender(1000)(() => (
+  // This div is here to prevent issues with split pane rendering, TODO: add proper empty state
+  <div style={{ padding: "40px" }}>No document selected</div>
+))
 
 /**
  * Renders the editor if there is a document selected
  */
 export const EditorRenderer: React.FC = () => {
-  const db = useDatabase()
-  const {
-    currentDocumentId,
-    // isDocumentLoading,
-    // unsyncedDocs,
-  } = useMainState()
-  const { /* isModified, */ saveDocument } = useEditorState()
-
   const { tabs, currentTab } = useTabsState()
+
+  // Handles rendering the editor based on tab type
+  function renderCorrectEditor() {
+    let currentTabObj = tabs[currentTab]
+    // TODO: probably precompute this and expose in useTabsState hook
+    const currentTabType = currentTabObj.tabType
+    if (currentTabType === "cloudNew") return <DummyEditor />
+    if (currentTabType === "cloudDocument")
+      return <CloudEditor currentDocumentId={currentTabObj.documentId} />
+    if (currentTabType === "localDocument")
+      return <LocalEditor currentDocumentPath={currentTabObj.path} />
+    return <DocumentEmptyState />
+  }
+
+  return (
+    <OutermosterContainer>
+      <EditorTabsBar />
+      <OutermostContainer>
+        <ImageModalProvider>
+          <LinkModalProvider>{renderCorrectEditor()}</LinkModalProvider>
+        </ImageModalProvider>
+      </OutermostContainer>
+    </OutermosterContainer>
+  )
+}
+
+const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
+  currentDocumentPath,
+}) => {
+  const [isLoading, setIsLoading] = useState(true)
+  const [title, setTitle] = useState<string>()
+  const [content, setContent] = useState<Descendant[]>()
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
+
+  useEffect(() => {
+    ;(async () => {
+      console.log("LOCAL EDITOR USEEFFECT")
+      setIsLoading(true)
+
+      const ipcResponse = await window.electron.invoke("OPEN_FILE", {
+        filePath: currentDocumentPath,
+      })
+
+      console.log(ipcResponse)
+
+      if (ipcResponse.status === "success") {
+        // TODO: handle possible data-shape errors
+        setTitle(ipcResponse.data.file.fileName)
+        // TODO: support other deserializers
+        // I'm using my custom deserializer as it's practically identical to the plate one and doesn't require the editor object which would require a big restructuring of this code
+        // const deserializer = { md: deserializeMarkdown }["md"]
+
+        // TODO: this is the previous working thingy
+        let deserialized = myDeserializeMd(ipcResponse.data.file.content)
+        if (deserialized.length === 0) {
+          deserialized = DEFAULT_EDITOR_VALUE
+        }
+
+        console.log("deserialized:", deserialized)
+        setContent(deserialized)
+      } else {
+        // TODO: handle this
+        console.warn("something went wrong")
+      }
+
+      setIsLoading(false)
+    })()
+  }, [currentDocumentPath])
+
+  console.log(title, content)
+
+  return !isLoading && content && title ? (
+    <EditorComponent
+      key={currentDocumentPath}
+      saveDocument={async () => {
+        if (!editor) {
+          console.warn("no editor")
+          return
+        }
+
+        console.log(editor.children)
+
+        const serializedContent = mySerializeMd(editor.children)
+
+        console.log("serialized:", serializedContent)
+
+        const ipcResponse = await window.electron.invoke("WRITE_FILE", {
+          filePath: currentDocumentPath,
+          content: serializedContent,
+        })
+        console.log(ipcResponse)
+      }}
+      renameDocument={() => {
+        console.log("TODO: implement")
+      }}
+      title={title}
+      content={content}
+      isDeleted={false}
+      documentId=""
+    />
+  ) : isLoading ? (
+    <DocumentLoadingState />
+  ) : (
+    <DocumentEmptyState />
+  )
+}
+
+const CloudEditor: React.FC<{ currentDocumentId: string }> = ({
+  currentDocumentId,
+}) => {
+  const db = useDatabase()
+  const { saveDocument } = useEditorState()
+  const { renameDocument } = useDocumentsAPI()
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   // TODO: maybe make the main state provider use the rx subscription hook
   const {
@@ -60,56 +177,59 @@ export const EditorRenderer: React.FC = () => {
     db.documents.findOne().where("id").eq(currentDocumentId)
   )
 
-  // Handles rendering the editor based on tab type and loading/error states
-  function renderInner() {
-    let currentTabObj = tabs[currentTab]
-    // TODO: probably precompute this and expose in useTabsStateHook
-    const currentTabType = currentTabObj.tabType
+  const content = useMemo(
+    () => (currentDocument ? deserialize(currentDocument.content) : []),
+    [currentDocument]
+  )
 
-    // cloud document new
-    if (currentTabType === "cloudNew") return <DummyEditor />
-    // cloud document loading
-    if (isDocumentLoading) return <DocumentLoadingState />
-    // cloud document ready
-    if (currentDocument)
-      return (
-        <EditorComponent
-          key={currentDocument.id} // Necessary to reload the component on id change
-          currentDocument={currentDocument}
-          saveDocument={saveDocument}
-        />
-      )
-    // default (error) case
-    return (
-      // This div is here to prevent issues with split pane rendering, TODO: add proper empty state
-      withDelayRender(1000, () => (
-        <div style={{ padding: "40px" }}>No document selected</div>
-      ))
-    )
-  }
+  const handleRename = useCallback(
+    (value: string) => {
+      renameDocument(currentDocumentId, value)
+    },
+    [currentDocumentId, renameDocument]
+  )
 
-  return (
-    <OutermosterContainer>
-      <EditorTabsBar />
-      <OutermostContainer>
-        <ImageModalProvider>
-          <LinkModalProvider>{renderInner()}</LinkModalProvider>
-        </ImageModalProvider>
-      </OutermostContainer>
-    </OutermosterContainer>
+  return currentDocument ? (
+    <EditorComponent
+      key={currentDocument.id} // Necessary to reload the component on id change
+      saveDocument={() => {
+        console.log("children", editor?.children)
+
+        saveDocument()
+      }}
+      renameDocument={handleRename}
+      title={currentDocument.title}
+      content={content}
+      isDeleted={currentDocument.isDeleted}
+      documentId={currentDocumentId}
+    />
+  ) : isDocumentLoading ? (
+    <DocumentLoadingState />
+  ) : (
+    <DocumentEmptyState />
   )
 }
 
 const EditorComponent: React.FC<{
-  // we get the currentDocument from a prop because inside this component it can't be null
-  currentDocument: DocumentDoc
-  saveDocument: SaveDocumentFn
-}> = ({ currentDocument, saveDocument }) => {
+  saveDocument: () => void
+  renameDocument: (value: string) => void
+  title: string
+  content: Descendant[]
+  // TODO: probably move the dependency on isDeleted and documentId up and outside of this component
+  isDeleted: boolean
+  documentId: string
+}> = ({
+  saveDocument,
+  title,
+  content,
+  renameDocument,
+  isDeleted,
+  documentId,
+}) => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
   const tabsDispatch = useTabsDispatch()
-
-  // const { isSpellCheckEnabled } = useUserdata()
   const { onChange } = useEditorState()
+  // const { isSpellCheckEnabled } = useUserdata()
 
   const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
 
@@ -198,11 +318,11 @@ const EditorComponent: React.FC<{
     () => ({
       placeholder: "Start writing…",
       spellCheck: /* isSpellCheckEnabled */ false, // TODO: change this back when I restore userdata
-      onBlur: (e) => {
+      onBlur: (_e) => {
         // TODO: if you close the window or reload without clicking on something else the blur doesn't trigger and the content doesn't get saved
         saveDocument()
       },
-      onFocus: (e) => {
+      onFocus: (_e) => {
         tabsDispatch({ type: "keep-tab", tabId: null })
       },
       onMouseDown: (
@@ -330,20 +450,19 @@ const EditorComponent: React.FC<{
     <>
       {/* TODO: maybe use an rxdb subscription to the update event to check for deletion to display the banner (maybe keep isDeleted in local state) */}
       {/* TODO: maybe use an rxdb subscription to the remove event to check for permanent deletion to close the tab (maybe do it higher up) */}
-      {currentDocument.isDeleted && (
-        <TrashBanner documentId={currentDocument.id} />
-      )}
+      {isDeleted && <TrashBanner documentId={documentId} />}
       <OuterContainer onKeyDown={handleContainerKeyDown}>
+        <div className="Editor_TopShadow" />
         <InnerContainer>
           <EditableContainer>
             <Plate
               id="main"
               plugins={pluginsList}
               editableProps={editableProps}
-              initialValue={deserialize(currentDocument.content)}
+              initialValue={content}
               onChange={onChange}
             >
-              <TitleInput currentDocument={currentDocument} />
+              <TitleInput title={title} onRename={renameDocument} />
               <Toolbar />
               <BalloonToolbar />
               {/* <ToolbarSearchHighlight icon={Search} setSearch={setSearch} /> */}
@@ -355,7 +474,6 @@ const EditorComponent: React.FC<{
             </Plate>
             {isMenuOpen && renderContextMenu()}
           </EditableContainer>
-
           {/* <HoveringToolbar /> */}
         </InnerContainer>
       </OuterContainer>

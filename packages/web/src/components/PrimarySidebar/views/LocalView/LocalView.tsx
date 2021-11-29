@@ -18,6 +18,8 @@ import {
   InnerContainer,
 } from "../../../SidebarCommon"
 import { useCurrentUser } from "../../.."
+import { useTabsDispatch, useTabsState } from "../../../MainProvider"
+import { TabsState } from "../../../MainProvider/tabsSlice"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
@@ -96,10 +98,14 @@ const LocalViewInner: React.FC<{
     const res = await window.electron.invoke("ADD_PATH")
     // TODO: handle other statuses
     if (res.status === "success") {
-      updateDirs([
-        ...dirs,
-        { name: res.data.baseName, path: res.data.dirPath, exists: true },
-      ])
+      const foundIndex = dirs.findIndex((dir) => dir.path === res.data.dirPath)
+      // only add if this path is not already in the list
+      if (foundIndex === -1) {
+        updateDirs([
+          ...dirs,
+          { name: res.data.baseName, path: res.data.dirPath, exists: true },
+        ])
+      }
     }
   }
   const handleRemovePath = async (path: string) => {
@@ -199,6 +205,22 @@ const DirItem: React.FC<{
   )
 }
 
+/**
+ * Checks tabs state for a tab with a local document with path matching the param
+ * @returns tabId of the tab containing the document or null if such tab wasn't found
+ */
+function findTabWithPath(tabsState: TabsState, path: string): string | null {
+  let foundTabId: string | null = null
+  Object.entries(tabsState.tabs).some(([tabId, tab]) => {
+    if (tab.tabType === "localDocument" && tab.path === path) {
+      foundTabId = tabId
+      return true
+    }
+    return false
+  })
+  return foundTabId
+}
+
 const NestedDirItem: React.FC<
   DirObject & { removeDir: (path: string) => void }
 > = ({ path, name, dirs, files, removeDir }) => {
@@ -218,13 +240,7 @@ const NestedDirItem: React.FC<
       {isOpen ? (
         <>
           {files.map((file) => (
-            <SidebarDocumentItemComponent
-              key={file.path}
-              title={file.name}
-              modifiedAt={Date.now()}
-              createdAt={Date.now()}
-              isCurrent={false}
-            />
+            <LocalDocumentSidebarItem path={file.path} name={file.name} />
           ))}
           {dirs.map((dir) => (
             <NestedDirItem key={dir.path} {...dir} removeDir={removeDir} />
@@ -233,4 +249,60 @@ const NestedDirItem: React.FC<
       ) : null}
     </>
   ) : null
+}
+
+const LocalDocumentSidebarItem: React.FC<{ path: string; name: string }> = ({
+  path,
+  name,
+}) => {
+  const tabsDispatch = useTabsDispatch()
+  const tabsState = useTabsState()
+
+  const handleClick = useCallback(() => {
+    const tabId = findTabWithPath(tabsState, path)
+    // tab with this path already exists, switch to it
+    if (tabId !== null) {
+      tabsDispatch({ type: "switch-tab", tabId })
+    } else {
+      // check for a tab with keep === false
+      const tempTab = Object.values(tabsState.tabs).find(
+        (tab) => tab.keep === false
+      )
+      // if there is a tab with keep === false, we reuse that tab
+      if (!!tempTab) {
+        tabsDispatch({
+          type: "replace-tab",
+          tab: {
+            tabId: tempTab.tabId,
+            tabType: "localDocument",
+            path: path,
+            keep: false,
+          },
+          switch: true,
+        })
+      }
+      // open document in new tab
+      else {
+        tabsDispatch({
+          type: "create-tab",
+          tabType: "localDocument",
+          path: path,
+          switch: true,
+        })
+      }
+    }
+  }, [path, tabsDispatch, tabsState])
+
+  return (
+    <SidebarDocumentItemComponent
+      key={path}
+      title={name}
+      // TODO: replace these timestamps with real data
+      modifiedAt={Date.now()}
+      createdAt={Date.now()}
+      // TODO: add an actual isCurrent check
+      isCurrent={false}
+      onClick={handleClick}
+    />
+  )
 }

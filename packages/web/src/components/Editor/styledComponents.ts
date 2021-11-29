@@ -26,6 +26,17 @@ export const OuterContainer = styled.div`
   font-size: 20px;
   box-sizing: content-box;
   ${customScrollbar}
+  position: relative;
+
+  .Editor_TopShadow {
+    position: sticky;
+    z-index: 9999;
+    height: 40px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(var(--dark-200) 4%, #19191900 70%);
+  }
 `
 
 export const InnerContainer = styled.div`
