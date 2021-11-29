@@ -32,6 +32,7 @@ export const PrimarySidebarViewContainer = styled.div<{ noButton?: boolean }>`
 `
 
 export const SecondarySidebarViewContainer = styled.div`
+  padding-top: 5px;
   min-height: 0;
   height: 100%;
   width: 100%;
