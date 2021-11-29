@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo } from "react"
 import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
 
-import createContext from "../../utils/createContext"
+import createContext from "../../../utils/createContext"
 
-import { getAndUpsertLink } from "../Toolbar"
-import { getPromptModalContent, usePromptModal } from "../PromptModal"
+import { getPromptModalContent, usePromptModal } from "../../PromptModal"
+
+import { getAndUpsertLink } from "../Toolbars"
 
 import { LinkModalContextValue } from "./types"
 

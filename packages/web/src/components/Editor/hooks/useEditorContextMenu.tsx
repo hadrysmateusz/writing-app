@@ -23,10 +23,11 @@ import {
   ContextSubmenu,
 } from "../../ContextMenu"
 import { TurnIntoContextMenuContent } from "../../NodeToolbar"
-import { useImageModal } from "../../ImageModal"
-import { useLinkModal } from "../../LinkPrompt"
 import Icon from "../../Icon"
-import { ToolbarLink } from "../../Toolbar" // TODO: refactor those components to make them more general
+
+import { useLinkModal } from "../LinkModal"
+import { useImageModal } from "../ImageModal"
+import { ToolbarLink } from "../Toolbars" // TODO: refactor those components to make them more general
 
 type ContextMenuType = {
   base: "collapsed" | "expanded" | "node"

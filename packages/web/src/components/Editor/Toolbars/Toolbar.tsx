@@ -21,9 +21,10 @@ import {
   ListToolbarButton,
 } from "@udecode/plate"
 
-import { useImageModal } from "../ImageModal"
+import Icon from "../../Icon"
+
 // import { useLinkModal } from "../LinkPrompt"
-import Icon from "../Icon"
+import { useImageModal } from "../ImageModal"
 
 // import { ToolbarLink } from "./ToolbarLink"
 import { ToolbarImage } from "./ToolbarImage"

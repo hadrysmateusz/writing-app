@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react"
 import { ToggleableHooks } from "../../hooks"
-import { ModalContainer } from "../ImageModal/styledComponents"
+import { ModalContainer } from "../Editor/ImageModal/ImageModal.styles"
 import { useModal } from "../Modal"
 import { ModalContentProps } from "../Modal/types"
 

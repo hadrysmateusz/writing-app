@@ -10,9 +10,10 @@ import {
   getPluginType,
 } from "@udecode/plate"
 
-import { ToolbarLink } from "../../Toolbar"
-import { useLinkModal } from "../../LinkPrompt"
+import { useLinkModal } from "../LinkModal"
 import Icon from "../../Icon"
+
+import { ToolbarLink } from "./ToolbarLink"
 
 export const BalloonToolbar = () => {
   const editor = usePlateEditorRef()

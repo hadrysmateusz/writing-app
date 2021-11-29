@@ -7,7 +7,6 @@ import isHotkey from "is-hotkey"
 import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
 import { useEditorState } from "../EditorStateProvider"
-import { Toolbar } from "../Toolbar"
 import { useTabsDispatch } from "../MainProvider"
 
 import {
@@ -18,7 +17,7 @@ import {
 import { useEditorContextMenu } from "./hooks"
 import { pluginsList } from "./config"
 import TitleInput from "./TitleInput"
-import { BalloonToolbar } from "./Toolbars"
+import { BalloonToolbar, Toolbar } from "./Toolbars"
 
 type EditorComponentProps = {
   saveDocument: () => void

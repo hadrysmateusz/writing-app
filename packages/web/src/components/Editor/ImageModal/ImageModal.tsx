@@ -1,10 +1,10 @@
 import React, { useMemo, useCallback } from "react"
 import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
 
-import createContext from "../../utils/createContext"
+import createContext from "../../../utils/createContext"
 
-import { insertImage } from "../Toolbar"
-import { getPromptModalContent, usePromptModal } from "../PromptModal"
+import { insertImage } from "../Toolbars"
+import { getPromptModalContent, usePromptModal } from "../../PromptModal"
 
 import { ImageModalContextValue } from "./types"
 

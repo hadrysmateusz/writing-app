@@ -2,8 +2,6 @@ import React from "react"
 
 import { useTabsState } from "../MainProvider"
 import { EditorTabsBar } from "../EditorTabs"
-import { ImageModalProvider } from "../ImageModal"
-import { LinkModalProvider } from "../LinkPrompt"
 
 import {
   OutermostContainer,
@@ -11,6 +9,8 @@ import {
 } from "./EditorRenderer.styles"
 import { LocalEditor, CloudEditor, DummyEditor } from "./SpecializedEditors"
 import { DocumentEmptyState } from "./HelperStates"
+import { ImageModalProvider } from "./ImageModal"
+import { LinkModalProvider } from "./LinkModal"
 
 /**
  * Renders the editor if there is a document selected
