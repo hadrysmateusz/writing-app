@@ -240,7 +240,11 @@ const NestedDirItem: React.FC<
       {isOpen ? (
         <>
           {files.map((file) => (
-            <LocalDocumentSidebarItem path={file.path} name={file.name} />
+            <LocalDocumentSidebarItem
+              key={file.path}
+              path={file.path}
+              name={file.name}
+            />
           ))}
           {dirs.map((dir) => (
             <NestedDirItem key={dir.path} {...dir} removeDir={removeDir} />
