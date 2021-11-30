@@ -14,6 +14,9 @@ import isElectron from "is-electron"
 import { cloneDeep } from "lodash"
 import { ELEMENT_DEFAULT } from "@udecode/plate"
 
+import { GROUP_TREE_ROOT } from "../../constants"
+import { createContext } from "../../utils"
+
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 import { useModal } from "../Modal"
 import {
@@ -25,9 +28,6 @@ import {
 } from "../Database"
 import { defaultLocalSettings, useLocalSettings } from "../LocalSettings"
 import { serialize } from "../Editor"
-
-import { GROUP_TREE_ROOT } from "../../constants"
-import { createContext } from "../../utils"
 
 import {
   CreateDocumentFn,
