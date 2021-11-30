@@ -5,7 +5,16 @@ import { CloseModalFn } from "../Modal/types"
 import { ModalButtonsContainer, ModalContainer } from "../Modal"
 
 import { useDocumentsAPI } from "."
-import { ConfirmDeleteModalProps } from "./types"
+
+export type ConfirmDeleteModalProps =
+  | {
+      all: false
+      documentId: string | null
+    }
+  | {
+      all: true
+      documentId: undefined
+    }
 
 export type ConfirmDeleteModalReturnValue = boolean
 

@@ -7,16 +7,6 @@ export type Sorting = {
   direction: SortingDirection
 }
 
-export type ConfirmDeleteModalProps =
-  | {
-      all: false
-      documentId: string | null
-    }
-  | {
-      all: true
-      documentId: undefined
-    }
-
 /**
  * The generic type has to be an RxDB Document
  *

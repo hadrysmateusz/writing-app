@@ -50,7 +50,6 @@ import {
   UpdateGroupFn,
   MoveGroupFn,
   OpenDocumentFn,
-  ConfirmDeleteModalProps,
   ActuallyPermanentlyDeleteTagFn,
   RenameTagFn,
   CreateTagFn,
@@ -67,7 +66,10 @@ import {
   TabsDispatchContext,
 } from "./context"
 import { cancelSubscriptions, getCurrentCloudDocumentId } from "./helpers"
-import { ConfirmDeleteModalContent } from "./ConfirmDeleteModalContent"
+import {
+  ConfirmDeleteModalContent,
+  ConfirmDeleteModalProps,
+} from "./ConfirmDeleteModalContent"
 import { TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
 import AppLoadingState from "./AppLoadingState"
 
