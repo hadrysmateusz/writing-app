@@ -50,10 +50,15 @@ const resetBlockTypesCommonRule = {
   defaultType: ELEMENT_PARAGRAPH,
 }
 
-const ParagraphElement = styled.p`
+const ParagraphElementS = styled.p`
   margin: 8px 0;
   /* margin: 16px 0; */
 `
+
+const ParagraphElement = (props) => {
+  console.log(props)
+  return <ParagraphElementS {...props} {...props.attributes} />
+}
 
 export const pluginsList = createPlugins(
   [
@@ -166,7 +171,7 @@ export const pluginsList = createPlugins(
       [ELEMENT_CODE_BLOCK]: withProps(CodeBlockElement, {
         styles: { root: { background: "var(--dark-400)" } },
       }),
-      [ELEMENT_PARAGRAPH]: ParagraphElement,
+      [ELEMENT_PARAGRAPH]: withProps(ParagraphElement, {}),
       [ELEMENT_BLOCKQUOTE]: withProps(BlockquoteElement, {
         styles: {
           root: {
