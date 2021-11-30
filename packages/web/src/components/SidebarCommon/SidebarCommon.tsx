@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components/macro"
+import { customScrollbar } from "../../style-utils"
 
 export const SidebarContainer = styled.div<{ collapsed: boolean }>`
   min-height: 0;
@@ -36,6 +37,9 @@ export const SecondarySidebarViewContainer = styled.div`
   min-height: 0;
   height: 100%;
   width: 100%;
+
+  overflow: auto;
+  ${customScrollbar}
 `
 
 export const SidebarTabsContainer = styled.div`
