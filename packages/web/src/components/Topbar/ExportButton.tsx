@@ -1,41 +1,50 @@
-import React, { useCallback } from "react"
-import { useSlateStatic } from "slate-react"
-import { mySerializeMd } from "../../slate-helpers/deserialize"
-// import { useSlateStatic } from "slate-react"
+import { useCallback } from "react"
 
+import { mySerializeMd } from "../../slate-helpers/deserialize"
 // import { serializeHTML, serializeMarkdown } from "../../slate-helpers"
 
-// import { useMainState } from "../MainProvider"
+import { deserialize } from "../Editor/helpers"
+
 import { Button } from "../Button"
-import { useMainState } from "../MainProvider"
-import { ModalButtonsContainer, ModalContainer, useModal } from "../Modal"
+import { ModalButtonsContainer, ModalContainer } from "../Modal"
 import { CloseModalFn } from "../Modal/types"
 
-export const ExportModalContent: React.FC<{
-  close: CloseModalFn<void>
-}> = ({ close }) => {
-  // const editor = useSlateStatic()
-  // const { currentDocument } = useMainState()
+export type ExportModalProps = {
+  documentContent: string
+  documentTitle: string
+}
+export type ExportModalReturnValue = void
+
+export const ExportModalContent: React.FC<
+  ExportModalProps & {
+    close: CloseModalFn<ExportModalReturnValue>
+  }
+> = ({ close, documentContent, documentTitle }) => {
+  console.log("export modal content")
 
   // TODO: add a way to export in a browser (probably generate on a server if anything more complex is required and download)
   // TODO: consider offloading the serializing to the main process to allow it to run in parallel to selecting the file path
-  // TODO: fix the serializers and then move to the new ipc system
   const exportFile = useCallback(
     async (format: "html" | "md" /* TODO: replace with FileFormats enum */) => {
-      // const name = currentDocument?.title
-      // const serializer = { md: serializeMarkdown, html: serializeHTML }[format]
-      // const result = await window.ipcRenderer.invoke("save-file", {
-      //   content: serializer(editor),
-      //   format: format,
-      //   name,
-      // })
-      // if (result.error) {
-      //   alert(result.error)
-      // }
-      // close()
+      const name = documentTitle
+      const serializer = {
+        md: mySerializeMd,
+        html: () => {
+          // TODO: as a temporary solution use the remark serializer and convert to html with the remark-rehype bridge
+          throw new Error("implement")
+        },
+      }[format]
+      const result = await window.electron.invoke("SAVE_FILE", {
+        content: serializer(deserialize(documentContent)),
+        format: format,
+        name,
+      })
+      if (result.error) {
+        console.warn(result.error)
+      }
+      close(undefined)
     },
-    // [close, currentDocument, editor]
-    []
+    [close, documentContent, documentTitle]
   )
 
   const handleExportHTML = useCallback(() => {
@@ -56,20 +65,5 @@ export const ExportModalContent: React.FC<{
         <Button onClick={handleExportHTML}>HTML</Button>
       </ModalButtonsContainer>
     </ModalContainer>
-  )
-}
-
-export const ExportButton: React.FC = () => {
-  const { open: openExportModal, Modal: ExportModal } = useModal(false, {})
-
-  const handleExport = () => {
-    openExportModal({})
-  }
-
-  return (
-    <>
-      <Button onClick={handleExport}>Export</Button>
-      <ExportModal>{(props) => <ExportModalContent {...props} />}</ExportModal>
-    </>
   )
 }
