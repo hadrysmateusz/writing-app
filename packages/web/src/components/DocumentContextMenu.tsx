@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react"
 import styled from "styled-components/macro"
 
+import { formatOptional } from "../utils"
+
 import {
   useContextMenu,
   ContextMenuItem,
@@ -9,9 +11,13 @@ import {
 } from "./ContextMenu"
 import { DocumentDoc } from "./Database"
 import { useEditableText } from "./RenamingInput"
-import { useMainState } from "./MainProvider"
-import { formatOptional } from "./../utils"
-import { useDocumentsAPI } from "./MainProvider"
+import { useMainState, useDocumentsAPI } from "./MainProvider"
+import { useModal } from "./Modal"
+import {
+  ExportModalContent,
+  ExportModalProps,
+  ExportModalReturnValue,
+} from "./Topbar/ExportButton"
 
 export const useDocumentContextMenu = (document: DocumentDoc) => {
   const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)
@@ -32,6 +38,11 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
       renameDocument(document.id, value)
     }
   )
+
+  const { open: openExportModal, Modal: ExportModal } = useModal<
+    ExportModalReturnValue,
+    ExportModalProps
+  >(false, { documentContent: document.content, documentTitle: document.title })
 
   const modifiedAt = useMemo(() => {
     // TODO: replace with proper representation (using moment.js)
@@ -78,6 +89,14 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     [openMenu]
   )
 
+  const handleExport = useCallback(() => {
+    console.log("open")
+    openExportModal({
+      documentContent: document.content,
+      documentTitle: document.title,
+    })
+  }, [document.content, document.title, openExportModal])
+
   const getContainerProps = useCallback(() => {
     return { onContextMenu: handleContextMenu }
   }, [handleContextMenu])
@@ -107,6 +126,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
                     ? "Remove from favorites"
                     : "Add to favorites"}
                 </ContextMenuItem>
+                <ContextMenuItem onClick={handleExport}>Export</ContextMenuItem>
                 <ContextMenuItem onClick={handleRemoveDocument}>
                   Delete
                 </ContextMenuItem>
