@@ -172,7 +172,6 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
   }>(initialTabData)
 
   const {
-    isMenuOpen,
     DocumentContextMenu,
     getEditableProps,
     getContainerProps,
@@ -213,7 +212,7 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
       </div>
       {tabData.group ? <div className="tab-group">{tabData.group}</div> : null}
       <TabCloseButton handleCloseTab={handleCloseTab} />
-      {isMenuOpen && <DocumentContextMenu />}
+      <DocumentContextMenu />
     </EditorTabContainer>
   )
 }

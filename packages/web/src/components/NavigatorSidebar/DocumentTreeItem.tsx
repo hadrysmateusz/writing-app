@@ -15,7 +15,6 @@ const DocumentTreeItem: React.FC<{
   const { openDocument } = useMainState()
 
   const {
-    isMenuOpen,
     DocumentContextMenu,
     getEditableProps,
     getContainerProps,
@@ -42,7 +41,7 @@ const DocumentTreeItem: React.FC<{
         <EditableText {...getEditableProps()}>{title}</EditableText>
       </GenericTreeItem>
 
-      {isMenuOpen && <DocumentContextMenu />}
+      <DocumentContextMenu />
     </>
   )
 }

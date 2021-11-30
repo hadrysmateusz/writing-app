@@ -16,7 +16,6 @@ export const SidebarDocumentItem: React.FC<{
 
   const {
     openMenu,
-    isMenuOpen,
     DocumentContextMenu,
     getEditableProps,
   } = useDocumentContextMenu(document)
@@ -86,7 +85,7 @@ export const SidebarDocumentItem: React.FC<{
         onContextMenu={handleContextMenu}
         getEditableProps={getEditableProps}
       />
-      {isMenuOpen && <DocumentContextMenu />}
+      <DocumentContextMenu />
     </>
   )
 }
