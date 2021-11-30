@@ -34,14 +34,15 @@ export const DirItem: React.FC<{
       files={files}
       dirs={dirs}
       removeDir={removeDir}
+      startOpen={true}
     />
   )
 }
 
 const NestedDirItem: React.FC<
-  DirObject & { removeDir: (path: string) => void }
-> = ({ path, name, dirs, files, removeDir }) => {
-  const { isOpen, toggle } = useToggleable(false)
+  DirObject & { removeDir: (path: string) => void; startOpen?: boolean }
+> = ({ path, name, dirs, files, removeDir, startOpen = false }) => {
+  const { isOpen, toggle } = useToggleable(startOpen)
 
   return files.length > 0 ? (
     <>
