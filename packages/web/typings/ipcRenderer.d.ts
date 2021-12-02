@@ -19,7 +19,12 @@ declare global {
       ) => () => void
       invoke: (channel: ElectronIpcChannel, ...args: any[]) => Promise<any>
       send: (channel: ElectronIpcChannel, ...args: any[]) => void
+      sendSync: (channel, ...args) => any
       receive: (
+        channel: ElectronIpcChannel,
+        handler: (...args: any[]) => void
+      ) => void
+      removeListener: (
         channel: ElectronIpcChannel,
         handler: (...args: any[]) => void
       ) => void
