@@ -8,6 +8,7 @@ type ElectronIpcChannel =
   | "VALIDATE_PATHS"
   | "OPEN_FILE"
   | "WRITE_FILE"
+  | "FORCE_RELOAD"
 
 declare global {
   interface Window {

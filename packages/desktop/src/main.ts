@@ -465,4 +465,15 @@ ipcMain.handle("VALIDATE_PATHS", async (_event, payload) => {
   }
 })
 
+ipcMain.handle("FORCE_RELOAD", async (_event, _payload) => {
+  const noti = new Notification({
+    title: "Database setup error",
+    body: "Attempting force reload",
+  })
+
+  noti.show()
+
+  mainWindow.webContents.reloadIgnoringCache()
+})
+
 export {}

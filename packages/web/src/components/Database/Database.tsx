@@ -91,7 +91,9 @@ export const DatabaseProvider: React.FC = ({ children }) => {
 
         setDatabaseState({ database: db, status: "READY" })
       } catch (e) {
+        console.log("Database setup error, attempting force reload...")
         console.error(e)
+        window.electron.invoke("FORCE_RELOAD")
         setDatabaseState({ database: null, status: "ERROR" })
       }
     })()
