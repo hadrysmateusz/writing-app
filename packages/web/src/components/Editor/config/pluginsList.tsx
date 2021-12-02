@@ -50,13 +50,12 @@ const resetBlockTypesCommonRule = {
   defaultType: ELEMENT_PARAGRAPH,
 }
 
-const ParagraphElementS = styled.p`
+const ParagraphElementS = styled.div`
   margin: 8px 0;
   /* margin: 16px 0; */
 `
 
 const ParagraphElement = (props) => {
-  console.log(props)
   return <ParagraphElementS {...props} {...props.attributes} />
 }
 
