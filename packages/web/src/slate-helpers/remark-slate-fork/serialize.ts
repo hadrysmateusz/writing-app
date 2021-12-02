@@ -198,7 +198,7 @@ export default function serialize(
     case nodeTypes.link:
       return `[${children}](${(chunk as BlockType)[linkDestinationKey] || ""})`
     case nodeTypes.image:
-      console.log("image", chunk, chunk[imageSourceKey], imageSourceKey)
+      // console.log("image", chunk, chunk[imageSourceKey], imageSourceKey)
       return `![${(chunk as BlockType)[imageCaptionKey]
         // TODO: refactor and understand this code
         .map((c: BlockType | LeafType) => {

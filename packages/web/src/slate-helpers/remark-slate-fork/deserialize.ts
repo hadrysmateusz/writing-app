@@ -107,8 +107,6 @@ export default function deserialize(node: MdastNode, opts?: OptionType) {
     )
   }
 
-  console.log(node)
-
   switch (node.type) {
     case "heading":
       return { type: types.heading[node.depth || 1], children }
