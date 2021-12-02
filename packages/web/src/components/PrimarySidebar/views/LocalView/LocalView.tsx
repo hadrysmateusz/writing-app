@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react"
-
-import { formatOptional } from "../../../../utils"
+import React, { useEffect, useState } from "react"
 
 import { MainHeader } from "../../../DocumentsList"
 import { useLocalSettings } from "../../../LocalSettings"
@@ -14,7 +12,8 @@ import { useCurrentUser } from "../../../Auth"
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 import { ValidatePathsObj } from "./types"
-import { DirItem } from "./DirItem"
+import { DirItemTopLevel } from "./DirItem"
+import { formatOptional } from "../../../../utils"
 
 export const LocalView: React.FC<{}> = () => {
   const db = useDatabase()
@@ -91,29 +90,38 @@ const LocalViewInner: React.FC<{
       }
     }
   }
-  const handleRemovePath = async (path: string) => {
+  const handleRemovePath = (path: string) => {
     const filteredDirs = dirs.filter((dir) => dir.path !== path)
     updateDirs(filteredDirs)
   }
+  const handleCreateFile = async () => {
+    const ipcResponse = await window.electron.invoke("CREATE_FILE", {})
+  }
 
   // TODO: if dir has exists === false, show a warning and a button to manually find the dir
+  // TODO: add local document context menu
+  // TODO: turn bottom button into a create local document action (and expose it in context menu)
+  // TODO: move the add path action to maybe the main header (and probably context menu)
+  // TODO: refactor and generalize group tree items to support library dirs (and display them instead of collections when local documents are the selected view (also hide tags then (maybe change the entire navigator sidebar to support the local view then (e.g. add recent docs section instead of favorites))))
 
   return (
     <PrimarySidebarViewContainer>
-      <MainHeader title={"Local"} />
+      <MainHeader title="Local" />
       <InnerContainer>
         {dirs.map((dir) => (
-          <DirItem
+          <DirItemTopLevel
             key={dir.path}
             path={dir.path}
             name={formatOptional(dir.name, "Unknown")}
             removeDir={handleRemovePath}
+            // exists={"exists" in dir ? dir.exists : undefined}
+            startOpen={true}
           />
         ))}
       </InnerContainer>
 
-      <PrimarySidebarBottomButton icon="plus" handleClick={handleAddPath}>
-        Add Path
+      <PrimarySidebarBottomButton icon="plus" handleClick={handleCreateFile}>
+        Create Document
       </PrimarySidebarBottomButton>
     </PrimarySidebarViewContainer>
   )

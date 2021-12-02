@@ -1,5 +1,6 @@
 // Figure out a way to make this a shared enum
-type ElectronIpcChannel =
+export type ElectronIpcChannel = IpcChannelFromRenderer | IpcChannelFromMain
+type IpcChannelFromRenderer =
   | "NEW_CLOUD_DOCUMENT"
   | "READ_FILE"
   | "SAVE_FILE"
@@ -8,7 +9,11 @@ type ElectronIpcChannel =
   | "VALIDATE_PATHS"
   | "OPEN_FILE"
   | "WRITE_FILE"
+  | "CREATE_FILE"
+  | "WATCH_DIR"
+  | "STOP_WATCH_DIR"
   | "FORCE_RELOAD"
+type IpcChannelFromMain = "WATCH_DIR:RES"
 
 declare global {
   interface Window {

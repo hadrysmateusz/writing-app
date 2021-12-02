@@ -1,13 +1,30 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from "electron"
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  dialog,
+  shell,
+  Notification,
+} from "electron"
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from "electron-devtools-installer"
 import fs from "fs-extra"
 import path from "path"
 import os from "os"
+import chokidar from "chokidar"
 
 import IS_DEV from "./helpers/electron-is-dev"
 import { setUpApplicationMenu } from "./menu"
+
+type FileObject = { path: string; name: string }
+
+type DirObjectRecursive = {
+  path: string
+  name: string
+  dirs: DirObjectRecursive[]
+  files: FileObject[]
+}
 
 let mainWindow: BrowserWindow
 
@@ -211,6 +228,7 @@ ipcMain.handle("READ_FILE", async (_event, payload) => {
   return { status: DialogStatus.SUCCESS, error: null, data: files }
 })
 
+// TODO: add simple reveal in explorer action
 // TODO: rework naming of the events/channels
 
 ipcMain.handle("OPEN_FILE", async (_event, payload) => {
@@ -376,15 +394,9 @@ ipcMain.handle("ADD_PATH", async (_event, _payload) => {
   }
 })
 
-type DirObject = {
-  path: string
-  name: string
-  dirs: DirObject[]
-  files: FileObject[]
-}
-type FileObject = { path: string; name: string }
-
-const createDirObject = async (pathStr: string): Promise<DirObject> => {
+const createDirObjectRecursive = async (
+  pathStr: string
+): Promise<DirObjectRecursive> => {
   try {
     await fs.ensureDir(pathStr)
   } catch (error) {
@@ -396,7 +408,7 @@ const createDirObject = async (pathStr: string): Promise<DirObject> => {
   const entries = fs.readdirSync(pathStr, { withFileTypes: true })
 
   const files: FileObject[] = []
-  const dirs: DirObject[] = []
+  const dirs: DirObjectRecursive[] = []
 
   for (let entry of entries) {
     if (entry.isFile()) {
@@ -404,7 +416,7 @@ const createDirObject = async (pathStr: string): Promise<DirObject> => {
       files.push({ path: filePath, name: entry.name })
     } else if (entry.isDirectory()) {
       const dirPath = path.resolve(pathStr, entry.name)
-      const newDir = await createDirObject(dirPath)
+      const newDir = await createDirObjectRecursive(dirPath)
       dirs.push(newDir)
     } else {
       // skip
@@ -419,9 +431,52 @@ const createDirObject = async (pathStr: string): Promise<DirObject> => {
   }
 }
 
+// type DirObject = {
+//   path: string
+//   name: string
+//   dirs: ChildDirObject[]
+//   files: FileObject[]
+// }
+// type ChildDirObject = Pick<DirObject, "path" | "name">
+
+// const createDirObject = async (pathStr: string): Promise<DirObject> => {
+//   try {
+//     await fs.ensureDir(pathStr)
+//   } catch (error) {
+//     // TODO: better error handling
+//     console.log(error)
+//     throw error
+//   }
+
+//   const entries = fs.readdirSync(pathStr, { withFileTypes: true })
+
+//   const files: FileObject[] = []
+//   const dirs: ChildDirObject[] = []
+
+//   for (let entry of entries) {
+//     if (entry.isFile()) {
+//       const filePath = path.resolve(pathStr, entry.name)
+//       files.push({ path: filePath, name: entry.name })
+//     } else if (entry.isDirectory()) {
+//       const dirPath = path.resolve(pathStr, entry.name)
+//       dirs.push({ path: dirPath, name: entry.name })
+//     } else {
+//       // skip
+//     }
+//   }
+
+//   return {
+//     path: pathStr,
+//     name: path.basename(pathStr),
+//     dirs,
+//     files,
+//   }
+// }
+
+// TODO: rename to sth like GET_PATH_CONTENTS
 ipcMain.handle("GET_FILES_AT_PATH", async (_event, payload) => {
   try {
-    const dirObj = await createDirObject(payload.path)
+    const dirObj = await createDirObjectRecursive(payload.path)
     return {
       status: DialogStatus.SUCCESS,
       error: null,
@@ -433,6 +488,153 @@ ipcMain.handle("GET_FILES_AT_PATH", async (_event, payload) => {
     return { status: DialogStatus.ERROR, error: err, data: null }
   }
 })
+
+type WatcherUnsubObj = { close: chokidar.FSWatcher["close"]; added: number }
+const dirWatchers: Record<string, WatcherUnsubObj> = {}
+
+const closeWatcherForDir = async (dirPath: string, timestamp?: number) => {
+  const log = (msg) => console.log("closeWatcherForDir: " + msg)
+  const oldWatcher: WatcherUnsubObj | undefined = dirWatchers[dirPath]
+  if (oldWatcher) {
+    if (!timestamp || timestamp > oldWatcher.added) {
+      await oldWatcher.close()
+      log("watcher closed")
+      return true
+    } else {
+      log("skipping, watcher is younger than timestamp")
+      return false
+    }
+  }
+  log("no old watcher")
+  return false
+}
+
+ipcMain.handle(
+  "WATCH_DIR",
+  async (
+    _event,
+    payload: {
+      dirPath: string
+    }
+  ) => {
+    try {
+      const { dirPath } = payload
+      console.log("main handling WATCH_DIR event")
+
+      // TODO: ensure or just check for path
+
+      const watcher = chokidar.watch(dirPath, {
+        persistent: true,
+        ignoreInitial: true,
+      })
+
+      const sendResponse = ({
+        eventType,
+        filePath,
+      }: {
+        eventType: string
+        filePath: string
+      }) => {
+        console.log("file " + filePath + " " + eventType)
+        const fileDirPath = path.dirname(filePath)
+        const fileName = path.basename(filePath)
+
+        // console.log("fileDirPath: ", fileDirPath)
+        // console.log("search for: ", dirPath)
+        let relativePath = fileDirPath.replace(dirPath, "")
+        // console.log("relativePath: ", relativePath)
+
+        const dirPathArr = relativePath.split(path.sep)
+        if (dirPathArr[0] === "") {
+          dirPathArr.shift() // remove empty string caused by leading slash
+        }
+        // console.log("dirPathArr: ", dirPathArr)
+
+        const actualDirPathArr = dirPathArr.map((fragment, i, fragArr) => {
+          let newActualDirPath = dirPath
+          for (let j = 0; j <= i; j++) {
+            newActualDirPath = path.join(newActualDirPath, fragArr[j])
+            newActualDirPath = path.normalize(newActualDirPath)
+          }
+          return newActualDirPath
+        })
+
+        mainWindow.webContents.send("WATCH_DIR:RES", {
+          eventType: eventType,
+          dirPath,
+          filePath,
+          fileDirPath,
+          dirPathArr: actualDirPathArr,
+          fileName,
+        })
+      }
+
+      const onWatcherReady = async () => {
+        // TODO: refactoring
+        closeWatcherForDir(dirPath)
+        dirWatchers[dirPath] = {
+          close: watcher.close.bind(watcher),
+          added: Date.now(),
+        }
+        console.log("saved watcher")
+      }
+
+      const onWatcherAdd = (path: string) => {
+        sendResponse({ eventType: "add", filePath: path })
+      }
+
+      const onWatcherUnlink = (path: string) => {
+        sendResponse({ eventType: "unlink", filePath: path })
+      }
+
+      watcher
+        .on("ready", onWatcherReady)
+        .on("add", onWatcherAdd)
+        .on("unlink", onWatcherUnlink)
+        .on("change", (path) => console.log(`File ${path} has been changed`))
+        .on("error", (error) => console.log(`Watcher error: ${error}`))
+
+      return {
+        status: DialogStatus.SUCCESS,
+        error: null,
+        data: {
+          removeWatcher: watcher.close,
+        },
+      }
+    } catch (err) {
+      console.log("Error in WATCH_DIR handler:")
+      console.log(err)
+      return {
+        status: DialogStatus.ERROR,
+        error: err,
+        data: null,
+      }
+    }
+
+    // TODO: handle add/unlink dir events
+
+    // More possible events.
+    // watcher
+    //   .on("addDir", (path) => log(`Directory ${path} has been added`))
+    //   .on("unlinkDir", (path) => log(`Directory ${path} has been removed`))
+    //   .on("error", (error) => log(`Watcher error: ${error}`))
+    //   .on("ready", () => log("Initial scan complete. Ready for changes"))
+  }
+)
+
+ipcMain.handle(
+  "STOP_WATCH_DIR",
+  async (
+    _event,
+    payload: {
+      dirPath: string
+      timestamp: number
+    }
+  ) => {
+    const { dirPath, timestamp } = payload
+    closeWatcherForDir(dirPath, timestamp)
+  }
+)
 
 type ValidatePathsObj = { path: string; name: string | null; exists: boolean }
 
