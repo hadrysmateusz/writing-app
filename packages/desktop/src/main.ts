@@ -9,6 +9,8 @@ import os from "os"
 import IS_DEV from "./helpers/electron-is-dev"
 import { setUpApplicationMenu } from "./menu"
 
+let mainWindow: BrowserWindow
+
 const APP_NAME = "writing-tool" // TODO: move to shared constants file and replace all current uses
 
 // TODO: move to shared location
@@ -42,7 +44,7 @@ async function createWindow() {
   }
 
   // Create the browser window.
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1900,
     height: 1020,
     minWidth: 300, // The minWidth shouldn't be too high because it would prevent multi-tasking on most screens
@@ -61,7 +63,7 @@ async function createWindow() {
   })
 
   // and load the index.html of the app.
-  win.loadURL(START_URL)
+  mainWindow.loadURL(START_URL)
 
   // Open the DevTools.
   // win.webContents.openDevTools()
