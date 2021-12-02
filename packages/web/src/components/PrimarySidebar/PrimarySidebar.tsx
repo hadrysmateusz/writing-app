@@ -82,7 +82,7 @@ export const PrimarySidebarTabs = () => {
       <SidebarTab
         isActive={isTabActive("tags")}
         onClick={handleClick("tags")}
-        icon="tag"
+        icon="tags"
       />
       {primarySidebar.isOpen ? (
         <SidebarTab

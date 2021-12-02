@@ -26,6 +26,7 @@ import {
   AiFillFolder,
   AiOutlineFolder,
   AiFillTag,
+  AiFillTags,
   // AiOutlineDownload,
 } from "react-icons/ai"
 import { IoMdTrash, IoMdSettings } from "react-icons/io"
@@ -109,6 +110,7 @@ const iconLibrary = {
   arrow90DegUp: BsArrow90DegUp,
   sort: BiSort,
   tag: AiFillTag,
+  tags: AiFillTags,
   pen: FaPen,
 }
 
