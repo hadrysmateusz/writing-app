@@ -571,7 +571,7 @@ ipcMain.handle(
 
       const onWatcherReady = async () => {
         // TODO: refactoring
-        closeWatcherForDir(dirPath)
+        await closeWatcherForDir(dirPath)
         dirWatchers[dirPath] = {
           close: watcher.close.bind(watcher),
           added: Date.now(),
