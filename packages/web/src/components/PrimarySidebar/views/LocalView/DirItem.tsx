@@ -1,13 +1,12 @@
-import { cloneDeep } from "lodash"
 import { useEffect, useState } from "react"
 
 import { useToggleable } from "../../../../hooks"
 import { formatOptional } from "../../../../utils"
-import { findDirInDir } from "./helpers"
 
 import { LocalDocumentSectionHeader } from "./LocalDocumentSectionHeader"
 import { LocalDocumentSidebarItem } from "./LocalDocumentSidebarItem"
 import { FileObject, DirObjectRecursive } from "./types"
+import { findDirInDir } from "./helpers"
 
 // TODO: rename
 export const DirItemTopLevel: React.FC<{
@@ -67,21 +66,25 @@ export const DirItemInnerTopLevel: React.FC<{
         console.log("WATCH_DIR response", res)
       })
 
-      handleWatchDirResponse = ({
-        dirPath,
-        filePath,
-        fileDirPath,
-        dirPathArr,
-        fileName,
-        eventType,
-      }: {
-        dirPath: string
-        filePath: string
-        fileDirPath: string
-        dirPathArr: string[]
-        fileName: string
-        eventType: string
-      }) => {
+      handleWatchDirResponse = (res) => {
+        const {
+          dirPath,
+          filePath,
+          fileDirPath,
+          dirPathArr,
+          fileName,
+          eventType,
+        }: {
+          dirPath: string
+          filePath: string
+          fileDirPath: string
+          dirPathArr: string[]
+          fileName: string
+          eventType: string
+        } = res
+
+        console.log("===========================================")
+        console.log(res)
         // ========= HELPERS ==========
 
         const addFileToDirFiles = (
@@ -107,15 +110,17 @@ export const DirItemInnerTopLevel: React.FC<{
         if (dirPath === path) {
           // TODO: switch to switch statement
           if (eventType === "add") {
-            // console.log("file added:", filePath)
-            // console.log("dirPathArr", dirPathArr)
-
             setDirState((prevDirState) => {
               if (!prevDirState) {
                 return undefined
               }
 
-              const resultDir = findDirInDir(prevDirState, dirPathArr, 0)
+              const resultDir =
+                fileDirPath === prevDirState.path
+                  ? prevDirState
+                  : findDirInDir(prevDirState, dirPathArr, 0)
+
+              console.log("resultDir", resultDir)
 
               if (resultDir) {
                 addFileToDirFiles(resultDir, {
@@ -130,15 +135,13 @@ export const DirItemInnerTopLevel: React.FC<{
             })
           }
           if (eventType === "unlink") {
-            // console.log("file removed:", filePath)
-            // console.log("dirPathArr", dirPathArr)
-
             setDirState((prevDirState) => {
               if (!prevDirState) {
                 return undefined
               }
 
               const resultDir = findDirInDir(prevDirState, dirPathArr, 0)
+              console.log("resultDir", resultDir)
 
               if (resultDir) {
                 removeFileFromDirFiles(resultDir, filePath)
@@ -146,7 +149,7 @@ export const DirItemInnerTopLevel: React.FC<{
 
               console.log("resultDir after mod", resultDir)
 
-              return cloneDeep(prevDirState)
+              return prevDirState
             })
           }
         }
@@ -243,81 +246,3 @@ const LocalDocumentItemsList: React.FC<{ files: FileObject[] }> = ({
     ))}
   </>
 )
-
-// ===========================================================================
-
-// export const ChildDirs: React.FC<{
-//   dirs: (DirObject | ValidatePathsObj)[]
-//   handleRemovePath: (path: string) => void
-//   startOpen?: boolean
-// }> = ({ dirs, handleRemovePath, startOpen = false }) => {
-//   return (
-//     <>
-//       {dirs.map((dir) => (
-//         <DirItem
-//           key={dir.path}
-//           path={dir.path}
-//           exists={"exists" in dir ? dir.exists : undefined}
-//           name={formatOptional(dir.name, "Unknown")}
-//           removeDir={handleRemovePath}
-//           startOpen={startOpen}
-//         />
-//       ))}
-//     </>
-//   )
-// }
-
-// export const DirItemInner: React.FC<{
-//   path: string
-//   removeDir: (path: string) => void
-// }> = ({ path, removeDir }) => {
-//   const [files, setFiles] = useState<FileObject[]>([])
-//   const [dirs, setDirs] = useState<DirObject[]>([])
-
-//   useEffect(() => {
-//     window.electron.invoke("GET_FILES_AT_PATH", { path }).then((res) => {
-//       console.log(res)
-//       if (res.status === "success") {
-//         const { dirObj } = res.data
-//         // setFiles(dirObj.files)
-//         setDirs(dirObj.dirs)
-//       } else {
-//         console.log("NOT SUCCESS :C")
-//       }
-//     })
-//   }, [path])
-
-//   useEffect(() => {
-//     window.electron.invoke("WATCH_DIR", { dirPath: path })
-//     window.electron.receive(
-//       "WATCH_DIR:FILE_ADDED",
-//       ({ dirPath, filePath, fileName }) => {
-//         if (dirPath === path) {
-//           console.log("file added:", filePath)
-//           setFiles((prevFiles) => [
-//             ...prevFiles,
-//             { path: filePath, name: fileName },
-//           ])
-//         }
-//       }
-//     )
-//   }, [path])
-
-//   return files.length === 0 ? (
-//     <Empty>Empty</Empty>
-//   ) : (
-//     <>
-//       <LocalDocumentItemsList files={files} />
-//       {dirs.map((dir) => (
-//         <DirItem
-//           key={dir.path}
-//           path={dir.path}
-//           name={formatOptional(dir.name, "Unknown")}
-//           removeDir={removeDir}
-//           // exists={"exists" in dir ? dir.exists : undefined}
-//           // startOpen={startOpen}
-//         />
-//       ))}
-//     </>
-//   )
-// }

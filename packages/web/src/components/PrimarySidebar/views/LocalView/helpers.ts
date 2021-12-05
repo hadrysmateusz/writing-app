@@ -21,40 +21,25 @@ export function findTabWithPath(
   return foundTabId
 }
 
-export const findDirInCurrentDir = (
-  dir: DirObjectRecursive,
-  dirPathToFind: string
-) => {
-  return dir.dirs.find((dir) => dir.path === dirPathToFind)
-}
-
-export const findDirInChildDirs = (
-  dirs: DirObjectRecursive[],
-  dirPathToFind: string
-) => {
-  let foundDir: DirObjectRecursive | undefined
-  for (let dir of dirs) {
-    let foundDirInChild = findDirInCurrentDir(dir, dirPathToFind)
-    // when we find correct dir, we exit the loop with the result
-    if (foundDirInChild) {
-      foundDir = foundDirInChild
-      break
-    }
-  }
-  return foundDir
-}
-
 export const findDirInDir = (
   checkedDir: DirObjectRecursive,
   dirPathArr: string[],
   i: number
 ) => {
-  const foundDir = findDirInCurrentDir(checkedDir, dirPathArr[i])
-  if (foundDir) {
-    // search for the dir next nesting level
-    return findDirInCurrentDir(foundDir, dirPathArr[i + 1])
-  } else {
-    // search for the dir in child dirs
-    return findDirInChildDirs(checkedDir.dirs, dirPathArr[i])
+  console.log("findDirInDir", checkedDir, dirPathArr, dirPathArr[i])
+
+  const isCurrentDirTheDir = checkedDir.path === dirPathArr[i]
+  if (isCurrentDirTheDir) {
+    const isCurrentCheckedPathLastInDirPathArr = i === dirPathArr.length - 1
+    if (isCurrentCheckedPathLastInDirPathArr) {
+      return checkedDir
+    } else {
+      for (let dir of checkedDir.dirs) {
+        const foundDir = findDirInDir(dir, dirPathArr, i + 1)
+        if (foundDir) {
+          return foundDir
+        }
+      }
+    }
   }
 }

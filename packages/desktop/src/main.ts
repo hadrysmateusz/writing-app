@@ -545,9 +545,6 @@ ipcMain.handle(
         // console.log("relativePath: ", relativePath)
 
         const dirPathArr = relativePath.split(path.sep)
-        if (dirPathArr[0] === "") {
-          dirPathArr.shift() // remove empty string caused by leading slash
-        }
         // console.log("dirPathArr: ", dirPathArr)
 
         const actualDirPathArr = dirPathArr.map((fragment, i, fragArr) => {
@@ -558,6 +555,7 @@ ipcMain.handle(
           }
           return newActualDirPath
         })
+        // console.log("actualDirPathArr", actualDirPathArr)
 
         mainWindow.webContents.send("WATCH_DIR:RES", {
           eventType: eventType,
