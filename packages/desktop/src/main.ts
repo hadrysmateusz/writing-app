@@ -83,7 +83,7 @@ async function createWindow() {
   mainWindow.loadURL(START_URL)
 
   // Open the DevTools.
-  // win.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Set up application menu
   setUpApplicationMenu()
