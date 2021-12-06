@@ -7,6 +7,7 @@ import { LocalDocumentSectionHeader } from "./LocalDocumentSectionHeader"
 import { LocalDocumentSidebarItem } from "./LocalDocumentSidebarItem"
 import { FileObject, DirObjectRecursive } from "./types"
 import { findDirInDir } from "./helpers"
+import { cloneDeep } from "lodash"
 
 // TODO: rename
 export const DirItemTopLevel: React.FC<{
@@ -131,7 +132,7 @@ export const DirItemInnerTopLevel: React.FC<{
 
               console.log("resultDir after mod", resultDir)
 
-              return prevDirState
+              return cloneDeep(prevDirState)
             })
           }
           if (eventType === "unlink") {
@@ -149,7 +150,7 @@ export const DirItemInnerTopLevel: React.FC<{
 
               console.log("resultDir after mod", resultDir)
 
-              return prevDirState
+              return cloneDeep(prevDirState)
             })
           }
         }
