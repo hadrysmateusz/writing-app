@@ -2,6 +2,11 @@ import { useCallback } from "react"
 
 import SidebarDocumentItemComponent from "../../../DocumentsList/SidebarDocumentItemComponent"
 import { useTabsDispatch, useTabsState } from "../../../MainProvider"
+import {
+  useContextMenu,
+  ContextMenu,
+  ContextMenuItem,
+} from "../../../NewContextMenu"
 
 import { findTabWithPath } from "./helpers"
 
@@ -11,6 +16,8 @@ export const LocalDocumentSidebarItem: React.FC<{
 }> = ({ path, name }) => {
   const tabsDispatch = useTabsDispatch()
   const tabsState = useTabsState()
+
+  const { getContextMenuProps, openMenu } = useContextMenu()
 
   const handleClick = useCallback(() => {
     const tabId = findTabWithPath(tabsState, path)
@@ -47,16 +54,41 @@ export const LocalDocumentSidebarItem: React.FC<{
     }
   }, [path, tabsDispatch, tabsState])
 
+  const handleContextMenu = useCallback(
+    (e) => {
+      openMenu(e)
+    },
+    [openMenu]
+  )
+
+  const handleRemove = useCallback(() => {
+    window.electron.invoke("DELETE_FILE", { targetPath: path })
+  }, [path])
+
+  const handleRevealInExplorer = useCallback(() => {
+    window.electron.invoke("VIEW_IN_EXPLORER", { targetPath: path })
+  }, [path])
+
   return (
-    <SidebarDocumentItemComponent
-      key={path}
-      title={name}
-      // TODO: replace these timestamps with real data
-      modifiedAt={Date.now()}
-      createdAt={Date.now()}
-      // TODO: add an actual isCurrent check
-      isCurrent={false}
-      onClick={handleClick}
-    />
+    <>
+      <SidebarDocumentItemComponent
+        key={path}
+        title={name}
+        // TODO: replace these timestamps with real data
+        modifiedAt={Date.now()}
+        createdAt={Date.now()}
+        // TODO: add an actual isCurrent check
+        isCurrent={false}
+        onClick={handleClick}
+        onContextMenu={handleContextMenu}
+      />
+      <ContextMenu {...getContextMenuProps()}>
+        <ContextMenuItem
+          text="Reveal in Explorer"
+          /* TODO: use OS-agnostic naming */ onClick={handleRevealInExplorer}
+        />
+        <ContextMenuItem text="Delete" onClick={handleRemove} />
+      </ContextMenu>
+    </>
   )
 }

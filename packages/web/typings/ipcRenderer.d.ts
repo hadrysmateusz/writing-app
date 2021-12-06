@@ -13,6 +13,8 @@ type IpcChannelFromRenderer =
   | "WATCH_DIR"
   | "STOP_WATCH_DIR"
   | "FORCE_RELOAD"
+  | "VIEW_IN_EXPLORER"
+  | "DELETE_FILE"
 type IpcChannelFromMain = "WATCH_DIR:RES"
 
 declare global {
