@@ -23,9 +23,9 @@ export const DirItemTopLevel: React.FC<{
     <>
       <LocalDocumentSectionHeader
         path={path}
-        removeDir={removeDir}
         isOpen={isOpen}
         onToggle={toggle}
+        removeDir={removeDir}
       >
         {name}
       </LocalDocumentSectionHeader>
@@ -208,9 +208,9 @@ export const DirItem: React.FC<
     <>
       <LocalDocumentSectionHeader
         path={path}
-        removeDir={removeDir}
         isOpen={isOpen}
         onToggle={toggle}
+        removeDir={removeDir}
       >
         {formatOptional(name, "Unknown")}
       </LocalDocumentSectionHeader>

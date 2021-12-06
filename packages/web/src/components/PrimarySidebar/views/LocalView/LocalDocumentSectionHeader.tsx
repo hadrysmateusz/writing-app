@@ -6,6 +6,7 @@ import {
   ContextMenuItem,
   useContextMenu,
 } from "../../../NewContextMenu"
+import { usePrimarySidebar } from "../../../ViewState"
 
 export const LocalDocumentSectionHeader: React.FC<{
   path: string
@@ -13,6 +14,8 @@ export const LocalDocumentSectionHeader: React.FC<{
   onToggle: () => void
   removeDir: (path: string) => void
 }> = ({ path, children, removeDir, isOpen, onToggle }) => {
+  const { switchSubview } = usePrimarySidebar()
+
   const { openMenu, isMenuOpen, getContextMenuProps } = useContextMenu()
 
   const handleRemoveDir = useCallback(
@@ -22,13 +25,24 @@ export const LocalDocumentSectionHeader: React.FC<{
     [path, removeDir]
   )
 
+  const handleClick = () => {
+    switchSubview("local", "directory", path)
+  }
+
+  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+    openMenu(e)
+  }
+
   return (
     <>
       <SectionHeaderComponent
-        titleTooltip={path}
         isOpen={isOpen}
+        titleTooltip={path}
+        togglerTooltip={`${isOpen ? "Collapse" : "Expand"} directory`}
+        onClick={handleClick}
+        onContextMenu={handleContextMenu}
         onToggle={onToggle}
-        onContextMenu={openMenu}
       >
         {children}
       </SectionHeaderComponent>

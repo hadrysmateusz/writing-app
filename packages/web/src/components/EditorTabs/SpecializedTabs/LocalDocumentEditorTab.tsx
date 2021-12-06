@@ -5,6 +5,17 @@ import Icon from "../../Icon"
 import { EditorTabContainer } from "../EditorTab.styles"
 import { TabCloseButton } from "../EditorTabCommon"
 
+type DocumentState = {
+  isLoading: boolean
+  isMissing: boolean
+  document: { title: string } | undefined
+}
+
+const INITIAL_DOCUMENT_STATE: DocumentState = {
+  isLoading: true,
+  isMissing: false,
+  document: undefined,
+}
 export const LocalDocumentEditorTab: React.FC<{
   path: string
   isActive: boolean
@@ -12,12 +23,17 @@ export const LocalDocumentEditorTab: React.FC<{
   handleSwitchTab: (e: React.MouseEvent) => void
   handleCloseTab: (e: React.MouseEvent) => void
 }> = ({ path, isActive, keep, handleSwitchTab, handleCloseTab }) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [title, setTitle] = useState<string>()
+  const [documentState, setDocumentState] = useState<DocumentState>(
+    INITIAL_DOCUMENT_STATE
+  )
 
   useEffect(() => {
     ;(async () => {
-      setIsLoading(true)
+      setDocumentState({
+        isLoading: true,
+        isMissing: false,
+        document: undefined,
+      })
 
       // TODO: figure a more efficient solution that doesn't require reading, the file's contents from disk (again)
       // TODO: also get the file's parent directory and use it like group in cloud documents (maybe)
@@ -29,13 +45,19 @@ export const LocalDocumentEditorTab: React.FC<{
 
       if (ipcResponse.status === "success") {
         // TODO: handle possible data-shape errors
-        setTitle(ipcResponse.data.file.fileName)
+        setDocumentState({
+          isLoading: false,
+          isMissing: false,
+          document: { title: ipcResponse.data.file.name },
+        })
       } else {
-        // TODO: handle this
         console.warn("something went wrong")
+        setDocumentState({
+          isLoading: false,
+          isMissing: true,
+          document: undefined,
+        })
       }
-
-      setIsLoading(false)
     })()
   }, [path])
 
@@ -50,12 +72,16 @@ export const LocalDocumentEditorTab: React.FC<{
         <Icon icon="folderClosed" />
       </div>
       <div className="tab-title">
+        {documentState.isLoading
+          ? "Loading..."
+          : documentState.isMissing
+          ? "Deleted"
+          : documentState.document?.title || "Error"}
         {/* TODO: support renaming the file (although maybe just from context menu) */}
-        {title ?? "Loading..."}
       </div>
       {/* {tabData.group ? <div className="tab-group">{tabData.group}</div> : null} */}
       <TabCloseButton handleCloseTab={handleCloseTab} />
-      {/* TODO: add context menu with basic actionas like renaming */}
+      {/* TODO: add context menu with basic actions like renaming */}
     </EditorTabContainer>
   )
 }

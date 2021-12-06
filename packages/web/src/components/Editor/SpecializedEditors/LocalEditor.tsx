@@ -12,18 +12,40 @@ import { DEFAULT_EDITOR_VALUE } from "../../MainProvider"
 import { DocumentEmptyState, DocumentLoadingState } from "../HelperStates"
 import EditorComponent from "../EditorComponent"
 
+type DocumentState = {
+  isLoading: boolean
+  isMissing: boolean
+  document:
+    | {
+        title: string
+        content: Descendant[]
+      }
+    | undefined
+}
+
+const INITIAL_DOCUMENT_STATE: DocumentState = {
+  isLoading: true,
+  isMissing: false,
+  document: undefined,
+}
+
 export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
   currentDocumentPath,
 }) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [title, setTitle] = useState<string>()
-  const [content, setContent] = useState<Descendant[]>()
+  const [documentState, setDocumentState] = useState<DocumentState>(
+    INITIAL_DOCUMENT_STATE
+  )
+
   const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   useEffect(() => {
     ;(async () => {
       console.log("LOCAL EDITOR USEEFFECT")
-      setIsLoading(true)
+      setDocumentState({
+        isLoading: true,
+        isMissing: false,
+        document: undefined,
+      })
 
       const ipcResponse = await window.electron.invoke("OPEN_FILE", {
         filePath: currentDocumentPath,
@@ -33,26 +55,32 @@ export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
 
       if (ipcResponse.status === "success") {
         // TODO: handle possible data-shape errors
-        setTitle(ipcResponse.data.file.fileName)
-        // TODO: support other deserializers (maybe, or probably just for importing to cloud documents)
 
+        // TODO: support other deserializers (maybe, or probably just for importing to cloud documents)
         let deserialized = myDeserializeMd(ipcResponse.data.file.content)
         if (deserialized.length === 0) {
           deserialized = DEFAULT_EDITOR_VALUE
         }
 
         console.log("deserialized:", deserialized)
-        setContent(deserialized)
+        setDocumentState({
+          document: {
+            title: ipcResponse.data.file.name,
+            content: deserialized,
+          },
+          isLoading: false,
+          isMissing: false,
+        })
       } else {
-        // TODO: handle this
         console.warn("something went wrong")
+        setDocumentState({
+          document: undefined,
+          isLoading: false,
+          isMissing: true,
+        })
       }
-
-      setIsLoading(false)
     })()
   }, [currentDocumentPath])
-
-  console.log(title, content)
 
   const saveDocument = useCallback(async () => {
     if (!editor) {
@@ -77,16 +105,18 @@ export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
     console.log("TODO: implement")
   }, [])
 
-  return !isLoading && content && title ? (
+  return documentState.document ? (
     <EditorComponent
       key={currentDocumentPath}
       saveDocument={saveDocument}
       renameDocument={renameDocument}
-      title={title}
-      content={content}
+      title={documentState.document.title}
+      content={documentState.document.content}
     />
-  ) : isLoading ? (
+  ) : documentState.isLoading ? (
     <DocumentLoadingState />
+  ) : documentState.isMissing ? (
+    <div>Document was deleted</div>
   ) : (
     <DocumentEmptyState />
   )
