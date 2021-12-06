@@ -1,6 +1,8 @@
 import chokidar from "chokidar"
 
-export type FileObject = { path: string; name: string }
+export type OpenFileObject = { name: string; content: string }
+
+export type FileObject = { name: string; path: string }
 
 export type DirObjectRecursive = {
   path: string

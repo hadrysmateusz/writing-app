@@ -88,7 +88,6 @@ app.on("activate", () => {
 
 // TODO: add simple reveal in explorer action
 
-// TODO: extract some common logic to share between exporting and saving local files
 ipcMain.handle("EXPORT_FILE", handleExportFile)
 ipcMain.handle("IMPORT_FILE", handleImportFile)
 

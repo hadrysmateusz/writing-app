@@ -4,7 +4,12 @@ import path from "path"
 import os from "os"
 import chokidar from "chokidar"
 
-import { ValidatePathsObj, FileFormats, DialogStatus } from "./types"
+import {
+  ValidatePathsObj,
+  FileFormats,
+  DialogStatus,
+  OpenFileObject,
+} from "./types"
 import {
   closeWatcherForDir,
   createDirObjectRecursive,
@@ -12,6 +17,7 @@ import {
 } from "./helpers"
 import { APP_NAME, filters } from "./constants"
 import { getMainWindow } from "./helpers"
+import { readFileForLocalEditor } from "./io"
 
 export const handleExportFile = async (
   _event,
@@ -20,30 +26,18 @@ export const handleExportFile = async (
     format: FileFormats
     name: string | undefined
   }
-): Promise<{
-  status: DialogStatus
-  error: /* string | null | */ unknown /* TODO: figure out proper error typing */
-}> => {
-  // TODO: make sure the event can be trusted
-
+) => {
   try {
     const { content, format, name } = payload
-
-    const filter = filters[format]
 
     // TODO: better default path
     // TODO: save the last used path for later
     // TODO: consider making the path configurable in settings
 
     let defaultPath = path.join(os.homedir(), APP_NAME)
+    const filter = filters[format]
 
-    try {
-      await fs.ensureDir(defaultPath)
-    } catch (error) {
-      // TODO: better error handling
-      console.log(error)
-      throw error
-    }
+    await fs.ensureDir(defaultPath)
 
     if (typeof name === "string" && name.trim() !== "") {
       defaultPath = path.join(defaultPath, `${name}.${format}`)
@@ -80,16 +74,9 @@ export const handleImportFile = async (_event, payload) => {
   // TODO: better default path
   // TODO: save the last used path for later
   let defaultPath = path.join(os.homedir())
-
-  try {
-    await fs.ensureDir(defaultPath)
-  } catch (error) {
-    // TODO: better error handling
-    console.log(error)
-    throw error
-  }
-
   const filter = filters[format]
+
+  await fs.ensureDir(defaultPath)
 
   // TODO: investigate if I should use the browserWindow argument to make the dialog modal
   const dialogRes = await dialog.showOpenDialog({
@@ -105,14 +92,12 @@ export const handleImportFile = async (_event, payload) => {
     return { status: DialogStatus.CANCELED, error: null, data: null }
   }
 
-  const files: { fileName: string; content: string }[] = []
+  const files: OpenFileObject[] = []
 
   for (const filePath of dialogRes.filePaths) {
     try {
-      // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
-      const content = fs.readFileSync(filePath, { encoding: "utf-8" })
-      const fileName = path.basename(filePath, path.extname(filePath))
-      files.push({ fileName, content })
+      const file = readFileForLocalEditor(filePath)
+      files.push(file)
     } catch (error) {
       return {
         status: DialogStatus.ERROR,
@@ -140,17 +125,12 @@ export const handleOpenFile = async (_event, payload) => {
   }
 
   try {
-    // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
-    const content = fs.readFileSync(filePath, { encoding: "utf-8" })
-    const fileName = path.basename(filePath, path.extname(filePath))
+    const file = readFileForLocalEditor(filePath)
     return {
       status: DialogStatus.SUCCESS,
       error: null,
       data: {
-        file: {
-          content,
-          fileName,
-        },
+        file,
       },
     }
   } catch (error) {
@@ -162,7 +142,13 @@ export const handleOpenFile = async (_event, payload) => {
   }
 }
 
-export const handleSaveFile = async (_event, payload) => {
+export const handleSaveFile = async (
+  _event,
+  payload: {
+    filePath: string
+    content: string
+  }
+) => {
   const { filePath, content } = payload
 
   const fileExists =
@@ -176,7 +162,6 @@ export const handleSaveFile = async (_event, payload) => {
       data: null,
     }
   }
-
   try {
     // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
     await fs.writeFile(filePath, content)
