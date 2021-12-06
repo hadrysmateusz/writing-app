@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron"
+import { app, BrowserWindow, ipcMain, shell } from "electron"
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from "electron-devtools-installer"
@@ -6,6 +6,8 @@ import path from "path"
 
 import { setUpApplicationMenu } from "./menu"
 import { WatcherUnsubObj } from "./types"
+import { APP_NAME, START_URL } from "./constants"
+import { getMainWindow, IS_DEV } from "./helpers"
 import {
   handleAddPath,
   handleCreateFile,
@@ -19,8 +21,8 @@ import {
   handleWatchDir,
   handleSaveFile,
 } from "./ipcHandlers"
-import { APP_NAME, START_URL } from "./constants"
-import { getMainWindow, IS_DEV } from "./helpers"
+import { handleViewInExplorer } from "./ipcHandlers/handleViewInExplorer"
+import { handleDeleteFile } from "./ipcHandlers/handleDeleteFile"
 
 declare global {
   var mainWindow: BrowserWindow | undefined
@@ -95,6 +97,9 @@ ipcMain.handle("OPEN_FILE", handleOpenFile)
 ipcMain.handle("SAVE_FILE", handleSaveFile)
 
 ipcMain.handle("CREATE_FILE", handleCreateFile)
+ipcMain.handle("DELETE_FILE", handleDeleteFile)
+
+ipcMain.handle("VIEW_IN_EXPLORER", handleViewInExplorer)
 
 ipcMain.handle("ADD_PATH", handleAddPath)
 
