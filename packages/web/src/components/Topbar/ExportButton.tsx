@@ -34,7 +34,7 @@ export const ExportModalContent: React.FC<
           throw new Error("implement")
         },
       }[format]
-      const result = await window.electron.invoke("SAVE_FILE", {
+      const result = await window.electron.invoke("EXPORT_FILE", {
         content: serializer(deserialize(documentContent)),
         format: format,
         name,

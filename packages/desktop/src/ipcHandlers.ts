@@ -5,11 +5,15 @@ import os from "os"
 import chokidar from "chokidar"
 
 import { ValidatePathsObj, FileFormats, DialogStatus } from "./types"
-import { closeWatcherForDir, createDirObjectRecursive } from "./helpers"
+import {
+  closeWatcherForDir,
+  createDirObjectRecursive,
+  getDirWatchers,
+} from "./helpers"
 import { APP_NAME, filters } from "./constants"
 import { getMainWindow } from "./helpers"
 
-export const handleSaveFile = async (
+export const handleExportFile = async (
   _event,
   payload: {
     content: string
@@ -70,7 +74,7 @@ export const handleSaveFile = async (
   }
 }
 
-export const handleReadFile = async (_event, payload) => {
+export const handleImportFile = async (_event, payload) => {
   const { format } = payload
 
   // TODO: better default path
@@ -158,7 +162,7 @@ export const handleOpenFile = async (_event, payload) => {
   }
 }
 
-export const handleWriteFile = async (_event, payload) => {
+export const handleSaveFile = async (_event, payload) => {
   const { filePath, content } = payload
 
   const fileExists =
@@ -280,7 +284,7 @@ export const handleAddPath = async (_event, _payload) => {
   }
 }
 
-export const handleGetFilesAtPath = async (_event, payload) => {
+export const handleGetPathContents = async (_event, payload) => {
   try {
     const dirObj = await createDirObjectRecursive(payload.path)
     return {
@@ -331,7 +335,7 @@ export const handleWatchDir = async (
       const dirPathArr = relativePath.split(path.sep)
       // console.log("dirPathArr: ", dirPathArr)
 
-      const actualDirPathArr = dirPathArr.map((fragment, i, fragArr) => {
+      const actualDirPathArr = dirPathArr.map((_fragment, i, fragArr) => {
         let newActualDirPath = dirPath
         for (let j = 0; j <= i; j++) {
           newActualDirPath = path.join(newActualDirPath, fragArr[j])
@@ -354,14 +358,12 @@ export const handleWatchDir = async (
     const onWatcherReady = async () => {
       // TODO: refactoring
       await closeWatcherForDir(dirPath)
-      if (!global.dirWatchers) {
-        global.dirWatchers = {}
-      }
-      global.dirWatchers[dirPath] = {
+      getDirWatchers()[dirPath] = {
         close: watcher.close.bind(watcher),
         added: Date.now(),
       }
       console.log("saved watcher")
+      console.log(getDirWatchers())
     }
 
     const onWatcherAdd = (path: string) => {
@@ -376,8 +378,6 @@ export const handleWatchDir = async (
       .on("ready", onWatcherReady)
       .on("add", onWatcherAdd)
       .on("unlink", onWatcherUnlink)
-      .on("change", (path) => console.log(`File ${path} has been changed`))
-      .on("error", (error) => console.log(`Watcher error: ${error}`))
 
     return {
       status: DialogStatus.SUCCESS,
@@ -404,6 +404,8 @@ export const handleWatchDir = async (
   //   .on("unlinkDir", (path) => log(`Directory ${path} has been removed`))
   //   .on("error", (error) => log(`Watcher error: ${error}`))
   //   .on("ready", () => log("Initial scan complete. Ready for changes"))
+  // .on("change", (path) => console.log(`File ${path} has been changed`))
+  // .on("error", (error) => console.log(`Watcher error: ${error}`))
 }
 
 export const handleStopWatchDir = async (

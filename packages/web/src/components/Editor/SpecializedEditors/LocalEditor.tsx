@@ -66,7 +66,7 @@ export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
 
     console.log("serialized:", serializedContent)
 
-    const ipcResponse = await window.electron.invoke("WRITE_FILE", {
+    const ipcResponse = await window.electron.invoke("SAVE_FILE", {
       filePath: currentDocumentPath,
       content: serializedContent,
     })

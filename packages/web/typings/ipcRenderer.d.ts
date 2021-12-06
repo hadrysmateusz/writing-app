@@ -2,13 +2,13 @@
 export type ElectronIpcChannel = IpcChannelFromRenderer | IpcChannelFromMain
 type IpcChannelFromRenderer =
   | "NEW_CLOUD_DOCUMENT"
-  | "READ_FILE"
-  | "SAVE_FILE"
+  | "IMPORT_FILE"
+  | "EXPORT_FILE"
   | "ADD_PATH"
-  | "GET_FILES_AT_PATH"
+  | "GET_PATH_CONTENTS"
   | "VALIDATE_PATHS"
   | "OPEN_FILE"
-  | "WRITE_FILE"
+  | "SAVE_FILE"
   | "CREATE_FILE"
   | "WATCH_DIR"
   | "STOP_WATCH_DIR"

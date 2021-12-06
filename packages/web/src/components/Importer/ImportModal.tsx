@@ -82,7 +82,7 @@ export const ImportModalContent: React.FC<{
   // TODO: figure out why importing takes such an insanely long time
   const importFile = useCallback(
     async (format: "md") => {
-      const result = await window.electron.invoke("READ_FILE", {
+      const result = await window.electron.invoke("IMPORT_FILE", {
         format: format,
       })
 

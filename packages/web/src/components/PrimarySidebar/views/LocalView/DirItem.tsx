@@ -44,8 +44,8 @@ export const DirItemInnerTopLevel: React.FC<{
 
   useEffect(() => {
     setIsReady(false)
-    window.electron.invoke("GET_FILES_AT_PATH", { path }).then((res) => {
-      console.log("get_files_at_path", res)
+    window.electron.invoke("GET_PATH_CONTENTS", { path }).then((res) => {
+      console.log("GET_PATH_CONTENTS", res)
       if (res.status === "success") {
         setDirState(res.data.dirObj)
         setIsReady(true)

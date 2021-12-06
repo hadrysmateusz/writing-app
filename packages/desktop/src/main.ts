@@ -10,14 +10,14 @@ import {
   handleAddPath,
   handleCreateFile,
   handleForceReload,
-  handleGetFilesAtPath,
+  handleGetPathContents,
   handleOpenFile,
-  handleReadFile,
-  handleSaveFile,
+  handleImportFile,
+  handleExportFile,
   handleStopWatchDir,
   handleValidatePaths,
   handleWatchDir,
-  handleWriteFile,
+  handleSaveFile,
 } from "./ipcHandlers"
 import { APP_NAME, START_URL } from "./constants"
 import { getMainWindow, IS_DEV } from "./helpers"
@@ -86,29 +86,22 @@ app.on("activate", () => {
   }
 })
 
-// TODO: rename to something like EXPORT_FILE
-// TODO: extract some common logic to share between exporting and saving local files
-ipcMain.handle("SAVE_FILE", handleSaveFile)
-
-ipcMain.handle("READ_FILE", handleReadFile)
-
 // TODO: add simple reveal in explorer action
-// TODO: rework naming of the events/channels
+
+// TODO: extract some common logic to share between exporting and saving local files
+ipcMain.handle("EXPORT_FILE", handleExportFile)
+ipcMain.handle("IMPORT_FILE", handleImportFile)
 
 ipcMain.handle("OPEN_FILE", handleOpenFile)
-
-// TODO: rename to SAVE_FILE after I rename the previous handler with that name
-ipcMain.handle("WRITE_FILE", handleWriteFile)
+ipcMain.handle("SAVE_FILE", handleSaveFile)
 
 ipcMain.handle("CREATE_FILE", handleCreateFile)
 
 ipcMain.handle("ADD_PATH", handleAddPath)
 
-// TODO: rename to sth like GET_PATH_CONTENTS
-ipcMain.handle("GET_FILES_AT_PATH", handleGetFilesAtPath)
+ipcMain.handle("GET_PATH_CONTENTS", handleGetPathContents)
 
 ipcMain.handle("WATCH_DIR", handleWatchDir)
-
 ipcMain.handle("STOP_WATCH_DIR", handleStopWatchDir)
 
 ipcMain.handle("VALIDATE_PATHS", handleValidatePaths)
