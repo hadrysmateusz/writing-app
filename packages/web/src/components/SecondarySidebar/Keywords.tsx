@@ -92,7 +92,6 @@ const Keywords = () => {
 
   useEffect(() => {
     if (currentDocument !== null && tags !== null) {
-      console.log("updating matching tags list")
       const matchingTags: TagDoc[] = []
       currentDocument.tags.forEach((tagId) => {
         const tag = tags.find((tag) => tag.id === tagId)
