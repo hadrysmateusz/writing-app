@@ -106,6 +106,7 @@ const DirectoryViewInner: React.FC<{
   directoryPath: string
 }> = ({ dir, directoryPath }) => {
   const { createDocument: createFile, dirTrees } = useLocalFS()
+  const { switchSubview } = usePrimarySidebar()
 
   // TODO: when adding dir path to local library paths list check if it's not a descendant of a path already on the list (this would cause a shitton of problems because the dirs and files inside would no longer be unique in the tree which will probably break watchers and other things)
 
@@ -113,13 +114,18 @@ const DirectoryViewInner: React.FC<{
     return findDirInTrees(dirTrees, directoryPath)
   }, [dirTrees, directoryPath])
 
-  console.log("FOUND DIR TREE", dirTree)
+  // console.log("FOUND DIR TREE", dirTree)
+
+  // If the dir wasn't found, switch to more general sidebar view
+  useEffect(() => {
+    if (!dirTree) {
+      switchSubview("local", "all")
+    }
+  }, [dirTree, switchSubview])
 
   // TODO: if dir has exists === false, show a warning and a button to manually find the dir
-  // TODO: add local document context menu
   // TODO: turn bottom button into a create local document action (and expose it in context menu)
   // TODO: move the add path action to maybe the main header (and probably context menu)
-  // TODO: refactor and generalize group tree items to support library dirs (and display them instead of collections when local documents are the selected view (also hide tags then (maybe change the entire navigator sidebar to support the local view then (e.g. add recent docs section instead of favorites))))
 
   return (
     <PrimarySidebarViewContainer>
