@@ -1,12 +1,12 @@
 import { useCallback } from "react"
 
-import SectionHeaderComponent from "../../../DocumentsList/SectionHeaderComponent"
+import SectionHeaderComponent from "../../DocumentsList/SectionHeaderComponent"
 import {
   ContextMenu,
   ContextMenuItem,
   useContextMenu,
-} from "../../../NewContextMenu"
-import { usePrimarySidebar } from "../../../ViewState"
+} from "../../NewContextMenu"
+import { usePrimarySidebar } from "../../ViewState"
 
 export const LocalDocumentSectionHeader: React.FC<{
   path: string

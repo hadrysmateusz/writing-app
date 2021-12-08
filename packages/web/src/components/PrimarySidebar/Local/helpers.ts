@@ -1,4 +1,4 @@
-import { TabsState } from "../../../MainProvider/tabsSlice"
+import { TabsState } from "../../MainProvider/tabsSlice"
 
 import { DirObjectRecursive } from "./types"
 

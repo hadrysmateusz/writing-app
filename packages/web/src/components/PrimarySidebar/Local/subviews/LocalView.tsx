@@ -7,8 +7,9 @@ import { useLocalFS } from "../../../LocalFSProvider"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
-import { DirItem } from "./DirItem"
+import { DirItem } from "../DirItem"
 
+// TODO: rename to localdocumentsallview
 export const LocalView: React.FC<{}> = () => {
   // TODO:  loading/empty state + handle errors
   const { dirTrees, createDocument } = useLocalFS()

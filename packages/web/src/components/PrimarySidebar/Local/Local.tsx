@@ -1,8 +1,10 @@
-import React, { memo, useMemo } from "react"
+import { memo, useMemo } from "react"
+
 import { parseSidebarPath, usePrimarySidebar } from "../../ViewState"
 import { Switch, Case } from "../../Conditional"
-import { LocalView } from "../views"
-import { DirectoryView } from "../views/LocalView/DirectoryView"
+
+import { DirectoryView } from "./subviews/DirectoryView"
+import { LocalView } from "./subviews/LocalView"
 
 export const Local: React.FC = memo(() => {
   const { currentSubviews } = usePrimarySidebar()

@@ -1,13 +1,13 @@
 import { useCallback, useMemo } from "react"
 
-import SidebarDocumentItemComponent from "../../../DocumentsList/SidebarDocumentItemComponent"
-import { useLocalFS } from "../../../LocalFSProvider"
-import { useTabsDispatch, useTabsState } from "../../../MainProvider"
+import SidebarDocumentItemComponent from "../../DocumentsList/SidebarDocumentItemComponent"
+import { useLocalFS } from "../../LocalFSProvider"
+import { useTabsDispatch, useTabsState } from "../../MainProvider"
 import {
   useContextMenu,
   ContextMenu,
   ContextMenuItem,
-} from "../../../NewContextMenu"
+} from "../../NewContextMenu"
 
 import { findTabWithPath } from "./helpers"
 

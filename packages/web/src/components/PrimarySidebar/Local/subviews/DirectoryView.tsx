@@ -14,8 +14,8 @@ import { useLocalFS } from "../../../LocalFSProvider"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
-import { DirObjectRecursive, ValidatePathsObj } from "./types"
-import { LocalDocumentsSubGroupInner } from "./DirItem"
+import { DirObjectRecursive, ValidatePathsObj } from "../types"
+import { LocalDocumentsSubGroupInner } from "../DirItem"
 
 const findClosestMatch = (dirs: DirObjectRecursive[], wantedPath: string) => {
   const closestMatch = dirs.find((dir) => {

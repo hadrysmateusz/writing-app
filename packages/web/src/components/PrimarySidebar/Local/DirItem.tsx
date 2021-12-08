@@ -1,8 +1,9 @@
 import { useState } from "react"
-import { useToggleable } from "../../../../hooks"
-import { formatOptional } from "../../../../utils"
-import { PrimarySidebarSectionContainer } from "../../../DocumentsList/SectionHeaderComponent.styles"
-import { useLocalFS } from "../../../LocalFSProvider"
+import { useToggleable } from "../../../hooks"
+import { formatOptional } from "../../../utils"
+
+import { PrimarySidebarSectionContainer } from "../../DocumentsList/SectionHeaderComponent.styles"
+import { useLocalFS } from "../../LocalFSProvider"
 
 import { LocalDocumentSectionHeader } from "./LocalDocumentSectionHeader"
 import { LocalDocumentSidebarItem } from "./LocalDocumentSidebarItem"

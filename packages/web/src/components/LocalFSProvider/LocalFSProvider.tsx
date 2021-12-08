@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback } from "react"
 import { cloneDeep } from "lodash"
 
 import { createContext } from "../../utils"
-import { useValidateDirs } from "../PrimarySidebar"
+
 import {
   DirObjectRecursive,
   FileObject,
   ValidatePathsObj,
-} from "../PrimarySidebar/views/LocalView/types"
-import { findDirInDir } from "../PrimarySidebar/views/LocalView/helpers"
+  findDirInDir,
+  useValidateDirs,
+} from "../PrimarySidebar/Local"
 
 type DirState = {
   dirTrees: DirObjectRecursive[]

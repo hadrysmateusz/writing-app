@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from "react"
 
+import { DirObjectRecursive } from "../PrimarySidebar/Local"
 import { ItemsBranch } from "../GroupingItemList"
 import { useLocalFS } from "../LocalFSProvider"
-import { DirObjectRecursive } from "../PrimarySidebar/views/LocalView/types"
-
-import { SectionHeader, SectionContainer } from "./Common"
 import { GenericAddButton } from "../TreeItem"
 import { usePrimarySidebar } from "../ViewState"
-import { DirsList } from "../DirsList/DirsList"
+import { DirsList } from "../DirsList"
+
+import { SectionHeader, SectionContainer } from "./Common"
 
 // TODO: probably rename to dirs section
 

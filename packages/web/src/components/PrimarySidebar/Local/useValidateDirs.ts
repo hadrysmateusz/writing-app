@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 
-import { useLocalSettings } from "../../../LocalSettings"
-import { useDatabase } from "../../../Database"
-import { useCurrentUser } from "../../../Auth"
+import { useLocalSettings } from "../../LocalSettings"
+import { useDatabase } from "../../Database"
+import { useCurrentUser } from "../../Auth"
 
 import { ValidatePathsObj } from "./types"
 
