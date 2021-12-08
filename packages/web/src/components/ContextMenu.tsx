@@ -19,6 +19,7 @@ type ContextMenuHookOptions = ToggleableHooks & {
   toggleOnNestedDOMNodes?: boolean
   stopPropagation?: boolean
   closeAfterClick?: boolean
+  closeOnScroll?: boolean
 }
 
 // TODO: replace this with the new context menu
@@ -37,6 +38,7 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
     toggleOnNestedDOMNodes = true,
     stopPropagation = true,
     closeAfterClick = true,
+    closeOnScroll = true,
   } = options
 
   // TODO: capture focus inside the context menu and restore it when it closes
@@ -109,20 +111,24 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
     const [x, setX] = useState(eventX)
     const [y, setY] = useState(eventY)
 
-    useEffect(() => {
-      console.log("mount")
-    }, [])
+    // useEffect(() => {
+    //   console.log("mount")
+    // }, [])
 
     useOnClickOutside(containerRef, () => {
       closeMenu()
     })
 
     useEffect(() => {
-      const listener = () => {
-        closeMenu()
+      if (closeOnScroll) {
+        const listener = () => {
+          closeMenu()
+        }
+        document.addEventListener("wheel", listener, { once: true })
+        return () => document.removeEventListener("wheel", listener)
+      } else {
+        return undefined
       }
-      document.addEventListener("wheel", listener, { once: true })
-      return () => document.removeEventListener("wheel", listener)
     }, [])
 
     useLayoutEffect(() => {
