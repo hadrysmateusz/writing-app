@@ -1,5 +1,3 @@
-import chokidar from "chokidar"
-
 export type OpenFileObject = { name: string; content: string }
 
 export type FileObject = { name: string; path: string }
@@ -12,7 +10,7 @@ export type DirObjectRecursive = {
 }
 
 export type WatcherUnsubObj = {
-  close: chokidar.FSWatcher["close"]
+  close: () => Promise<void>
   added: number
 }
 

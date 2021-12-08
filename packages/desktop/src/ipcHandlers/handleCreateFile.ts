@@ -10,11 +10,18 @@ export const handleCreateFile = async (
   _event,
   payload: {
     name?: string
+    defaultPath?: string
   } = {}
 ) => {
-  const { name = undefined } = payload
+  const {
+    name = undefined,
+    defaultPath = path.join(os.homedir(), name ?? ""),
+  } = payload
 
-  let defaultPath = path.join(os.homedir(), name ?? "")
+  console.log("create file handler")
+  console.log("handleCreateFile", name, defaultPath, payload)
+
+  fs.ensureDir(defaultPath)
 
   const filter = filters["md"]
 

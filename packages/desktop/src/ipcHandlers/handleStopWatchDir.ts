@@ -3,10 +3,10 @@ import { closeWatcherForDir } from "../helpers"
 export const handleStopWatchDir = async (
   _event,
   payload: {
-    dirPath: string
+    watchedDirPath: string
     timestamp: number
   }
 ) => {
-  const { dirPath, timestamp } = payload
-  await closeWatcherForDir(dirPath, timestamp)
+  const { watchedDirPath, timestamp } = payload
+  await closeWatcherForDir(watchedDirPath, timestamp)
 }

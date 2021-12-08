@@ -1,95 +1,128 @@
 import path from "path"
 import chokidar from "chokidar"
+import mime from "mime-types"
 
 import { DialogStatus } from "../types"
-import { closeWatcherForDir, getDirWatchers, getMainWindow } from "../helpers"
+import {
+  ALLOWED_DOCUMENT_FILE_TYPES,
+  closeWatcherForDir,
+  getDirWatchers,
+  getMainWindow,
+} from "../helpers"
 
 export const handleWatchDir = async (
   _event,
   payload: {
-    dirPath: string
+    watchedDirPath: string
   }
 ) => {
   try {
-    const { dirPath } = payload
-    console.log("main handling WATCH_DIR event")
+    const { watchedDirPath } = payload
+    console.log(`setting up dir watcher for ${watchedDirPath}`, payload)
 
     // TODO: ensure or just check for path
 
-    const watcher = chokidar.watch(dirPath, {
+    const watcher = chokidar.watch(watchedDirPath, {
       persistent: true,
       ignoreInitial: true,
     })
+    const watcherClose = () => {
+      const boundClose = watcher.close.bind(watcher)
+      return boundClose()
+    }
+    await closeWatcherForDir(watchedDirPath)
+    getDirWatchers()[watchedDirPath] = {
+      close: watcherClose,
+      added: Date.now(),
+    }
+    console.log("saved watcher")
+    console.log(getDirWatchers())
 
     const sendResponse = ({
       eventType,
-      filePath,
+      itemPath,
     }: {
       eventType: string
-      filePath: string
+      itemPath: string
     }) => {
-      console.log("file " + filePath + " " + eventType)
-      const fileDirPath = path.dirname(filePath)
-      const fileName = path.basename(filePath)
+      console.log(itemPath + " " + eventType)
+      const parentDirPath = path.dirname(itemPath)
+      const itemName = path.basename(itemPath)
 
-      // console.log("fileDirPath: ", fileDirPath)
-      // console.log("search for: ", dirPath)
-      let relativePath = fileDirPath.replace(dirPath, "")
-      // console.log("relativePath: ", relativePath)
+      console.log("parentDirPath: ", parentDirPath)
+      console.log("search for: ", watchedDirPath)
+      let relativePath = parentDirPath.replace(watchedDirPath, "")
+      console.log("relativePath: ", relativePath)
 
       const dirPathArr = relativePath.split(path.sep)
-      // console.log("dirPathArr: ", dirPathArr)
+      console.log("dirPathArr: ", dirPathArr)
 
-      const actualDirPathArr = dirPathArr.map((_fragment, i, fragArr) => {
-        let newActualDirPath = dirPath
+      const parentDirPathArr = dirPathArr.map((_fragment, i, fragArr) => {
+        let newActualDirPath = watchedDirPath
         for (let j = 0; j <= i; j++) {
           newActualDirPath = path.join(newActualDirPath, fragArr[j])
           newActualDirPath = path.normalize(newActualDirPath)
         }
         return newActualDirPath
       })
-      // console.log("actualDirPathArr", actualDirPathArr)
+      console.log("parentDirPathArr", parentDirPathArr)
 
       getMainWindow().webContents.send("WATCH_DIR:RES", {
         eventType: eventType,
-        dirPath,
-        filePath,
-        fileDirPath,
-        dirPathArr: actualDirPathArr,
-        fileName,
+        watchedDirPath,
+
+        itemPath,
+        itemName,
+        parentDirPath: parentDirPath,
+        parentDirPathArr: parentDirPathArr,
       })
     }
 
-    const onWatcherReady = async () => {
-      // TODO: refactoring
-      await closeWatcherForDir(dirPath)
-      getDirWatchers()[dirPath] = {
-        close: watcher.close.bind(watcher),
-        added: Date.now(),
+    // const onWatcherReady = async () => {
+    //   console.log("watcher ready")
+    //   // TODO: refactoring
+    //   await closeWatcherForDir(watchedDirPath)
+    //   getDirWatchers()[watchedDirPath] = {
+    //     close: watcherClose,
+    //     added: Date.now(),
+    //   }
+    //   console.log("saved watcher")
+    //   console.log(getDirWatchers())
+    // }
+
+    const onWatcherAdd = (itemPath: string) => {
+      const fileType = mime.lookup(itemPath)
+      // console.log("FILE TYPE:", fileType)
+      if (!ALLOWED_DOCUMENT_FILE_TYPES.includes(fileType)) {
+        console.log(`unsupported file type ${fileType}, skipping`)
+        return
       }
-      console.log("saved watcher")
-      console.log(getDirWatchers())
+      sendResponse({ eventType: "add", itemPath })
     }
 
-    const onWatcherAdd = (path: string) => {
-      sendResponse({ eventType: "add", filePath: path })
+    const onWatcherUnlink = (itemPath: string) => {
+      sendResponse({ eventType: "unlink", itemPath })
     }
 
-    const onWatcherUnlink = (path: string) => {
-      sendResponse({ eventType: "unlink", filePath: path })
+    const onWatcherAddDir = (itemPath: string) => {
+      sendResponse({ eventType: "addDir", itemPath })
+    }
+
+    const onWatcherUnlinkDir = (itemPath: string) => {
+      sendResponse({ eventType: "unlinkDir", itemPath })
     }
 
     watcher
-      .on("ready", onWatcherReady)
+      // .on("ready", onWatcherReady)
       .on("add", onWatcherAdd)
       .on("unlink", onWatcherUnlink)
+      .on("addDir", onWatcherAddDir)
+      .on("unlinkDir", onWatcherUnlinkDir)
 
     return {
       status: DialogStatus.SUCCESS,
       error: null,
-      data: {
-        removeWatcher: watcher.close,
-      },
+      data: {},
     }
   } catch (err) {
     console.log("Error in WATCH_DIR handler:")

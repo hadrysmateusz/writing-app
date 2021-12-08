@@ -5,18 +5,15 @@ import os from "os"
 
 import { DialogStatus } from "../types"
 
-export const handleAddPath = async (_event, _payload) => {
+export const handleAddPath = async (
+  _event,
+  payload: { defaultPath?: string }
+) => {
   // TODO: better default path
-  // TODO: save the last used path for later
-  let defaultPath = path.join(os.homedir())
+  // TODO: maybe save the last used path for later
+  const { defaultPath = os.homedir() } = payload
 
-  try {
-    await fs.ensureDir(defaultPath)
-  } catch (error) {
-    // TODO: better error handling
-    console.log(error)
-    throw error
-  }
+  await fs.ensureDir(defaultPath)
 
   // TODO: investigate if I should use the browserWindow argument to make the dialog modal
   const dialogRes = await dialog.showOpenDialog({
