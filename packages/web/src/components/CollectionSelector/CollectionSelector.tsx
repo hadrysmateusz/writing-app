@@ -21,7 +21,7 @@ export const CollectionSelector = ({
 
   const { data: groups } = useRxSubscription(
     // TODO: create a nameSlug for groups to avoid errors
-    db.groups.find().sort({ name: "desc" })
+    db.groups.find().sort({ name: "asc" })
   )
 
   const { data: currentDocument } = useRxSubscription(
