@@ -7,6 +7,7 @@ import { ANIMATION_FADEIN } from "../../style-utils"
 
 export const TreeItem_AddDocumentButton = "TreeItem_AddDocumentButton"
 
+// TODO: probably replace this to some degree with GenericAddButton (maybe make this a wrapper over it)
 export const AddButton: React.FC<{
   tooltip?: string
   groupId: string | null
@@ -19,6 +20,25 @@ export const AddButton: React.FC<{
 
   const handleClick = () => {
     createDocument({ parentGroup: groupId })
+  }
+
+  return (
+    <AddButtonComponent title={tooltip} onClick={handleClick}>
+      <Icon icon="plus" />
+    </AddButtonComponent>
+  )
+}
+
+export const GenericAddButton: React.FC<{
+  tooltip?: string
+  onAdd: () => void
+}> = ({
+  // TODO: create custom tooltips that better match the style of the app
+  tooltip = "Add a document inside",
+  onAdd,
+}) => {
+  const handleClick = () => {
+    onAdd()
   }
 
   return (
