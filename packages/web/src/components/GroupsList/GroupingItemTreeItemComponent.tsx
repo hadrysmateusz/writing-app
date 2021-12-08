@@ -368,14 +368,21 @@ export const GroupingItemTreeItemComponent: React.FC<{
                 Rename
               </ContextMenuItem>
 
-              <ContextSubmenu text={"Delete"}>
-                <ContextMenuItem onClick={handleRemovePath}>
-                  From Library
-                </ContextMenuItem>
+              {/* TODO: use a less error-prone solution than a depth check */}
+              {depth === 1 ? (
+                <ContextSubmenu text="Delete">
+                  <ContextMenuItem onClick={handleRemovePath}>
+                    From Library
+                  </ContextMenuItem>
+                  <ContextMenuItem onClick={handleDeleteItem}>
+                    From Disk
+                  </ContextMenuItem>
+                </ContextSubmenu>
+              ) : (
                 <ContextMenuItem onClick={handleDeleteItem}>
-                  From Disk
+                  Delete From Disk
                 </ContextMenuItem>
-              </ContextSubmenu>
+              )}
               {/* TODO: add confirmation dialog (emphasise the fact that this action can't be reversed) */}
             </>
           ) : null}
