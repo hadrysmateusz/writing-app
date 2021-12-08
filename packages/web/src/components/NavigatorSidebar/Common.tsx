@@ -18,6 +18,25 @@ export const SectionHeader = styled.div<{ withHover?: boolean }>`
 
   color: var(--light-300);
 
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+
+  > :last-child {
+    display: none;
+  }
+
+  &:hover > :last-child {
+    display: flex;
+    position: absolute;
+    right: 18px;
+    top: -3px;
+  }
+
   :hover {
     ${(p) => (p.withHover ? "color: var(--light-400); cursor:pointer;" : null)}
   }
