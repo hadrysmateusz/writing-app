@@ -16,7 +16,10 @@ export type LocalSettings = {
   /**
    * Array of IDs for tree items that should be expanded (mostly corresponding to group IDs)
    */
-  expandedKeys: string[]
+  expandedKeys: {
+    cloud: string[]
+    local: string[]
+  }
   /**
    * Array of IDs for documents that have unsynced changes
    */

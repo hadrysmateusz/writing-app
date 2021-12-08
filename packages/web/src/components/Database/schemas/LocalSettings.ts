@@ -8,10 +8,17 @@ const sidebarCommon = {
   currentView: { type: "string" },
 }
 
+const expandedKeysArray = {
+  type: "array",
+  // TODO: consider removing the uniqueItems constraint as it shouldn't be a problem and it might cause the app to crash on an improper update
+  uniqueItems: true,
+  items: { type: "string" },
+}
+
 export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
   title: "local settings schema",
   description: "describes a set of local settings",
-  version: 4,
+  version: 5,
   primaryKey: "userId",
   type: "object",
   properties: {
@@ -20,10 +27,11 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
       final: true,
     },
     expandedKeys: {
-      type: "array",
-      // TODO: consider removing the uniqueItems constraint as it shouldn't be a problem and it might cause the app to crash on an improper update
-      uniqueItems: true,
-      items: { type: "string" },
+      type: "object",
+      properties: {
+        cloud: expandedKeysArray,
+        local: expandedKeysArray,
+      },
     },
     unsyncedDocs: {
       type: "array",

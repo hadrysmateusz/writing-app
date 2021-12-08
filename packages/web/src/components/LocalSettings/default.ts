@@ -3,7 +3,7 @@ import { TabsState } from "../MainProvider/tabsSlice"
 import { SIDEBAR_VAR } from "../ViewState/types"
 
 export const defaultLocalSettings: LocalSettings = {
-  expandedKeys: [],
+  expandedKeys: { cloud: [], local: [] },
   unsyncedDocs: [],
   tabs: tabsInit(),
   localDocPaths: [],

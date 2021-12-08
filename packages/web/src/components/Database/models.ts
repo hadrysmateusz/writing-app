@@ -150,6 +150,15 @@ export const models = {
           localDocPaths: [],
         }
       },
+      5: function (oldDoc: LocalSettingsDoc) {
+        return {
+          ...oldDoc,
+          expandedKeys: {
+            cloud: oldDoc.expandedKeys,
+            local: [],
+          },
+        }
+      },
     },
     // pouchSettings: {
     //   skip_setup: true,
