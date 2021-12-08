@@ -6,6 +6,13 @@ export const TagListItemContainer = styled.div`
 
   padding: 2px 14px;
   font-size: 12px;
+  cursor: pointer;
+
+  transition: background-color 200ms ease;
+
+  :hover {
+    background: var(--bg-highlight);
+  }
 
   .Tag_Name {
     padding: 8px 0;
@@ -16,6 +23,9 @@ export const TagListItemContainer = styled.div`
     font-weight: 500;
     font-family: "Poppins";
     user-select: none;
+
+    transition: color 200ms ease;
+
     :hover {
       color: white;
     }
@@ -35,7 +45,8 @@ export const TagListItemContainer = styled.div`
 
   .Tag_Action {
     padding: 8px 6px;
-    cursor: pointer;
+
+    transition: color 200ms ease;
 
     :hover {
       color: var(--light-400);
