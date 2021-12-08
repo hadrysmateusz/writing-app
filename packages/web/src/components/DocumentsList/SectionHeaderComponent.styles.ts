@@ -74,5 +74,5 @@ export const PrimarySidebarSectionContainer = styled.div<{
 
   transition: background-color 200ms ease;
 
-  ${(p) => (p.isHovered ? `background-color: #262626` : undefined)}
+  ${(p) => (p.isHovered ? `background-color: var(--dark-400)` : undefined)}
 `
