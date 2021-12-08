@@ -17,8 +17,9 @@ export const SectionName = styled.div<{
   ${(p) =>
     p.isClickable
       ? css`
+          transition: color 200ms ease;
           &:hover {
-            color: ${p.isOpen ? `var(--light-400)` : `var(--light-300)`};
+            color: ${p.isOpen ? `var(--light-400)` : `var(--light-400)`};
             cursor: pointer;
           }
         `
@@ -35,6 +36,9 @@ export const SectionHeaderContainer = styled.div<{ isOpen: boolean }>`
 
   display: flex;
   user-select: none;
+
+  transition: color 200ms ease;
+
   color: ${(p) => (p.isOpen ? `var(--light-300)` : `var(--light-100)`)};
 
   .SectionHeader_Toggle {
@@ -53,11 +57,22 @@ export const SectionHeaderContainer = styled.div<{ isOpen: boolean }>`
     animation: 200ms ease-out both ${ANIMATION_FADEIN};
 
     :hover {
-      color: ${(p) => (p.isOpen ? `var(--light-400)` : `var(--light-300)`)};
+      color: ${(p) => (p.isOpen ? `var(--light-400)` : `var(--light-400)`)};
     }
   }
 
   :hover .SectionHeader_Toggle {
     display: flex;
   }
+`
+
+// TODO: move to more appropriate spot
+export const PrimarySidebarSectionContainer = styled.div<{
+  isHovered: boolean
+}>`
+  border-radius: 4px;
+
+  transition: background-color 200ms ease;
+
+  ${(p) => (p.isHovered ? `background-color: #262626` : undefined)}
 `

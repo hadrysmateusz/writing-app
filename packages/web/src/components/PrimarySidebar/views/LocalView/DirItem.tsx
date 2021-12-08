@@ -204,13 +204,22 @@ export const DirItem: React.FC<
 
   const isEmpty = files.length === 0 && dirs.length === 0
 
+  // TODO: reduce duplication with subgroups
+  const [isHovered, setIsHovered] = useState(false)
+  const handleMouseEnter = (e) => {
+    setIsHovered(true)
+  }
+  const handleMouseLeave = (e) => {
+    setIsHovered(false)
+  }
   return !isEmpty ? (
-    <>
+    <PrimarySidebarSectionContainer isHovered={isHovered}>
       <LocalDocumentSectionHeader
         path={path}
         isOpen={isOpen}
         onToggle={toggle}
-        removeDir={removeDir}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {formatOptional(name, "Unknown")}
       </LocalDocumentSectionHeader>
@@ -228,7 +237,7 @@ export const DirItem: React.FC<
           ))}
         </>
       ) : null}
-    </>
+    </PrimarySidebarSectionContainer>
   ) : null
 }
 

@@ -15,7 +15,10 @@ export const SectionHeader: React.FC<{
   groupId?: string | null
   isOpen: boolean
   onToggle: () => void
-}> = ({ groupId, onToggle, isOpen, children }) => {
+
+  onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void
+  onMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => void
+}> = ({ groupId, onToggle, isOpen, children, onMouseEnter, onMouseLeave }) => {
   const { switchSubview } = usePrimarySidebar()
   const { createDocument } = useDocumentsAPI()
 
@@ -49,6 +52,8 @@ export const SectionHeader: React.FC<{
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         onToggle={onToggle}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
         {children}
       </SectionHeaderComponent>

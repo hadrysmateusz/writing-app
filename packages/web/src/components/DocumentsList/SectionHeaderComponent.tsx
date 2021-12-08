@@ -13,6 +13,9 @@ export const SectionHeaderComponent: React.FC<{
   onToggle?: () => void
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement>) => void
+
+  onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void
+  onMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => void
 }> = ({
   children,
   isOpen = true,
@@ -21,6 +24,8 @@ export const SectionHeaderComponent: React.FC<{
   onToggle,
   onClick,
   onContextMenu,
+  onMouseEnter,
+  onMouseLeave,
 }) => {
   const handleToggleClick = onToggle
     ? () => {
@@ -29,7 +34,11 @@ export const SectionHeaderComponent: React.FC<{
     : undefined
 
   return (
-    <SectionHeaderContainer isOpen={isOpen}>
+    <SectionHeaderContainer
+      isOpen={isOpen}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       <SectionName
         title={titleTooltip}
         isOpen={isOpen}

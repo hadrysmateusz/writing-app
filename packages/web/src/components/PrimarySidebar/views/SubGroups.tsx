@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useState } from "react"
 
 import { GroupTreeBranch } from "../../../helpers/createGroupTree"
 import { useToggleable, useRxSubscription } from "../../../hooks"
@@ -8,6 +8,7 @@ import { useMainState } from "../../MainProvider"
 import { useDatabase } from "../../Database"
 
 import { createFindDocumentsInGroupQuery } from "./queries"
+import { PrimarySidebarSectionContainer } from "../../DocumentsList/SectionHeaderComponent.styles"
 
 // TODO: use stateless toggleables and keep state higher up, persisting it between path changes (either as a global collection of group.ids that are open or closed, or a per-path one)
 
@@ -35,9 +36,24 @@ export const SubGroupDocumentsList: FC<{
 
   // TODO: "dim" all child components when the section toggler is hovered to quickly indicate which things are descendants of this branch and will be hidden
 
+  // TODO: reduce duplication with diritem
+  const [isHovered, setIsHovered] = useState(false)
+  const handleMouseEnter = (e) => {
+    setIsHovered(true)
+  }
+  const handleMouseLeave = (e) => {
+    setIsHovered(false)
+  }
+
   return shouldRender ? (
-    <>
-      <SectionHeader groupId={group.id} onToggle={toggle} isOpen={isOpen}>
+    <PrimarySidebarSectionContainer isHovered={isHovered}>
+      <SectionHeader
+        groupId={group.id}
+        onToggle={toggle}
+        isOpen={isOpen}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         {group.name}
       </SectionHeader>
       {isOpen ? (
@@ -46,6 +62,6 @@ export const SubGroupDocumentsList: FC<{
           <SubGroups groups={group.children} />
         </>
       ) : null}
-    </>
+    </PrimarySidebarSectionContainer>
   ) : null
 }
