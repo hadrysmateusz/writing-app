@@ -87,7 +87,14 @@ const TagDocumentsList: FC<{
 
   return documents.length > 0 ? (
     <>
-      <SectionHeader groupId={undefined} onToggle={toggle} isOpen={isOpen}>
+      {/* TODO: make this use a different sectionheader based on sectionheadercomponent */}
+      <SectionHeader
+        groupId={undefined}
+        onToggle={toggle}
+        isOpen={isOpen}
+        onMouseEnter={(e) => {}}
+        onMouseLeave={(e) => {}}
+      >
         {tagName}
       </SectionHeader>
       {isOpen ? <DocumentsList documents={documents} /> : null}
