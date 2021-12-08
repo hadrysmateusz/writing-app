@@ -60,7 +60,7 @@ async function createWindow() {
   getMainWindow().loadURL(START_URL)
 
   // Open the DevTools.
-  // getMainWindow().webContents.openDevTools()
+  getMainWindow().webContents.openDevTools()
 
   // Set up application menu
   setUpApplicationMenu()
