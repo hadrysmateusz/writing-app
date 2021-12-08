@@ -9,7 +9,7 @@ const GlobalStyles = createGlobalStyle`
     --dark-100: #0e0e0e;
     --dark-200: #191919;
     --dark-300: #202020;
-    --dark-400: #262626;
+    --dark-400: #252525;
     --dark-500: #373737;
     --dark-600: #545454;
 
