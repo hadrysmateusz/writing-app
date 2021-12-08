@@ -119,10 +119,10 @@ export const ContextMenu: React.FC<{
       return
     }
 
-    const rect = menuEl.getBoundingClientRect()
+    // const rect = menuEl.getBoundingClientRect()
 
-    const menuWidth = Math.ceil(rect.width)
-    const menuHeight = Math.ceil(rect.height)
+    // const menuWidth = Math.ceil(rect.width)
+    // const menuHeight = Math.ceil(rect.height)
 
     // setY((y) => {
     //   if (y + menuHeight > window.innerHeight) {
