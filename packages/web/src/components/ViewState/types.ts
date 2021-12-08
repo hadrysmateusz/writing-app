@@ -1,6 +1,7 @@
 import { Toggleable } from "../../hooks"
 import { LocalSettings } from "../Database/types"
 
+// TODO: the way this function works is probably why opening directories with underscores in the name don't work. Either rework the system or use a separator that is not supported in paths on any OS (that might be hard as it seems that MacOS supports all of unicode)
 // TODO: move this to a more logical place
 export function parseSidebarPath(path: string) {
   const pathParts = path.split("_")
