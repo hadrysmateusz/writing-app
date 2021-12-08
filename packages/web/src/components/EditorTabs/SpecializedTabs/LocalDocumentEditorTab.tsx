@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { formatOptional } from "../../../utils"
 
 import Icon from "../../Icon"
 
@@ -76,7 +77,7 @@ export const LocalDocumentEditorTab: React.FC<{
           ? "Loading..."
           : documentState.isMissing
           ? "Deleted"
-          : documentState.document?.title || "Error"}
+          : formatOptional(documentState.document?.title, "Untitled")}
         {/* TODO: support renaming the file (although maybe just from context menu) */}
       </div>
       {/* {tabData.group ? <div className="tab-group">{tabData.group}</div> : null} */}
