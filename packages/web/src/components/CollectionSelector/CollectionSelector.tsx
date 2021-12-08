@@ -67,6 +67,7 @@ export const CollectionSelector = ({
         ref={autocompleteInputRef}
         suggestions={options}
         submit={onSubmit}
+        placeholder="Search"
       />
     </CollectionSelectorContainer>
   )

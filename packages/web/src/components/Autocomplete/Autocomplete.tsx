@@ -9,8 +9,12 @@ export const Autocomplete = forwardRef<
   {
     suggestions: Option[]
     submit: (value: Option) => void
+    /**
+     * Force the placeholder to be a custom string instead of currently selected option
+     */
+    placeholder?: string
   }
->(({ suggestions, submit }, inputRef) => {
+>(({ suggestions, submit, placeholder }, inputRef) => {
   const [filteredSuggestions, setFilteredSuggestions] = useState(suggestions)
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0)
   const [inputValue, setInputValue] = useState("")
@@ -98,7 +102,9 @@ export const Autocomplete = forwardRef<
         onChange={onChange}
         onKeyDown={handleKeyDown} // TODO: use arrow keys to select options and enter/esc to select/close
         value={inputValue}
-        placeholder={filteredSuggestions[activeSuggestionIndex]?.label}
+        placeholder={
+          placeholder || filteredSuggestions[activeSuggestionIndex]?.label
+        }
       />
 
       {filteredSuggestions.length > 0 ? (
