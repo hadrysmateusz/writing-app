@@ -14,8 +14,9 @@
 
 import { GroupDoc, GroupDocType } from "../components/Database"
 
-export interface GroupTreeBranch extends GroupDocType {
+export type GroupTreeBranch = Exclude<GroupDocType, "id"> & {
   children: GroupTreeBranch[]
+  id: string | null
 }
 
 // TODO: make a more reusable algorithm with customizable keys (types are gonna be more complicated - there are probably ready-made algorithms for that)
@@ -101,7 +102,7 @@ export const createBranch = (
   } as GroupTreeBranch
 }
 
-const createGroupTree = (allGroups: GroupDoc[]): GroupTreeBranch => {
+export const createGroupTree = (allGroups: GroupDoc[]): GroupTreeBranch => {
   const plainGroups = allGroups.map((group) => group.toJSON())
   const groupTree = createBranch(null, plainGroups)
   return groupTree

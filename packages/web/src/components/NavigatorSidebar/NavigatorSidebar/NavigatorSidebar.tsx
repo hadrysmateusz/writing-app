@@ -14,6 +14,7 @@ import { GroupsSection } from "../GroupsSection"
 import { SectionContainer } from "../Common"
 
 import { useNavigationTreeItem } from "./helpers"
+import { DirectoriesSection } from "../DirectoriesSection"
 
 export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
   (_props, ref) => (
@@ -27,6 +28,8 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
       <FavoritesSection />
 
       <GroupsSection />
+
+      <DirectoriesSection />
 
       <TagsSection />
 

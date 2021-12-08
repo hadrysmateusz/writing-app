@@ -1,6 +1,7 @@
 import { useCallback } from "react"
 
 import SidebarDocumentItemComponent from "../../../DocumentsList/SidebarDocumentItemComponent"
+import { useLocalFS } from "../../../LocalFSProvider"
 import { useTabsDispatch, useTabsState } from "../../../MainProvider"
 import {
   useContextMenu,
@@ -16,8 +17,9 @@ export const LocalDocumentSidebarItem: React.FC<{
 }> = ({ path, name }) => {
   const tabsDispatch = useTabsDispatch()
   const tabsState = useTabsState()
+  const { deleteFile, revealItem } = useLocalFS()
 
-  const { getContextMenuProps, openMenu } = useContextMenu()
+  const { getContextMenuProps, openMenu, isMenuOpen } = useContextMenu()
 
   const handleClick = useCallback(() => {
     const tabId = findTabWithPath(tabsState, path)
@@ -62,12 +64,12 @@ export const LocalDocumentSidebarItem: React.FC<{
   )
 
   const handleRemove = useCallback(() => {
-    window.electron.invoke("DELETE_FILE", { targetPath: path })
-  }, [path])
+    deleteFile(path)
+  }, [deleteFile, path])
 
   const handleRevealInExplorer = useCallback(() => {
-    window.electron.invoke("VIEW_IN_EXPLORER", { targetPath: path })
-  }, [path])
+    revealItem(path)
+  }, [path, revealItem])
 
   return (
     <>
@@ -82,13 +84,15 @@ export const LocalDocumentSidebarItem: React.FC<{
         onClick={handleClick}
         onContextMenu={handleContextMenu}
       />
-      <ContextMenu {...getContextMenuProps()}>
-        <ContextMenuItem
-          text="Reveal in Explorer"
-          /* TODO: use OS-agnostic naming */ onClick={handleRevealInExplorer}
-        />
-        <ContextMenuItem text="Delete" onClick={handleRemove} />
-      </ContextMenu>
+      {isMenuOpen ? (
+        <ContextMenu {...getContextMenuProps()}>
+          <ContextMenuItem
+            text="Reveal in Explorer"
+            /* TODO: use OS-agnostic naming */ onClick={handleRevealInExplorer}
+          />
+          <ContextMenuItem text="Delete" onClick={handleRemove} />
+        </ContextMenu>
+      ) : null}
     </>
   )
 }

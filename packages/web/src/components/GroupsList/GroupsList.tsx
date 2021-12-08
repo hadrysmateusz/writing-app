@@ -1,21 +1,38 @@
 import { FC, useEffect } from "react"
 
-import { GroupTreeBranch } from "../../helpers/createGroupTree"
 import GroupTreeItem from "./GroupTreeItem"
 import { GenericTreeItem } from "../TreeItem"
 import Ellipsis from "../Ellipsis"
 import { useEditableText, EditableText } from "../RenamingInput"
-import { useGroupsAPI } from "../MainProvider"
+import { SidebarView } from "../ViewState"
+import DirTreeItem from "../DirsList/DirTreeItem"
 
-export const GroupsList: FC<{
-  group: GroupTreeBranch
+export type ItemsBranch = {
+  itemId: string
+  itemName: string
+  parentItemId: string | null // TODO: add actual parentItemIds for local branches
+  childItems: ItemsBranch[]
+}
+
+export const GroupingItemList: FC<{
+  view: SidebarView<"primary">
+  itemId: string
+  childItems: ItemsBranch[]
   depth: number
   isCreatingGroup: boolean
   setIsCreatingGroup: (newValue: boolean) => void
-}> = ({ group, depth, isCreatingGroup, setIsCreatingGroup }) => {
-  const isEmpty = group.children.length === 0
-  const isRoot = group.id === null
-  const { createGroup } = useGroupsAPI()
+  createItem?: (values: { name?: string }) => void
+}> = ({
+  depth,
+  isCreatingGroup,
+  setIsCreatingGroup,
+  childItems,
+  itemId,
+  createItem,
+  view,
+}) => {
+  const isEmpty = childItems.length === 0
+  const isRoot = itemId === null
 
   const {
     startRenaming: startNamingNew,
@@ -26,7 +43,7 @@ export const GroupsList: FC<{
     stopNamingNew()
     setIsCreatingGroup(false)
     if (value === "") return
-    createGroup(group.id, { name: value })
+    createItem && createItem({ name: value }) // TODO: fix this and make not optional
   })
 
   useEffect(() => {
@@ -44,18 +61,25 @@ export const GroupsList: FC<{
       {isEmpty && !isCreatingGroup ? (
         <GenericTreeItem depth={depth} disabled>
           <Ellipsis style={{ marginLeft: "2px" }}>
+            {/* TODO: use cloud/local agnostic naming (or provide option for setting this) */}
             {isRoot ? "No Collections" : "No Nested Collections"}
           </Ellipsis>
         </GenericTreeItem>
       ) : (
-        group.children.map((childGroupTreeBranch, index) => (
-          <GroupTreeItem
-            key={childGroupTreeBranch.id}
-            group={childGroupTreeBranch}
-            depth={depth}
-            index={index}
-          />
-        ))
+        childItems.map((childItemBranch, index) => {
+          // render correct children based on view
+          const props = {
+            key: childItemBranch.itemId,
+            depth,
+            index,
+            item: childItemBranch,
+          }
+          return view === "local" ? (
+            <DirTreeItem {...props} />
+          ) : view === "cloud" ? (
+            <GroupTreeItem {...props} />
+          ) : null
+        })
       )}
 
       {/* TODO: fix the input overflowing the sidebar */}

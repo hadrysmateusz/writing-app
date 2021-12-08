@@ -10,11 +10,43 @@ import {
   SIDEBAR_VAR,
   usePrimarySidebar,
 } from "../../../ViewState"
+import { useLocalFS } from "../../../LocalFSProvider"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
-import { ValidatePathsObj } from "./types"
-import { DirItemInnerTopLevel } from "./DirItem"
+import { DirObjectRecursive, ValidatePathsObj } from "./types"
+import { LocalDocumentsSubGroupInner } from "./DirItem"
+
+const findClosestMatch = (dirs: DirObjectRecursive[], wantedPath: string) => {
+  const closestMatch = dirs.find((dir) => {
+    return wantedPath.includes(dir.path)
+  })
+  return closestMatch
+}
+
+const findExactMatch = (dirs: DirObjectRecursive[], wantedPath: string) => {
+  const exactMatch = dirs.find((dir) => {
+    return dir.path === wantedPath
+  })
+  return exactMatch
+}
+
+const findDirInTrees = (
+  dirs: DirObjectRecursive[],
+  wantedPath: string
+): DirObjectRecursive | undefined => {
+  const exactMatch = findExactMatch(dirs, wantedPath)
+  if (exactMatch) {
+    return exactMatch
+  } else {
+    const closestMatch = findClosestMatch(dirs, wantedPath)
+    if (!closestMatch) {
+      return undefined
+    } else {
+      return findDirInTrees(closestMatch.dirs, wantedPath)
+    }
+  }
+}
 
 export const DirectoryView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -64,15 +96,24 @@ const DirectoryViewWithFoundDirPath: React.FC<{
   }, [directoryPath])
 
   // TODO: better loading/empty state + handle errors
-  return !isLoading && dir ? <DirectoryViewInner dir={dir} /> : null
+  return !isLoading && dir ? (
+    <DirectoryViewInner dir={dir} directoryPath={directoryPath} />
+  ) : null
 }
 
 const DirectoryViewInner: React.FC<{
   dir: ValidatePathsObj
-}> = ({ dir }) => {
-  const handleCreateFile = async () => {
-    const ipcResponse = await window.electron.invoke("CREATE_FILE", {})
-  }
+  directoryPath: string
+}> = ({ dir, directoryPath }) => {
+  const { createDocument: createFile, dirTrees } = useLocalFS()
+
+  // TODO: when adding dir path to local library paths list check if it's not a descendant of a path already on the list (this would cause a shitton of problems because the dirs and files inside would no longer be unique in the tree which will probably break watchers and other things)
+
+  const dirTree = useMemo(() => {
+    return findDirInTrees(dirTrees, directoryPath)
+  }, [dirTrees, directoryPath])
+
+  console.log("FOUND DIR TREE", dirTree)
 
   // TODO: if dir has exists === false, show a warning and a button to manually find the dir
   // TODO: add local document context menu
@@ -87,16 +128,18 @@ const DirectoryViewInner: React.FC<{
         goUpPath={SIDEBAR_VAR.primary.local.all} // TODO: add a way to go up one directory
       />
       <InnerContainer>
-        <DirItemInnerTopLevel
-          path={dir.path}
-          removeDir={() => {
-            // TODO: implement
-            throw new Error("UNIMPLEMENTED")
-          }}
-        />
+        {dirTree ? (
+          <LocalDocumentsSubGroupInner
+            files={dirTree.files}
+            dirs={dirTree.dirs}
+          />
+        ) : null}
       </InnerContainer>
 
-      <PrimarySidebarBottomButton icon="plus" handleClick={handleCreateFile}>
+      <PrimarySidebarBottomButton
+        icon="plus"
+        handleClick={() => createFile(dir.path)}
+      >
         Create Document
       </PrimarySidebarBottomButton>
     </PrimarySidebarViewContainer>

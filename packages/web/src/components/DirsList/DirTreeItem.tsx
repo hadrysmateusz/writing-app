@@ -5,64 +5,77 @@ import {
   useNavigatorSidebar,
   usePrimarySidebar,
 } from "../ViewState"
-import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 
 import { formatOptional } from "../../utils"
 import { useLocalSettings } from "../LocalSettings"
 import { LocalSettings } from "../Database"
-import { ItemsBranch } from "./GroupsList"
-import { GroupingItemTreeItemComponent } from "./GroupingItemTreeItemComponent"
+import { ItemsBranch } from "../GroupsList"
+import { GroupingItemTreeItemComponent } from "../GroupsList/GroupingItemTreeItemComponent"
+import { useLocalFS } from "../LocalFSProvider"
 
-export const GroupTreeItem: React.FC<{
+export const DirTreeItem: React.FC<{
   item: ItemsBranch
   index: number
   depth?: number
 }> = ({ item, index, depth }) => {
-  const { createDocument: createCloudDocument } = useDocumentsAPI()
-  const { renameGroup, removeGroup, createGroup, moveGroup } = useGroupsAPI()
   const { updateLocalSetting } = useLocalSettings()
   const { switchSubview, currentSubviews, currentView } = usePrimarySidebar()
   const { expandedKeys, setExpandedKeys } = useNavigatorSidebar()
+  const {
+    createDocument: createLocalDocument,
+    createDir,
+    deleteDir,
+    revealItem: revealItemBase,
+    removePath: removePathBase,
+  } = useLocalFS()
 
-  const view = "cloud"
+  const view = "local"
   const itemId = item.itemId
-  const itemName = formatOptional(item.itemName, "Unnamed Collection")
+  const itemName = formatOptional(item.itemName, "Unknown")
   const isEmpty = item.childItems.length === 0
   // TODO: calculate this once for the entire groups section, taking into consideration which group tree items are expanded etc. (calculate a single group.id which should be highlighted)
   const isActive = parseSidebarPath(currentSubviews[currentView])?.id === itemId
 
   const createItem = useCallback(
-    (values) => {
-      return createGroup(itemId, values)
+    (values = {}) => {
+      console.log("create dir", values)
+      const { name = "" } = values
+
+      createDir(name, item.itemId)
     },
-    [createGroup, itemId]
+    [createDir, item.itemId]
   )
 
   const deleteItem = useCallback(() => {
-    return removeGroup(itemId)
-  }, [itemId, removeGroup])
+    return deleteDir
+  }, [deleteDir])
 
   const selectItem = useCallback(() => {
-    return switchSubview("cloud", "group", itemId)
+    return switchSubview("local", "directory", itemId)
   }, [itemId, switchSubview])
 
-  const renameItem = useCallback(
-    (newName: string) => {
-      return renameGroup(itemId, newName)
-    },
-    [itemId, renameGroup]
-  )
+  const renameItem = useCallback((newName: string) => {
+    // return renameGroup(itemId, newName)
+  }, [])
 
   const moveItem = useCallback(
     (movedItemId: string, destinationId: string, destinationIndex: number) => {
-      return moveGroup(movedItemId, destinationIndex, destinationId)
+      // return moveGroup(movedItemId, destinationIndex, destinationId)
     },
-    [moveGroup]
+    []
   )
 
+  const revealItem = useCallback(() => {
+    return revealItemBase(itemId)
+  }, [itemId, revealItemBase])
+
+  const removePath = useCallback(() => {
+    return removePathBase(itemId)
+  }, [itemId, removePathBase])
+
   const createDocument = useCallback(() => {
-    return createCloudDocument({ parentGroup: itemId })
-  }, [createCloudDocument, itemId])
+    return createLocalDocument(item.itemId)
+  }, [createLocalDocument, item.itemId])
 
   const isExpanded = expandedKeys[view].includes(itemId)
   const setIsExpanded = useCallback(
@@ -113,8 +126,10 @@ export const GroupTreeItem: React.FC<{
       renameItem={renameItem}
       moveItem={moveItem}
       createDocument={createDocument}
+      revealItem={revealItem}
+      removePath={removePath}
     />
   )
 }
 
-export default GroupTreeItem
+export default DirTreeItem

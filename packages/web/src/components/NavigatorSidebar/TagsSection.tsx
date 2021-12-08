@@ -37,7 +37,7 @@ function countTaggedDocs(tags: TagDoc[], documents: DocumentDoc[]) {
 
 /* The number of tags displayed without toggling */
 const LIMIT_TAGS = 4
-const MSG_TAGS = "Tags"
+const MSG_TAGS_HEADER = "Tags"
 const MSG_SHOW_MORE = "Show More"
 const MSG_SHOW_LESS = "Show Less"
 export const TagsSection: React.FC = () => {
@@ -92,7 +92,7 @@ const TagsSectionHeader = () => {
 
   return (
     <SectionHeader withHover={true} onClick={handleClick}>
-      {MSG_TAGS}
+      {MSG_TAGS_HEADER}
     </SectionHeader>
   )
 }

@@ -13,7 +13,18 @@ export const LocalDocumentSectionHeader: React.FC<{
   isOpen: boolean
   onToggle: () => void
   removeDir: (path: string) => void
-}> = ({ path, children, removeDir, isOpen, onToggle }) => {
+
+  onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void
+  onMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => void
+}> = ({
+  path,
+  children,
+  removeDir,
+  isOpen,
+  onToggle,
+  onMouseEnter,
+  onMouseLeave,
+}) => {
   const { switchSubview } = usePrimarySidebar()
 
   const { openMenu, isMenuOpen, getContextMenuProps } = useContextMenu()
@@ -43,6 +54,8 @@ export const LocalDocumentSectionHeader: React.FC<{
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         onToggle={onToggle}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
         {children}
       </SectionHeaderComponent>
