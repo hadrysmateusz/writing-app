@@ -1,8 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react"
 import styled from "styled-components/macro"
 
-import { formatOptional } from "../utils"
-
 import {
   useContextMenu,
   ContextMenuItem,
@@ -11,18 +9,17 @@ import {
 } from "./ContextMenu"
 import { DocumentDoc } from "./Database"
 import { useEditableText } from "./RenamingInput"
-import { useMainState, useDocumentsAPI } from "./MainProvider"
+import { useDocumentsAPI } from "./MainProvider"
 import { useModal } from "./Modal"
 import {
   ExportModalContent,
   ExportModalProps,
   ExportModalReturnValue,
 } from "./Topbar/ExportButton"
+import CollectionSelector from "./CollectionSelector/CollectionSelector"
+import { Option } from "./Autocomplete"
 
 export const useDocumentContextMenu = (document: DocumentDoc) => {
-  const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
-  const { groups /* , currentDocumentId */ } = useMainState()
   const {
     removeDocument,
     renameDocument,
@@ -30,7 +27,15 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     toggleDocumentFavorite,
     restoreDocument,
     permanentlyRemoveDocument,
+    updateDocument,
   } = useDocumentsAPI()
+
+  const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)
+
+  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu({
+    closeAfterClick: false,
+    closeOnScroll: false,
+  })
 
   const { startRenaming, getProps: getEditableProps } = useEditableText(
     document.title,
@@ -108,6 +113,19 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
 
   // TODO: add item for exporting
 
+  const handleMoveToGroupSubmit = useCallback(
+    async (option: Option) => {
+      closeMenu()
+
+      const selectedGroupId = option.value
+
+      await updateDocument(document.id, {
+        parentGroup: selectedGroupId,
+      })
+    },
+    [closeMenu, document.id, updateDocument]
+  )
+
   const DocumentContextMenu: React.FC<{}> = () => {
     return (
       <>
@@ -133,14 +151,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
 
                 <ContextMenuSeparator />
                 <ContextSubmenu text="Move to">
-                  {groups.map((group) => (
-                    <ContextMenuItem
-                      key={group.id}
-                      onClick={() => moveToGroup(group.id)}
-                    >
-                      {formatOptional(group.name, "Unnamed Collection")}
-                    </ContextMenuItem>
-                  ))}
+                  <CollectionSelector onSubmit={handleMoveToGroupSubmit} />
                 </ContextSubmenu>
                 <ContextMenuSeparator />
                 <ContextMeta>
