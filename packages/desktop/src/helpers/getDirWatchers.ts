@@ -1,9 +1,8 @@
 import { WatcherUnsubObj } from "../types"
 
 export const getDirWatchers = () => {
-  if (!dirWatchers) {
-    // TODO: create custom error for this
-    throw new Error("dirWatchers is undefined")
+  if (!global.dirWatchers) {
+    global.dirWatchers = {}
   }
   return global.dirWatchers as Record<string, WatcherUnsubObj>
 }

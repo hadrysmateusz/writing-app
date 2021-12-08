@@ -1,3 +1,4 @@
+import { getDirWatchers } from "./getDirWatchers"
 import { WatcherUnsubObj } from "../types"
 
 export const closeWatcherForDir = async (
@@ -5,10 +6,8 @@ export const closeWatcherForDir = async (
   timestamp?: number
 ) => {
   const log = (msg) => console.log("closeWatcherForDir: " + msg)
-  if (!global.dirWatchers) {
-    global.dirWatchers = {}
-  }
-  const oldWatcher: WatcherUnsubObj | undefined = global.dirWatchers[dirPath]
+
+  const oldWatcher: WatcherUnsubObj | undefined = getDirWatchers()[dirPath]
   if (oldWatcher) {
     if (!timestamp || timestamp > oldWatcher.added) {
       await oldWatcher.close()
