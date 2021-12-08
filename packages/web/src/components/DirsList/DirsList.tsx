@@ -4,9 +4,9 @@ import {
   GroupingItemListComponent,
   GroupingItemListComponentProps,
 } from "../GroupingItemList/GroupingItemListComponent"
-import { useGroupsAPI } from "../MainProvider"
+import { useLocalFS } from "../LocalFSProvider"
 
-type GroupsListProps = Pick<
+type DirsListProps = Pick<
   GroupingItemListComponentProps,
   | "setIsCreatingGroup"
   | "isCreatingGroup"
@@ -15,33 +15,33 @@ type GroupsListProps = Pick<
   | "parentItemId"
 >
 
-export const GroupsList: React.FC<GroupsListProps> = ({
+export const DirsList: React.FC<DirsListProps> = ({
   setIsCreatingGroup,
   isCreatingGroup,
   childItems,
-  parentItemId,
   depth,
 }) => {
-  const { createGroup } = useGroupsAPI()
+  const { createDir } = useLocalFS()
 
-  const handleCreateNewGroup = useCallback(
+  const handleCreateNewDir = useCallback(
     (values: { name?: string; parentItemId?: string | null }) => {
-      console.log("createItem (GROUP)", values)
+      console.log("createItem (DIR)", values)
       const { parentItemId = null, name } = values
-      createGroup(parentItemId, { name })
+      // TODO: fix the generic typing (on GroupingItemListComponent, I think) to better fit local directory methods (and remove the ORs below when it's done)
+      createDir(name || "Unnamed", parentItemId || undefined)
     },
-    [createGroup]
+    [createDir]
   )
 
   return (
     <GroupingItemListComponent
-      view="cloud"
-      parentItemId={parentItemId}
+      view="local"
+      parentItemId={null}
       childItems={childItems}
       depth={depth}
       isCreatingGroup={isCreatingGroup}
       setIsCreatingGroup={setIsCreatingGroup}
-      createItem={handleCreateNewGroup}
+      createItem={handleCreateNewDir}
     />
   )
 }

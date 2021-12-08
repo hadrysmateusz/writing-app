@@ -21,3 +21,10 @@ export interface GroupDropResult {
 export interface GroupDragCollectedProps {
   isDragging: boolean
 }
+
+export type ItemsBranch = {
+  itemId: string
+  itemName: string
+  parentItemId: string | null // TODO: add actual parentItemIds for local branches
+  childItems: ItemsBranch[]
+}

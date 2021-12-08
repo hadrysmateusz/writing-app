@@ -1,17 +1,16 @@
 import React, { useCallback } from "react"
 
+import { formatOptional } from "../../utils"
+
+import { useLocalSettings } from "../LocalSettings"
+import { LocalSettings } from "../Database"
+import { useLocalFS } from "../LocalFSProvider"
 import {
   parseSidebarPath,
   useNavigatorSidebar,
   usePrimarySidebar,
 } from "../ViewState"
-
-import { formatOptional } from "../../utils"
-import { useLocalSettings } from "../LocalSettings"
-import { LocalSettings } from "../Database"
-import { ItemsBranch } from "../GroupsList"
-import { GroupingItemTreeItemComponent } from "../GroupsList/GroupingItemTreeItemComponent"
-import { useLocalFS } from "../LocalFSProvider"
+import { GroupingItemTreeItemComponent, ItemsBranch } from "../GroupingItemList"
 
 export const DirTreeItem: React.FC<{
   item: ItemsBranch

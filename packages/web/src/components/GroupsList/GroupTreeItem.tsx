@@ -10,8 +10,7 @@ import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 import { formatOptional } from "../../utils"
 import { useLocalSettings } from "../LocalSettings"
 import { LocalSettings } from "../Database"
-import { ItemsBranch } from "./GroupsList"
-import { GroupingItemTreeItemComponent } from "./GroupingItemTreeItemComponent"
+import { ItemsBranch, GroupingItemTreeItemComponent } from "../GroupingItemList"
 
 export const GroupTreeItem: React.FC<{
   item: ItemsBranch

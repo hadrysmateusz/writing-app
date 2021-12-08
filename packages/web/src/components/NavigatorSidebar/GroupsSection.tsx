@@ -3,10 +3,13 @@ import React, { useMemo, useState, useCallback } from "react"
 import { SectionHeader, SectionContainer } from "./Common"
 import { useMainState } from "../MainProvider"
 import { createGroupTree, GroupTreeBranch } from "../../helpers"
-import { GenericTreeItem } from "../TreeItem"
-import { GroupingItemList, ItemsBranch } from "../GroupsList"
+import { GenericAddButton } from "../TreeItem"
+import { GroupsList } from "../GroupsList"
+import { ItemsBranch } from "../GroupingItemList"
 
-const createGroupingItemBranch = (
+const MSG_GROUPS_HEADER = "Collections"
+
+export const createGroupingItemBranchFromGroupTreeBranch = (
   groupTreeBranch: GroupTreeBranch
 ): ItemsBranch => {
   return {
@@ -14,15 +17,15 @@ const createGroupingItemBranch = (
     itemName: groupTreeBranch.name,
     parentItemId: groupTreeBranch.parentGroup,
     childItems: groupTreeBranch.children.map((childGroupBranch) =>
-      createGroupingItemBranch(childGroupBranch)
+      createGroupingItemBranchFromGroupTreeBranch(childGroupBranch)
     ),
   }
 }
 
 export const GroupsSection: React.FC = () => {
   const { groups } = useMainState()
+
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
-  // const [expandedKeys, setExpandedKeys] = useState([])
 
   const handleNewGroup = useCallback(() => {
     setIsCreatingGroup(true)
@@ -30,31 +33,37 @@ export const GroupsSection: React.FC = () => {
 
   // TODO: maybe remove the entire GroupTree structure in favor of the new generic system
   // map the flat groups list to a tree structure
-  const groupsTree = useMemo(() => createGroupTree(groups), [groups])
-
-  const childItems = useMemo(
-    () => createGroupingItemBranch(groupsTree).childItems,
-    [groupsTree]
-  )
+  const [groupsTree, childItems] = useMemo(() => {
+    const groupsTree = createGroupTree(groups)
+    const childItems = createGroupingItemBranchFromGroupTreeBranch(groupsTree)
+      .childItems
+    return [groupsTree, childItems]
+  }, [groups])
 
   return groupsTree ? (
     <SectionContainer>
-      <SectionHeader>Collections</SectionHeader>
+      <GroupsSectionHeader newGroup={handleNewGroup} />
 
-      <GroupingItemList
-        view="cloud"
-        itemId={groupsTree.id}
+      <GroupsList
+        parentItemId={null}
         childItems={childItems}
         depth={1}
         isCreatingGroup={isCreatingGroup}
         setIsCreatingGroup={setIsCreatingGroup}
       />
-
-      {!isCreatingGroup ? (
-        <GenericTreeItem icon="plus" onClick={handleNewGroup} depth={0}>
-          Add Collection
-        </GenericTreeItem>
-      ) : null}
     </SectionContainer>
   ) : null
+}
+
+const GroupsSectionHeader = ({ newGroup }: { newGroup: () => void }) => {
+  const handleAddClick = () => {
+    newGroup()
+  }
+
+  return (
+    <SectionHeader>
+      <div>{MSG_GROUPS_HEADER}</div>
+      <GenericAddButton onAdd={handleAddClick} />
+    </SectionHeader>
+  )
 }
