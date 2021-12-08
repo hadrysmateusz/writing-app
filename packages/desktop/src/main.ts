@@ -56,6 +56,20 @@ async function createWindow() {
     },
   })
 
+  getMainWindow().on("close", (event) => {
+    // TODO: remove this notification when I'm sure the watcher removal works
+    const noti = new Notification({
+      title: "Closed window",
+      body: "Cancelling watchers",
+    })
+    noti.show()
+    // TODO: make sure this works
+    for (let [dirPath, watcherObj] of Object.entries(getDirWatchers())) {
+      watcherObj.close()
+      delete getDirWatchers()[dirPath]
+    }
+  })
+
   // and load the index.html of the app.
   getMainWindow().loadURL(START_URL)
 
