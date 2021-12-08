@@ -1,4 +1,4 @@
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 
 import SidebarDocumentItemComponent from "../../../DocumentsList/SidebarDocumentItemComponent"
 import { useLocalFS } from "../../../LocalFSProvider"
@@ -18,8 +18,22 @@ export const LocalDocumentSidebarItem: React.FC<{
   const tabsDispatch = useTabsDispatch()
   const tabsState = useTabsState()
   const { deleteFile, revealItem } = useLocalFS()
+  const { tabs, currentTab } = useTabsState()
 
   const { getContextMenuProps, openMenu, isMenuOpen } = useContextMenu()
+
+  const isCurrent = useMemo(() => {
+    let currentTabObj = tabs[currentTab]
+    // TODO: probably precompute this and expose in useTabsState hook
+    const currentTabType = currentTabObj.tabType
+
+    if (currentTabType === "localDocument") {
+      console.log(currentTabObj.path, path, currentTabObj.path === path)
+      return path === currentTabObj.path
+    } else {
+      return false
+    }
+  }, [currentTab, path, tabs])
 
   const handleClick = useCallback(() => {
     const tabId = findTabWithPath(tabsState, path)
@@ -79,8 +93,7 @@ export const LocalDocumentSidebarItem: React.FC<{
         // TODO: replace these timestamps with real data
         modifiedAt={Date.now()}
         createdAt={Date.now()}
-        // TODO: add an actual isCurrent check
-        isCurrent={false}
+        isCurrent={isCurrent}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
       />
