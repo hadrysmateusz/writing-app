@@ -35,14 +35,18 @@ export const TagListItem: React.FC<{ id: string; name: string }> = ({
   return (
     <>
       <TagListItemContainer>
-        <div className="Tag_Name" onClick={handleTagClick}>
+        <div
+          className="Tag_Name"
+          onClick={handleTagClick}
+          title="View documents with this tag"
+        >
           <EditableText {...getRenamingInputProps()}>{name}</EditableText>
         </div>
         <div className="Tag_ActionsContainer">
-          <div className="Tag_Action" onClick={handleRename}>
+          <div className="Tag_Action" onClick={handleRename} title="Rename">
             <Icon icon="pen" />
           </div>
-          <div className="Tag_Action" onClick={handleDelete}>
+          <div className="Tag_Action" onClick={handleDelete} title="Delete">
             <Icon icon="trash" />
           </div>
         </div>
