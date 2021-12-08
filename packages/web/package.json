@@ -46,6 +46,7 @@
     "is-hotkey": "^0.1.6",
     "is-url": "^1.2.4",
     "lodash": "^4.17.20",
+    "mime-types": "^2.1.34",
     "moment": "^2.29.1",
     "mudder": "^1.0.9",
     "polished": "^3.6.5",
