@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from "electron"
+import { app, BrowserWindow, ipcMain, Notification } from "electron"
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from "electron-devtools-installer"
@@ -7,22 +7,22 @@ import path from "path"
 import { setUpApplicationMenu } from "./menu"
 import { WatcherUnsubObj } from "./types"
 import { APP_NAME, START_URL } from "./constants"
-import { getMainWindow, IS_DEV } from "./helpers"
-import {
-  handleAddPath,
-  handleCreateFile,
-  handleForceReload,
-  handleGetPathContents,
-  handleOpenFile,
-  handleImportFile,
-  handleExportFile,
-  handleStopWatchDir,
-  handleValidatePaths,
-  handleWatchDir,
-  handleSaveFile,
-} from "./ipcHandlers"
+import { getDirWatchers, getMainWindow, IS_DEV } from "./helpers"
 import { handleViewInExplorer } from "./ipcHandlers/handleViewInExplorer"
 import { handleDeleteFile } from "./ipcHandlers/handleDeleteFile"
+import { handleDeleteDir } from "./ipcHandlers/handleDeleteDir"
+import { handleCreateDir } from "./ipcHandlers/handleCreateDir"
+import { handleWatchDir } from "./ipcHandlers/handleWatchDir"
+import { handleSaveFile } from "./ipcHandlers/handleSaveFile"
+import { handleValidatePaths } from "./ipcHandlers/handleValidatePaths"
+import { handleStopWatchDir } from "./ipcHandlers/handleStopWatchDir"
+import { handleExportFile } from "./ipcHandlers/handleExportFile"
+import { handleImportFile } from "./ipcHandlers/handleImportFile"
+import { handleOpenFile } from "./ipcHandlers/handleOpenFile"
+import { handleGetPathContents } from "./ipcHandlers/handleGetPathContents"
+import { handleForceReload } from "./ipcHandlers/handleForceReload"
+import { handleCreateFile } from "./ipcHandlers/handleCreateFile"
+import { handleAddPath } from "./ipcHandlers/handleAddPath"
 
 declare global {
   var mainWindow: BrowserWindow | undefined
@@ -98,6 +98,9 @@ ipcMain.handle("SAVE_FILE", handleSaveFile)
 
 ipcMain.handle("CREATE_FILE", handleCreateFile)
 ipcMain.handle("DELETE_FILE", handleDeleteFile)
+
+ipcMain.handle("CREATE_DIR", handleCreateDir)
+ipcMain.handle("DELETE_DIR", handleDeleteDir)
 
 ipcMain.handle("VIEW_IN_EXPLORER", handleViewInExplorer)
 

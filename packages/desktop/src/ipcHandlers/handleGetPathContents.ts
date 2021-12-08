@@ -3,7 +3,7 @@ import { createDirObjectRecursive } from "../helpers"
 
 export const handleGetPathContents = async (_event, payload) => {
   try {
-    const dirObj = await createDirObjectRecursive(payload.path)
+    const dirObj = createDirObjectRecursive(payload.path)
     return {
       status: DialogStatus.SUCCESS,
       error: null,

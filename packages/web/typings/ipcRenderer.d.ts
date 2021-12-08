@@ -15,6 +15,8 @@ type IpcChannelFromRenderer =
   | "FORCE_RELOAD"
   | "VIEW_IN_EXPLORER"
   | "DELETE_FILE"
+  | "CREATE_DIR"
+  | "DELETE_DIR"
 type IpcChannelFromMain = "WATCH_DIR:RES"
 
 declare global {

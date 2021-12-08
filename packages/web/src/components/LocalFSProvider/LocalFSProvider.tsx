@@ -94,12 +94,16 @@ const useSetUpWatchers = (
         itemPath,
         itemName,
         parentDirPathArr,
+
+        dirTree,
       }: {
         eventType: string
         watchedDirPath: string
         itemPath: string
         itemName: string
         parentDirPathArr: string[]
+
+        dirTree?: DirObjectRecursive
       } = res
 
       console.log("===========================================")
@@ -111,7 +115,7 @@ const useSetUpWatchers = (
         fileToAdd: FileObject
       ) => {
         // check for existance first to prevent duplication
-        if (dir.files.find((file) => file.path === itemPath)) {
+        if (dir.files.find((file) => file.path === fileToAdd.path)) {
           return
         }
         dir.files.push(fileToAdd)
@@ -122,6 +126,26 @@ const useSetUpWatchers = (
         filePathToRemove: string
       ) => {
         dir.files = dir.files.filter((file) => file.path !== filePathToRemove)
+      }
+
+      const addDirToDirDirs = (
+        dir: DirObjectRecursive,
+        dirToAdd: DirObjectRecursive
+      ) => {
+        // check for existance first to prevent duplication
+        if (dir.dirs.find((innerDir) => innerDir.path === dirToAdd.path)) {
+          return
+        }
+        dir.dirs.push(dirToAdd)
+      }
+
+      const removeDirFromDirDirs = (
+        dir: DirObjectRecursive,
+        dirPathToRemove: string
+      ) => {
+        dir.dirs = dir.dirs.filter(
+          (dirInner) => dirInner.path !== dirPathToRemove
+        )
       }
 
       const findCorrectDirInState = (dirState: DirState, dirPath: string) => {
@@ -136,7 +160,7 @@ const useSetUpWatchers = (
           // modify only correct dirTree in state
           const prevDir = findCorrectDirInState(prevDirState, watchedDirPath)
 
-          // Don't modify (TODO: maybe harsher handling could be required)
+          // Don't modify (TODO: maybe harsher handling could be required, maybe send a STOP_WATCH_DIR to remove a stale watcher)
           if (!prevDir) {
             return prevDirState
           }
@@ -168,7 +192,7 @@ const useSetUpWatchers = (
           // modify only correct dirTree in state
           const prevDir = findCorrectDirInState(prevDirState, watchedDirPath)
 
-          // Don't modify (TODO: maybe harsher handling could be required)
+          // Don't modify (TODO: maybe harsher handling could be required, maybe send a STOP_WATCH_DIR to remove a stale watcher)
           if (!prevDir) {
             return prevDirState
           }
@@ -178,6 +202,58 @@ const useSetUpWatchers = (
 
           if (resultDir) {
             removeFileFromDirFiles(resultDir, itemPath)
+          }
+
+          console.log("resultDir after mod", resultDir)
+
+          return cloneDeep(prevDirState)
+        })
+      }
+      if (eventType === "addDir") {
+        setDirState((prevDirState) => {
+          // modify only correct dirTree in state
+          const prevDir = findCorrectDirInState(prevDirState, watchedDirPath)
+
+          // Don't modify (TODO: maybe harsher handling could be required, maybe send a STOP_WATCH_DIR to remove a stale watcher)
+          if (!prevDir) {
+            return prevDirState
+          }
+
+          const resultDir = findDirInDir(prevDir, parentDirPathArr, 0)
+          console.log("resultDir", resultDir)
+
+          if (resultDir) {
+            addDirToDirDirs(
+              resultDir,
+              dirTree || {
+                path: itemPath,
+                name: itemName,
+                files: [],
+                dirs: [],
+              }
+            )
+          }
+
+          console.log("resultDir after mod", resultDir)
+
+          return cloneDeep(prevDirState)
+        })
+      }
+      if (eventType === "unlinkDir") {
+        setDirState((prevDirState) => {
+          // modify only correct dirTree in state
+          const prevDir = findCorrectDirInState(prevDirState, watchedDirPath)
+
+          // Don't modify (TODO: maybe harsher handling could be required, maybe send a STOP_WATCH_DIR to remove a stale watcher)
+          if (!prevDir) {
+            return prevDirState
+          }
+
+          const resultDir = findDirInDir(prevDir, parentDirPathArr, 0)
+          console.log("resultDir", resultDir)
+
+          if (resultDir) {
+            removeDirFromDirDirs(resultDir, itemPath)
           }
 
           console.log("resultDir after mod", resultDir)

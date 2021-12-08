@@ -1,21 +1,13 @@
 import path from "path"
 import fs from "fs-extra"
-import mime from "mime-types"
 
 import { DirObjectRecursive, FileObject } from "../types"
+import { fileTypeIsAllowedDocumentType } from "."
 
-export const ALLOWED_DOCUMENT_FILE_TYPES = ["text/markdown"]
-
-export const createDirObjectRecursive = async (
+export const createDirObjectRecursive = (
   pathStr: string
-): Promise<DirObjectRecursive> => {
-  try {
-    await fs.ensureDir(pathStr)
-  } catch (error) {
-    // TODO: better error handling
-    console.log(error)
-    throw error
-  }
+): DirObjectRecursive => {
+  fs.ensureDirSync(pathStr)
 
   const entries = fs.readdirSync(pathStr, { withFileTypes: true })
 
@@ -25,15 +17,13 @@ export const createDirObjectRecursive = async (
   for (let entry of entries) {
     if (entry.isFile()) {
       const filePath = path.resolve(pathStr, entry.name)
-      const fileType = mime.lookup(filePath)
-      // console.log("FILE TYPE:", fileType)
-      if (!ALLOWED_DOCUMENT_FILE_TYPES.includes(fileType)) {
+      if (!fileTypeIsAllowedDocumentType(filePath)) {
         continue
       }
       files.push({ path: filePath, name: entry.name })
     } else if (entry.isDirectory()) {
       const dirPath = path.resolve(pathStr, entry.name)
-      const newDir = await createDirObjectRecursive(dirPath)
+      const newDir = createDirObjectRecursive(dirPath)
       dirs.push(newDir)
     }
   }

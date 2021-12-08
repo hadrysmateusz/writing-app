@@ -47,8 +47,8 @@ export const DirTreeItem: React.FC<{
   )
 
   const deleteItem = useCallback(() => {
-    return deleteDir
-  }, [deleteDir])
+    return deleteDir(itemId)
+  }, [deleteDir, itemId])
 
   const selectItem = useCallback(() => {
     return switchSubview("local", "directory", itemId)

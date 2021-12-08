@@ -1,11 +1,11 @@
 import path from "path"
 import chokidar from "chokidar"
-import mime from "mime-types"
 
-import { DialogStatus } from "../types"
+import { DialogStatus, DirObjectRecursive } from "../types"
 import {
-  ALLOWED_DOCUMENT_FILE_TYPES,
   closeWatcherForDir,
+  createDirObjectRecursive,
+  fileTypeIsAllowedDocumentType,
   getDirWatchers,
   getMainWindow,
 } from "../helpers"
@@ -41,9 +41,11 @@ export const handleWatchDir = async (
     const sendResponse = ({
       eventType,
       itemPath,
+      dirTree,
     }: {
       eventType: string
       itemPath: string
+      dirTree?: DirObjectRecursive
     }) => {
       console.log(itemPath + " " + eventType)
       const parentDirPath = path.dirname(itemPath)
@@ -75,6 +77,8 @@ export const handleWatchDir = async (
         itemName,
         parentDirPath: parentDirPath,
         parentDirPathArr: parentDirPathArr,
+
+        dirTree,
       })
     }
 
@@ -91,10 +95,8 @@ export const handleWatchDir = async (
     // }
 
     const onWatcherAdd = (itemPath: string) => {
-      const fileType = mime.lookup(itemPath)
-      // console.log("FILE TYPE:", fileType)
-      if (!ALLOWED_DOCUMENT_FILE_TYPES.includes(fileType)) {
-        console.log(`unsupported file type ${fileType}, skipping`)
+      if (!fileTypeIsAllowedDocumentType(itemPath)) {
+        console.log(`unsupported file type, skipping`)
         return
       }
       sendResponse({ eventType: "add", itemPath })
@@ -105,7 +107,9 @@ export const handleWatchDir = async (
     }
 
     const onWatcherAddDir = (itemPath: string) => {
-      sendResponse({ eventType: "addDir", itemPath })
+      const dirTree = createDirObjectRecursive(itemPath)
+
+      sendResponse({ eventType: "addDir", itemPath, dirTree })
     }
 
     const onWatcherUnlinkDir = (itemPath: string) => {
