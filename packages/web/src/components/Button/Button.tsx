@@ -1,8 +1,13 @@
-import styled, { css } from "styled-components/macro"
+import styled, {
+  css,
+  FlattenSimpleInterpolation,
+} from "styled-components/macro"
 
 import { ellipsis } from "../../style-utils"
 
-const variants = {
+export type ButtonVariants = "default" | "primary" | "accent" | "danger"
+
+const variants: Record<ButtonVariants, FlattenSimpleInterpolation> = {
   default: css`
     color: var(--light-400);
     border-color: var(--dark-500);
@@ -77,43 +82,43 @@ const getVariant = (name: string = "default") => {
 
 type ButtonProps = {
   /** A named variant. Can only be one at a time */
-  variant?: string
+  variant?: ButtonVariants
   /** Makes the button take up all available horizontal space */
   fullWidth?: boolean
 }
 
 export const Button = styled.button<ButtonProps>`
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
 
   min-width: 0;
-	padding: 6px 20px;
-	margin: 0;
-	border: 1px solid;
+  padding: 6px 20px;
+  margin: 0;
+  border: 1px solid;
   border-radius: 3px;
 
   font-weight: 500;
-	font-size: 12px;
+  font-size: 12px;
   font-family: "Poppins";
 
-	transition-property: background-color, color, border-color, background-image;
-	transition-duration: 0.15s;
-	transition-timing-function: ease;
+  transition-property: background-color, color, border-color, background-image;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
 
-	/* Add spacing between children */
-	> * + * {
-		margin-left: 16px;
-	}
+  /* Add spacing between children */
+  > * + * {
+    margin-left: 16px;
+  }
 
-	/* Change cursor if button isn't disabled */
+  /* Change cursor if button isn't disabled */
   cursor: ${(p) => (p.disabled ? "default" : "pointer")};
 
-	/* Variant styles */
-	${(p) => getVariant(p.variant)}
+  /* Variant styles */
+  ${(p) => getVariant(p.variant)}
 
-	/* Disabled styles */
+  /* Disabled styles */
 	${(p) => p.disabled && disabled}
 
   /* Full-width styles */
