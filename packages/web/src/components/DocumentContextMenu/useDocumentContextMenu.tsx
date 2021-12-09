@@ -47,7 +47,15 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   const { open: openExportModal, Modal: ExportModal } = useModal<
     ExportModalReturnValue,
     ExportModalProps
-  >(false, { documentContent: document.content, documentTitle: document.title })
+  >(
+    false,
+    { documentContent: document.content, documentTitle: document.title },
+    {
+      onAfterOpen: () => {
+        closeMenu()
+      },
+    }
+  )
 
   const modifiedAt = useMemo(() => {
     // TODO: replace with proper representation (using moment.js)
