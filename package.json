@@ -14,21 +14,17 @@
     "dev:web": "yarn workspace @writing-tool/web start",
     "start": "yarn dev:desktop",
     "build": "yarn workspace @writing-tool/desktop build",
-    "lint": "yarn workspaces run lint"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
+    "lint": "yarn workspaces run lint",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "concurrently": "^5.1.0",
     "cross-env": "^7.0.2",
-    "prettier": "2.0.5",
-    "pretty-quick": "^2.0.1",
+    "prettier": "2.5.1",
+    "pretty-quick": "^3.1.2",
     "shx": "^0.3.2",
     "wait-on": "^4.0.2",
-    "husky": "^4.2.5",
+    "husky": "^7.0.0",
     "typescript": "4.4.3"
   }
 }
