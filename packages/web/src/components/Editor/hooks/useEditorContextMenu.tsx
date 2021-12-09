@@ -22,12 +22,12 @@ import {
   ContextMenuSeparator,
   ContextSubmenu,
 } from "../../ContextMenu/Old"
-import { TurnIntoContextMenuContent } from "../../NodeToolbar"
 import Icon from "../../Icon"
 
 import { useLinkModal } from "../LinkModal"
 import { useImageModal } from "../ImageModal"
 import { ToolbarLink } from "../Toolbars" // TODO: refactor those components to make them more general
+import { TurnIntoContextMenuContent } from "./TurnIntoContextMenuContent"
 
 type ContextMenuType = {
   base: "collapsed" | "expanded" | "node"

@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo } from "react"
 
 import { GenericTreeItem } from "../TreeItem"
-import Ellipsis from "../Ellipsis"
+import { Ellipsis } from "../Ellipsis"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { SidebarView } from "../ViewState"
 

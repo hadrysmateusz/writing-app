@@ -6,18 +6,18 @@ import {
   ContextMenuItem,
   ContextSubmenu,
   ContextMenuSeparator,
-} from "./ContextMenu/Old"
-import { DocumentDoc } from "./Database"
-import { useEditableText } from "./RenamingInput"
-import { useDocumentsAPI } from "./MainProvider"
-import { useModal } from "./Modal"
+} from "../ContextMenu/Old"
+import { DocumentDoc } from "../Database"
+import { useEditableText } from "../RenamingInput"
+import { useDocumentsAPI } from "../MainProvider"
+import { useModal } from "../Modal"
 import {
   ExportModalContent,
   ExportModalProps,
   ExportModalReturnValue,
-} from "./Topbar/ExportButton"
-import CollectionSelector from "./CollectionSelector/CollectionSelector"
-import { Option } from "./Autocomplete"
+} from "../Topbar/ExportButton"
+import CollectionSelector from "../CollectionSelector/CollectionSelector"
+import { Option } from "../Autocomplete"
 
 export const useDocumentContextMenu = (document: DocumentDoc) => {
   const {

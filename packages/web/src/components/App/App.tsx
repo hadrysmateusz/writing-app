@@ -3,15 +3,15 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
 import styled from "styled-components/macro"
 import { Amplify } from "aws-amplify"
 
-import { AuthContextProvider, AuthenticatedRoute } from "./Auth"
-import GlobalStyles from "./GlobalStyles"
-
 import {
   MediumAuthRedirectPage,
   LoginPage,
   EditorPage,
   SignupPage,
-} from "../Pages"
+} from "../../Pages"
+
+import { AuthContextProvider, AuthenticatedRoute } from "../Auth"
+import GlobalStyles from "../GlobalStyles"
 
 // window.LOG_LEVEL = "DEBUG"
 
@@ -49,8 +49,6 @@ export const App = () => {
   return (
     <>
       <GlobalStyles />
-
-      {/* <div style={{ height: "28px" }} /> */}
 
       <AuthContextProvider>
         <AppContainer>
