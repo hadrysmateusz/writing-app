@@ -28,6 +28,7 @@ import {
 } from "../Database"
 import { defaultLocalSettings, useLocalSettings } from "../LocalSettings"
 import { serialize } from "../Editor"
+import { getConfirmModalContent, useConfirmModal } from "../ConfirmModal"
 
 import {
   CreateDocumentFn,
@@ -74,6 +75,11 @@ import { TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
 import AppLoadingState from "./AppLoadingState"
 
 const m = mudder.base62
+
+const ConfirmDeleteTagModalContent = getConfirmModalContent({
+  confirmMessage: "Delete",
+  promptMessage: "Are you sure you want to delete this tag?",
+})
 
 export const DEFAULT_EDITOR_VALUE: Descendant[] = [
   { type: ELEMENT_DEFAULT, children: [{ text: "" }] },
@@ -212,9 +218,9 @@ export const MainProvider: React.FC = memo(({ children }) => {
         .exec()
 
       const prevPosition = lastSibling?.position
-      let newPosition = (prevPosition
-        ? m.mudder(prevPosition, "Z", 1)
-        : m.mudder(1))[0]
+      let newPosition = (
+        prevPosition ? m.mudder(prevPosition, "Z", 1) : m.mudder(1)
+      )[0]
 
       let newGroup: GroupDoc | undefined
 
@@ -530,24 +536,38 @@ export const MainProvider: React.FC = memo(({ children }) => {
     [db.tags]
   )
 
-  const actuallyPermanentlyDeleteTag: ActuallyPermanentlyDeleteTagFn = useCallback(
-    async (id) => {
-      // TODO: add a confirmation dialog step before this
-      const tag = await db.tags.findOne().where("id").eq(id).exec()
-      if (tag === null) {
-        throw new Error(`no tag found matching this id (${id})`)
-      }
-      try {
-        await tag.remove()
-      } catch (e) {
-        // TODO: better surface this error to the user
-        console.log("error while deleting document")
-        throw e
-      }
+  const {
+    open: openConfirmDeleteTagModal,
+    Modal: ConfirmDeleteTagModal,
+    isOpen: isConfirmDeleteTagModalOpen,
+  } = useConfirmModal()
 
-      // TODO: remove tag from all documents (probably handled with a preRemove hook)
+  const actuallyPermanentlyDeleteTag: ActuallyPermanentlyDeleteTagFn =
+    useCallback(
+      async (id) => {
+        const tag = await db.tags.findOne().where("id").eq(id).exec()
+        if (tag === null) {
+          throw new Error(`no tag found matching this id (${id})`)
+        }
+        try {
+          await tag.remove()
+        } catch (e) {
+          // TODO: better surface this error to the user
+          console.log("error while deleting document")
+          throw e
+        }
+      },
+      [db.tags]
+    )
+
+  const permanentlyDeleteTag = useCallback(
+    async (tagId: string) => {
+      const shouldDelete = await openConfirmDeleteTagModal({})
+      if (shouldDelete) {
+        return await actuallyPermanentlyDeleteTag(tagId)
+      }
     },
-    [db.tags]
+    [actuallyPermanentlyDeleteTag, openConfirmDeleteTagModal]
   )
 
   const renameTag: RenameTagFn = useCallback(
@@ -930,10 +950,14 @@ export const MainProvider: React.FC = memo(({ children }) => {
   //#region deletion confirmation modal
 
   // The document deletion confirmation modal
-  const { open: openConfirmDeleteModal, Modal: ConfirmDeleteModal } = useModal<
-    boolean,
-    ConfirmDeleteModalProps
-  >(false, { all: false, documentId: null })
+  const {
+    isOpen: isConfirmDeleteModalOpen,
+    open: openConfirmDeleteModal,
+    Modal: ConfirmDeleteModal,
+  } = useModal<boolean, ConfirmDeleteModalProps>(false, {
+    all: false,
+    documentId: null,
+  })
 
   /**
    * Permanently removes a document
@@ -1185,8 +1209,13 @@ export const MainProvider: React.FC = memo(({ children }) => {
     ]
   )
   const tagsAPI = useMemo(
-    () => ({ createTag, renameTag, actuallyPermanentlyDeleteTag }),
-    [actuallyPermanentlyDeleteTag, createTag, renameTag]
+    () => ({
+      createTag,
+      renameTag,
+      actuallyPermanentlyDeleteTag,
+      permanentlyDeleteTag,
+    }),
+    [actuallyPermanentlyDeleteTag, createTag, renameTag, permanentlyDeleteTag]
   )
 
   return (
@@ -1196,7 +1225,14 @@ export const MainProvider: React.FC = memo(({ children }) => {
           <TagsAPIContext.Provider value={tagsAPI}>
             <TabsStateContext.Provider value={tabsState}>
               <TabsDispatchContext.Provider value={tabsDispatch}>
-                <ConfirmDeleteModal component={ConfirmDeleteModalContent} />
+                {isConfirmDeleteModalOpen ? (
+                  <ConfirmDeleteModal component={ConfirmDeleteModalContent} />
+                ) : null}
+                {isConfirmDeleteTagModalOpen ? (
+                  <ConfirmDeleteTagModal
+                    component={ConfirmDeleteTagModalContent}
+                  />
+                ) : null}
                 {isInitialLoad ? <AppLoadingState /> : children}
               </TabsDispatchContext.Provider>
             </TabsStateContext.Provider>

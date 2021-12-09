@@ -18,7 +18,7 @@ export type ConfirmDeleteModalProps =
 
 export type ConfirmDeleteModalReturnValue = boolean
 
-// TODO: extract this into a reusable modal similiar to the PromptModal
+// TODO: make this use the standard Confirm modal
 export const ConfirmDeleteModalContent: FC<
   ConfirmDeleteModalProps & {
     close: CloseModalFn<ConfirmDeleteModalReturnValue>

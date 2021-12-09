@@ -1,3 +1,5 @@
+import { useCallback } from "react"
+
 import Icon from "../Icon"
 import { useTagsAPI } from "../MainProvider/context"
 import { EditableText, useEditableText } from "../RenamingInput"
@@ -9,28 +11,35 @@ export const TagListItem: React.FC<{ id: string; name: string }> = ({
   id,
   name,
 }) => {
-  const { actuallyPermanentlyDeleteTag, renameTag } = useTagsAPI()
+  const { permanentlyDeleteTag, renameTag } = useTagsAPI()
   const { switchSubview } = usePrimarySidebar()
+
+  const handleRenameSubmit = useCallback(
+    (value: string) => {
+      renameTag(id, value)
+    },
+    [renameTag, id]
+  )
 
   const { startRenaming, getProps: getRenamingInputProps } = useEditableText(
     name,
-    (value: string) => {
-      renameTag(id, value)
-    }
+    handleRenameSubmit
   )
 
-  const handleRename = (_e) => {
+  const handleRename = useCallback(() => {
     startRenaming()
-  }
+  }, [startRenaming])
 
-  const handleDelete = (_e) => {
-    // TODO: replace with a confirmation dialog
-    actuallyPermanentlyDeleteTag(id)
-  }
+  const handleDelete = useCallback(async () => {
+    await permanentlyDeleteTag(id)
+  }, [permanentlyDeleteTag, id])
 
-  const handleTagClick = (_e) => {
-    switchSubview("cloud", "tag", id)
-  }
+  const handleTagClick = useCallback(
+    async (_e) => {
+      await switchSubview("cloud", "tag", id)
+    },
+    [id, switchSubview]
+  )
 
   return (
     <>
