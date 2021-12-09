@@ -1,6 +1,3 @@
-export * from "./getMarksOnNode"
-export * from "./isBlockActive"
-export * from "./isBlockTextEmpty"
 export * from "./isFirstChild"
 export * from "./isLastChild"
 export * from "./isMarkActive"
