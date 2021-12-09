@@ -21,7 +21,7 @@ import {
   useContextMenu,
   ContextMenuSeparator,
   ContextSubmenu,
-} from "../../ContextMenu"
+} from "../../ContextMenu/Old"
 import { TurnIntoContextMenuContent } from "../../NodeToolbar"
 import Icon from "../../Icon"
 

@@ -5,7 +5,7 @@ import { useRxSubscription, useToggleable } from "../../hooks"
 import { DocumentDoc, TagDoc, useDatabase } from "../Database"
 import { GenericTreeItem } from "../TreeItem"
 import { EditableText, useEditableText } from "../RenamingInput"
-import { ContextMenuItem, useContextMenu } from "../ContextMenu"
+import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
 import { useTagsAPI } from "../MainProvider/context"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 

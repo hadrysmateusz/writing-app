@@ -10,9 +10,9 @@ import React, {
 import styled, { css } from "styled-components/macro"
 import usePortal from "react-useportal"
 
-import { useOnClickOutside } from "../hooks/useOnClickOutside"
+import { useOnClickOutside } from "../../../hooks/useOnClickOutside"
 import { BsCaretRightFill } from "react-icons/bs"
-import { ToggleableHooks } from "../hooks"
+import { ToggleableHooks } from "../../../hooks"
 
 type ContextMenuHookOptions = ToggleableHooks & {
   renderWhenClosed?: boolean

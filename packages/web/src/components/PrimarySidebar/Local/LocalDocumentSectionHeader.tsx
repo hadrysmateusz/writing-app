@@ -5,7 +5,7 @@ import {
   ContextMenu,
   ContextMenuItem,
   useContextMenu,
-} from "../../NewContextMenu"
+} from "../../ContextMenu/New"
 import { usePrimarySidebar } from "../../ViewState"
 
 export const LocalDocumentSectionHeader: React.FC<{

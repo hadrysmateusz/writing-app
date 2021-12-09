@@ -7,7 +7,7 @@ import {
   useContextMenu,
   ContextMenu,
   ContextMenuItem,
-} from "../../NewContextMenu"
+} from "../../ContextMenu/New"
 
 import { findTabWithPath } from "./helpers"
 

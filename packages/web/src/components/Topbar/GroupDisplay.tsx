@@ -7,7 +7,7 @@ import {
   useContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
-} from "../ContextMenu"
+} from "../ContextMenu/Old"
 
 import { formatOptional } from "../../utils"
 import { getGroupName } from "../../helpers/getGroupName"

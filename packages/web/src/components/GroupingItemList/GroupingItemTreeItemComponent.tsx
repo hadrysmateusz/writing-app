@@ -6,7 +6,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextSubmenu,
-} from "../ContextMenu"
+} from "../ContextMenu/Old"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { SidebarView } from "../ViewState"
 

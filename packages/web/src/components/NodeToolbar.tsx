@@ -12,7 +12,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextSubmenu,
-} from "./ContextMenu"
+} from "./ContextMenu/Old"
 
 import { ELEMENT_H1, ELEMENT_H2 } from "@udecode/plate"
 

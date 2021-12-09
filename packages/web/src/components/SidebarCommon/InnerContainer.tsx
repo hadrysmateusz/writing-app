@@ -2,7 +2,7 @@ import React, { useCallback } from "react"
 import styled from "styled-components/macro"
 import { customScrollbar } from "../../style-utils"
 
-import { ContextMenuItem, useContextMenu } from "../ContextMenu"
+import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
 import { useDocumentsAPI } from "../MainProvider"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 

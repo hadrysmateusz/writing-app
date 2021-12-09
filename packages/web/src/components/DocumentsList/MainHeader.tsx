@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react"
 import styled from "styled-components/macro"
 
-import { ContextMenuItem, useContextMenu } from "../ContextMenu"
+import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
 import Icon from "../Icon"
 import { SortingIndex, SortingDirection, useMainState } from "../MainProvider"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
