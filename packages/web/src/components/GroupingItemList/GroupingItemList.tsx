@@ -2,7 +2,7 @@ import { SidebarView } from "../ViewState"
 
 import { GroupingItemListComponentProps } from "./GroupingItemListComponent"
 import { GroupsList } from "../GroupsList"
-import { DirsList } from "../DirsList/DirsList"
+import { DirsList } from "../DirsList"
 
 export type GroupingItemListProps = {
   view: SidebarView<"primary">

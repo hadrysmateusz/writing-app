@@ -3,9 +3,9 @@ import { useMemo } from "react"
 import createGroupTree, {
   findInTree,
   findChildGroups,
-} from "../../../../helpers/createGroupTree"
+} from "../../../helpers/createGroupTree"
 
-import { useMainState } from "../../../MainProvider"
+import { useMainState } from "../../MainProvider"
 
 export const useFindGroupAndChildGroups = (groupId: string | undefined) => {
   const { groups } = useMainState()

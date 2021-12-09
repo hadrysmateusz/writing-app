@@ -1,20 +1,20 @@
 import React, { useMemo } from "react"
 
-import useRxSubscription from "../../../hooks/useRxSubscription"
-import createGroupTree from "../../../helpers/createGroupTree"
+import useRxSubscription from "../../../../hooks/useRxSubscription"
+import createGroupTree from "../../../../helpers/createGroupTree"
 
-import { useDatabase } from "../../Database"
-import { useMainState } from "../../MainProvider"
-import { DocumentsList, MainHeader } from "../../DocumentsList"
+import { useDatabase } from "../../../Database"
+import { useMainState } from "../../../MainProvider"
+import { DocumentsList, MainHeader } from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
-} from "../../SidebarCommon"
+} from "../../../SidebarCommon"
 
-import { NewButton } from "../NewButton"
+import { NewButton } from "../../NewButton"
 
-import { SubGroups } from "./SubGroups"
-import { createFindDocumentsAtRootQuery } from "./queries"
+import { SubGroups } from "../SubGroups"
+import { createFindDocumentsAtRootQuery } from "../queries"
 
 export const AllDocumentsView: React.FC = () => {
   const db = useDatabase()

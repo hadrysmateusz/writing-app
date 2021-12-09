@@ -1,19 +1,19 @@
 import { FunctionComponent } from "react"
 
-import useRxSubscription from "../../../hooks/useRxSubscription"
+import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
-} from "../../SidebarCommon"
-import { DocumentsList, MainHeader } from "../../DocumentsList"
-import { useDocumentsAPI, useMainState } from "../../MainProvider"
-import { useDatabase } from "../../Database"
+} from "../../../SidebarCommon"
+import { DocumentsList, MainHeader } from "../../../DocumentsList"
+import { useDocumentsAPI, useMainState } from "../../../MainProvider"
+import { useDatabase } from "../../../Database"
+import { SIDEBAR_VAR } from "../../../ViewState"
 
-import { PrimarySidebarBottomButton } from "../PrimarySidebarBottomButton"
+import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
-import { createFindDeletedDocumentsQuery } from "./queries"
-import { SIDEBAR_VAR } from "../../ViewState"
+import { createFindDeletedDocumentsQuery } from "../queries"
 
 export const TrashView: FunctionComponent = () => {
   const db = useDatabase()

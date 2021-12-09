@@ -1,8 +1,13 @@
 import React, { memo, useMemo } from "react"
-import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
-import { Switch, Case } from "../Conditional"
-import { AllDocumentsView, InboxView, TrashView, GroupView } from "./views"
-import { TagView } from "./views/TagView"
+
+import { parseSidebarPath, usePrimarySidebar } from "../../ViewState"
+import { Switch, Case } from "../../Conditional"
+
+import { TagView } from "./subviews/TagView"
+import { AllDocumentsView } from "./subviews/AllDocumentsView"
+import { InboxView } from "./subviews/InboxView"
+import { TrashView } from "./subviews/TrashView"
+import { GroupView } from "./subviews/GroupView"
 
 export const Cloud: React.FC = memo(() => {
   const { currentSubviews } = usePrimarySidebar()

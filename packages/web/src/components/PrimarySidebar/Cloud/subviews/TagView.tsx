@@ -1,21 +1,21 @@
 import { useMemo } from "react"
 
-import useRxSubscription from "../../../hooks/useRxSubscription"
+import useRxSubscription from "../../../../hooks/useRxSubscription"
 
-import { DocumentsList, MainHeader } from "../../DocumentsList"
-import { useDatabase } from "../../Database"
-import { useMainState } from "../../MainProvider"
+import { DocumentsList, MainHeader } from "../../../DocumentsList"
+import { useDatabase } from "../../../Database"
+import { useMainState } from "../../../MainProvider"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
-} from "../../SidebarCommon"
+} from "../../../SidebarCommon"
 import {
   parseSidebarPath,
   SIDEBAR_VAR,
   usePrimarySidebar,
-} from "../../ViewState"
+} from "../../../ViewState"
 
-import { NewButton } from "../NewButton"
+import { NewButton } from "../../NewButton"
 
 export const TagView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()

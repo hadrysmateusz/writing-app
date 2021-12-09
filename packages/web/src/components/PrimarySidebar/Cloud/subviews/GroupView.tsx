@@ -20,8 +20,7 @@ import { NewButton } from "../../NewButton"
 
 import { SubGroups } from "../SubGroups"
 import { createFindDocumentsInGroupQuery } from "../queries"
-
-import { useFindGroupAndChildGroups } from "./helpers"
+import { useFindGroupAndChildGroups } from "../helpers"
 
 export const GroupView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()

@@ -3,12 +3,12 @@ import { FC, useState } from "react"
 import { GroupTreeBranch } from "../../../helpers/createGroupTree"
 import { useToggleable, useRxSubscription } from "../../../hooks"
 
+import { PrimarySidebarSectionContainer } from "../../DocumentsList/SectionHeaderComponent.styles"
 import { DocumentsList, SectionHeader } from "../../DocumentsList"
 import { useMainState } from "../../MainProvider"
 import { useDatabase } from "../../Database"
 
 import { createFindDocumentsInGroupQuery } from "./queries"
-import { PrimarySidebarSectionContainer } from "../../DocumentsList/SectionHeaderComponent.styles"
 
 // TODO: use stateless toggleables and keep state higher up, persisting it between path changes (either as a global collection of group.ids that are open or closed, or a per-path one)
 
