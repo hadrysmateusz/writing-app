@@ -16,7 +16,7 @@ import {
   ExportModalProps,
   ExportModalReturnValue,
 } from "../Topbar/ExportButton"
-import CollectionSelector from "../CollectionSelector/CollectionSelector"
+import { CollectionSelector } from "../CollectionSelector"
 import { Option } from "../Autocomplete"
 
 export const useDocumentContextMenu = (document: DocumentDoc) => {
