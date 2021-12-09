@@ -15,7 +15,7 @@ import {
   ExportModalContent,
   ExportModalProps,
   ExportModalReturnValue,
-} from "../Topbar/ExportButton"
+} from "../ExportModal"
 import { CollectionSelector } from "../CollectionSelector"
 import { Option } from "../Autocomplete"
 
@@ -23,7 +23,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   const {
     removeDocument,
     renameDocument,
-    moveDocumentToGroup,
+    // moveDocumentToGroup,
     toggleDocumentFavorite,
     restoreDocument,
     permanentlyRemoveDocument,
@@ -86,13 +86,13 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     setIsLoadingFavorite(false)
   }, [closeMenu, document.id, toggleDocumentFavorite])
 
-  const moveToGroup = useCallback(
-    (groupId: string) => {
-      // TODO: consider adding a way to move it to root
-      moveDocumentToGroup(document.id, groupId)
-    },
-    [document.id, moveDocumentToGroup]
-  )
+  // const moveToGroup = useCallback(
+  //   (groupId: string) => {
+  //     // TODO: consider adding a way to move it to root
+  //     moveDocumentToGroup(document.id, groupId)
+  //   },
+  //   [document.id, moveDocumentToGroup]
+  // )
 
   const handleContextMenu = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
