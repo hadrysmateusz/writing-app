@@ -1,18 +1,22 @@
 import React, { FC, useMemo } from "react"
-import { useToggleable } from "../../../hooks"
+import { useToggleable } from "../../../../hooks"
 
-import useRxSubscription from "../../../hooks/useRxSubscription"
+import useRxSubscription from "../../../../hooks/useRxSubscription"
 
-import { DocumentDoc, TagDoc, useDatabase } from "../../Database"
-import { DocumentsList, MainHeader, SectionHeader } from "../../DocumentsList"
-import { useDocumentsAPI } from "../../MainProvider"
+import { DocumentDoc, TagDoc, useDatabase } from "../../../Database"
+import {
+  DocumentsList,
+  MainHeader,
+  SectionHeader,
+} from "../../../DocumentsList"
+import { useDocumentsAPI } from "../../../MainProvider"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
-} from "../../SidebarCommon"
-import { SIDEBAR_VAR } from "../../ViewState"
+} from "../../../SidebarCommon"
+import { SIDEBAR_VAR } from "../../../ViewState"
 
-import { PrimarySidebarBottomButton } from "../PrimarySidebarBottomButton"
+import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 function assignDocsToTags(tags: TagDoc[], documents: DocumentDoc[]) {
   // simplify tag docs to only the necessary data and add a docCount field for later

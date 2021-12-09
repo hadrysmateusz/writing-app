@@ -1,19 +1,19 @@
 import React, { FC, useCallback } from "react"
 
-import useRxSubscription from "../../../hooks/useRxSubscription"
+import useRxSubscription from "../../../../hooks/useRxSubscription"
 
-import { TagDoc, useDatabase } from "../../Database"
-import { MainHeader } from "../../DocumentsList"
-import { useTagsAPI } from "../../MainProvider/context"
-import { getPromptModalContent, usePromptModal } from "../../PromptModal"
+import { TagDoc, useDatabase } from "../../../Database"
+import { MainHeader } from "../../../DocumentsList"
+import { useTagsAPI } from "../../../MainProvider/context"
+import { getPromptModalContent, usePromptModal } from "../../../PromptModal"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
-} from "../../SidebarCommon"
-import { TagListItem } from "../../TagListItem"
-import { SIDEBAR_VAR } from "../../ViewState"
+} from "../../../SidebarCommon"
+import { TagListItem } from "../../../TagListItem"
+import { SIDEBAR_VAR } from "../../../ViewState"
 
-import { PrimarySidebarBottomButton } from "../PrimarySidebarBottomButton"
+import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 const TagAddModalContent = getPromptModalContent("Tag name", "Create")
 

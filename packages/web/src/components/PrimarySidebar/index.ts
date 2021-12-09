@@ -1,2 +1,2 @@
-export * from "./views"
+export * from "./Tags"
 export * from "./PrimarySidebar"
