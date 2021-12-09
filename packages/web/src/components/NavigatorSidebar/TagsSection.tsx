@@ -1,13 +1,11 @@
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 
 import { useRxSubscription, useToggleable } from "../../hooks"
 
 import { DocumentDoc, TagDoc, useDatabase } from "../Database"
+import { TagTreeItem } from "../TagTreeItem"
 import { GenericTreeItem } from "../TreeItem"
-import { EditableText, useEditableText } from "../RenamingInput"
-import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
-import { useTagsAPI } from "../MainProvider/context"
-import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
+import { usePrimarySidebar } from "../ViewState"
 
 import { SectionHeader, SectionContainer } from "./Common"
 
@@ -94,65 +92,6 @@ const TagsSectionHeader = () => {
     <SectionHeader withHover={true} onClick={handleClick}>
       {MSG_TAGS_HEADER}
     </SectionHeader>
-  )
-}
-
-const TagTreeItem: React.FC<{ tagId: string; tagName: string }> = ({
-  tagId,
-  tagName,
-}) => {
-  const { actuallyPermanentlyDeleteTag, renameTag } = useTagsAPI()
-  const { switchSubview, currentSubviews, currentView } = usePrimarySidebar()
-
-  const { openMenu, closeMenu, ContextMenu } = useContextMenu()
-
-  const { startRenaming, getProps: getRenamingInputProps } = useEditableText(
-    tagName,
-    (value: string) => {
-      renameTag(tagId, value)
-    }
-  )
-
-  const handleRename = useCallback(() => {
-    closeMenu()
-    startRenaming()
-  }, [closeMenu, startRenaming])
-
-  const handleDelete = useCallback(async () => {
-    // TODO: add a confirmation dialog
-    try {
-      await actuallyPermanentlyDeleteTag(tagId)
-    } catch (e) {
-      // TODO: better surface this error to the user
-      console.log("error while deleting tag")
-      throw e
-    }
-  }, [actuallyPermanentlyDeleteTag, tagId])
-
-  const handleClick = useCallback(() => {
-    switchSubview("cloud", "tag", tagId)
-  }, [switchSubview, tagId])
-
-  const isActive = parseSidebarPath(currentSubviews[currentView])?.id === tagId
-
-  return (
-    <>
-      <GenericTreeItem
-        key={tagId}
-        depth={0}
-        onContextMenu={openMenu}
-        onClick={handleClick}
-        isActive={isActive}
-        icon="tag"
-      >
-        <EditableText {...getRenamingInputProps()}>{tagName}</EditableText>
-      </GenericTreeItem>
-
-      <ContextMenu>
-        <ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>
-        <ContextMenuItem onClick={handleDelete}>Delete</ContextMenuItem>
-      </ContextMenu>
-    </>
   )
 }
 
