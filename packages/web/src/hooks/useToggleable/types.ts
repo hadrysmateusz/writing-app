@@ -10,9 +10,11 @@ export interface SimplifiedToggleableHooks {
   onAfterChange?: (newState: boolean) => void
 }
 
-export interface ToggleableHooks extends SimplifiedToggleableHooks {
+export interface ToggleableHooks<T = undefined>
+  extends SimplifiedToggleableHooks {
   onBeforeOpen?: () => void
   onAfterOpen?: () => void
   onBeforeClose?: () => void
-  onAfterClose?: () => void
+  // onAfterClose?: T extends undefined ? () => void : (resolveValue: T) => void
+  onAfterClose?: (resolveValue?: T) => void
 }

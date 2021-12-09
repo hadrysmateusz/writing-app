@@ -11,7 +11,7 @@ export const useToggleable = <T = undefined>(
     onAfterClose,
     onBeforeChange,
     onAfterChange,
-  }: ToggleableHooks = {}
+  }: ToggleableHooks<T> = {}
 ) => {
   const [isOpen, setIsOpen] = useState(initialState)
 
@@ -46,7 +46,7 @@ export const useToggleable = <T = undefined>(
       awaitCloseRef.current = undefined
 
       onAfterChange && onAfterChange(false)
-      onAfterClose && onAfterClose()
+      onAfterClose && onAfterClose(resolveValue)
     },
     [onAfterChange, onAfterClose, onBeforeChange, onBeforeClose]
   )

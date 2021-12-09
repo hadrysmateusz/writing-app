@@ -14,7 +14,7 @@ import {
 export function useModal<ReturnValue, ModalProps extends object>(
   initialState: boolean,
   defaultModalProps: ModalProps,
-  options: ToggleableHooks = {}
+  options: ToggleableHooks<ReturnValue> = {}
 ): UseModalReturn<ReturnValue, ModalProps> {
   const { close, open, isOpen } = useToggleable<ReturnValue>(
     initialState,
@@ -31,17 +31,16 @@ export function useModal<ReturnValue, ModalProps extends object>(
   )
 
   const closeModal = useCallback<CloseModalFn<ReturnValue>>(
-    (resolveValue?: ReturnValue) => {
+    (resolveValue: ReturnValue) => {
       close(resolveValue)
       setModalProps(defaultModalProps)
     },
     [close, defaultModalProps]
   )
 
-  const StatefulModal: FunctionComponent<ModalRenderProps<
-    ReturnValue,
-    ModalProps
-  >> = useMemo(() => {
+  const StatefulModal: FunctionComponent<
+    ModalRenderProps<ReturnValue, ModalProps>
+  > = useMemo(() => {
     return ({ component: C, children, ...props }) => {
       return isOpen ? (
         <Modal onRequestClose={closeModal} {...props}>

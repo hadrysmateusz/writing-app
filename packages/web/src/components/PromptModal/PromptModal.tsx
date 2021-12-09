@@ -13,7 +13,7 @@ export type PromptModalContentProps = ModalContentProps<
 
 export function usePromptModal(
   initialValue: string,
-  options?: ToggleableHooks
+  options?: ToggleableHooks<PromptModalOpenReturnValue>
 ) {
   return useModal<PromptModalOpenReturnValue, PromptModalProps>(
     false,
