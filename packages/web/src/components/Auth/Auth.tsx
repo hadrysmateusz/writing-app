@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from "react"
-import createContext from "../../utils/createContext"
-import { useAsyncEffect } from "../../hooks"
+import { useState, useCallback, useEffect } from "react"
 import { Auth } from "aws-amplify"
+
+import createContext from "../../utils/createContext"
+
 import { CurrentUser } from "./types"
 
 export type AuthState = {
@@ -83,20 +84,22 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     }
   }, [changeAuthState])
 
-  useAsyncEffect(async () => {
-    try {
-      // TODO: reexamine the auth logic
-      await Auth.currentSession()
-      changeAuthState(true)
-    } catch (error) {
-      changeAuthState(false)
-      // This error means that there is no current user - the user will be shown a login form, so there is no need to display the error
-      if (error !== "No current user") {
-        alert(error)
+  useEffect(() => {
+    ;(async () => {
+      try {
+        // TODO: reexamine the auth logic
+        await Auth.currentSession()
+        changeAuthState(true)
+      } catch (error) {
+        changeAuthState(false)
+        // This error means that there is no current user - the user will be shown a login form, so there is no need to display the error
+        if (error !== "No current user") {
+          alert(error)
+        }
       }
-    }
-    setIsAuthenticating(false)
-  }, [])
+      setIsAuthenticating(false)
+    })()
+  }, [changeAuthState])
 
   return (
     <AuthContext.Provider
