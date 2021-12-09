@@ -1,5 +1,5 @@
 import { Editor, Transforms, Location } from "slate"
-import { cloneDeep } from "lodash"
+import cloneDeep from "lodash/cloneDeep"
 import {
   getPluginType,
   PlateEditor,

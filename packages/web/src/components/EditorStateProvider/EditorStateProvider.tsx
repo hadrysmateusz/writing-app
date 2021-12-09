@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo } from "react"
-import { isEqual } from "lodash"
+import isEqual from "lodash/isEqual"
 import { Descendant } from "slate"
 import { usePlateEventId, usePlateEditorRef } from "@udecode/plate-core"
 

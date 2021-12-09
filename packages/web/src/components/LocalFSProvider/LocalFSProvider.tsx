@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import { cloneDeep } from "lodash"
+import cloneDeep from "lodash/cloneDeep"
 
 import { createContext } from "../../utils"
 

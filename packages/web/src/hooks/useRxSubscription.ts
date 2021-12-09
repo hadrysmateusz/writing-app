@@ -3,7 +3,7 @@ import { Subscription } from "rxjs"
 import { RxQuery } from "rxdb"
 
 import { cleanUpSubscriptions } from "../utils"
-import { cloneDeep } from "lodash"
+import cloneDeep from "lodash/cloneDeep"
 
 // TODO: add variant with a transformer function to transform query results into the stored and returned data
 export function useRxSubscription<RxDocumentType, RxQueryResult>(

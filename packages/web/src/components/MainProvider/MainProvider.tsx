@@ -11,7 +11,7 @@ import { Subscription } from "rxjs"
 import { v4 as uuidv4 } from "uuid"
 import mudder from "mudder"
 import isElectron from "is-electron"
-import { cloneDeep } from "lodash"
+import cloneDeep from "lodash/cloneDeep"
 import { ELEMENT_DEFAULT } from "@udecode/plate"
 
 import { GROUP_TREE_ROOT } from "../../constants"

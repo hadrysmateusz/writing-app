@@ -1,4 +1,4 @@
-import { cloneDeep } from "lodash"
+import cloneDeep from "lodash/cloneDeep"
 
 /**
  * Helper for creating a basic empty node

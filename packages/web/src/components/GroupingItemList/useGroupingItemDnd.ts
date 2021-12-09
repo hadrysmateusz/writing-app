@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef } from "react"
-import { throttle } from "lodash"
+import throttle from "lodash/throttle"
 import {
   DragObjectWithType,
   DropTargetMonitor,
