@@ -8,6 +8,7 @@ import { ellipsis } from "../../style-utils"
 export type ButtonVariants = "default" | "primary" | "accent" | "danger"
 
 const variants: Record<ButtonVariants, FlattenSimpleInterpolation> = {
+  // TODO: finish default conditional styles
   default: css`
     color: var(--light-400);
     border-color: var(--dark-500);
@@ -18,20 +19,51 @@ const variants: Record<ButtonVariants, FlattenSimpleInterpolation> = {
         border-color: var(--dark-500);
         background: var(--dark-400);
       }
+      &:focus,
+      &:focus-within {
+        border-color: var(--dark-600);
+      }
+    }
+
+    &[disabled] {
+      color: var(--light-100);
     }
   `,
   primary: css`
-    /* border-color: var(--black0);
-    background: var(--black0);
+    border-color: var(--dark-600);
+    background: var(--dark-500);
+    color: var(--light-400);
+
+    &:not([disabled]) {
+      &:hover {
+        background: #3c3c3c;
+        border-color: var(--dark-600);
+      }
+      &:focus {
+        border-color: #6a6a6a;
+      }
+    }
+    &[disabled] {
+      color: var(--light-100);
+      background: var(--dark-400);
+      border-color: var(--dark-500);
+    }
+  `,
+  // TODO: add disabled and focus styles
+  danger: css`
+    border-color: var(--danger-200);
+    background: var(--danger-200);
     color: white;
 
     &:not([disabled]) {
       &:hover {
-        background: var(--black50);
-        border-color: var(--black50);
+        border-color: var(--danger-200);
+        background: var(--danger-200);
+        color: white;
       }
-    } */
+    }
   `,
+  // TODO: consider the necessity of this one
   accent: css`
     /* border-color: #c46179;
     background: #c46179;
@@ -46,21 +78,9 @@ const variants: Record<ButtonVariants, FlattenSimpleInterpolation> = {
       }
     } */
   `,
-  danger: css`
-    border-color: var(--danger-200);
-    background: var(--danger-200);
-    color: white;
-
-    &:not([disabled]) {
-      &:hover {
-        border-color: var(--danger-200);
-        background: var(--danger-200);
-        color: white;
-      }
-    }
-  `,
 }
 
+// TODO: either move back to this solution or shift completely to per-variant disabled styles and removeThis
 const disabled = css`
   /* border-color: var(--gray100);
   background: var(--almost-white);
@@ -125,5 +145,5 @@ export const Button = styled.button<ButtonProps>`
 	${(p) => p.fullWidth && fullWidth}
 
 	/* Prevent text overflow */
-	${ellipsis}
+	${ellipsis};
 `
