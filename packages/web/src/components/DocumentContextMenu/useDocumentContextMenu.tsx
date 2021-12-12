@@ -159,6 +159,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
 
                 <ContextMenuSeparator />
                 <ContextSubmenu text="Move to">
+                  {/* FIXME: options list of CollectionSelector is empty when a non-cloud document is in current tab */}
                   <CollectionSelector onSubmit={handleMoveToGroupSubmit} />
                 </ContextSubmenu>
                 <ContextMenuSeparator />
