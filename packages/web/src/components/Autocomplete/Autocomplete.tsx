@@ -1,4 +1,5 @@
 import React, { forwardRef, useEffect, useState } from "react"
+import { TextInput } from "../TextInput"
 
 import { AutocompleteContainer, SuggestionItem } from "./Autocomplete.styles"
 
@@ -96,7 +97,7 @@ export const Autocomplete = forwardRef<
 
   return (
     <AutocompleteContainer>
-      <input
+      <TextInput
         ref={inputRef}
         type="text"
         onChange={onChange}
