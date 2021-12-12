@@ -93,4 +93,6 @@ const AppContainer = styled.div`
   max-width: 100vw;
   max-height: 100vh;
   overflow: hidden;
+
+  background: var(--dark-200);
 `
