@@ -29,5 +29,9 @@ export const LogoutButton: React.FC<{
   }
 
   // TODO: add some special styling and maybe a confirmation modal
-  return <Button onClick={handleLogout}>Logout</Button>
+  return (
+    <Button variant="danger" onClick={handleLogout}>
+      Logout
+    </Button>
+  )
 }
