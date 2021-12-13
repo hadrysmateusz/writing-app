@@ -42,7 +42,7 @@ const ModalBackdrop = styled.div`
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.3);
-  z-index: 9999;
+  z-index: 1000;
 `
 
 const ModalBox = styled.div`

@@ -13,7 +13,7 @@ export const OuterContainer = styled.div`
 
   .Editor_TopShadow {
     position: sticky;
-    z-index: 9999;
+    z-index: 500;
     height: 40px;
     width: 100%;
     top: 0;

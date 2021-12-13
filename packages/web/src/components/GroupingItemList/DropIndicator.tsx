@@ -11,7 +11,7 @@ export const DropIndicator = styled.div<{
   position: absolute;
   user-select: none;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 500;
   transition: opacity 200ms ease-out;
   opacity: ${(p) => (p.visible ? "1" : "0")};
 
