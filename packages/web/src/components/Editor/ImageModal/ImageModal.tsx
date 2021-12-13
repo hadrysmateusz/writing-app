@@ -9,11 +9,14 @@ import { insertImage } from "../Toolbars"
 
 import { ImageModalContextValue } from "./types"
 
-export const [ImageModalContext, useImageModal] = createContext<
-  ImageModalContextValue
->()
+export const [ImageModalContext, useImageModal] =
+  createContext<ImageModalContextValue>()
 
-const ImageModalContent = getPromptModalContent("Image url", "Insert Image")
+const ImageModalContent = getPromptModalContent({
+  promptMessage: "Paste image url",
+  submitMessage: "Insert Image",
+  inputPlaceholder: "Image url",
+})
 
 export const ImageModalProvider: React.FC = ({ children }) => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))

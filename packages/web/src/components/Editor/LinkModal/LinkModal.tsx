@@ -9,11 +9,14 @@ import { getAndUpsertLink } from "../Toolbars"
 
 import { LinkModalContextValue } from "./types"
 
-export const [LinkModalContext, useLinkModal] = createContext<
-  LinkModalContextValue
->()
+export const [LinkModalContext, useLinkModal] =
+  createContext<LinkModalContextValue>()
 
-const LinkModalContent = getPromptModalContent("Link url", "Add Link")
+const LinkModalContent = getPromptModalContent({
+  promptMessage: "Paste link url",
+  submitMessage: "Add Link",
+  inputPlaceholder: "Link url",
+})
 
 // TODO: remove duplication with ImageModal code
 // TODO: support other link operations, like changing url or text

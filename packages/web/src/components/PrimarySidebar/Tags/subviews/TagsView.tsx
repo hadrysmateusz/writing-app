@@ -15,7 +15,11 @@ import { SIDEBAR_VAR } from "../../../ViewState"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
-const TagAddModalContent = getPromptModalContent("Tag name", "Create")
+const TagAddModalContent = getPromptModalContent({
+  promptMessage: "Tag name",
+  submitMessage: "Create",
+  inputPlaceholder: "Tag name",
+})
 
 export const TagsView: React.FC = () => {
   const db = useDatabase()

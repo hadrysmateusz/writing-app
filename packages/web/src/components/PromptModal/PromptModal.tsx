@@ -1,7 +1,12 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
+import styled from "styled-components/macro"
+
 import { ToggleableHooks } from "../../hooks"
-import { useModal, ModalContainer } from "../Modal"
+
+import { Button } from "../Button"
+import { useModal, ModalContainer, ModalMessageContainer } from "../Modal"
 import { ModalContentProps } from "../Modal/types"
+import { TextInput } from "../TextInput"
 
 export type PromptModalOpenReturnValue = string
 export type PromptModalProps = { initialValue: string }
@@ -23,10 +28,15 @@ export function usePromptModal(
 }
 
 // TODO: replace (at least temporarily) the link and image modals with this one
-export function getPromptModalContent(
-  promptMessage: string,
+export function getPromptModalContent({
+  promptMessage,
+  submitMessage = "OK",
+  inputPlaceholder = "",
+}: {
+  promptMessage: string
   submitMessage: string
-) {
+  inputPlaceholder?: string
+}) {
   const PromptModalContent: React.FC<PromptModalContentProps> = ({
     close,
     initialValue = "",
@@ -34,14 +44,20 @@ export function getPromptModalContent(
     const inputRef = useRef<HTMLInputElement | null>(null)
     const [value, setValue] = useState<string>(initialValue)
 
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(event.target.value)
-    }
+    const onChange = useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(event.target.value)
+      },
+      []
+    )
 
-    const onSubmit = (event: React.FormEvent) => {
-      event.preventDefault()
-      close(value)
-    }
+    const onSubmit = useCallback(
+      (event: React.FormEvent) => {
+        event.preventDefault()
+        close(value)
+      },
+      [close, value]
+    )
 
     useEffect(() => {
       inputRef?.current?.focus()
@@ -50,9 +66,19 @@ export function getPromptModalContent(
     return (
       <ModalContainer>
         <form onSubmit={onSubmit}>
-          <div style={{ marginBottom: "12px" }}>{promptMessage}</div>
-          <input type="text" value={value} onChange={onChange} ref={inputRef} />
-          <button type="submit">{submitMessage}</button>
+          <ModalMessageContainer>{promptMessage}</ModalMessageContainer>
+          <PromptModalInnerContainer>
+            <TextInput
+              type="text"
+              value={value}
+              onChange={onChange}
+              placeholder={inputPlaceholder}
+              ref={inputRef}
+            />
+            <Button type="submit" variant="primary" fullWidth>
+              {submitMessage}
+            </Button>
+          </PromptModalInnerContainer>
         </form>
       </ModalContainer>
     )
@@ -60,3 +86,14 @@ export function getPromptModalContent(
 
   return PromptModalContent
 }
+
+const PromptModalInnerContainer = styled.div`
+  width: 320px;
+  display: grid;
+  grid-template-columns: 60fr 40fr;
+  gap: 12px;
+  /* display: flex; */
+  /* > :last-child {
+    flex-grow: 1;
+  } */
+`

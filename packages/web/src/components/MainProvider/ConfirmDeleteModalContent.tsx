@@ -2,7 +2,11 @@ import { FC } from "react"
 
 import { Button } from "../Button"
 import { CloseModalFn } from "../Modal/types"
-import { ModalButtonsContainer, ModalContainer } from "../Modal"
+import {
+  ModalButtonsContainer,
+  ModalContainer,
+  ModalMessageContainer,
+} from "../Modal"
 
 import { useDocumentsAPI } from "."
 
@@ -54,13 +58,15 @@ export const ConfirmDeleteModalContent: FC<
 
   return (
     <ModalContainer>
-      <p style={{ marginTop: "4px" }}>{msgPrompt}</p>
+      <ModalMessageContainer>{msgPrompt}</ModalMessageContainer>
       <ModalButtonsContainer>
         {/* TODO: add progress spinner (that only shows up if the confirmation takes more than X miliseconds) */}
-        <Button onClick={handleConfirm} variant={"danger"}>
+        <Button onClick={handleConfirm} variant={"danger"} fullWidth>
           {msgConfirm}
         </Button>
-        <Button onClick={handleCancel}>Cancel</Button>
+        <Button onClick={handleCancel} fullWidth>
+          Cancel
+        </Button>
       </ModalButtonsContainer>
     </ModalContainer>
   )

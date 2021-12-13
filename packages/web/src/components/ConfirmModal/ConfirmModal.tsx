@@ -1,7 +1,12 @@
 import React, { useRef } from "react"
 import { ToggleableHooks } from "../../hooks"
 import { Button, ButtonVariants } from "../Button"
-import { useModal, ModalContainer, ModalButtonsContainer } from "../Modal"
+import {
+  useModal,
+  ModalContainer,
+  ModalButtonsContainer,
+  ModalMessageContainer,
+} from "../Modal"
 import { ModalContentProps } from "../Modal/types"
 
 export type ConfirmModalOpenReturnValue = boolean
@@ -70,7 +75,8 @@ export function getConfirmModalContent({
 
     return (
       <ModalContainer>
-        <p style={{ marginTop: "4px" }}>{promptMessage}</p>
+        {/* TODO: extract this prompt element and share between prompt and confirm modals */}
+        <ModalMessageContainer>{promptMessage}</ModalMessageContainer>
         <ModalButtonsContainer>
           <Button
             onClick={handleConfirm}
@@ -79,7 +85,7 @@ export function getConfirmModalContent({
           >
             {confirmMessage}
           </Button>
-          <Button onClick={handleCancel} ref={cancelBtnRef}>
+          <Button onClick={handleCancel} ref={cancelBtnRef} fullWidth>
             {cancelMessage}
           </Button>
         </ModalButtonsContainer>

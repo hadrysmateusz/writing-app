@@ -5,11 +5,12 @@ import styled from "styled-components/macro"
 import { useBodyScrollLock } from "../../hooks"
 
 export const ModalContainer = styled.div`
-  background: var(--dark-400);
+  background: var(--dark-300);
   border: 1px solid var(--dark-500);
-  padding: 16px 20px 20px;
+  padding: 20px 20px 20px;
   border-radius: 4px;
   color: white;
+  font-weight: bold;
 
   h2 {
     color: var(--light-500);
@@ -19,9 +20,16 @@ export const ModalContainer = styled.div`
   }
 `
 
+export const ModalMessageContainer = styled.div`
+  margin-bottom: 12px;
+`
+
 export const ModalButtonsContainer = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  > * {
+    width: 100%;
+  }
 `
 
 const ModalBackdrop = styled.div`
