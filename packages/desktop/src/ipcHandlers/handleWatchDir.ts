@@ -35,8 +35,7 @@ export const handleWatchDir = async (
       close: watcherClose,
       added: Date.now(),
     }
-    console.log("saved watcher")
-    console.log(getDirWatchers())
+    // console.log("saved watcher")
 
     const sendResponse = ({
       eventType,
@@ -52,12 +51,12 @@ export const handleWatchDir = async (
       const itemName = path.basename(itemPath)
 
       console.log("parentDirPath: ", parentDirPath)
-      console.log("search for: ", watchedDirPath)
+      // console.log("search for: ", watchedDirPath)
       let relativePath = parentDirPath.replace(watchedDirPath, "")
       console.log("relativePath: ", relativePath)
 
       const dirPathArr = relativePath.split(path.sep)
-      console.log("dirPathArr: ", dirPathArr)
+      // console.log("dirPathArr: ", dirPathArr)
 
       const parentDirPathArr = dirPathArr.map((_fragment, i, fragArr) => {
         let newActualDirPath = watchedDirPath
