@@ -1,10 +1,13 @@
-import { useMemo } from "react"
+import React, { useCallback, useMemo, useState } from "react"
 
 import { useRxSubscription, useToggleable } from "../../hooks"
 
 import { DocumentDoc, TagDoc, useDatabase } from "../Database"
+import { GroupingItemListComponentProps } from "../GroupingItemList/GroupingItemListComponent"
+import { NewGroupingItemInputTreeItem } from "../GroupingItemList/NewGroupingItemInputTreeItem"
+import { useTagsAPI } from "../MainProvider"
 import { TagTreeItem } from "../TagTreeItem"
-import { GenericTreeItem } from "../TreeItem"
+import { GenericAddButton, GenericTreeItem } from "../TreeItem"
 import { usePrimarySidebar } from "../ViewState"
 
 import { SectionHeader, SectionContainer } from "./Common"
@@ -40,8 +43,11 @@ const MSG_SHOW_MORE = "Show More"
 const MSG_SHOW_LESS = "Show Less"
 export const TagsSection: React.FC = () => {
   const db = useDatabase()
+  const { createTag } = useTagsAPI()
 
-  const { isOpen, toggle } = useToggleable(false)
+  const [isCreatingGroup, _setIsCreatingGroup] = useState(false)
+
+  const { isOpen, toggle, open } = useToggleable(false)
 
   const { data: tags } = useRxSubscription(db.tags.find())
   const { data: documents } = useRxSubscription(db.documents.findNotRemoved())
@@ -56,15 +62,45 @@ export const TagsSection: React.FC = () => {
 
   const isReady = hasTags && sortedTags
 
+  const createItem: GroupingItemListComponentProps["createItem"] = useCallback(
+    (values) => {
+      const { name } = values
+      if (typeof name !== "string" || name.trim() === "") {
+        return
+      }
+      createTag({ name })
+    },
+    [createTag]
+  )
+
+  const setIsCreatingGroup = useCallback(
+    (value: boolean) => {
+      open()
+      _setIsCreatingGroup(value)
+    },
+    [open]
+  )
+
   return isReady ? (
     <SectionContainer>
-      <TagsSectionHeader />
+      <TagsSectionHeader setIsCreatingGroup={setIsCreatingGroup} />
 
       {sortedTags.map((tag, index) =>
         isOpen || index < LIMIT_TAGS ? (
           <TagTreeItem key={tag.id} tagId={tag.id} tagName={tag.name} />
         ) : null
       )}
+
+      {/* TODO: fix the input overflowing the sidebar */}
+      {isCreatingGroup ? (
+        <NewGroupingItemInputTreeItem
+          parentItemId={null}
+          depth={0}
+          createItem={createItem}
+          setIsCreatingGroup={setIsCreatingGroup}
+          isCreatingGroup={isCreatingGroup}
+        />
+      ) : null}
 
       {numTags > LIMIT_TAGS ? (
         <GenericTreeItem
@@ -81,16 +117,23 @@ export const TagsSection: React.FC = () => {
   ) : null
 }
 
-const TagsSectionHeader = () => {
+const TagsSectionHeader: React.FC<
+  Pick<GroupingItemListComponentProps, "setIsCreatingGroup">
+> = ({ setIsCreatingGroup }) => {
   const primarySidebar = usePrimarySidebar()
 
   const handleClick = (_e) => {
     primarySidebar.switchSubview("tags", "all")
   }
 
+  const handleAddClick = () => {
+    setIsCreatingGroup(true)
+  }
+
   return (
     <SectionHeader withHover={true} onClick={handleClick}>
-      {MSG_TAGS_HEADER}
+      <div>{MSG_TAGS_HEADER}</div>
+      <GenericAddButton onAdd={handleAddClick} />
     </SectionHeader>
   )
 }
