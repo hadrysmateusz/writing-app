@@ -1,8 +1,8 @@
 import React from "react"
 
-import { useDocumentsAPI } from "../MainProvider"
-import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
-import { usePrimarySidebar } from "../ViewState"
+import { useDocumentsAPI } from "../../MainProvider"
+import { ContextMenuItem, useContextMenu } from "../../ContextMenu/Old"
+import { usePrimarySidebar } from "../../ViewState"
 
 import SectionHeaderComponent from "./SectionHeaderComponent"
 

@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from "react"
 
-import SidebarDocumentItemComponent from "../../DocumentsList/SidebarDocumentItemComponent"
 import { useLocalFS } from "../../LocalFSProvider"
 import { useTabsDispatch, useTabsState } from "../../MainProvider"
 import {
@@ -9,7 +8,9 @@ import {
   ContextMenuItem,
 } from "../../ContextMenu/New"
 
-import { findTabWithPath } from "./helpers"
+import { findTabWithPath } from "../../PrimarySidebar/Local/helpers"
+
+import SidebarDocumentItemComponent from "./SidebarDocumentItemComponent"
 
 export const LocalDocumentSidebarItem: React.FC<{
   path: string

@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from "react"
 import { Ancestor, Node } from "slate"
 
-import { DocumentDoc } from "../Database"
-import { useMainState } from "../MainProvider"
-import { formatOptional } from "../../utils"
-import { useDocumentContextMenu } from "../DocumentContextMenu"
+import { DocumentDoc } from "../../Database"
+import { useMainState } from "../../MainProvider"
+import { formatOptional } from "../../../utils"
+import { useDocumentContextMenu } from "../../DocumentContextMenu"
 import SidebarDocumentItemComponent from "./SidebarDocumentItemComponent"
 
 const SNIPPET_LENGTH = 340
@@ -14,11 +14,8 @@ export const SidebarDocumentItem: React.FC<{
 }> = ({ document }) => {
   const { currentDocumentId, openDocument } = useMainState()
 
-  const {
-    openMenu,
-    DocumentContextMenu,
-    getEditableProps,
-  } = useDocumentContextMenu(document)
+  const { openMenu, DocumentContextMenu, getEditableProps } =
+    useDocumentContextMenu(document)
 
   const isCurrent = useMemo(() => {
     if (currentDocumentId === null) return false

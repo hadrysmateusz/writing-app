@@ -2,11 +2,13 @@ import { useState } from "react"
 import { useToggleable } from "../../../hooks"
 import { formatOptional } from "../../../utils"
 
-import { PrimarySidebarSectionContainer } from "../../DocumentsList/SectionHeaderComponent.styles"
 import { useLocalFS } from "../../LocalFSProvider"
 
-import { LocalDocumentSectionHeader } from "./LocalDocumentSectionHeader"
-import { LocalDocumentSidebarItem } from "./LocalDocumentSidebarItem"
+import { LocalDocumentSectionHeader } from "../../DocumentsList/SectionHeader/LocalDocumentSectionHeader"
+import { LocalDocumentSidebarItem } from "../../DocumentsList/SidebarDocumentItem/LocalDocumentSidebarItem"
+
+import { PrimarySidebarSectionContainer } from "../PrimarySidebar.styles"
+
 import { FileObject, DirObjectRecursive } from "./types"
 
 export const DirItem: React.FC<

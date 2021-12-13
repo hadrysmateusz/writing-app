@@ -1,8 +1,8 @@
 import React, { useMemo } from "react"
 import moment from "moment"
 
-import { Outline } from "../SecondarySidebar/Outline"
-import { EditableText, EditableTextProps } from "../RenamingInput"
+import { Outline } from "../../SecondarySidebar/Outline"
+import { EditableText, EditableTextProps } from "../../RenamingInput"
 
 import {
   DateModified,
@@ -31,12 +31,14 @@ export const SidebarDocumentItemComponent: React.FC<{
   getEditableProps,
 }) => {
   // TODO: replace moment with a more lightweight solution
-  const formattedModifiedAt = useMemo(() => moment(modifiedAt).format("LL"), [
-    modifiedAt,
-  ])
-  const formattedCreatedAt = useMemo(() => moment(createdAt).format("LL"), [
-    createdAt,
-  ])
+  const formattedModifiedAt = useMemo(
+    () => moment(modifiedAt).format("LL"),
+    [modifiedAt]
+  )
+  const formattedCreatedAt = useMemo(
+    () => moment(createdAt).format("LL"),
+    [createdAt]
+  )
 
   const hasSnippet = snippet ? snippet.trim().length > 0 : false
   const dateModifiedTooltip = `Modified at: ${formattedModifiedAt}\nCreated at: ${formattedCreatedAt}`

@@ -3,10 +3,11 @@ import { FC, useState } from "react"
 import { GroupTreeBranch } from "../../../helpers/createGroupTree"
 import { useToggleable, useRxSubscription } from "../../../hooks"
 
-import { PrimarySidebarSectionContainer } from "../../DocumentsList/SectionHeaderComponent.styles"
 import { DocumentsList, SectionHeader } from "../../DocumentsList"
 import { useMainState } from "../../MainProvider"
 import { useDatabase } from "../../Database"
+
+import { PrimarySidebarSectionContainer } from "../PrimarySidebar.styles"
 
 import { createFindDocumentsInGroupQuery } from "./queries"
 

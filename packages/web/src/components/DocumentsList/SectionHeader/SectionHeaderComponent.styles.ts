@@ -1,18 +1,21 @@
 import styled, { css } from "styled-components/macro"
 
-import { ANIMATION_FADEIN, ellipsis } from "../../style-utils"
+import { ANIMATION_FADEIN, ellipsis } from "../../../style-utils"
 
-export const SectionName = styled.div<{
+type SectionNameProps = {
   isClickable: boolean
   isOpen: boolean
-}>`
+}
+
+export const SectionName = styled.div<SectionNameProps>`
   padding: var(--padding-y);
   padding-left: var(--padding-x);
 
   flex-grow: 1;
   flex-shrink: 1;
   min-width: 0;
-  ${ellipsis}
+
+  ${ellipsis};
 
   ${(p) =>
     p.isClickable
@@ -23,10 +26,12 @@ export const SectionName = styled.div<{
             cursor: pointer;
           }
         `
-      : null}
+      : null};
 `
 
-export const SectionHeaderContainer = styled.div<{ isOpen: boolean }>`
+type SectionHeaderContainerProps = { isOpen: boolean }
+
+export const SectionHeaderContainer = styled.div<SectionHeaderContainerProps>`
   --padding-x: 12px;
   --padding-y: 12px;
 
@@ -47,8 +52,8 @@ export const SectionHeaderContainer = styled.div<{ isOpen: boolean }>`
     padding-left: 6px;
 
     display: none;
-    cursor: pointer;
     white-space: nowrap;
+    cursor: pointer;
 
     > :first-child {
       margin-right: 3px;
@@ -64,15 +69,4 @@ export const SectionHeaderContainer = styled.div<{ isOpen: boolean }>`
   :hover .SectionHeader_Toggle {
     display: flex;
   }
-`
-
-// TODO: move to more appropriate spot
-export const PrimarySidebarSectionContainer = styled.div<{
-  isHovered: boolean
-}>`
-  border-radius: 4px;
-
-  transition: background-color 200ms ease;
-
-  ${(p) => (p.isHovered ? `background-color: var(--dark-400)` : undefined)}
 `

@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "styled-components/macro"
 
-import SidebarDocumentItem from "./SidebarDocumentItem"
+import SidebarDocumentItem from "./SidebarDocumentItem/SidebarDocumentItem"
 import { DocumentDoc } from "../Database"
 
 export const DocumentsList: React.FC<{
