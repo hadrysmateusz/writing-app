@@ -1,12 +1,12 @@
-import { FC, useEffect, useMemo } from "react"
+import { FC, useMemo } from "react"
 
 import { GenericTreeItem } from "../TreeItem"
 import { Ellipsis } from "../Ellipsis"
-import { useEditableText, EditableText } from "../RenamingInput"
 import { SidebarView } from "../ViewState"
 
 import { ItemsBranch } from "./types"
 import { GroupingItemTreeItem } from "./GroupingItemTreeItem"
+import { NewGroupingItemInputTreeItem } from "./NewGroupingItemInputTreeItem"
 
 export type GroupingItemListComponentProps = {
   view: SidebarView<"primary">
@@ -46,9 +46,9 @@ export const GroupingItemListComponent: FC<GroupingItemListComponentProps> = ({
         ))
       )}
 
-      {/* TODO: fix the input overflowing the sidebar */}
+      {/* FIXME: fix the input overflowing the sidebar */}
       {isCreatingGroup && (
-        <NewGroupInputTreeItem
+        <NewGroupingItemInputTreeItem
           parentItemId={parentItemId}
           depth={depth}
           createItem={createItem}
@@ -57,55 +57,6 @@ export const GroupingItemListComponent: FC<GroupingItemListComponentProps> = ({
         />
       )}
     </>
-  )
-}
-
-type NewGroupInputTreeItemProps = Pick<
-  GroupingItemListComponentProps,
-  | "depth"
-  | "setIsCreatingGroup"
-  | "isCreatingGroup"
-  | "createItem"
-  | "parentItemId"
->
-
-const NewGroupInputTreeItem: FC<NewGroupInputTreeItemProps> = ({
-  depth,
-  setIsCreatingGroup,
-  isCreatingGroup,
-  createItem,
-  parentItemId,
-}) => {
-  const {
-    startRenaming: startNamingNew,
-    getProps: getNamingNewProps,
-    stopRenaming: stopNamingNew,
-    isRenaming: isNamingNew,
-  } = useEditableText("", (value: string) => {
-    stopNamingNew()
-    setIsCreatingGroup(false)
-    if (value === "") return
-    createItem({ name: value, parentItemId })
-  })
-
-  useEffect(() => {
-    if (isCreatingGroup && !isNamingNew) {
-      startNamingNew()
-    }
-
-    if (!isCreatingGroup && isNamingNew) {
-      stopNamingNew()
-    }
-  }, [isCreatingGroup, isNamingNew, startNamingNew, stopNamingNew])
-
-  return (
-    <GenericTreeItem key="NEW_GROUP_INPUT" depth={depth} disabled>
-      <EditableText
-        placeholder="Unnamed"
-        {...getNamingNewProps()}
-        style={{ color: "var(--light-600)" }}
-      />
-    </GenericTreeItem>
   )
 }
 
