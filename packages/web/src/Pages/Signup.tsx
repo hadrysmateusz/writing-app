@@ -3,6 +3,14 @@ import { Link, Redirect } from "react-router-dom"
 import { Auth } from "aws-amplify"
 
 import { useAuthContext } from "../components/Auth"
+import { TextInput } from "../components/TextInput"
+import { Button } from "../components/Button"
+import {
+  AuthInnerContainer,
+  AuthOuterContainer,
+  AuthSection,
+  LabelText,
+} from "./Login"
 
 const Signup = () => {
   const [email, setEmail] = useState("")
@@ -74,44 +82,48 @@ const Signup = () => {
 
   const renderForm = () => (
     <form onSubmit={handleSubmit}>
-      <div>
+      <AuthSection>
         <label>
-          <span>Email</span>
-          <input
+          <LabelText>Email</LabelText>
+          <TextInput
+            placeholder="john.doe@example.com"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoFocus
           />
         </label>
-      </div>
-      <div>
+      </AuthSection>
+      <AuthSection>
         <label>
-          <span>Password</span>
-          <input
+          <LabelText>Password</LabelText>
+          <TextInput
+            placeholder="********"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-      </div>
-      <div>
+      </AuthSection>
+      <AuthSection>
         <label>
-          <span>Confirm Password</span>
-          <input
+          <LabelText>Confirm Password</LabelText>
+          <TextInput
+            placeholder="********"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </label>
-      </div>
-      <button
+      </AuthSection>
+      <Button
+        variant="primary"
         type="submit"
         disabled={!validateForm()}
         style={{ margin: "20px 0" }}
       >
         Signup
-      </button>
+      </Button>
     </form>
   )
 
@@ -119,43 +131,46 @@ const Signup = () => {
     <form onSubmit={handleConfirmationSubmit}>
       <div>Please check your email for the code.</div>
       <div>
-        <label>
-          <span>Confirmation Code</span>
-          <input
+        <AuthSection>
+          <LabelText>Confirmation Code</LabelText>
+          <TextInput
             type="text"
             value={confirmationCode}
             onChange={(e) => setConfirmationCode(e.target.value)}
             autoFocus
           />
-        </label>
+        </AuthSection>
       </div>
 
-      <button
+      <Button
+        variant="primary"
         type="submit"
         disabled={!validateConfirmationForm()}
         style={{ margin: "20px 0" }}
       >
         Verify
-      </button>
+      </Button>
     </form>
   )
 
   return isAuthenticated ? (
     <Redirect to="/" />
   ) : (
-    <div style={{ padding: "0 20px" }}>
-      <h2>Create an account to get started</h2>
-      <div>
-        {isLoading
-          ? "Please wait"
-          : newUser === null
-          ? renderForm()
-          : renderConfirmationForm()}
-      </div>
-      <div>
-        or <Link to="/login">Login</Link>&nbsp;
-      </div>
-    </div>
+    <AuthOuterContainer>
+      <AuthInnerContainer>
+        <h2>Create an account to get started</h2>
+        <div>
+          {isLoading
+            ? "Please wait"
+            : newUser === null
+            ? renderForm()
+            : renderConfirmationForm()}
+        </div>
+        <div>
+          or <Link to="/login">Login</Link>&nbsp;
+        </div>
+      </AuthInnerContainer>
+    </AuthOuterContainer>
   )
 }
 
