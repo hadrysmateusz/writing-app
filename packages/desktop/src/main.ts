@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Notification } from "electron"
+import { app, BrowserWindow, Notification } from "electron"
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
 } from "electron-devtools-installer"
@@ -8,21 +8,7 @@ import { setUpApplicationMenu } from "./menu"
 import { WatcherUnsubObj } from "./types"
 import { APP_NAME, START_URL } from "./constants"
 import { getDirWatchers, getMainWindow, IS_DEV } from "./helpers"
-import { handleViewInExplorer } from "./ipcHandlers/handleViewInExplorer"
-import { handleDeleteFile } from "./ipcHandlers/handleDeleteFile"
-import { handleDeleteDir } from "./ipcHandlers/handleDeleteDir"
-import { handleCreateDir } from "./ipcHandlers/handleCreateDir"
-import { handleWatchDir } from "./ipcHandlers/handleWatchDir"
-import { handleSaveFile } from "./ipcHandlers/handleSaveFile"
-import { handleValidatePaths } from "./ipcHandlers/handleValidatePaths"
-import { handleStopWatchDir } from "./ipcHandlers/handleStopWatchDir"
-import { handleExportFile } from "./ipcHandlers/handleExportFile"
-import { handleImportFile } from "./ipcHandlers/handleImportFile"
-import { handleOpenFile } from "./ipcHandlers/handleOpenFile"
-import { handleGetPathContents } from "./ipcHandlers/handleGetPathContents"
-import { handleForceReload } from "./ipcHandlers/handleForceReload"
-import { handleCreateFile } from "./ipcHandlers/handleCreateFile"
-import { handleAddPath } from "./ipcHandlers/handleAddPath"
+import registerIpcHandlers from "./ipcHandlers/registerIpcHandlers"
 
 declare global {
   var mainWindow: BrowserWindow | undefined
@@ -56,7 +42,7 @@ async function createWindow() {
     },
   })
 
-  getMainWindow().on("close", (event) => {
+  getMainWindow().on("close", (_event) => {
     // TODO: remove this notification when I'm sure the watcher removal works
     const noti = new Notification({
       title: "Closed window",
@@ -102,31 +88,6 @@ app.on("activate", () => {
   }
 })
 
-// TODO: add simple reveal in explorer action
-
-ipcMain.handle("EXPORT_FILE", handleExportFile)
-ipcMain.handle("IMPORT_FILE", handleImportFile)
-
-ipcMain.handle("OPEN_FILE", handleOpenFile)
-ipcMain.handle("SAVE_FILE", handleSaveFile)
-
-ipcMain.handle("CREATE_FILE", handleCreateFile)
-ipcMain.handle("DELETE_FILE", handleDeleteFile)
-
-ipcMain.handle("CREATE_DIR", handleCreateDir)
-ipcMain.handle("DELETE_DIR", handleDeleteDir)
-
-ipcMain.handle("VIEW_IN_EXPLORER", handleViewInExplorer)
-
-ipcMain.handle("ADD_PATH", handleAddPath)
-
-ipcMain.handle("GET_PATH_CONTENTS", handleGetPathContents)
-
-ipcMain.handle("WATCH_DIR", handleWatchDir)
-ipcMain.handle("STOP_WATCH_DIR", handleStopWatchDir)
-
-ipcMain.handle("VALIDATE_PATHS", handleValidatePaths)
-
-ipcMain.handle("FORCE_RELOAD", handleForceReload)
+registerIpcHandlers()
 
 export {}
