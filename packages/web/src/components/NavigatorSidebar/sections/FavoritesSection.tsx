@@ -1,12 +1,12 @@
 import { memo } from "react"
 
-import { useRxSubscription, useToggleable } from "../../hooks"
+import { useRxSubscription, useToggleable } from "../../../hooks"
 
-import { GenericTreeItem } from "../TreeItem"
-import { useDatabase } from "../Database"
+import { GenericTreeItem } from "../../TreeItem"
+import { useDatabase } from "../../Database"
 
-import { SectionHeader, SectionContainer } from "./Common"
-import DocumentTreeItem from "./DocumentTreeItem"
+import { SectionHeader, SectionContainer } from "./../Common"
+import DocumentTreeItem from "../DocumentTreeItem"
 
 /* The number of favorites displayed without toggling */
 const LIMIT_FAVORITES = 4

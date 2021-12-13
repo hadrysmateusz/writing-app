@@ -8,13 +8,14 @@ import { useModal } from "../../Modal"
 import { AccountModalContent } from "../../AccountModal"
 import { SidebarImportButton } from "../../Importer"
 
-import TagsSection from "../TagsSection"
-import { FavoritesSection } from "../FavoritesSection"
-import { GroupsSection } from "../GroupsSection"
 import { SectionContainer } from "../Common"
 
+import TagsSection from "../sections/TagsSection"
+import { FavoritesSection } from "../sections/FavoritesSection"
+import { GroupsSection } from "../sections/GroupsSection"
+import { DirectoriesSection } from "../sections/DirectoriesSection"
+
 import { useNavigationTreeItem } from "./helpers"
-import { DirectoriesSection } from "../DirectoriesSection"
 
 export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
   (_props, ref) => (

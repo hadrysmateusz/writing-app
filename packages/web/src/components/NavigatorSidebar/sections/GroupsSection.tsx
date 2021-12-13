@@ -1,11 +1,13 @@
 import React, { useMemo, useState, useCallback } from "react"
 
-import { SectionHeader, SectionContainer } from "./Common"
-import { useMainState } from "../MainProvider"
-import { createGroupTree, GroupTreeBranch } from "../../helpers"
-import { GenericAddButton } from "../TreeItem"
-import { GroupsList } from "../GroupsList"
-import { ItemsBranch } from "../GroupingItemList"
+import { createGroupTree, GroupTreeBranch } from "../../../helpers"
+
+import { useMainState } from "../../MainProvider"
+import { GenericAddButton } from "../../TreeItem"
+import { GroupsList } from "../../GroupsList"
+import { ItemsBranch } from "../../GroupingItemList"
+
+import { SectionHeader, SectionContainer } from "../Common"
 
 const MSG_GROUPS_HEADER = "Collections"
 
@@ -35,8 +37,8 @@ export const GroupsSection: React.FC = () => {
   // map the flat groups list to a tree structure
   const [groupsTree, childItems] = useMemo(() => {
     const groupsTree = createGroupTree(groups)
-    const childItems = createGroupingItemBranchFromGroupTreeBranch(groupsTree)
-      .childItems
+    const childItems =
+      createGroupingItemBranchFromGroupTreeBranch(groupsTree).childItems
     return [groupsTree, childItems]
   }, [groups])
 
