@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import styled from "styled-components/macro"
 
 import {
@@ -9,7 +9,6 @@ import {
 } from "../ContextMenu/Old"
 import { DocumentDoc } from "../Database"
 import { useEditableText } from "../RenamingInput"
-import { useDocumentsAPI } from "../MainProvider"
 import { useModal } from "../Modal"
 import {
   ExportModalContent,
@@ -18,6 +17,7 @@ import {
 } from "../ExportModal"
 import { CollectionSelector } from "../CollectionSelector"
 import { Option } from "../Autocomplete"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
 
 export const useDocumentContextMenu = (document: DocumentDoc) => {
   const {

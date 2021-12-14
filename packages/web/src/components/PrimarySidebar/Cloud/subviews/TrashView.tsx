@@ -12,17 +12,18 @@ import {
   MainHeader,
   SortingMainHeaderButton,
 } from "../../../DocumentsList"
-import { useDocumentsAPI, useMainState } from "../../../MainProvider"
 import { useDatabase } from "../../../Database"
 import { SIDEBAR_VAR } from "../../../ViewState"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 import { createFindDeletedDocumentsQuery } from "../queries"
+import { useSorting } from "../../../SortingProvider"
+import { useDocumentsAPI } from "../../../DocumentsAPIProvider"
 
 export const TrashView: FunctionComponent = () => {
   const db = useDatabase()
-  const { sorting } = useMainState()
+  const { sorting } = useSorting()
 
   const { data: documents, isLoading } = useRxSubscription(
     createFindDeletedDocumentsQuery(db, sorting)

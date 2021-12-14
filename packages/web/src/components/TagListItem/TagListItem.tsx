@@ -1,8 +1,8 @@
 import { useCallback } from "react"
 
 import Icon from "../Icon"
-import { useTagsAPI } from "../MainProvider/context"
 import { EditableText, useEditableText } from "../RenamingInput"
+import { useTagsAPI } from "../TagsProvider"
 import { usePrimarySidebar } from "../ViewState"
 
 import { TagListItemContainer } from "./TagListItem.styles"

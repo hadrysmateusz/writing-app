@@ -3,12 +3,11 @@ import { FC } from "react"
 import { Button } from "../Button"
 import { CloseModalFn } from "../Modal/types"
 import {
-  ModalButtonsContainer,
   ModalContainer,
+  ModalButtonsContainer,
   ModalMessageContainer,
 } from "../Modal"
-
-import { useDocumentsAPI } from "."
+import { useDocumentsAPI } from "./DocumentsAPIProvider"
 
 export type ConfirmDeleteModalProps =
   | {

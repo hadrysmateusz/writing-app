@@ -1,7 +1,7 @@
 import React from "react"
 
-import { useTabsState } from "../MainProvider"
 import { EditorTabsBar } from "../EditorTabs"
+import { useTabsState } from "../TabsProvider"
 
 import {
   OutermostContainer,
@@ -16,22 +16,21 @@ import { LinkModalProvider } from "./LinkModal"
  * Renders the editor if there is a document selected
  */
 export const EditorRenderer: React.FC = () => {
-  const { tabs, currentTab } = useTabsState()
+  const { currentTabObject } = useTabsState()
 
   // Handles rendering the editor based on tab type
   function renderCorrectEditor() {
-    let currentTabObj = tabs[currentTab]
     // TODO: probably precompute this and expose in useTabsState hook
-    const currentTabType = currentTabObj.tabType
+    const currentTabType = currentTabObject.tabType
 
     if (currentTabType === "cloudNew") {
       return <DummyEditor />
     }
     if (currentTabType === "cloudDocument") {
-      return <CloudEditor currentDocumentId={currentTabObj.documentId} />
+      return <CloudEditor currentDocumentId={currentTabObject.documentId} />
     }
     if (currentTabType === "localDocument") {
-      return <LocalEditor currentDocumentPath={currentTabObj.path} />
+      return <LocalEditor currentDocumentPath={currentTabObject.path} />
     }
     return <DocumentEmptyState />
   }

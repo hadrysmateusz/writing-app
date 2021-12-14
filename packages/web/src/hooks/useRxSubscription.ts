@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import { Subscription } from "rxjs"
 import { RxQuery } from "rxdb"
-
-import { cleanUpSubscriptions } from "../utils"
 import cloneDeep from "lodash/cloneDeep"
+
+import { cancelRxSubscription } from "../utils"
 
 // TODO: add variant with a transformer function to transform query results into the stored and returned data
 export function useRxSubscription<RxDocumentType, RxQueryResult>(
@@ -40,7 +40,7 @@ export function useRxSubscription<RxDocumentType, RxQueryResult>(
 
     setup()
 
-    return () => cleanUpSubscriptions([subscription])
+    return () => cancelRxSubscription(subscription)
   }, [query])
 
   return { data, isLoading }

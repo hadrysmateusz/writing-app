@@ -1,11 +1,7 @@
-import { RxQuery } from "rxdb"
+import { DocumentDoc, DocumentDocType, Updater } from "../Database"
 
-import { DocumentDoc, DocumentDocType } from "../../Database"
-import { Updater } from "./Misc"
-
-export type DocumentsAPI = {
+export type DocumentsAPIContextType = {
   updateDocument: UpdateDocumentFn
-  findDocuments: FindDocumentsFn
   findDocumentById: FindDocumentByIdFn
   toggleDocumentFavorite: ToggleDocumentFavoriteFn
   renameDocument: RenameDocumentFn
@@ -23,19 +19,6 @@ export type CreateDocumentOptions = {
   switchToDocument?: boolean
   switchToGroup?: boolean
 }
-
-export type FindDocumentByIdFn = (
-  id: string,
-  includeRemoved?: boolean
-) => Promise<DocumentDoc | null>
-export type FindDocumentsFn = (
-  includeRemoved?: boolean
-) => RxQuery<DocumentDocType, DocumentDoc[]>
-export type UpdateDocumentFn = (
-  id: string,
-  updater: Updater<DocumentDoc, DocumentDocType>,
-  includeRemoved?: boolean
-) => Promise<DocumentDoc>
 export type CreateDocumentFn = (
   /**
    * Initial values for the document
@@ -50,6 +33,17 @@ export type CreateDocumentFn = (
   },
   options?: CreateDocumentOptions
 ) => Promise<DocumentDoc>
+
+export type FindDocumentByIdFn = (
+  id: string,
+  includeRemoved?: boolean
+) => Promise<DocumentDoc | null>
+export type UpdateDocumentFn = (
+  id: string,
+  updater: Updater<DocumentDoc, DocumentDocType>,
+  includeRemoved?: boolean
+) => Promise<DocumentDoc>
+
 export type RenameDocumentFn = (
   documentId: string,
   title: string

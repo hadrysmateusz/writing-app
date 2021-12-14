@@ -4,12 +4,12 @@ import { useRxSubscription } from "../../../hooks"
 
 import { useEditorState } from "../../EditorStateProvider"
 import { useDatabase } from "../../Database"
-import { useDocumentsAPI } from "../../MainProvider"
 import TrashBanner from "../../TrashBanner"
 
 import { deserialize } from "../helpers"
 import { DocumentEmptyState, DocumentLoadingState } from "../HelperStates"
 import EditorComponent from "../EditorComponent"
+import { useDocumentsAPI } from "../../DocumentsAPIProvider"
 
 export const CloudEditor: React.FC<{ currentDocumentId: string }> = ({
   currentDocumentId,
@@ -19,12 +19,8 @@ export const CloudEditor: React.FC<{ currentDocumentId: string }> = ({
   const { renameDocument } = useDocumentsAPI()
 
   // TODO: maybe make the main state provider use the rx subscription hook
-  const {
-    data: currentDocument,
-    isLoading: isDocumentLoading,
-  } = useRxSubscription(
-    db.documents.findOne().where("id").eq(currentDocumentId)
-  )
+  const { data: currentDocument, isLoading: isDocumentLoading } =
+    useRxSubscription(db.documents.findOne().where("id").eq(currentDocumentId))
 
   const content = useMemo(
     () => (currentDocument ? deserialize(currentDocument.content) : []),

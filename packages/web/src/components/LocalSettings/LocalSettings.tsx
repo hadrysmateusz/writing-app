@@ -6,7 +6,7 @@ import { useCurrentUser } from "../Auth"
 import defaults from "./default"
 import { LocalSettingsContext } from "./misc"
 import { LocalSettingsDocError } from "."
-import { TabsState } from "../MainProvider/tabsSlice"
+import { TabsState } from "../TabsProvider/tabsSlice"
 
 // TODO: consider integrating it with the MainProvider
 // TODO: better handle loading states, make sure the defaults aren't used until they're necessary

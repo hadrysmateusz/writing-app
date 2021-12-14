@@ -1,14 +1,13 @@
 import { useCallback } from "react"
-import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 import { Descendant } from "slate"
+import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
 import {
   CreateDocumentFn,
   DEFAULT_EDITOR_VALUE,
   useDocumentsAPI,
-  useTabsState,
-} from "../../MainProvider"
-import { useTabsDispatch } from "../../MainProvider"
+} from "../../DocumentsAPIProvider"
+import { useTabsDispatch, useTabsState } from "../../TabsProvider"
 
 import { serialize } from "../helpers"
 import EditorComponent from "../EditorComponent"
@@ -16,7 +15,9 @@ import EditorComponent from "../EditorComponent"
 export const DummyEditor = () => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
   const { createDocument } = useDocumentsAPI()
-  const { currentTab } = useTabsState()
+  const {
+    tabsState: { currentTab },
+  } = useTabsState()
   const tabsDispatch = useTabsDispatch()
 
   const createDocumentAndReplaceTab = useCallback(

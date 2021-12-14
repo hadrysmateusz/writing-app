@@ -1,5 +1,5 @@
 import { LocalSettings } from "../Database"
-import { TabsState } from "../MainProvider/tabsSlice"
+import { TabsState } from "../TabsProvider/tabsSlice"
 import { SIDEBAR_VAR } from "../ViewState/types"
 
 export const defaultLocalSettings: LocalSettings = {

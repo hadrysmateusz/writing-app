@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from "react"
 
 import { useLocalFS } from "../../../LocalFSProvider"
-import { useTabsDispatch, useTabsState } from "../../../MainProvider"
 import {
   useContextMenu,
   ContextMenu,
@@ -10,30 +9,26 @@ import {
 import { findTabWithPath } from "../../../PrimarySidebar/Local/helpers"
 
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
+import { useTabsDispatch, useTabsState } from "../../../TabsProvider"
 
 export const LocalDocumentSidebarItem: React.FC<{
   path: string
   name: string
 }> = ({ path, name }) => {
   const tabsDispatch = useTabsDispatch()
-  const tabsState = useTabsState()
+  const { tabsState, currentTabObject } = useTabsState()
   const { deleteFile, revealItem } = useLocalFS()
-  const { tabs, currentTab } = useTabsState()
 
   const { getContextMenuProps, openMenu, isMenuOpen } = useContextMenu()
 
   const isCurrent = useMemo(() => {
-    let currentTabObj = tabs[currentTab]
-    // TODO: probably precompute this and expose in useTabsState hook
-    const currentTabType = currentTabObj.tabType
-
-    if (currentTabType === "localDocument") {
-      console.log(currentTabObj.path, path, currentTabObj.path === path)
-      return path === currentTabObj.path
+    if (currentTabObject.tabType === "localDocument") {
+      console.log(currentTabObject.path, path, currentTabObject.path === path)
+      return path === currentTabObject.path
     } else {
       return false
     }
-  }, [currentTab, path, tabs])
+  }, [currentTabObject, path])
 
   const handleClick = useCallback(() => {
     const tabId = findTabWithPath(tabsState, path)

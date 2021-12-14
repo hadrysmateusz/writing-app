@@ -1,6 +1,6 @@
-import React, { useCallback } from "react"
+import { useCallback } from "react"
 
-import { useDocumentsAPI } from "../MainProvider"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
 
 import { PrimarySidebarBottomButton } from "./PrimarySidebarBottomButton"
 

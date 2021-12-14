@@ -1,12 +1,12 @@
 import styled from "styled-components/macro"
 
-import { useMainState } from "../MainProvider"
 import Icon from "../Icon"
+import { useTabsDispatch } from "../TabsProvider"
 
 const EditorTabAdd = () => {
-  const { tabsDispatch } = useMainState()
+  const tabsDispatch = useTabsDispatch()
 
-  const handleClick = async (e) => {
+  const handleClick = async (_e) => {
     tabsDispatch({ type: "create-tab", tabType: "cloudNew", switch: true })
   }
 

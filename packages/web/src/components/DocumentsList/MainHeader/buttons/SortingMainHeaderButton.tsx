@@ -1,9 +1,9 @@
 import { ContextMenuItem, useContextMenu } from "../../../ContextMenu/Old"
 import {
-  SortingIndex,
   SortingDirection,
-  useMainState,
-} from "../../../MainProvider"
+  SortingIndex,
+  useSorting,
+} from "../../../SortingProvider"
 
 import { SortingMenuItemInnerWrapper } from "../MainHeader.styles"
 
@@ -54,7 +54,7 @@ const SortingMenuItem: React.FC<{
   sortingIndex: SortingIndex
   sortingDirection: SortingDirection
 }> = ({ sortingIndex, sortingDirection, children }) => {
-  const { changeSorting, sorting } = useMainState()
+  const { changeSorting, sorting } = useSorting()
 
   const isActive =
     sorting.index === sortingIndex && sorting.direction === sortingDirection

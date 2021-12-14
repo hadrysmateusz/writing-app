@@ -5,12 +5,12 @@ import { useRxSubscription, useToggleable } from "../../../hooks"
 import { GroupingItemListComponentProps } from "../../GroupingItemList/GroupingItemListComponent"
 import { NewGroupingItemInputTreeItem } from "../../GroupingItemList/NewGroupingItemInputTreeItem"
 import { DocumentDoc, TagDoc, useDatabase } from "../../Database"
-import { useTagsAPI } from "../../MainProvider"
 import { TagTreeItem } from "../../TagTreeItem"
 import { GenericAddButton, GenericTreeItem } from "../../TreeItem"
 import { usePrimarySidebar } from "../../ViewState"
+import { useTagsAPI } from "../../TagsProvider"
 
-import { SectionHeader, SectionContainer } from "./../Common"
+import { SectionHeader, SectionContainer } from "../Common"
 
 function countTaggedDocs(tags: TagDoc[], documents: DocumentDoc[]) {
   // simplify tag docs to only the necessary data and add a docCount field for later
@@ -38,6 +38,7 @@ function countTaggedDocs(tags: TagDoc[], documents: DocumentDoc[]) {
 
 /* The number of tags displayed without toggling */
 const LIMIT_TAGS = 4
+
 const MSG_TAGS_HEADER = "Tags"
 const MSG_SHOW_MORE = "Show More"
 const MSG_SHOW_LESS = "Show Less"

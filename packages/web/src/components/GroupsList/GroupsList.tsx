@@ -1,10 +1,10 @@
 import { useCallback } from "react"
+import { useCloudGroupsAPI } from "../CloudGroupsProvider"
 
 import {
   GroupingItemListComponent,
   GroupingItemListComponentProps,
 } from "../GroupingItemList/GroupingItemListComponent"
-import { useGroupsAPI } from "../MainProvider"
 
 type GroupsListProps = Pick<
   GroupingItemListComponentProps,
@@ -22,7 +22,7 @@ export const GroupsList: React.FC<GroupsListProps> = ({
   parentItemId,
   depth,
 }) => {
-  const { createGroup } = useGroupsAPI()
+  const { createGroup } = useCloudGroupsAPI()
 
   const handleCreateNewGroup = useCallback(
     (values: { name?: string; parentItemId?: string | null }) => {

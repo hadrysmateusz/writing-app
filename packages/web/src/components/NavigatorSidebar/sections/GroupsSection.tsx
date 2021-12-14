@@ -2,10 +2,10 @@ import React, { useMemo, useState, useCallback } from "react"
 
 import { createGroupTree, GroupTreeBranch } from "../../../helpers"
 
-import { useMainState } from "../../MainProvider"
 import { GenericAddButton } from "../../TreeItem"
 import { GroupsList } from "../../GroupsList"
 import { ItemsBranch } from "../../GroupingItemList"
+import { useCloudGroupsState } from "../../CloudGroupsProvider"
 
 import { SectionHeader, SectionContainer } from "../Common"
 
@@ -25,7 +25,7 @@ export const createGroupingItemBranchFromGroupTreeBranch = (
 }
 
 export const GroupsSection: React.FC = () => {
-  const { groups } = useMainState()
+  const { groups } = useCloudGroupsState()
 
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
 

@@ -5,12 +5,13 @@ import {
   useNavigatorSidebar,
   usePrimarySidebar,
 } from "../ViewState"
-import { useDocumentsAPI, useGroupsAPI } from "../MainProvider"
 
 import { formatOptional } from "../../utils"
 import { useLocalSettings } from "../LocalSettings"
 import { LocalSettings } from "../Database"
 import { ItemsBranch, GroupingItemTreeItemComponent } from "../GroupingItemList"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useCloudGroupsAPI } from "../CloudGroupsProvider"
 
 export const GroupTreeItem: React.FC<{
   item: ItemsBranch
@@ -18,7 +19,8 @@ export const GroupTreeItem: React.FC<{
   depth?: number
 }> = ({ item, index, depth }) => {
   const { createDocument: createCloudDocument } = useDocumentsAPI()
-  const { renameGroup, removeGroup, createGroup, moveGroup } = useGroupsAPI()
+  const { renameGroup, removeGroup, createGroup, moveGroup } =
+    useCloudGroupsAPI()
   const { updateLocalSetting } = useLocalSettings()
   const { switchSubview, currentSubviews, currentView } = usePrimarySidebar()
   const { expandedKeys, setExpandedKeys } = useNavigatorSidebar()

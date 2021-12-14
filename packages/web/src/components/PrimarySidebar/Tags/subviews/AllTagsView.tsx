@@ -4,12 +4,12 @@ import { useToggleable } from "../../../../hooks"
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import { DocumentDoc, TagDoc, useDatabase } from "../../../Database"
+import { useDocumentsAPI } from "../../../DocumentsAPIProvider/DocumentsAPIProvider"
 import {
   DocumentsList,
   MainHeader,
   CloudDocumentSectionHeader,
 } from "../../../DocumentsList"
-import { useDocumentsAPI } from "../../../MainProvider"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,

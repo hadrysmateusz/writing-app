@@ -8,13 +8,13 @@ import {
   MainHeader,
   SortingMainHeaderButton,
 } from "../../../DocumentsList"
-import { useTagsAPI } from "../../../MainProvider/context"
 import { getPromptModalContent, usePromptModal } from "../../../PromptModal"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
 import { TagListItem } from "../../../TagListItem"
+import { useTagsAPI } from "../../../TagsProvider"
 import { SIDEBAR_VAR } from "../../../ViewState"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"

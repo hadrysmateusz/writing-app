@@ -1,6 +1,6 @@
 import { RxDocument, RxCollection } from "rxdb"
 
-import { TabsState } from "../../../MainProvider/tabsSlice"
+import { TabsState } from "../../../TabsProvider/tabsSlice"
 import { SidebarSidebar, SidebarView } from "../../../ViewState"
 
 type NewSidebarType<S extends SidebarSidebar> = {

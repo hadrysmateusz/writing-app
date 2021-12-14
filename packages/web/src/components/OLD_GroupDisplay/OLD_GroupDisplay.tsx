@@ -1,21 +1,23 @@
 import React, { useMemo } from "react"
 import styled from "styled-components/macro"
 
-import { useMainState } from "../MainProvider"
-import { useDocumentsAPI } from "../MainProvider"
+import { formatOptional } from "../../utils"
+import { getGroupName } from "../../helpers/getGroupName"
+
 import {
   useContextMenu,
   ContextMenuItem,
   ContextMenuSeparator,
 } from "../ContextMenu/Old"
-
-import { formatOptional } from "../../utils"
-import { getGroupName } from "../../helpers/getGroupName"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useCloudGroupsState } from "../CloudGroupsProvider"
 
 export const GroupDisplay: React.FC = () => {
-  const { currentDocument, groups } = useMainState()
+  const { groups } = useCloudGroupsState()
   const { moveDocumentToGroup } = useDocumentsAPI()
   const { openMenu, ContextMenu } = useContextMenu()
+
+  let currentDocument: any // TODO: this is a temp hack to silence TS errors as this component isn't currently used anywhere
 
   // TODO: when you change the document's group using the context menu on this component, the group name doesn't get updated
   const groupName = useMemo(() => {

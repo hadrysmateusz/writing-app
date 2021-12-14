@@ -8,14 +8,17 @@ import {
 
 import { Autocomplete, Option } from "../Autocomplete"
 import { TagDoc, useDatabase } from "../Database"
-import { useDocumentsAPI, useMainState, useTagsAPI } from "../MainProvider"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useTabsState } from "../TabsProvider"
 import { Tag } from "../Tag"
+import { useTagsAPI } from "../TagsProvider"
 
 import { AddTagButton, TagsContainer } from "./Keywords.styles"
 
-const Keywords = () => {
+// TODO: rename this to Tags______
+export const Keywords = () => {
   const db = useDatabase()
-  const { currentDocumentId } = useMainState()
+  const { currentDocumentId } = useTabsState()
   const { updateDocument } = useDocumentsAPI()
   const { createTag } = useTagsAPI()
 

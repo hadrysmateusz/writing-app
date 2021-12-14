@@ -9,11 +9,11 @@ import {
   MainHeader,
   SortingMainHeaderButton,
 } from "../../../DocumentsList"
-import { useMainState } from "../../../MainProvider"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
+import { useSorting } from "../../../SortingProvider"
 import { SIDEBAR_VAR } from "../../../ViewState"
 
 import { NewButton } from "../../NewButton"
@@ -22,7 +22,7 @@ import { createFindDocumentsAtRootQuery } from "../queries"
 
 export const InboxView: React.FC = () => {
   const db = useDatabase()
-  const { sorting } = useMainState()
+  const { sorting } = useSorting()
 
   const { data: documents, isLoading } = useRxSubscription(
     createFindDocumentsAtRootQuery(db, sorting)

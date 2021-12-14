@@ -1,9 +1,11 @@
 import React from "react"
 import styled from "styled-components/macro"
+
+import { ANIMATION_FADEIN } from "../../style-utils"
+
 import Icon from "../Icon"
 import { UnstyledButton } from "../Button"
-import { useDocumentsAPI } from "../MainProvider"
-import { ANIMATION_FADEIN } from "../../style-utils"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
 
 export const TreeItem_AddDocumentButton = "TreeItem_AddDocumentButton"
 

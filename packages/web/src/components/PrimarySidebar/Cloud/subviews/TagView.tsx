@@ -9,7 +9,6 @@ import {
   SortingMainHeaderButton,
 } from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
-import { useMainState } from "../../../MainProvider"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -21,6 +20,7 @@ import {
 } from "../../../ViewState"
 
 import { NewButton } from "../../NewButton"
+import { useSorting } from "../../../SortingProvider"
 
 export const TagView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -36,7 +36,7 @@ export const TagView: React.FC = () => {
 const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
   const db = useDatabase()
   // const { primarySidebar } = useViewState()
-  const { sorting } = useMainState()
+  const { sorting } = useSorting()
 
   const { data: tag, isLoading: isTagLoading } = useRxSubscription(
     db.tags.findOne().where("id").eq(tagId)

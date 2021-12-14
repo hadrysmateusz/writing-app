@@ -1,18 +1,12 @@
-import React from "react"
-
 import { Section, SecondarySidebarViewContainer } from "../../SidebarCommon"
+import { useTabsState } from "../../TabsProvider"
 
 import TextStats from "../TextStats"
-import { Outline } from "../Outline"
 import Keywords from "../Keywords"
-import { useTabsState } from "../../MainProvider"
+import { Outline } from "../Outline"
 
 export const DashboardView: React.FC = () => {
-  const { tabs, currentTab } = useTabsState()
-
-  let currentTabObj = tabs[currentTab]
-  // TODO: probably precompute this and expose in useTabsState hook
-  const currentTabType = currentTabObj.tabType
+  const { currentTabType } = useTabsState()
 
   return (
     <SecondarySidebarViewContainer>

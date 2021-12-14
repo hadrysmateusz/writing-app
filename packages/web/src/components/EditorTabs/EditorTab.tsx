@@ -1,6 +1,5 @@
 import { FC, useCallback, useMemo } from "react"
-
-import { useMainState, useTabsState } from "../MainProvider"
+import { useTabsAPI, useTabsDispatch, useTabsState } from "../TabsProvider"
 
 import {
   CloudDocumentEditorTab,
@@ -9,8 +8,9 @@ import {
 } from "./SpecializedTabs"
 
 const EditorTab: FC<{ tabId: string }> = ({ tabId }) => {
-  const tabsState = useTabsState()
-  const { closeTab, tabsDispatch } = useMainState()
+  const { tabsState } = useTabsState()
+  const { closeTab } = useTabsAPI()
+  const tabsDispatch = useTabsDispatch()
 
   const isActive = tabsState.currentTab === tabId
   const tab = useMemo(() => tabsState.tabs[tabId], [tabId, tabsState.tabs])

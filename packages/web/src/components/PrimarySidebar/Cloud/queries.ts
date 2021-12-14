@@ -1,5 +1,5 @@
 import { MyDatabase } from "../../Database"
-import { Sorting } from "../../MainProvider"
+import { Sorting } from "../../SortingProvider"
 
 export const createFindDocumentsInGroupQuery = (
   db: MyDatabase,

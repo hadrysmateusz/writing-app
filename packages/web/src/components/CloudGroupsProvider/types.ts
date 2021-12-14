@@ -1,14 +1,6 @@
-import { GroupDoc, GroupDocType } from "../../Database"
-import { Updater } from "./Misc"
+import { GroupDoc, GroupDocType, Updater } from "../Database"
 
-export type GroupsAPI = {
-  moveGroup: MoveGroupFn
-  createGroup: CreateGroupFn
-  renameGroup: RenameGroupFn
-  removeGroup: RemoveGroupFn
-  updateGroup: UpdateGroupFn
-  findGroupById: FindGroupByIdFn
-}
+// ======== API Methods Types =========
 
 export type CreateGroupFn = (
   parentGroupId: string | null,
@@ -35,3 +27,19 @@ export type UpdateGroupFn = (
   id: string,
   updater: Updater<GroupDoc, GroupDocType>
 ) => Promise<GroupDoc>
+
+// ========= Context Types =========
+
+export type CloudGroupsStateContextType = {
+  groups: GroupDoc[]
+  isLoading: boolean
+}
+
+export type CloudGroupsAPIContextType = {
+  moveGroup: MoveGroupFn
+  createGroup: CreateGroupFn
+  renameGroup: RenameGroupFn
+  removeGroup: RemoveGroupFn
+  updateGroup: UpdateGroupFn
+  findGroupById: FindGroupByIdFn
+}

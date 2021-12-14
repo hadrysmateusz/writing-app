@@ -4,12 +4,12 @@ import { GroupTreeBranch } from "../../../helpers/createGroupTree"
 import { useToggleable, useRxSubscription } from "../../../hooks"
 
 import { DocumentsList, CloudDocumentSectionHeader } from "../../DocumentsList"
-import { useMainState } from "../../MainProvider"
 import { useDatabase } from "../../Database"
 
 import { PrimarySidebarSectionContainer } from "../PrimarySidebar.styles"
 
 import { createFindDocumentsInGroupQuery } from "./queries"
+import { useSorting } from "../../SortingProvider"
 
 // TODO: use stateless toggleables and keep state higher up, persisting it between path changes (either as a global collection of group.ids that are open or closed, or a per-path one)
 
@@ -25,7 +25,7 @@ export const SubGroupDocumentsList: FC<{
   group: GroupTreeBranch
 }> = ({ group }) => {
   const db = useDatabase()
-  const { sorting } = useMainState()
+  const { sorting } = useSorting()
 
   const { toggle, isOpen } = useToggleable(true)
 

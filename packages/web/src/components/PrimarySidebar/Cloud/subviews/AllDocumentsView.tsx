@@ -4,7 +4,6 @@ import useRxSubscription from "../../../../hooks/useRxSubscription"
 import createGroupTree from "../../../../helpers/createGroupTree"
 
 import { useDatabase } from "../../../Database"
-import { useMainState } from "../../../MainProvider"
 import {
   DocumentsList,
   MainHeader,
@@ -19,10 +18,13 @@ import { NewButton } from "../../NewButton"
 
 import { SubGroups } from "../SubGroups"
 import { createFindDocumentsAtRootQuery } from "../queries"
+import { useSorting } from "../../../SortingProvider"
+import { useCloudGroupsState } from "../../../CloudGroupsProvider"
 
 export const AllDocumentsView: React.FC = () => {
   const db = useDatabase()
-  const { sorting, groups } = useMainState()
+  const { sorting } = useSorting()
+  const { groups } = useCloudGroupsState()
 
   const { data: documents, isLoading } = useRxSubscription(
     createFindDocumentsAtRootQuery(db, sorting)

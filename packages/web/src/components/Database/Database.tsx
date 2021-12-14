@@ -14,7 +14,7 @@ import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import { withDelayRender } from "../../withDelayRender"
 
 import { useCurrentUser } from "../Auth"
-import AppLoadingState from "../MainProvider/AppLoadingState"
+import AppLoadingState from "../AppLoadingState/AppLoadingState"
 
 import { dbNameBase, initialSyncState, usernameStartWord } from "./constants"
 import { MyDatabase, SyncStates, MyDatabaseCollections } from "./types"

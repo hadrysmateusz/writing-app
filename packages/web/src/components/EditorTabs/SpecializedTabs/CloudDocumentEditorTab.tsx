@@ -6,11 +6,12 @@ import { useRxSubscription } from "../../../hooks"
 import { useDocumentContextMenu } from "../../DocumentContextMenu"
 import { EditableText } from "../../RenamingInput"
 import { DocumentDoc, useDatabase } from "../../Database"
-import { useGroupsAPI, useMainState } from "../../MainProvider"
 import Icon from "../../Icon"
+import { useTabsAPI } from "../../TabsProvider"
 
 import { EditorTabContainer } from "../EditorTab.styles"
 import { TabCloseButton } from "../EditorTabCommon"
+import { useCloudGroupsAPI } from "../../CloudGroupsProvider"
 
 const initialTabData = { title: "", group: null }
 
@@ -23,7 +24,7 @@ export const CloudDocumentEditorTab: React.FC<{
   handleCloseTab: (e: React.MouseEvent) => void
 }> = ({ tabId, documentId, ...rest }) => {
   const db = useDatabase()
-  const { closeTab } = useMainState()
+  const { closeTab } = useTabsAPI()
 
   const { data: document, isLoading: isDocumentLoading } = useRxSubscription(
     db.documents.findOne(documentId)
@@ -50,18 +51,15 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
   handleSwitchTab: (e: React.MouseEvent) => void
   handleCloseTab: (e: React.MouseEvent) => void
 }> = ({ document, isActive, keep, handleSwitchTab, handleCloseTab }) => {
-  const { findGroupById } = useGroupsAPI()
+  const { findGroupById } = useCloudGroupsAPI()
 
   const [tabData, setTabData] = useState<{
     title: string
     group: string | null
   }>(initialTabData)
 
-  const {
-    DocumentContextMenu,
-    getEditableProps,
-    getContainerProps,
-  } = useDocumentContextMenu(document)
+  const { DocumentContextMenu, getEditableProps, getContainerProps } =
+    useDocumentContextMenu(document)
 
   useEffect(() => {
     const title = formatOptional(document.title, "Untitled")

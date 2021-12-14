@@ -5,10 +5,10 @@ import createGroupTree, {
   findChildGroups,
 } from "../../../helpers/createGroupTree"
 
-import { useMainState } from "../../MainProvider"
+import { useCloudGroupsState } from "../../CloudGroupsProvider"
 
 export const useFindGroupAndChildGroups = (groupId: string | undefined) => {
-  const { groups } = useMainState()
+  const { groups } = useCloudGroupsState()
 
   const group = useMemo(() => {
     if (groupId === undefined) return null

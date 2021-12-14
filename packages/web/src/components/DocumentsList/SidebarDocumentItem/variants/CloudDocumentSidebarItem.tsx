@@ -4,8 +4,8 @@ import { Ancestor, Node } from "slate"
 import { formatOptional } from "../../../../utils"
 
 import { DocumentDoc } from "../../../Database"
-import { useMainState } from "../../../MainProvider"
 import { useDocumentContextMenu } from "../../../DocumentContextMenu"
+import { useTabsAPI, useTabsState } from "../../../TabsProvider"
 
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
 
@@ -14,7 +14,8 @@ const SNIPPET_LENGTH = 340
 export const CloudDocumentSidebarItem: React.FC<{
   document: DocumentDoc
 }> = ({ document }) => {
-  const { currentDocumentId, openDocument } = useMainState()
+  const { openDocument } = useTabsAPI()
+  const { currentDocumentId } = useTabsState()
 
   const { openMenu, DocumentContextMenu, getEditableProps } =
     useDocumentContextMenu(document)

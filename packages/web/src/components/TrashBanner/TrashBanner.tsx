@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import styled from "styled-components/macro"
 
-import { useDocumentsAPI } from "../MainProvider"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
 
 const TrashBanner: React.FC<{ documentId: string }> = ({ documentId }) => {
   const { restoreDocument, permanentlyRemoveDocument } = useDocumentsAPI()

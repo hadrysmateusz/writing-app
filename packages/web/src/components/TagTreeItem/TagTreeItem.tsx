@@ -3,8 +3,8 @@ import { useCallback } from "react"
 import { GenericTreeItem } from "../TreeItem"
 import { EditableText, useEditableText } from "../RenamingInput"
 import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
-import { useTagsAPI } from "../MainProvider/context"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
+import { useTagsAPI } from "../TagsProvider"
 
 export const TagTreeItem: React.FC<{ tagId: string; tagName: string }> = ({
   tagId,

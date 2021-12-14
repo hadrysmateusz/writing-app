@@ -10,7 +10,6 @@ import {
   SortingMainHeaderButton,
 } from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
-import { useMainState } from "../../../MainProvider"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -26,6 +25,7 @@ import { NewButton } from "../../NewButton"
 import { SubGroups } from "../SubGroups"
 import { createFindDocumentsInGroupQuery } from "../queries"
 import { useFindGroupAndChildGroups } from "../helpers"
+import { useSorting } from "../../../SortingProvider"
 
 export const GroupView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -46,7 +46,7 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
 }) => {
   const db = useDatabase()
   const { switchSubview } = usePrimarySidebar()
-  const { sorting } = useMainState()
+  const { sorting } = useSorting()
 
   const { group, childGroups } = useFindGroupAndChildGroups(groupId)
 

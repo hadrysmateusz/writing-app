@@ -1,17 +1,18 @@
 import { FC } from "react"
 import styled from "styled-components/macro"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
 
-import { useDocumentsAPI, useMainState, useTabsState } from "../MainProvider"
 import { PrimarySidebarTabs } from "../PrimarySidebar"
 import { SecondarySidebarTabs } from "../SecondarySidebar"
+import { useTabsAPI, useTabsState } from "../TabsProvider"
 import { usePrimarySidebar, useSecondarySidebar } from "../ViewState"
 
 import EditorTab from "./EditorTab"
 import EditorTabAdd from "./EditorTabAdd"
 
 const EditorTabsBar: FC = () => {
-  const { openDocument } = useMainState()
-  const tabsState = useTabsState()
+  const { tabsState } = useTabsState()
+  const { openDocument } = useTabsAPI()
   const { createDocument } = useDocumentsAPI()
   const { isOpen: isPrimarySidebarOpen } = usePrimarySidebar()
   const { isOpen: isSecondarySidebarOpen } = useSecondarySidebar()

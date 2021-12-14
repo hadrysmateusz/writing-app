@@ -13,6 +13,7 @@ import {
   useNavigatorSidebar,
 } from "../ViewState"
 import { Switch, Case } from "../Conditional"
+import { SortingProvider } from "../SortingProvider"
 
 import { Cloud } from "./Cloud"
 import { Tags } from "./Tags"
@@ -26,21 +27,23 @@ export const PrimarySidebar = memo(
     const primarySidebar = usePrimarySidebar()
 
     return (
-      <SidebarContainer ref={ref} collapsed={!primarySidebar.isOpen}>
-        {primarySidebar.isOpen ? (
-          <>
-            <PrimarySidebarTabs />
+      <SortingProvider>
+        <SidebarContainer ref={ref} collapsed={!primarySidebar.isOpen}>
+          {primarySidebar.isOpen ? (
+            <>
+              <PrimarySidebarTabs />
 
-            <Switch value={primarySidebar.currentView}>
-              <Case value={"cloud"} component={<Cloud />} />
-              <Case value={"local"} component={<Local />} />
-              <Case value={"tags"} component={<Tags />} />
-            </Switch>
-          </>
-        ) : null}
+              <Switch value={primarySidebar.currentView}>
+                <Case value={"cloud"} component={<Cloud />} />
+                <Case value={"local"} component={<Local />} />
+                <Case value={"tags"} component={<Tags />} />
+              </Switch>
+            </>
+          ) : null}
 
-        <PrimarySidebarToggle sidebar={primarySidebar} />
-      </SidebarContainer>
+          <PrimarySidebarToggle sidebar={primarySidebar} />
+        </SidebarContainer>
+      </SortingProvider>
     )
   })
 )

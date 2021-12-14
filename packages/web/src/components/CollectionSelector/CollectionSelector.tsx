@@ -9,7 +9,7 @@ import {
 
 import { Autocomplete, Option } from "../Autocomplete"
 import { useDatabase } from "../Database"
-import { useMainState } from "../MainProvider"
+import { useTabsState } from "../TabsProvider"
 
 export const CollectionSelector = ({
   onSubmit,
@@ -17,7 +17,7 @@ export const CollectionSelector = ({
   onSubmit: (option: Option) => void
 }) => {
   const db = useDatabase()
-  const { currentDocumentId } = useMainState()
+  const { currentDocumentId } = useTabsState()
 
   const { data: groups } = useRxSubscription(
     // TODO: create a nameSlug for groups to avoid errors

@@ -3,11 +3,13 @@ import isEqual from "lodash/isEqual"
 import { Descendant } from "slate"
 import { usePlateEventId, usePlateEditorRef } from "@udecode/plate-core"
 
-import { SaveDocumentFn, useMainState } from "../MainProvider"
-import { serialize } from "../Editor"
-
 import { createContext } from "../../utils"
+
+import { serialize } from "../Editor"
 import { useDatabase } from "../Database"
+import { useTabsState } from "../TabsProvider"
+
+// TODO: this needs a significant rework/rethinking since the migration to plate
 
 export const [EditorStateContext, useEditorState] = createContext<any>() // TODO: fix the typings when I stabilize the api
 
@@ -16,7 +18,7 @@ export const [EditorStateContext, useEditorState] = createContext<any>() // TODO
  */
 export const EditorStateProvider: React.FC = ({ children }) => {
   const db = useDatabase()
-  const { currentDocumentId } = useMainState()
+  const { currentDocumentId } = useTabsState()
   const editor = usePlateEditorRef(usePlateEventId("focus"))
   // const editorValue = usePlateValue(usePlateEventId("focus"))
 
@@ -44,7 +46,7 @@ export const EditorStateProvider: React.FC = ({ children }) => {
    *
    * Works on the current document
    */
-  const saveDocument: SaveDocumentFn = useCallback(() => {
+  const saveDocument = useCallback(() => {
     console.log("saveDocument", editor, /* isModified, */ editor?.children)
     if (!isModified) {
       console.log("skipping save, document wasn't changed")

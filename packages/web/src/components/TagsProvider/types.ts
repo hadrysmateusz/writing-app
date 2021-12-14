@@ -1,4 +1,4 @@
-import { TagDoc, TagDocType } from "../../Database"
+import { TagDoc, TagDocType } from "../Database"
 
 export type TagsAPI = {
   createTag: CreateTagFn

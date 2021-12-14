@@ -4,25 +4,26 @@ import { myDeserializeMd } from "../../slate-helpers/deserialize"
 import { formatOptional } from "../../utils"
 import { useToggleable } from "../../hooks"
 
-import { Button } from "../Button"
-import { useDocumentsAPI } from "../MainProvider"
-import { usePrimarySidebar } from "../ViewState"
-import { useMainState } from "../MainProvider"
-import { CloseModalFn } from "../Modal/types"
 import { ContextMenuItem, ContextMenuSeparator } from "../ContextMenu/Old"
 import Icon from "../Icon"
+import { Button } from "../Button"
+import { usePrimarySidebar } from "../ViewState"
 import { serialize } from "../Editor"
+import { CloseModalFn } from "../Modal/types"
 import { ModalContainer, ModalButtonsContainer } from "../Modal"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useTabsAPI } from "../TabsProvider"
+import { useCloudGroupsState } from "../CloudGroupsProvider"
 
 import { DropdownContainer, DropdownContent } from "./ImportModal.styles"
 
 export const ImportModalContent: React.FC<{
   close: CloseModalFn<undefined>
 }> = ({ close }) => {
-  const { createDocument } = useDocumentsAPI()
   const { switchSubview, currentSubviews } = usePrimarySidebar()
-
-  const { openDocument, groups } = useMainState()
+  const { createDocument } = useDocumentsAPI()
+  const { openDocument } = useTabsAPI()
+  const { groups } = useCloudGroupsState()
 
   const [targetGroup, setTargetGroup] = useState(() => {
     const subview = currentSubviews.cloud

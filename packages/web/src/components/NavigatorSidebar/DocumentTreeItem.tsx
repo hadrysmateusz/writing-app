@@ -1,30 +1,29 @@
 import React, { useCallback, useMemo } from "react"
 
+import { formatOptional } from "../../utils"
+
 import { DocumentDoc } from "../Database"
 import { EditableText } from "../RenamingInput"
-import { useMainState } from "../MainProvider"
 import { GenericTreeItem } from "../TreeItem"
-import { formatOptional } from "../../utils"
 import { useDocumentContextMenu } from "../DocumentContextMenu"
+import { useTabsAPI } from "../TabsProvider"
 
 const DocumentTreeItem: React.FC<{
   document: DocumentDoc
   depth?: number
   icon?: string
 }> = ({ document, depth = 0, icon }) => {
-  const { openDocument } = useMainState()
+  const { openDocument } = useTabsAPI()
 
-  const {
-    DocumentContextMenu,
-    getEditableProps,
-    getContainerProps,
-  } = useDocumentContextMenu(document)
+  const { DocumentContextMenu, getEditableProps, getContainerProps } =
+    useDocumentContextMenu(document)
 
   // TODO: consider extracting the specific document renaming logic into another hook
 
-  const title = useMemo(() => formatOptional(document.title, "Untitled"), [
-    document.title,
-  ])
+  const title = useMemo(
+    () => formatOptional(document.title, "Untitled"),
+    [document.title]
+  )
 
   const handleClick = useCallback(() => {
     openDocument(document.id)

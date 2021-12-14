@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo } from "react"
-
+import { useCallback, useMemo } from "react"
 import { Descendant } from "slate"
 import { ReactEditor } from "slate-react"
 import { EditableProps } from "slate-react/dist/components/editable"
@@ -7,7 +6,6 @@ import isHotkey from "is-hotkey"
 import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
 import { useEditorState } from "../EditorStateProvider"
-import { useTabsDispatch } from "../MainProvider"
 
 import {
   EditableContainer,
@@ -18,6 +16,7 @@ import { useEditorContextMenu } from "./hooks"
 import { pluginsList } from "./config"
 import TitleInput from "./TitleInput"
 import { BalloonToolbar, Toolbar } from "./Toolbars"
+import { useTabsDispatch } from "../TabsProvider"
 
 type EditorComponentProps = {
   saveDocument: () => void
@@ -35,9 +34,9 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
   content,
   renameDocument,
 }) => {
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
   const tabsDispatch = useTabsDispatch()
   const { onChange } = useEditorState()
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
   // const { isSpellCheckEnabled } = useUserdata()
 
   const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()

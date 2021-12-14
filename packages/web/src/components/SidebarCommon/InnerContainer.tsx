@@ -1,9 +1,10 @@
-import React, { useCallback } from "react"
+import { useCallback } from "react"
 import styled from "styled-components/macro"
+
 import { customScrollbar } from "../../style-utils"
 
 import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
-import { useDocumentsAPI } from "../MainProvider"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 
 export const InnerContainer: React.FC<{}> = ({ children }) => {

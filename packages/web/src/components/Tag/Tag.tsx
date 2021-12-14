@@ -1,11 +1,11 @@
-import React from "react"
 import styled from "styled-components/macro"
 
-import { useDocumentsAPI, useMainState } from "../MainProvider"
+import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useTabsState } from "../TabsProvider"
 
 export const Tag: React.FC<{ tagId: string }> = ({ children, tagId }) => {
   const { updateDocument } = useDocumentsAPI()
-  const { currentDocumentId } = useMainState()
+  const { currentDocumentId } = useTabsState()
 
   const removeTag = async (id: string) => {
     if (currentDocumentId !== null) {
