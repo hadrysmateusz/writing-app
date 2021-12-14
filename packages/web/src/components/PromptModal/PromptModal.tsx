@@ -4,8 +4,12 @@ import styled from "styled-components/macro"
 import { ToggleableHooks } from "../../hooks"
 
 import { Button } from "../Button"
-import { useModal, ModalContainer, ModalMessageContainer } from "../Modal"
-import { ModalContentProps } from "../Modal/types"
+import {
+  useModal,
+  ModalContainer,
+  ModalMessageContainer,
+  ModalContentProps,
+} from "../Modal"
 import { TextInput } from "../TextInput"
 
 export type PromptModalOpenReturnValue = string
@@ -27,7 +31,6 @@ export function usePromptModal(
   )
 }
 
-// TODO: replace (at least temporarily) the link and image modals with this one
 export function getPromptModalContent({
   promptMessage,
   submitMessage = "OK",
