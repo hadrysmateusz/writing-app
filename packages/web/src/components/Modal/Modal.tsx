@@ -1,54 +1,9 @@
-import React, { useCallback } from "react"
+import { useCallback } from "react"
 import { Portal } from "react-portal"
-import styled from "styled-components/macro"
 
 import { useBodyScrollLock } from "../../hooks"
 
-export const ModalContainer = styled.div`
-  background: var(--dark-300);
-  border: 1px solid var(--dark-500);
-  padding: 20px 20px 20px;
-  border-radius: 4px;
-  color: white;
-  font-weight: bold;
-
-  h2 {
-    color: var(--light-500);
-    font-size: 20px;
-    line-height: 24px;
-    margin-top: 0;
-  }
-`
-
-export const ModalMessageContainer = styled.div`
-  margin-bottom: 12px;
-`
-
-export const ModalButtonsContainer = styled.div`
-  display: flex;
-  gap: 12px;
-  > * {
-    width: 100%;
-  }
-`
-
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-`
-
-const ModalBox = styled.div`
-  z-index: 1001;
-  position: relative;
-`
+import { ModalBackdrop, ModalBox } from "./Modal.styles"
 
 // TODO: move to a global provider based approach where there is one modal provider handling the modal's state and the consumers use a hook that registers a particular modal with an id in useEffect (this way we can check and prevent duplicate ids) this would eliminate the need for using a Modal component passed from a hook and instead only use a single hook that also exposes a getModalProps() function for the modal content component (maybe a single, globally exposed modal component could be used which would handle some of the interaction with the provider and the portal component)
 
