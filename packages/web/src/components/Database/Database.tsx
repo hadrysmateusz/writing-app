@@ -14,17 +14,13 @@ import PouchDbAdapterHttp from "pouchdb-adapter-http"
 import { withDelayRender } from "../../withDelayRender"
 
 import { useCurrentUser } from "../Auth"
+import AppLoadingState from "../MainProvider/AppLoadingState"
 
 import { dbNameBase, initialSyncState, usernameStartWord } from "./constants"
 import { MyDatabase, SyncStates, MyDatabaseCollections } from "./types"
-import { encodeLocalDbName, initializeSync } from "./helpers"
+import { encodeLocalDbName, initializeSync, setUpDbHooks } from "./helpers"
 import { DatabaseContext, SyncStateContext } from "./context"
-import models from "./models"
-import {
-  createDocumentPreSaveHook,
-  createGroupPreRemoveHook,
-  createTagPreRemoveHook,
-} from "./schemas"
+import { models } from "./models"
 
 addPouchPlugin(PouchDbAdapterIdb)
 addPouchPlugin(PouchDbAdapterHttp) // enable syncing over http
@@ -78,9 +74,7 @@ export const DatabaseProvider: React.FC = ({ children }) => {
 
         initializeSync(db, models, username, (val) => setSyncState(val))
 
-        db.groups.preRemove(createGroupPreRemoveHook(db), false)
-        db.documents.preSave(createDocumentPreSaveHook(), false)
-        db.tags.preRemove(createTagPreRemoveHook(db), false)
+        setUpDbHooks(db)
 
         db.waitForLeadership().then(() => {
           console.log("Long lives the king!") // <- runs when db becomes leader
@@ -119,7 +113,7 @@ export const DatabaseProvider: React.FC = ({ children }) => {
   }
 }
 
-const ErrorState: React.FC = () => <>Database setup error</>
-const LoadingState: React.FC = withDelayRender(1000)(() => (
-  <div>Loading...</div>
+const ErrorState: React.FC = withDelayRender(1000)(() => (
+  <>Database setup error</>
 ))
+const LoadingState: React.FC = withDelayRender(1000)(() => <AppLoadingState />)

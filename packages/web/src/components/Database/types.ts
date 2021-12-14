@@ -5,11 +5,11 @@ import {
 } from "rxdb"
 import PouchDB from "pouchdb-core"
 
-import { DocumentCollection } from "./Document"
-import { GroupCollection } from "./Group"
-import { LocalSettingsCollection } from "./LocalSettings"
-import { UserdataCollection } from "./Userdata"
-import { TagCollection } from "./Tag"
+import { DocumentCollection } from "./models/Document"
+import { GroupCollection } from "./models/Group"
+import { LocalSettingsCollection } from "./models/LocalSettings"
+import { UserdataCollection } from "./models/Userdata"
+import { TagCollection } from "./models/Tag"
 
 export enum CollectionNames {
   documents = "documents",

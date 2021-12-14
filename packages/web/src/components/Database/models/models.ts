@@ -1,17 +1,12 @@
-import {
-  CollectionNames,
-  DocumentCollection,
-  DocumentDoc,
-  LocalSettingsDoc,
-} from "./types"
-import {
-  documentSchema,
-  groupSchema,
-  localSettingsSchema,
-  userdataSchema,
-} from "./schemas"
-import { tagSchema } from "./schemas/Tag"
-import { defaultLocalSettings } from "../LocalSettings"
+import { defaultLocalSettings } from "../../LocalSettings"
+
+import { CollectionNames } from "../types"
+
+import { documentSchema, DocumentDoc, DocumentCollection } from "./Document"
+import { groupSchema } from "./Group"
+import { localSettingsSchema, LocalSettingsDoc } from "./LocalSettings"
+import { tagSchema } from "./Tag"
+import { userdataSchema } from "./Userdata"
 
 // TODO: skip_setup doesn't seem to work as expected and should probably be replaced with manual checks and simply not calling the create functions if they fail
 export const models = {

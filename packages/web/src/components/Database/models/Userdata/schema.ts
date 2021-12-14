@@ -1,6 +1,6 @@
 import { RxJsonSchema } from "rxdb"
 
-import { UserdataDocType } from "../types"
+import { UserdataDocType } from "./types"
 
 export const userdataSchema: RxJsonSchema<UserdataDocType> = {
   title: "userdata schema",

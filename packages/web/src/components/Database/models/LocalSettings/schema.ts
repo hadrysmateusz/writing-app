@@ -1,6 +1,6 @@
 import { RxJsonSchema } from "rxdb"
 
-import { LocalSettingsDocType } from "../types"
+import { LocalSettingsDocType } from "./types"
 
 const sidebarCommon = {
   // id: { type: "string" },

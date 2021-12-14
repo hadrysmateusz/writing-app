@@ -1,5 +1,8 @@
-import { withDelayRender } from "../../withDelayRender"
 import styled, { keyframes } from "styled-components/macro"
+
+import { withDelayRender } from "../../withDelayRender"
+
+// TODO: probably generalize this component as something like FullscreenLoadingState and extract it higher up
 
 const AppLoadingIndicator = withDelayRender(1000)(() => <div>Loading...</div>)
 

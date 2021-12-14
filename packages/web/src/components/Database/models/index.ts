@@ -1,5 +1,6 @@
 export * from "./Document"
 export * from "./Group"
 export * from "./LocalSettings"
-export * from "./Userdata"
 export * from "./Tag"
+export * from "./Userdata"
+export * from "./models"
