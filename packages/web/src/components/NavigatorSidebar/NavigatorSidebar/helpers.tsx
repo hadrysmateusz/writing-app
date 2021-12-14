@@ -1,19 +1,25 @@
 import { useCallback } from "react"
-import { SidebarSubview, SidebarView, usePrimarySidebar } from "../../ViewState"
+import {
+  parseSidebarPath,
+  SidebarSubview,
+  SidebarView,
+  usePrimarySidebar,
+} from "../../ViewState"
 
-// TODO: currently only works for cloud view subviews but I should work on a way to infer view from subview
 export function useNavigationTreeItem<V extends SidebarView<"primary">>(
   view: V,
   subview: SidebarSubview<"primary", V>
 ) {
   const { currentView, currentSubviews, switchSubview } = usePrimarySidebar()
 
+  const currentSubview = parseSidebarPath(currentSubviews[currentView])?.subview
+
   const getTreeItemProps = useCallback(
     () => ({
-      isActive: currentSubviews[currentView] === subview,
+      isActive: currentView === view && currentSubview === subview,
       onClick: () => switchSubview<V>(view, subview),
     }),
-    [currentSubviews, currentView, subview, switchSubview, view]
+    [currentSubview, currentView, subview, switchSubview, view]
   )
 
   return getTreeItemProps
