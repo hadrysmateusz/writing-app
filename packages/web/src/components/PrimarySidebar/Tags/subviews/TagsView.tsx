@@ -3,7 +3,11 @@ import React, { FC, useCallback } from "react"
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import { TagDoc, useDatabase } from "../../../Database"
-import { MainHeader } from "../../../DocumentsList"
+import {
+  GoUpMainHeaderButton,
+  MainHeader,
+  SortingMainHeaderButton,
+} from "../../../DocumentsList"
 import { useTagsAPI } from "../../../MainProvider/context"
 import { getPromptModalContent, usePromptModal } from "../../../PromptModal"
 import {
@@ -42,7 +46,13 @@ export const TagsView: React.FC = () => {
   return (
     <>
       <PrimarySidebarViewContainer>
-        <MainHeader title="Tags" goUpPath={SIDEBAR_VAR.primary.cloud.all} />
+        <MainHeader
+          title="Tags"
+          buttons={[
+            <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.cloud.all} />,
+            <SortingMainHeaderButton />,
+          ]}
+        />
         {/* TODO: Rework inner container to support tags */}
         <InnerContainer>
           {!isLoading && tags ? <TagsList tags={tags || []} /> : null}

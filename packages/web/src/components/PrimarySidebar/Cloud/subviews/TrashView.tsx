@@ -6,7 +6,12 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
-import { DocumentsList, MainHeader } from "../../../DocumentsList"
+import {
+  DocumentsList,
+  GoUpMainHeaderButton,
+  MainHeader,
+  SortingMainHeaderButton,
+} from "../../../DocumentsList"
 import { useDocumentsAPI, useMainState } from "../../../MainProvider"
 import { useDatabase } from "../../../Database"
 import { SIDEBAR_VAR } from "../../../ViewState"
@@ -25,7 +30,13 @@ export const TrashView: FunctionComponent = () => {
 
   return (
     <PrimarySidebarViewContainer>
-      <MainHeader title="Trash" goUpPath={SIDEBAR_VAR.primary.cloud.all} />
+      <MainHeader
+        title="Trash"
+        buttons={[
+          <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.cloud.all} />,
+          <SortingMainHeaderButton />,
+        ]}
+      />
       <InnerContainer>
         {!isLoading ? <DocumentsList documents={documents || []} /> : null}
       </InnerContainer>

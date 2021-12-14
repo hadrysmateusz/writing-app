@@ -3,7 +3,12 @@ import React, { useEffect, useMemo } from "react"
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 import { formatOptional } from "../../../../utils"
 
-import { DocumentsList, MainHeader } from "../../../DocumentsList"
+import {
+  DocumentsList,
+  GoUpMainHeaderButton,
+  MainHeader,
+  SortingMainHeaderButton,
+} from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
 import { useMainState } from "../../../MainProvider"
 import {
@@ -26,9 +31,10 @@ export const GroupView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
 
   // calculate this in ViewStateProvider along with other path properties
-  const groupId = useMemo(() => parseSidebarPath(currentSubviews.cloud)?.id, [
-    currentSubviews.cloud,
-  ])
+  const groupId = useMemo(
+    () => parseSidebarPath(currentSubviews.cloud)?.id,
+    [currentSubviews.cloud]
+  )
 
   console.log("groupId", groupId)
 
@@ -65,8 +71,11 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
     <PrimarySidebarViewContainer>
       <MainHeader
         title={formatOptional(group.name, "Unnamed Collection")}
-        goUpPath={goUpPath}
         numSubgroups={childGroups.length}
+        buttons={[
+          <GoUpMainHeaderButton goUpPath={goUpPath} />,
+          <SortingMainHeaderButton />,
+        ]}
       />
       <InnerContainer>
         {!isLoading ? (

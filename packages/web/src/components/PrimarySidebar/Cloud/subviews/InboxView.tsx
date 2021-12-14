@@ -3,7 +3,12 @@ import React from "react"
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import { useDatabase } from "../../../Database"
-import { DocumentsList, MainHeader } from "../../../DocumentsList"
+import {
+  DocumentsList,
+  GoUpMainHeaderButton,
+  MainHeader,
+  SortingMainHeaderButton,
+} from "../../../DocumentsList"
 import { useMainState } from "../../../MainProvider"
 import {
   PrimarySidebarViewContainer,
@@ -25,7 +30,13 @@ export const InboxView: React.FC = () => {
 
   return (
     <PrimarySidebarViewContainer>
-      <MainHeader title="Inbox" goUpPath={SIDEBAR_VAR.primary.cloud.all} />
+      <MainHeader
+        title="Inbox"
+        buttons={[
+          <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.cloud.all} />,
+          <SortingMainHeaderButton />,
+        ]}
+      />
       <InnerContainer>
         {!isLoading ? <DocumentsList documents={documents || []} /> : null}
       </InnerContainer>

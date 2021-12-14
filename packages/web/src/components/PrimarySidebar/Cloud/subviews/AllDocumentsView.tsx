@@ -5,7 +5,11 @@ import createGroupTree from "../../../../helpers/createGroupTree"
 
 import { useDatabase } from "../../../Database"
 import { useMainState } from "../../../MainProvider"
-import { DocumentsList, MainHeader } from "../../../DocumentsList"
+import {
+  DocumentsList,
+  MainHeader,
+  SortingMainHeaderButton,
+} from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -30,7 +34,10 @@ export const AllDocumentsView: React.FC = () => {
 
   return (
     <PrimarySidebarViewContainer>
-      <MainHeader title="All Documents" />
+      <MainHeader
+        title="All Documents"
+        buttons={[<SortingMainHeaderButton />]}
+      />
       <InnerContainer>
         {!isLoading ? (
           <>

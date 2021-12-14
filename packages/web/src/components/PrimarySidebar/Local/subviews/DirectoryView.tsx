@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react"
 
-import { MainHeader } from "../../../DocumentsList"
+import {
+  GoUpMainHeaderButton,
+  MainHeader,
+  SortingMainHeaderButton,
+} from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -131,7 +135,12 @@ const DirectoryViewInner: React.FC<{
     <PrimarySidebarViewContainer>
       <MainHeader
         title={dir.name ?? "Unknown Directory"}
-        goUpPath={SIDEBAR_VAR.primary.local.all} // TODO: add a way to go up one directory
+        buttons={[
+          // TODO: add a way to go up one directory
+          <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.local.all} />,
+          // TODO: support sorting for local directories
+          // <SortingMainHeaderButton />,
+        ]}
       />
       <InnerContainer>
         {dirTree ? (

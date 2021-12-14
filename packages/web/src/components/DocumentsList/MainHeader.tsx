@@ -4,6 +4,7 @@ import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
 import Icon from "../Icon"
 import { SortingIndex, SortingDirection, useMainState } from "../MainProvider"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
+
 import { SortingMenuItemInnerWrapper, Wrapper } from "./MainHeader.styles"
 
 const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
@@ -11,15 +12,29 @@ const SORT_METHODS = { modifiedAt: "Date updated", title: "Title" }
 export const MainHeader: FunctionComponent<{
   title: string
   numSubgroups?: number
-  goUpPath?: string
-}> = ({ title, numSubgroups, goUpPath }) => {
-  const { switchSubview } = usePrimarySidebar()
+  buttons: React.ReactElement[]
+}> = ({ title, numSubgroups, buttons }) => {
+  // TODO: use real documents data in MainHeader_Detail
 
-  const {
-    isMenuOpen: isSortingMenuOpen,
-    openMenu: openSortingMenu,
-    ContextMenu: SortingContextMenu,
-  } = useContextMenu()
+  return (
+    <Wrapper>
+      <div className="MainHeader_HorizontalContainer">
+        <div>
+          <div className="MainHeader_MainText">{title}</div>
+          <div className="MainHeader_Details">
+            X documents{numSubgroups ? `, ${numSubgroups} collections` : null}
+          </div>
+        </div>
+        <>{buttons}</>
+      </div>
+    </Wrapper>
+  )
+}
+
+export const GoUpMainHeaderButton: React.FC<{ goUpPath?: string }> = ({
+  goUpPath,
+}) => {
+  const { switchSubview } = usePrimarySidebar()
 
   const handleGoUpButtonClick = () => {
     if (!goUpPath) {
@@ -40,36 +55,33 @@ export const MainHeader: FunctionComponent<{
     switchSubview(view as any, subview as any, id)
   }
 
+  return goUpPath !== undefined ? (
+    <MainHeaderButton
+      tooltip="Go to parent collection"
+      icon="arrow90DegUp"
+      action={handleGoUpButtonClick}
+    />
+  ) : null
+}
+
+export const SortingMainHeaderButton: React.FC = () => {
+  const {
+    isMenuOpen: isSortingMenuOpen,
+    openMenu: openSortingMenu,
+    ContextMenu: SortingContextMenu,
+  } = useContextMenu()
+
   const handleOnSortingButtonClick = (e) => {
     openSortingMenu(e)
   }
 
-  // TODO: use real documents data in MainHeader_Detail
-
   return (
-    <Wrapper>
-      <div className="MainHeader_HorizontalContainer">
-        <div>
-          <div className="MainHeader_MainText">{title}</div>
-          <div className="MainHeader_Details">
-            X documents{numSubgroups ? `, ${numSubgroups} collections` : null}
-          </div>
-        </div>
-
-        {goUpPath !== undefined ? (
-          <MainHeaderButton
-            tooltip="Go to parent collection"
-            icon="arrow90DegUp"
-            action={handleGoUpButtonClick}
-          />
-        ) : null}
-
-        <MainHeaderButton
-          tooltip="Change sorting method"
-          icon="sort"
-          action={handleOnSortingButtonClick}
-        />
-      </div>
+    <>
+      <MainHeaderButton
+        tooltip="Change sorting method"
+        icon="sort"
+        action={handleOnSortingButtonClick}
+      />
 
       {isSortingMenuOpen ? (
         <SortingContextMenu>
@@ -87,11 +99,11 @@ export const MainHeader: FunctionComponent<{
           </SortingMenuItem>
         </SortingContextMenu>
       ) : null}
-    </Wrapper>
+    </>
   )
 }
 
-const MainHeaderButton: FunctionComponent<{
+export const MainHeaderButton: FunctionComponent<{
   icon: string
   tooltip: string
   action: (e: React.MouseEvent<HTMLDivElement>) => void

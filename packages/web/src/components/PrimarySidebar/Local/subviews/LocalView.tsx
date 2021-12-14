@@ -22,7 +22,7 @@ export const LocalView: React.FC<{}> = () => {
 
   return (
     <PrimarySidebarViewContainer>
-      <MainHeader title="Local" />
+      <MainHeader title="Local" buttons={[]} />
       <InnerContainer>
         {dirTrees.map((dirTree) => (
           <DirItem

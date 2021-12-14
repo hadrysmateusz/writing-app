@@ -2,7 +2,12 @@ import { useMemo } from "react"
 
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
-import { DocumentsList, MainHeader } from "../../../DocumentsList"
+import {
+  DocumentsList,
+  GoUpMainHeaderButton,
+  MainHeader,
+  SortingMainHeaderButton,
+} from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
 import { useMainState } from "../../../MainProvider"
 import {
@@ -20,9 +25,10 @@ import { NewButton } from "../../NewButton"
 export const TagView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
 
-  const tagId = useMemo(() => parseSidebarPath(currentSubviews.cloud)?.id, [
-    currentSubviews.cloud,
-  ])
+  const tagId = useMemo(
+    () => parseSidebarPath(currentSubviews.cloud)?.id,
+    [currentSubviews.cloud]
+  )
 
   return tagId ? <TagViewWithFoundTagId tagId={tagId} /> : null
 }
@@ -58,7 +64,13 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
 
   return ok ? (
     <PrimarySidebarViewContainer>
-      <MainHeader title={tag.name} goUpPath={SIDEBAR_VAR.primary.tags.all} />
+      <MainHeader
+        title={tag.name}
+        buttons={[
+          <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.tags.all} />,
+          <SortingMainHeaderButton />,
+        ]}
+      />
       <InnerContainer>
         {!isTagLoading && !isDocumentsLoading ? (
           <DocumentsList documents={documents || []} />
