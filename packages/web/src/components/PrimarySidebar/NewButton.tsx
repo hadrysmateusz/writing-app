@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 
 import { PrimarySidebarBottomButton } from "./PrimarySidebarBottomButton"
 

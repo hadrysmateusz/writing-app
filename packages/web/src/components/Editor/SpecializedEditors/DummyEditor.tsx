@@ -6,7 +6,7 @@ import {
   CreateDocumentFn,
   DEFAULT_EDITOR_VALUE,
   useDocumentsAPI,
-} from "../../DocumentsAPIProvider"
+} from "../../CloudDocumentsProvider"
 import { useTabsDispatch, useTabsState } from "../../TabsProvider"
 
 import { serialize } from "../helpers"

@@ -7,7 +7,7 @@ import {
   ModalButtonsContainer,
   ModalMessageContainer,
 } from "../Modal"
-import { useDocumentsAPI } from "./DocumentsAPIProvider"
+import { useDocumentsAPI } from "./CloudDocumentsProvider"
 
 export type ConfirmDeleteModalProps =
   | {

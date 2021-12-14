@@ -4,7 +4,7 @@ import styled from "styled-components/macro"
 import { customScrollbar } from "../../style-utils"
 
 import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 
 export const InnerContainer: React.FC<{}> = ({ children }) => {

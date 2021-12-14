@@ -5,11 +5,11 @@ import { useRxSubscription } from "../../../hooks"
 import { useEditorState } from "../../EditorStateProvider"
 import { useDatabase } from "../../Database"
 import TrashBanner from "../../TrashBanner"
+import { useDocumentsAPI } from "../../CloudDocumentsProvider"
 
 import { deserialize } from "../helpers"
 import { DocumentEmptyState, DocumentLoadingState } from "../HelperStates"
 import EditorComponent from "../EditorComponent"
-import { useDocumentsAPI } from "../../DocumentsAPIProvider"
 
 export const CloudEditor: React.FC<{ currentDocumentId: string }> = ({
   currentDocumentId,

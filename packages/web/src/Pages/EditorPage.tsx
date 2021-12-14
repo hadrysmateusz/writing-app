@@ -9,7 +9,7 @@ import { LocalSettingsProvider } from "../components/LocalSettings"
 import { LocalFSProvider } from "../components/LocalFSProvider"
 import { TabsProvider } from "../components/TabsProvider"
 import { TagsProvider } from "../components/TagsProvider"
-import { DocumentsAPIProvider } from "../components/DocumentsAPIProvider"
+import { DocumentsAPIProvider } from "../components/CloudDocumentsProvider"
 import { CloudGroupsProvider } from "../components/CloudGroupsProvider"
 
 const EditorPage = () => (

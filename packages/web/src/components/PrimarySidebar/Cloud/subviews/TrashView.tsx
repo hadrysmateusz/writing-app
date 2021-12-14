@@ -19,7 +19,7 @@ import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 import { createFindDeletedDocumentsQuery } from "../queries"
 import { useSorting } from "../../../SortingProvider"
-import { useDocumentsAPI } from "../../../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 
 export const TrashView: FunctionComponent = () => {
   const db = useDatabase()

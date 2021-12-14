@@ -5,7 +5,7 @@ import { ANIMATION_FADEIN } from "../../style-utils"
 
 import Icon from "../Icon"
 import { UnstyledButton } from "../Button"
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 
 export const TreeItem_AddDocumentButton = "TreeItem_AddDocumentButton"
 

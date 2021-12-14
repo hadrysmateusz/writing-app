@@ -7,7 +7,7 @@ import {
   mySerializeMd,
 } from "../../../slate-helpers/deserialize"
 
-import { DEFAULT_EDITOR_VALUE } from "../../DocumentsAPIProvider"
+import { DEFAULT_EDITOR_VALUE } from "../../CloudDocumentsProvider"
 
 import { DocumentEmptyState, DocumentLoadingState } from "../HelperStates"
 import EditorComponent from "../EditorComponent"

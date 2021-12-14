@@ -11,7 +11,7 @@ import { usePrimarySidebar } from "../ViewState"
 import { serialize } from "../Editor"
 import { CloseModalFn } from "../Modal/types"
 import { ModalContainer, ModalButtonsContainer } from "../Modal"
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useTabsAPI } from "../TabsProvider"
 import { useCloudGroupsState } from "../CloudGroupsProvider"
 

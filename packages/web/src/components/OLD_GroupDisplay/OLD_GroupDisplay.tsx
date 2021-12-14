@@ -9,7 +9,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "../ContextMenu/Old"
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useCloudGroupsState } from "../CloudGroupsProvider"
 
 export const GroupDisplay: React.FC = () => {

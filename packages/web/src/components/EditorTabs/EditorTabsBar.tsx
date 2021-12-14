@@ -1,7 +1,7 @@
 import { FC } from "react"
 import styled from "styled-components/macro"
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
 
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { PrimarySidebarTabs } from "../PrimarySidebar"
 import { SecondarySidebarTabs } from "../SecondarySidebar"
 import { useTabsAPI, useTabsState } from "../TabsProvider"

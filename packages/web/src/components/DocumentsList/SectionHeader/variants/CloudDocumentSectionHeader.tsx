@@ -1,5 +1,5 @@
 import { ContextMenuItem, useContextMenu } from "../../../ContextMenu/Old"
-import { useDocumentsAPI } from "../../../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
 
 import SectionHeaderComponent from "../SectionHeaderComponent"

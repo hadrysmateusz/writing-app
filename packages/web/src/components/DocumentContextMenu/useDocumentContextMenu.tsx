@@ -17,7 +17,7 @@ import {
 } from "../ExportModal"
 import { CollectionSelector } from "../CollectionSelector"
 import { Option } from "../Autocomplete"
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 
 export const useDocumentContextMenu = (document: DocumentDoc) => {
   const {

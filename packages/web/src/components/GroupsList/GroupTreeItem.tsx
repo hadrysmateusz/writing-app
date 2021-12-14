@@ -10,7 +10,7 @@ import { formatOptional } from "../../utils"
 import { useLocalSettings } from "../LocalSettings"
 import { LocalSettings } from "../Database"
 import { ItemsBranch, GroupingItemTreeItemComponent } from "../GroupingItemList"
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useCloudGroupsAPI } from "../CloudGroupsProvider"
 
 export const GroupTreeItem: React.FC<{

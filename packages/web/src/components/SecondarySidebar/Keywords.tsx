@@ -8,7 +8,7 @@ import {
 
 import { Autocomplete, Option } from "../Autocomplete"
 import { TagDoc, useDatabase } from "../Database"
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useTabsState } from "../TabsProvider"
 import { Tag } from "../Tag"
 import { useTagsAPI } from "../TagsProvider"

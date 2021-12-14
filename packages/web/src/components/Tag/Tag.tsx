@@ -1,6 +1,6 @@
 import styled from "styled-components/macro"
 
-import { useDocumentsAPI } from "../DocumentsAPIProvider"
+import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useTabsState } from "../TabsProvider"
 
 export const Tag: React.FC<{ tagId: string }> = ({ children, tagId }) => {
