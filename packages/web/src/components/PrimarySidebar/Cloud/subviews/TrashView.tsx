@@ -34,8 +34,11 @@ export const TrashView: FunctionComponent = () => {
       <MainHeader
         title="Trash"
         buttons={[
-          <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.cloud.all} />,
-          <SortingMainHeaderButton />,
+          <GoUpMainHeaderButton
+            goUpPath={SIDEBAR_VAR.primary.cloud.all}
+            key={SIDEBAR_VAR.primary.cloud.all}
+          />,
+          <SortingMainHeaderButton key="sorting" />,
         ]}
       />
       <InnerContainer>

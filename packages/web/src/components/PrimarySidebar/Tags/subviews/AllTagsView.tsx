@@ -61,7 +61,7 @@ export const AllTagsView: React.FC = () => {
           buttons={
             [
               // <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.cloud.all} />,
-              // <SortingMainHeaderButton />,
+              // <SortingMainHeaderButton key="sorting" />,
             ]
           }
         />

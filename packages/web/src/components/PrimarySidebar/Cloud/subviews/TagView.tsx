@@ -67,8 +67,11 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
       <MainHeader
         title={tag.name}
         buttons={[
-          <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.tags.all} />,
-          <SortingMainHeaderButton />,
+          <GoUpMainHeaderButton
+            goUpPath={SIDEBAR_VAR.primary.tags.all}
+            key={SIDEBAR_VAR.primary.tags.all}
+          />,
+          <SortingMainHeaderButton key="sorting" />,
         ]}
       />
       <InnerContainer>

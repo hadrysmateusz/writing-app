@@ -3,11 +3,7 @@ import React, { FC, useCallback } from "react"
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import { TagDoc, useDatabase } from "../../../Database"
-import {
-  GoUpMainHeaderButton,
-  MainHeader,
-  SortingMainHeaderButton,
-} from "../../../DocumentsList"
+import { MainHeader } from "../../../DocumentsList"
 import { getPromptModalContent, usePromptModal } from "../../../PromptModal"
 import {
   PrimarySidebarViewContainer,
@@ -15,7 +11,6 @@ import {
 } from "../../../SidebarCommon"
 import { TagListItem } from "../../../TagListItem"
 import { useTagsAPI } from "../../../TagsProvider"
-import { SIDEBAR_VAR } from "../../../ViewState"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
@@ -48,10 +43,16 @@ export const TagsView: React.FC = () => {
       <PrimarySidebarViewContainer>
         <MainHeader
           title="Tags"
-          buttons={[
-            <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.cloud.all} />,
-            <SortingMainHeaderButton />,
-          ]}
+          buttons={
+            [
+              // <GoUpMainHeaderButton
+              //   goUpPath={SIDEBAR_VAR.primary.cloud.all}
+              //   key={SIDEBAR_VAR.primary.cloud.all}
+              // />,
+              // TODO: support sorting for tags
+              // <SortingMainHeaderButton key="sorting" />,
+            ]
+          }
         />
         {/* TODO: Rework inner container to support tags */}
         <InnerContainer>

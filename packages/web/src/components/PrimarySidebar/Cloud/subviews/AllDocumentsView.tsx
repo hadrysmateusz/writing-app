@@ -38,7 +38,7 @@ export const AllDocumentsView: React.FC = () => {
     <PrimarySidebarViewContainer>
       <MainHeader
         title="All Documents"
-        buttons={[<SortingMainHeaderButton />]}
+        buttons={[<SortingMainHeaderButton key="sorting" />]}
       />
       <InnerContainer>
         {!isLoading ? (

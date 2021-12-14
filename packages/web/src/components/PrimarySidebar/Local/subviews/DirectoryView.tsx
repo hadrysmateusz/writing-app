@@ -137,9 +137,12 @@ const DirectoryViewInner: React.FC<{
         title={dir.name ?? "Unknown Directory"}
         buttons={[
           // TODO: add a way to go up one directory
-          <GoUpMainHeaderButton goUpPath={SIDEBAR_VAR.primary.local.all} />,
+          <GoUpMainHeaderButton
+            goUpPath={SIDEBAR_VAR.primary.local.all}
+            key={SIDEBAR_VAR.primary.local.all}
+          />,
           // TODO: support sorting for local directories
-          // <SortingMainHeaderButton />,
+          // <SortingMainHeaderButton key="sorting"/>,
         ]}
       />
       <InnerContainer>

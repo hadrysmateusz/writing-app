@@ -73,8 +73,8 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
         title={formatOptional(group.name, "Unnamed Collection")}
         numSubgroups={childGroups.length}
         buttons={[
-          <GoUpMainHeaderButton goUpPath={goUpPath} />,
-          <SortingMainHeaderButton />,
+          <GoUpMainHeaderButton goUpPath={goUpPath} key={goUpPath} />,
+          <SortingMainHeaderButton key="sorting" />,
         ]}
       />
       <InnerContainer>
