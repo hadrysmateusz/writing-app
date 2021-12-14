@@ -7,7 +7,7 @@ import { DocumentDoc, TagDoc, useDatabase } from "../../../Database"
 import {
   DocumentsList,
   MainHeader,
-  SectionHeader,
+  CloudDocumentSectionHeader,
 } from "../../../DocumentsList"
 import { useDocumentsAPI } from "../../../MainProvider"
 import {
@@ -99,7 +99,7 @@ const TagDocumentsList: FC<{
   return documents.length > 0 ? (
     <>
       {/* TODO: make this use a different sectionheader based on sectionheadercomponent */}
-      <SectionHeader
+      <CloudDocumentSectionHeader
         groupId={undefined}
         onToggle={toggle}
         isOpen={isOpen}
@@ -107,7 +107,7 @@ const TagDocumentsList: FC<{
         onMouseLeave={(e) => {}}
       >
         {tagName}
-      </SectionHeader>
+      </CloudDocumentSectionHeader>
       {isOpen ? <DocumentsList documents={documents} /> : null}
     </>
   ) : null

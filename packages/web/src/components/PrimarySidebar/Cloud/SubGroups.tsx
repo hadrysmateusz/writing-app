@@ -3,7 +3,7 @@ import { FC, useState } from "react"
 import { GroupTreeBranch } from "../../../helpers/createGroupTree"
 import { useToggleable, useRxSubscription } from "../../../hooks"
 
-import { DocumentsList, SectionHeader } from "../../DocumentsList"
+import { DocumentsList, CloudDocumentSectionHeader } from "../../DocumentsList"
 import { useMainState } from "../../MainProvider"
 import { useDatabase } from "../../Database"
 
@@ -48,7 +48,7 @@ export const SubGroupDocumentsList: FC<{
 
   return shouldRender ? (
     <PrimarySidebarSectionContainer isHovered={isHovered}>
-      <SectionHeader
+      <CloudDocumentSectionHeader
         groupId={group.id}
         onToggle={toggle}
         isOpen={isOpen}
@@ -56,7 +56,7 @@ export const SubGroupDocumentsList: FC<{
         onMouseLeave={handleMouseLeave}
       >
         {group.name}
-      </SectionHeader>
+      </CloudDocumentSectionHeader>
       {isOpen ? (
         <>
           <DocumentsList documents={documents} />

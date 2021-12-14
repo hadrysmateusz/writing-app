@@ -4,8 +4,8 @@ import { formatOptional } from "../../../utils"
 
 import { useLocalFS } from "../../LocalFSProvider"
 
-import { LocalDocumentSectionHeader } from "../../DocumentsList/SectionHeader/LocalDocumentSectionHeader"
-import { LocalDocumentSidebarItem } from "../../DocumentsList/SidebarDocumentItem/LocalDocumentSidebarItem"
+import { LocalDocumentSectionHeader } from "../../DocumentsList/SectionHeader"
+import { LocalDocumentSidebarItem } from "../../DocumentsList/SidebarDocumentItem"
 
 import { PrimarySidebarSectionContainer } from "../PrimarySidebar.styles"
 

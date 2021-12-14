@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "styled-components/macro"
 
-import SidebarDocumentItem from "./SidebarDocumentItem/SidebarDocumentItem"
+import { CloudDocumentSidebarItem } from "./SidebarDocumentItem"
 import { DocumentDoc } from "../Database"
 
 export const DocumentsList: React.FC<{
@@ -16,7 +16,7 @@ export const DocumentsList: React.FC<{
   ) : (
     <>
       {documents.map((document) => (
-        <SidebarDocumentItem key={document.id} document={document} />
+        <CloudDocumentSidebarItem key={document.id} document={document} />
       ))}
     </>
   )

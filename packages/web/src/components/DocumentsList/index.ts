@@ -1,4 +1,4 @@
 export * from "./DocumentsList"
-export * from "./SidebarDocumentItem/SidebarDocumentItem"
+export * from "./SidebarDocumentItem"
 export * from "./MainHeader"
-export * from "./SectionHeader/SectionHeader"
+export * from "./SectionHeader"

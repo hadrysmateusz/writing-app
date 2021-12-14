@@ -1,17 +1,15 @@
-import React from "react"
+import { useDocumentsAPI } from "../../../MainProvider"
+import { ContextMenuItem, useContextMenu } from "../../../ContextMenu/Old"
+import { usePrimarySidebar } from "../../../ViewState"
 
-import { useDocumentsAPI } from "../../MainProvider"
-import { ContextMenuItem, useContextMenu } from "../../ContextMenu/Old"
-import { usePrimarySidebar } from "../../ViewState"
-
-import SectionHeaderComponent from "./SectionHeaderComponent"
+import SectionHeaderComponent from "../SectionHeaderComponent"
 
 /**
  * Section header for cloud document lists
  *
  * TODO: eventually rename this to CloudDocumentsSectionHeader or sth
  */
-export const SectionHeader: React.FC<{
+export const CloudDocumentSectionHeader: React.FC<{
   groupId?: string | null
   isOpen: boolean
   onToggle: () => void
@@ -67,4 +65,4 @@ export const SectionHeader: React.FC<{
   )
 }
 
-export default SectionHeader
+export default CloudDocumentSectionHeader

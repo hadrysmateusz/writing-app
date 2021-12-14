@@ -4,10 +4,10 @@ import {
   ContextMenu,
   ContextMenuItem,
   useContextMenu,
-} from "../../ContextMenu/New"
-import { usePrimarySidebar } from "../../ViewState"
+} from "../../../ContextMenu/New"
+import { usePrimarySidebar } from "../../../ViewState"
 
-import SectionHeaderComponent from "./SectionHeaderComponent"
+import SectionHeaderComponent from "../SectionHeaderComponent"
 
 export const LocalDocumentSectionHeader: React.FC<{
   path: string

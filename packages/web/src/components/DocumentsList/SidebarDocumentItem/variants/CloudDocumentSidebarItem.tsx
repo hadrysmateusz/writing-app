@@ -1,15 +1,17 @@
-import React, { useCallback, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { Ancestor, Node } from "slate"
 
-import { DocumentDoc } from "../../Database"
-import { useMainState } from "../../MainProvider"
-import { formatOptional } from "../../../utils"
-import { useDocumentContextMenu } from "../../DocumentContextMenu"
-import SidebarDocumentItemComponent from "./SidebarDocumentItemComponent"
+import { formatOptional } from "../../../../utils"
+
+import { DocumentDoc } from "../../../Database"
+import { useMainState } from "../../../MainProvider"
+import { useDocumentContextMenu } from "../../../DocumentContextMenu"
+
+import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
 
 const SNIPPET_LENGTH = 340
 
-export const SidebarDocumentItem: React.FC<{
+export const CloudDocumentSidebarItem: React.FC<{
   document: DocumentDoc
 }> = ({ document }) => {
   const { currentDocumentId, openDocument } = useMainState()
@@ -87,7 +89,7 @@ export const SidebarDocumentItem: React.FC<{
   )
 }
 
-export default SidebarDocumentItem
+export default CloudDocumentSidebarItem
 
 // <MainContainer
 // onClick={handleClick}
