@@ -10,7 +10,7 @@ import { SidebarImportButton } from "../../Importer"
 
 import { SectionContainer } from "../Common"
 
-import TagsSection from "../sections/TagsSection"
+import { TagsSection } from "../sections/TagsSection"
 import { FavoritesSection } from "../sections/FavoritesSection"
 import { GroupsSection } from "../sections/GroupsSection"
 import { DirectoriesSection } from "../sections/DirectoriesSection"
