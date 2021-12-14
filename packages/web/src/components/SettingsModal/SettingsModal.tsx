@@ -1,24 +1,20 @@
-import React, { useState } from "react"
-import styled from "styled-components/macro"
+import { useState } from "react"
 
 import { LogoutButton } from "../Auth"
-import { ModalContainer } from "../Modal"
-import { CloseModalFn } from "../Modal/types"
+import { ModalContainer, ModalContentProps } from "../Modal"
 import { useUserdata } from "../Userdata"
 
-const Container = styled.div`
-  width: 350px;
-  margin-bottom: 16px;
-`
+import { InnerContainer } from "./SettingsModal.styles"
+
+type SettingsModalContentProps = ModalContentProps
 
 // TODO: rename component and file
-export const AccountModalContent: React.FC<{
-  close: CloseModalFn<void>
-}> = ({ close }) => {
+export const SettingsModalContent: React.FC<SettingsModalContentProps> = ({
+  close,
+}) => {
   const { isSpellCheckEnabled, updateSetting } = useUserdata()
-  const [isSpellCheckEnabledField, setIsSpellCheckEnabledField] = useState<
-    boolean
-  >(isSpellCheckEnabled)
+  const [isSpellCheckEnabledField, setIsSpellCheckEnabledField] =
+    useState<boolean>(isSpellCheckEnabled)
 
   const onChangeIsSpellCheckEnabled = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -31,7 +27,7 @@ export const AccountModalContent: React.FC<{
   return (
     <ModalContainer>
       <h2>Settings</h2>
-      <Container>
+      <InnerContainer>
         {/* 
         TODO: support language choice and auto-detection, and maybe custom dictionaries 
         https://www.electronjs.org/docs/tutorial/spellchecker 
@@ -43,7 +39,7 @@ export const AccountModalContent: React.FC<{
           defaultChecked={isSpellCheckEnabledField}
           onChange={onChangeIsSpellCheckEnabled}
         />
-      </Container>
+      </InnerContainer>
 
       <h2>Account</h2>
       <LogoutButton onBeforeLogout={close} />

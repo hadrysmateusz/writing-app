@@ -1,11 +1,8 @@
-import React, { FC } from "react"
-import styled from "styled-components/macro"
-
-import { customScrollbar } from "../../../style-utils"
+import { forwardRef } from "react"
 
 import { GenericTreeItem, AddButton } from "../../TreeItem"
 import { useModal } from "../../Modal"
-import { AccountModalContent } from "../../AccountModal"
+import { SettingsModalContent } from "../../SettingsModal"
 import { SidebarImportButton } from "../../Importer"
 
 import { SectionContainer } from "../Common"
@@ -16,10 +13,11 @@ import { GroupsSection } from "../sections/GroupsSection"
 import { DirectoriesSection } from "../sections/DirectoriesSection"
 
 import { useNavigationTreeItem } from "./helpers"
+import { NavigatorSidebarContainer } from "./NavigatorSidebar.styles"
 
-export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
+export const NavigatorSidebar = forwardRef<HTMLDivElement, {}>(
   (_props, ref) => (
-    <Container ref={ref}>
+    <NavigatorSidebarContainer ref={ref}>
       <SectionContainer>
         <AllDocumentsSidebarItem />
         <InboxSidebarItem />
@@ -38,11 +36,11 @@ export const NavigatorSidebar = React.forwardRef<HTMLDivElement, {}>(
         <SidebarImportButton />
         <TrashSidebarItem />
       </SectionContainer>
-    </Container>
+    </NavigatorSidebarContainer>
   )
 )
 
-const AllDocumentsSidebarItem: FC<{}> = () => {
+const AllDocumentsSidebarItem: React.FC<{}> = () => {
   const getTreeItemProps = useNavigationTreeItem("cloud", "all")
 
   return (
@@ -53,7 +51,7 @@ const AllDocumentsSidebarItem: FC<{}> = () => {
   )
 }
 
-const InboxSidebarItem: FC<{}> = () => {
+const InboxSidebarItem: React.FC<{}> = () => {
   const getTreeItemProps = useNavigationTreeItem("cloud", "inbox")
 
   return (
@@ -64,7 +62,7 @@ const InboxSidebarItem: FC<{}> = () => {
   )
 }
 
-const TrashSidebarItem: FC<{}> = () => {
+const TrashSidebarItem: React.FC<{}> = () => {
   const getTreeItemProps = useNavigationTreeItem("cloud", "trash")
 
   return (
@@ -74,7 +72,7 @@ const TrashSidebarItem: FC<{}> = () => {
   )
 }
 
-const SettingsSidebarItem: FC<{}> = () => {
+const SettingsSidebarItem: React.FC<{}> = () => {
   const { open: openAccountModal, Modal: AccountModal } = useModal(false, {})
 
   return (
@@ -87,20 +85,8 @@ const SettingsSidebarItem: FC<{}> = () => {
         Settings
       </GenericTreeItem>
       <AccountModal>
-        {(props) => <AccountModalContent {...props} />}
+        {(props) => <SettingsModalContent {...props} />}
       </AccountModal>
     </>
   )
 }
-
-const Container = styled.div`
-  --navigator-sidebar-spacing: 20px;
-
-  padding: var(--navigator-sidebar-spacing) 0;
-  font-size: 12px;
-  height: 100%;
-  background: var(--bg-100);
-
-  overflow-y: auto;
-  ${customScrollbar}
-`
