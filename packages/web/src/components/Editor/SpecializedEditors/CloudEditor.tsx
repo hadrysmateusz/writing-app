@@ -1,30 +1,26 @@
 import React, { useCallback, useMemo } from "react"
 
-import { useRxSubscription } from "../../../hooks"
-
-import { useEditorState } from "../../EditorStateProvider"
-import { useDatabase } from "../../Database"
 import TrashBanner from "../../TrashBanner"
+import { useEditorState } from "../../EditorStateProvider"
 import { useDocumentsAPI } from "../../CloudDocumentsProvider"
+import { useTabsState } from "../../TabsProvider"
 
 import { deserialize } from "../helpers"
 import { DocumentEmptyState, DocumentLoadingState } from "../HelperStates"
 import EditorComponent from "../EditorComponent"
 
+// TODO: probably remove dependence on currentDocumentId prop
 export const CloudEditor: React.FC<{ currentDocumentId: string }> = ({
   currentDocumentId,
 }) => {
-  const db = useDatabase()
   const { saveDocument } = useEditorState()
   const { renameDocument } = useDocumentsAPI()
-
-  // TODO: maybe make the main state provider use the rx subscription hook
-  const { data: currentDocument, isLoading: isDocumentLoading } =
-    useRxSubscription(db.documents.findOne().where("id").eq(currentDocumentId))
+  const { currentCloudDocument, isLoadingCurrentCloudDocument } = useTabsState()
 
   const content = useMemo(
-    () => (currentDocument ? deserialize(currentDocument.content) : []),
-    [currentDocument]
+    () =>
+      currentCloudDocument ? deserialize(currentCloudDocument.content) : [],
+    [currentCloudDocument]
   )
 
   const handleRename = useCallback(
@@ -34,20 +30,20 @@ export const CloudEditor: React.FC<{ currentDocumentId: string }> = ({
     [currentDocumentId, renameDocument]
   )
 
-  return currentDocument ? (
+  return currentCloudDocument ? (
     <>
-      {currentDocument.isDeleted && (
-        <TrashBanner documentId={currentDocument.id} />
+      {currentCloudDocument.isDeleted && (
+        <TrashBanner documentId={currentCloudDocument.id} />
       )}
       <EditorComponent
-        key={currentDocument.id} // Necessary to reload the component on id change
+        key={currentCloudDocument.id} // Necessary to reload the component on id change
         saveDocument={saveDocument}
         renameDocument={handleRename}
-        title={currentDocument.title}
+        title={currentCloudDocument.title}
         content={content}
       />
     </>
-  ) : isDocumentLoading ? (
+  ) : isLoadingCurrentCloudDocument ? (
     <DocumentLoadingState />
   ) : (
     <DocumentEmptyState />

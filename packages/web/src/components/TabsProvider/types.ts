@@ -1,3 +1,5 @@
+import { DocumentDoc } from "../Database"
+
 import { TabsState, TabsStateTab, TabTypes } from "./tabsSlice"
 
 export type OpenDocumentFn = (
@@ -7,7 +9,11 @@ export type OpenDocumentFn = (
 
 export type TabsStateContextType = {
   tabsState: TabsState
-  currentDocumentId: string | null
+
+  currentCloudDocumentId: string | null
+  currentCloudDocument: DocumentDoc | null
+  isLoadingCurrentCloudDocument: boolean
+
   currentTabObject: TabsStateTab
   currentTabType: TabTypes
 }

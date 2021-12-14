@@ -18,7 +18,7 @@ import { AddTagButton, TagsContainer } from "./Keywords.styles"
 // TODO: rename this to Tags______
 export const Keywords = () => {
   const db = useDatabase()
-  const { currentDocumentId } = useTabsState()
+  const { currentCloudDocument } = useTabsState()
   const { updateDocument } = useDocumentsAPI()
   const { createTag } = useTagsAPI()
 
@@ -42,21 +42,17 @@ export const Keywords = () => {
     db.tags.find().sort({ nameSlug: "desc" })
   )
 
-  const { data: currentDocument } = useRxSubscription(
-    db.documents.findOne().where("id").eq(currentDocumentId)
-  )
-
   const handleSubmit = async (option: Option) => {
     close()
 
-    if (currentDocument !== null) {
-      const oldTagIds = currentDocument.tags
+    if (currentCloudDocument !== null) {
+      const oldTagIds = currentCloudDocument.tags
       const selectedTagId = option.value
 
       if (selectedTagId !== null) {
         if (oldTagIds.includes(selectedTagId)) return
 
-        await updateDocument(currentDocument.id, {
+        await updateDocument(currentCloudDocument.id, {
           tags: [...oldTagIds, selectedTagId],
         })
 
@@ -74,7 +70,7 @@ export const Keywords = () => {
         return
       }
 
-      await updateDocument(currentDocument.id, {
+      await updateDocument(currentCloudDocument.id, {
         tags: [...oldTagIds, newTag.id],
       })
 
@@ -84,19 +80,21 @@ export const Keywords = () => {
 
   useEffect(() => {
     if (tags === null) return
-    if (currentDocument === null) return
+    if (currentCloudDocument === null) return
 
     setOptions(
       tags
         .map((tag) => ({ value: tag.id, label: tag.name }))
-        .filter((tagOption) => !currentDocument.tags.includes(tagOption.value))
+        .filter(
+          (tagOption) => !currentCloudDocument.tags.includes(tagOption.value)
+        )
     )
-  }, [currentDocument, tags])
+  }, [currentCloudDocument, tags])
 
   useEffect(() => {
-    if (currentDocument !== null && tags !== null) {
+    if (currentCloudDocument !== null && tags !== null) {
       const matchingTags: TagDoc[] = []
-      currentDocument.tags.forEach((tagId) => {
+      currentCloudDocument.tags.forEach((tagId) => {
         const tag = tags.find((tag) => tag.id === tagId)
         if (tag) {
           matchingTags.push(tag)
@@ -104,7 +102,7 @@ export const Keywords = () => {
       })
       setTagsOnDoc(matchingTags)
     }
-  }, [currentDocument, tags])
+  }, [currentCloudDocument, tags])
 
   useOnClickOutside(containerRef, () => {
     // TODO: reset autocomplete inputValue on close
@@ -113,7 +111,7 @@ export const Keywords = () => {
     }
   })
 
-  const isReady = currentDocumentId !== null && tags
+  const isReady = currentCloudDocument !== null && tags
 
   const handleAddTagButtonClick = (_e) => {
     toggle()
@@ -126,7 +124,7 @@ export const Keywords = () => {
           {tagsOnDoc.length > 0 ? "+" : "+ Add tag"}
         </AddTagButton>
       ) : null}
-      {currentDocument !== null
+      {currentCloudDocument !== null
         ? tagsOnDoc.map((tag) => (
             <Tag key={tag.id} tagId={tag.id}>
               {tag.name}

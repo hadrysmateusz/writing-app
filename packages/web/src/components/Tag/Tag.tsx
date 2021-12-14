@@ -5,11 +5,11 @@ import { useTabsState } from "../TabsProvider"
 
 export const Tag: React.FC<{ tagId: string }> = ({ children, tagId }) => {
   const { updateDocument } = useDocumentsAPI()
-  const { currentDocumentId } = useTabsState()
+  const { currentCloudDocumentId } = useTabsState()
 
   const removeTag = async (id: string) => {
-    if (currentDocumentId !== null) {
-      await updateDocument(currentDocumentId, (original) => ({
+    if (currentCloudDocumentId !== null) {
+      await updateDocument(currentCloudDocumentId, (original) => ({
         tags: original.tags.filter((tagId) => tagId !== id),
       }))
     }

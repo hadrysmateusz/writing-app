@@ -17,10 +17,8 @@ export const [EditorStateContext, useEditorState] = createContext<any>() // TODO
  * State provider for editor and secondary sidebar
  */
 export const EditorStateProvider: React.FC = ({ children }) => {
-  const db = useDatabase()
-  const { currentDocumentId } = useTabsState()
+  const { currentCloudDocument } = useTabsState()
   const editor = usePlateEditorRef(usePlateEventId("focus"))
-  // const editorValue = usePlateValue(usePlateEventId("focus"))
 
   const [isModified, setIsModified] = useState(false)
 
@@ -47,7 +45,6 @@ export const EditorStateProvider: React.FC = ({ children }) => {
    * Works on the current document
    */
   const saveDocument = useCallback(() => {
-    console.log("saveDocument", editor, /* isModified, */ editor?.children)
     if (!isModified) {
       console.log("skipping save, document wasn't changed")
       return null
@@ -56,39 +53,21 @@ export const EditorStateProvider: React.FC = ({ children }) => {
       console.error("Can't save, the editor is undefined")
       return null
     }
+    if (currentCloudDocument === null) {
+      console.log("Can't save, there is no currentCloudDocument")
+      return null
+    }
 
     const nodes = editor.children as Descendant[]
 
-    db.documents
-      .findOne()
-      .where("id")
-      .eq(currentDocumentId)
-      .exec()
-      .then((doc) => {
-        if (!doc) {
-          return
-        }
-        doc.atomicUpdate((doc) => {
-          console.log("updating with", JSON.stringify(nodes, null, 2))
-          doc.content = serialize(nodes)
-          return doc
-        })
-      })
+    currentCloudDocument.atomicUpdate((doc) => {
+      console.log("updating with", JSON.stringify(nodes, null, 2))
+      doc.content = serialize(nodes)
+      return doc
+    })
 
     return null
-
-    // if (isModified) {
-    //   const updatedDocument =
-    //     (await currentDocument?.atomicUpdate((doc) => {
-    //       console.log("updating with", JSON.stringify(nodes, null, 2))
-    //       doc.content = serialize(nodes)
-    //       return doc
-    //     })) || null
-
-    //   setIsModified(false)
-    //   return updatedDocument
-    // }
-  }, [currentDocumentId, db.documents, editor, isModified])
+  }, [currentCloudDocument, editor, isModified])
 
   const editorState = useMemo(
     () => ({

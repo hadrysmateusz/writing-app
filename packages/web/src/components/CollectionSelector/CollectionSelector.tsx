@@ -9,7 +9,7 @@ import {
 
 import { Autocomplete, Option } from "../Autocomplete"
 import { useDatabase } from "../Database"
-import { useTabsState } from "../TabsProvider"
+// import { useTabsState } from "../TabsProvider"
 
 export const CollectionSelector = ({
   onSubmit,
@@ -17,15 +17,12 @@ export const CollectionSelector = ({
   onSubmit: (option: Option) => void
 }) => {
   const db = useDatabase()
-  const { currentDocumentId } = useTabsState()
+  // const { currentCloudDocument } = useTabsState()
 
+  // TODO: maybe use the global groups array and manually sort on the client
   const { data: groups } = useRxSubscription(
     // TODO: create a nameSlug for groups to avoid errors
     db.groups.find().sort({ name: "asc" })
-  )
-
-  const { data: currentDocument } = useRxSubscription(
-    db.documents.findOne().where("id").eq(currentDocumentId)
   )
 
   const [options, setOptions] = useState<Option[]>([])
@@ -52,14 +49,22 @@ export const CollectionSelector = ({
 
   useEffect(() => {
     if (groups === null) return
-    if (currentDocument === null) return
 
-    setOptions(
-      groups
-        .map((group) => ({ value: group.id, label: group.name }))
-        .filter((tagOption) => currentDocument.parentGroup !== tagOption.value)
-    )
-  }, [currentDocument, groups])
+    let options = groups.map((group) => ({
+      value: group.id,
+      label: group.name,
+    }))
+
+    // TODO: only re-enable this when I add a way for this component to know if it's used on the current document or any other
+    // // If there is a currentCloudDocument filter out its parentGroup
+    // if (currentCloudDocument !== null) {
+    //   options = options.filter(
+    //     (tagOption) => currentCloudDocument.parentGroup !== tagOption.value
+    //   )
+    // }
+
+    setOptions(options)
+  }, [groups])
 
   return (
     <CollectionSelectorContainer>

@@ -8,9 +8,11 @@ import {
 } from "react"
 
 import { createContext } from "../../utils"
+import { useRxSubscription } from "../../hooks"
 
 import { defaultLocalSettings, useLocalSettings } from "../LocalSettings"
-import AppLoadingState from "../AppLoadingState/AppLoadingState"
+import { AppLoadingState } from "../AppLoadingState"
+import { useDatabase } from "../Database"
 
 import { findTabWithDocumentId, getCurrentCloudDocumentId } from "./helpers"
 import { TabsAction, TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
@@ -32,6 +34,7 @@ export const [TabsDispatchContext, useTabsDispatch] =
 // TODO: create document history. When the current document is deleted move to the previous one if available, and maybe even provide some kind of navigation arrows.
 
 export const TabsProvider: React.FC = memo(({ children }) => {
+  const db = useDatabase()
   const { updateLocalSetting, getLocalSetting } = useLocalSettings()
 
   // Flag to manage whether this is the first time the app is loaded
@@ -52,7 +55,14 @@ export const TabsProvider: React.FC = memo(({ children }) => {
     defaultLocalSettings.tabs
   )
 
-  const currentDocumentId = getCurrentCloudDocumentId(tabsState)
+  const currentCloudDocumentId = getCurrentCloudDocumentId(tabsState)
+
+  const {
+    data: currentCloudDocument,
+    isLoading: isLoadingCurrentCloudDocument,
+  } = useRxSubscription(
+    db.documents.findOne().where("id").eq(currentCloudDocumentId)
+  )
 
   // console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
 
@@ -154,7 +164,7 @@ export const TabsProvider: React.FC = memo(({ children }) => {
           })
         }
         // Open document in new tab
-        else if (currentDocumentId === null || inNewTab) {
+        else if (currentCloudDocumentId === null || inNewTab) {
           tabsDispatch({
             type: "create-tab",
             tabType: "cloudDocument",
@@ -181,7 +191,7 @@ export const TabsProvider: React.FC = memo(({ children }) => {
 
       // return fetchDocument(documentId) // TODO: probably remove dependency on this function as it relates to the old way of storing currentDocument
     },
-    [currentDocumentId, tabsState]
+    [currentCloudDocumentId, tabsState]
   )
 
   // TODO: rename tabsState.currentTab to currentTabId and this to currentTab
@@ -208,11 +218,22 @@ export const TabsProvider: React.FC = memo(({ children }) => {
     () => ({
       tabsState,
 
-      currentDocumentId,
+      // TODO: probably eventually replace (or supplement) with a generic currentDocument____ methods that get an abstracted current cloud/local document
+      currentCloudDocumentId,
+      currentCloudDocument,
+      isLoadingCurrentCloudDocument,
+
       currentTabObject,
       currentTabType,
     }),
-    [currentDocumentId, currentTabObject, currentTabType, tabsState]
+    [
+      currentCloudDocument,
+      currentCloudDocumentId,
+      currentTabObject,
+      currentTabType,
+      isLoadingCurrentCloudDocument,
+      tabsState,
+    ]
   )
 
   return (

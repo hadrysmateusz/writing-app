@@ -15,15 +15,15 @@ export const CloudDocumentSidebarItem: React.FC<{
   document: DocumentDoc
 }> = ({ document }) => {
   const { openDocument } = useTabsAPI()
-  const { currentDocumentId } = useTabsState()
+  const { currentCloudDocumentId } = useTabsState()
 
   const { openMenu, DocumentContextMenu, getEditableProps } =
     useDocumentContextMenu(document)
 
   const isCurrent = useMemo(() => {
-    if (currentDocumentId === null) return false
-    return document.id === currentDocumentId
-  }, [currentDocumentId, document.id])
+    if (currentCloudDocumentId === null) return false
+    return document.id === currentCloudDocumentId
+  }, [currentCloudDocumentId, document.id])
 
   const snippet = useMemo(() => {
     // TODO: replace with a better solution that simply limits the text to some number of lines (probably with css)
