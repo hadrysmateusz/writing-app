@@ -4,9 +4,11 @@ import { withDelayRender } from "../../withDelayRender"
 
 // TODO: probably generalize this component as something like FullscreenLoadingState and extract it higher up
 
-const AppLoadingIndicator = withDelayRender(1000)(() => <div>Loading...</div>)
+export const AppLoadingIndicator = withDelayRender(1000)(() => (
+  <div>Loading...</div>
+))
 
-const AppLoadingState = () => (
+export const AppLoadingState = () => (
   <AppLoadingContainer>
     <AppLoadingIndicator />
   </AppLoadingContainer>
