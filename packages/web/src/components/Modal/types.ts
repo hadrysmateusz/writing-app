@@ -19,13 +19,10 @@ export type UseModalReturn<ReturnValue, ModalProps> = ModalType<
   Modal: FunctionComponent<ModalRenderProps<ReturnValue, ModalProps>>
 }
 
-export type ModalContextValue<
-  ReturnValue,
-  ModalProps,
-  AdditionalValues
-> = ModalType<ReturnValue, ModalProps> & AdditionalValues
+export type ModalContextValue<ReturnValue, ModalProps, AdditionalValues> =
+  ModalType<ReturnValue, ModalProps> & AdditionalValues
 
-export type ModalContentProps<ReturnValue, ModalProps> = {
+export type ModalContentProps<ReturnValue = void, ModalProps = {}> = {
   close: CloseModalFn<ReturnValue>
 } & ModalProps
 
