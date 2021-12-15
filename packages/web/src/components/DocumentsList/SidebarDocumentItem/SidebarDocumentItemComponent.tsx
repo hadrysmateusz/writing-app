@@ -8,8 +8,12 @@ import {
   DateModified,
   MainContainer,
   Snippet,
+  TagAltContainer,
+  TagsContainer,
   Title,
 } from "./SidebarDocumentItemComponent.styles"
+import { useRxSubscription } from "../../../hooks"
+import { useDatabase } from "../../Database"
 
 export const SidebarDocumentItemComponent: React.FC<{
   title: string
@@ -17,6 +21,7 @@ export const SidebarDocumentItemComponent: React.FC<{
   modifiedAt: number
   createdAt: number
   isCurrent: boolean
+  tags?: string[]
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement>) => void
   getEditableProps?: () => EditableTextProps
@@ -26,6 +31,7 @@ export const SidebarDocumentItemComponent: React.FC<{
   modifiedAt,
   createdAt,
   isCurrent,
+  tags,
   onClick,
   onContextMenu,
   getEditableProps,
@@ -65,10 +71,35 @@ export const SidebarDocumentItemComponent: React.FC<{
           <DateModified title={dateModifiedTooltip}>
             {formattedModifiedAt}
           </DateModified>
+        {tags ? <TagsList tags={tags} /> : null}
         </>
       )}
     </MainContainer>
   )
+}
+
+// TODO: extract this for general use and also expose a list of all tags through context to reduce queries/subscriptions across the app
+const TagsList: React.FC<{ tags: string[] }> = ({ tags }) => {
+  const db = useDatabase()
+  const { data: allTags } = useRxSubscription(db.tags.find())
+
+  return allTags ? (
+    <TagsContainer>
+      {tags.map((tagId) => (
+        // <Tag tagId={tagId} key={tagId}>
+        //   {allTags.find((tag) => tag.id === tagId)?.name || "..."}
+        // </Tag>
+        <TagAlt key={tagId}>
+          {allTags.find((tag) => tag.id === tagId)?.name || "..."}
+        </TagAlt>
+      ))}
+    </TagsContainer>
+  ) : null
+}
+
+// TODO: extract this
+const TagAlt: React.FC = ({ children }) => {
+  return <TagAltContainer>{children}</TagAltContainer>
 }
 
 export default SidebarDocumentItemComponent

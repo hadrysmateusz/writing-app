@@ -81,6 +81,7 @@ export const CloudDocumentSidebarItem: React.FC<{
         modifiedAt={document.modifiedAt}
         createdAt={document.createdAt}
         isCurrent={isCurrent}
+        tags={document.tags}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         getEditableProps={getEditableProps}
