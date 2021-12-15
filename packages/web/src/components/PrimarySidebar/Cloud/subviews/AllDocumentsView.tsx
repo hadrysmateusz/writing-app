@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 import createGroupTree from "../../../../helpers/createGroupTree"
@@ -7,21 +7,79 @@ import { useDatabase } from "../../../Database"
 import {
   DocumentsList,
   MainHeader,
-  SortingMainHeaderButton,
+  MoreMainHeaderButton,
+  DocumentListDisplayTypeSubmenu,
+  CloudDocumentSortingSubmenu,
 } from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
+import { useSorting } from "../../../SortingProvider"
+import { useCloudGroupsState } from "../../../CloudGroupsProvider"
+import { usePrimarySidebar } from "../../../ViewState"
 
 import { NewButton } from "../../NewButton"
 
 import { SubGroups } from "../SubGroups"
-import { createFindDocumentsAtRootQuery } from "../queries"
-import { useSorting } from "../../../SortingProvider"
-import { useCloudGroupsState } from "../../../CloudGroupsProvider"
+import {
+  createFindAllDocumentsQuery,
+  createFindDocumentsAtRootQuery,
+} from "../queries"
 
 export const AllDocumentsView: React.FC = () => {
+  const { documentsListDisplayType } = usePrimarySidebar()
+
+  const renderCorrectList = useCallback(() => {
+    switch (documentsListDisplayType) {
+      case "flat":
+        return <FlatDocumentsList />
+      case "tree":
+        return <TreeDocumentsList />
+      default:
+        // TODO: handle this scenario better
+        return <TreeDocumentsList />
+    }
+  }, [documentsListDisplayType])
+
+  return (
+    <PrimarySidebarViewContainer>
+      <MainHeader
+        title="All Documents"
+        // numDocuments={documents?.length}
+        // numSubgroups={groupsTree.children.length}
+        buttons={[
+          <MoreMainHeaderButton
+            key="sorting"
+            contextMenuContent={
+              <>
+                <CloudDocumentSortingSubmenu />
+                <DocumentListDisplayTypeSubmenu />
+              </>
+            }
+          />,
+        ]}
+      />
+      <InnerContainer>{renderCorrectList()}</InnerContainer>
+      <NewButton groupId={null} />
+    </PrimarySidebarViewContainer>
+  )
+}
+
+const FlatDocumentsList = () => {
+  const db = useDatabase()
+  const { sorting } = useSorting()
+  const { data: documents, isLoading } = useRxSubscription(
+    createFindAllDocumentsQuery(db, sorting)
+  )
+  return !isLoading ? (
+    <>
+      <DocumentsList documents={documents || []} listType="flat" />
+    </>
+  ) : null
+}
+
+const TreeDocumentsList = () => {
   const db = useDatabase()
   const { sorting } = useSorting()
   const { groups } = useCloudGroupsState()
@@ -29,28 +87,12 @@ export const AllDocumentsView: React.FC = () => {
   const { data: documents, isLoading } = useRxSubscription(
     createFindDocumentsAtRootQuery(db, sorting)
   )
-
   const groupsTree = useMemo(() => createGroupTree(groups), [groups])
 
-  // TODO: add a switch to toggle flat (old) view
-
-  return (
-    <PrimarySidebarViewContainer>
-      <MainHeader
-        title="All Documents"
-        numDocuments={documents?.length}
-        numSubgroups={groupsTree.children.length}
-        buttons={[<SortingMainHeaderButton key="sorting" />]}
-      />
-      <InnerContainer>
-        {!isLoading ? (
-          <>
-            <DocumentsList documents={documents || []} />
-            <SubGroups groups={groupsTree.children} />
-          </>
-        ) : null}
-      </InnerContainer>
-      <NewButton groupId={null} />
-    </PrimarySidebarViewContainer>
-  )
+  return !isLoading ? (
+    <>
+      <DocumentsList documents={documents || []} listType="tree" />
+      <SubGroups groups={groupsTree.children} />
+    </>
+  ) : null
 }

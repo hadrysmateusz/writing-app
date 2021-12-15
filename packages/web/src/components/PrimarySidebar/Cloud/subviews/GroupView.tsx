@@ -4,10 +4,12 @@ import useRxSubscription from "../../../../hooks/useRxSubscription"
 import { formatOptional } from "../../../../utils"
 
 import {
+  CloudDocumentSortingSubmenu,
+  DocumentListDisplayTypeSubmenu,
   DocumentsList,
   GoUpMainHeaderButton,
   MainHeader,
-  SortingMainHeaderButton,
+  MoreMainHeaderButton,
 } from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
 import {
@@ -19,13 +21,13 @@ import {
   SIDEBAR_VAR,
   usePrimarySidebar,
 } from "../../../ViewState"
+import { useSorting } from "../../../SortingProvider"
 
 import { NewButton } from "../../NewButton"
 
 import { SubGroups } from "../SubGroups"
 import { createFindDocumentsInGroupQuery } from "../queries"
 import { useFindGroupAndChildGroups } from "../helpers"
-import { useSorting } from "../../../SortingProvider"
 
 export const GroupView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -67,6 +69,7 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
     ? `${SIDEBAR_VAR.primary.cloud.group}_${group.parentGroup}`
     : SIDEBAR_VAR.primary.cloud.all
 
+  // TODO: support flat view (probably recursively fetch all nested groups and use a query that matches any of those gorupIds)
   return ok ? (
     <PrimarySidebarViewContainer>
       <MainHeader
@@ -75,7 +78,15 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
         numSubgroups={childGroups.length}
         buttons={[
           <GoUpMainHeaderButton goUpPath={goUpPath} key={goUpPath} />,
-          <SortingMainHeaderButton key="sorting" />,
+          <MoreMainHeaderButton
+            key="sorting"
+            contextMenuContent={
+              <>
+                <CloudDocumentSortingSubmenu />
+                <DocumentListDisplayTypeSubmenu />
+              </>
+            }
+          />,
         ]}
       />
       <InnerContainer>

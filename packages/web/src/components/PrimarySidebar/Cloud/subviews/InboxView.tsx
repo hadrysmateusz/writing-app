@@ -4,10 +4,12 @@ import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import { useDatabase } from "../../../Database"
 import {
+  CloudDocumentSortingSubmenu,
+  DocumentListDisplayTypeSubmenu,
   DocumentsList,
   GoUpMainHeaderButton,
   MainHeader,
-  SortingMainHeaderButton,
+  MoreMainHeaderButton,
 } from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
@@ -38,7 +40,15 @@ export const InboxView: React.FC = () => {
             goUpPath={SIDEBAR_VAR.primary.cloud.all}
             key={SIDEBAR_VAR.primary.cloud.all}
           />,
-          <SortingMainHeaderButton key="sorting" />,
+          <MoreMainHeaderButton
+            key="sorting"
+            contextMenuContent={
+              <>
+                <CloudDocumentSortingSubmenu />
+                <DocumentListDisplayTypeSubmenu />
+              </>
+            }
+          />,
         ]}
       />
       <InnerContainer>

@@ -7,19 +7,21 @@ import {
   InnerContainer,
 } from "../../../SidebarCommon"
 import {
+  CloudDocumentSortingSubmenu,
+  DocumentListDisplayTypeSubmenu,
   DocumentsList,
   GoUpMainHeaderButton,
   MainHeader,
-  SortingMainHeaderButton,
+  MoreMainHeaderButton,
 } from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
 import { SIDEBAR_VAR } from "../../../ViewState"
+import { useSorting } from "../../../SortingProvider"
+import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 import { createFindDeletedDocumentsQuery } from "../queries"
-import { useSorting } from "../../../SortingProvider"
-import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 
 export const TrashView: FunctionComponent = () => {
   const db = useDatabase()
@@ -39,11 +41,21 @@ export const TrashView: FunctionComponent = () => {
             goUpPath={SIDEBAR_VAR.primary.cloud.all}
             key={SIDEBAR_VAR.primary.cloud.all}
           />,
-          <SortingMainHeaderButton key="sorting" />,
+          <MoreMainHeaderButton
+            key="sorting"
+            contextMenuContent={
+              <>
+                <CloudDocumentSortingSubmenu />
+                <DocumentListDisplayTypeSubmenu />
+              </>
+            }
+          />,
         ]}
       />
       <InnerContainer>
-        {!isLoading ? <DocumentsList documents={documents || []} /> : null}
+        {!isLoading ? (
+          <DocumentsList documents={documents || []} listType="flat" />
+        ) : null}
       </InnerContainer>
       <DeleteAllButton />
     </PrimarySidebarViewContainer>

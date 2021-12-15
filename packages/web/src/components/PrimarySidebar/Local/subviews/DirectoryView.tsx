@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react"
 
 import {
+  DocumentListDisplayTypeSubmenu,
   GoUpMainHeaderButton,
   MainHeader,
-  SortingMainHeaderButton,
+  MoreMainHeaderButton,
 } from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
@@ -141,8 +142,16 @@ const DirectoryViewInner: React.FC<{
             goUpPath={SIDEBAR_VAR.primary.local.all}
             key={SIDEBAR_VAR.primary.local.all}
           />,
-          // TODO: support sorting for local directories
-          // <SortingMainHeaderButton key="sorting"/>,
+
+          <MoreMainHeaderButton
+            key="sorting"
+            contextMenuContent={
+              <>
+                {/* <CloudDocumentSortingSubmenu /> // TODO: support sorting for local directories */}
+                <DocumentListDisplayTypeSubmenu />
+              </>
+            }
+          />,
         ]}
       />
       <InnerContainer>

@@ -3,10 +3,11 @@ import { useMemo } from "react"
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import {
+  CloudDocumentSortingSubmenu,
   DocumentsList,
   GoUpMainHeaderButton,
   MainHeader,
-  SortingMainHeaderButton,
+  MoreMainHeaderButton,
 } from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
 import {
@@ -18,9 +19,9 @@ import {
   SIDEBAR_VAR,
   usePrimarySidebar,
 } from "../../../ViewState"
+import { useSorting } from "../../../SortingProvider"
 
 import { NewButton } from "../../NewButton"
-import { useSorting } from "../../../SortingProvider"
 
 export const TagView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -71,12 +72,19 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
             goUpPath={SIDEBAR_VAR.primary.tags.all}
             key={SIDEBAR_VAR.primary.tags.all}
           />,
-          <SortingMainHeaderButton key="sorting" />,
+          <MoreMainHeaderButton
+            key="sorting"
+            contextMenuContent={
+              <>
+                <CloudDocumentSortingSubmenu />
+              </>
+            }
+          />,
         ]}
       />
       <InnerContainer>
         {!isTagLoading && !isDocumentsLoading ? (
-          <DocumentsList documents={documents || []} />
+          <DocumentsList documents={documents || []} listType="flat" />
         ) : null}
       </InnerContainer>
       {/* TODO:  Rework NewButton to work with tags as well as groups */}

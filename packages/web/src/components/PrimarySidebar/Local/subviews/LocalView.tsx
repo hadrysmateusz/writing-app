@@ -1,4 +1,8 @@
-import { MainHeader } from "../../../DocumentsList"
+import {
+  DocumentListDisplayTypeSubmenu,
+  MainHeader,
+  MoreMainHeaderButton,
+} from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -22,7 +26,20 @@ export const LocalView: React.FC<{}> = () => {
 
   return (
     <PrimarySidebarViewContainer>
-      <MainHeader title="Local" buttons={[]} />
+      <MainHeader
+        title="Local"
+        buttons={[
+          <MoreMainHeaderButton
+            key="sorting"
+            contextMenuContent={
+              <>
+                {/* <CloudDocumentSortingSubmenu /> // TODO: support sorting for local directories */}
+                <DocumentListDisplayTypeSubmenu />
+              </>
+            }
+          />,
+        ]}
+      />
       <InnerContainer>
         {dirTrees.map((dirTree) => (
           <DirItem
