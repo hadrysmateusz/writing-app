@@ -1,9 +1,11 @@
 import { withDelayRender } from "../../../withDelayRender"
 import { Wrapper } from "./MainHeader.styles"
 
-const EmptyDetails = withDelayRender(1000)(() => (
-  <>Figure out details for this view</>
-))
+const EmptyDetailsPlaceholder = () => <div>&nbsp;</div> // This is here to prevent the buttons from jumping
+const EmptyDetails = withDelayRender(
+  100,
+  EmptyDetailsPlaceholder
+)(() => <>Figure out details for this view</>)
 
 export const MainHeader: React.FC<{
   title: string
