@@ -18,6 +18,13 @@ import { LinkModalProvider } from "./LinkModal"
 export const EditorRenderer: React.FC = () => {
   const { currentTabObject } = useTabsState()
 
+  /* TODO: add basic keyboard shortcuts like:
+      - Mod+w : Close tab
+      - Mod+t : Create newCloudDocument tab
+      - Mod+n : Create new document (either cloud or local based on current primary sidebar view)
+      - Mod+s : Maybe move the save shortcut to the same place
+  */
+
   // Handles rendering the editor based on tab type
   function renderCorrectEditor() {
     // TODO: probably precompute this and expose in useTabsState hook
