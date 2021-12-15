@@ -4,11 +4,9 @@ import { useDatabase, LocalSettings, LocalSettingsDoc } from "../Database"
 import { useCurrentUser } from "../Auth"
 
 import defaults from "./default"
-import { LocalSettingsContext } from "./misc"
-import { LocalSettingsDocError } from "."
-import { TabsState } from "../TabsProvider/tabsSlice"
+import { LocalSettingsContext, LocalSettingsDocError } from "./misc"
+import { TabsState } from "../TabsProvider"
 
-// TODO: consider integrating it with the MainProvider
 // TODO: better handle loading states, make sure the defaults aren't used until they're necessary
 export const LocalSettingsProvider: FC = ({ children }) => {
   const db = useDatabase()
@@ -100,9 +98,22 @@ export const LocalSettingsProvider: FC = ({ children }) => {
         return k === "tabs"
       }
 
-      if (isKeyNotTabs(key)) {
-        let value: unknown = localSettingsDoc[key] // For now this casting is required for typescript to not complain
-        return value as LocalSettings[K]
+      function isKeyDocumentsListDisplayType(
+        k: K
+      ): k is Extract<K, "documentsListDisplayType"> {
+        return k === "documentsListDisplayType"
+      }
+
+      if (isKeyDocumentsListDisplayType(key)) {
+        let value = localSettingsDoc[key]
+        switch (value) {
+          case "flat":
+            return value as LocalSettings[K]
+          case "tree":
+            return value as LocalSettings[K]
+          default:
+            return defaults.documentsListDisplayType as LocalSettings[K]
+        }
       }
 
       if (isKeyTabs(key)) {
@@ -119,6 +130,11 @@ export const LocalSettingsProvider: FC = ({ children }) => {
           )
           return defaults.tabs as LocalSettings[K]
         }
+      }
+
+      if (isKeyNotTabs(key)) {
+        let value: unknown = localSettingsDoc[key] // For now this casting is required for typescript to not complain
+        return value as LocalSettings[K]
       }
 
       throw new Error("Something went wrong")

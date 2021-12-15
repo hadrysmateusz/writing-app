@@ -154,6 +154,13 @@ export const models = {
           },
         }
       },
+      6: function (oldDoc: LocalSettingsDoc) {
+        return {
+          ...oldDoc,
+          documentsListDisplayType:
+            defaultLocalSettings.documentsListDisplayType,
+        }
+      },
     },
     // pouchSettings: {
     //   skip_setup: true,

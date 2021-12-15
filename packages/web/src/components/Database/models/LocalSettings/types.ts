@@ -10,12 +10,16 @@ type NewSidebarType<S extends SidebarSidebar> = {
   currentPaths: Record<SidebarView<S>, string>
 }
 
+type DocumentsListDisplayType = "tree" | "flat"
+
 /**
  * Contains only the actual user preferences/settings, for use elsewhere
  */
 export type LocalSettings = {
   /**
    * Array of IDs for tree items that should be expanded (mostly corresponding to group IDs)
+   *
+   * TODO: consider moving to a synced collection like userdata (may require additional deserializing on other devices to handle the local-only parts of the state)
    */
   expandedKeys: {
     cloud: string[]
@@ -27,6 +31,8 @@ export type LocalSettings = {
   unsyncedDocs: string[]
   /**
    * Tabs state
+   *
+   * TODO: consider moving to a synced collection like userdata (may require additional deserializing on other devices to handle the local-only parts of the state)
    */
   tabs: TabsState
   /**
@@ -35,12 +41,20 @@ export type LocalSettings = {
   localDocPaths: string[]
   /**
    * New combined sidebars state
+   *
+   * TODO: consider moving to a synced collection like userdata (may require additional deserializing on other devices to handle the local-only parts of the state)
    */
   sidebars: {
     navigator: NewSidebarType<"navigator">
     primary: NewSidebarType<"primary">
     secondary: NewSidebarType<"secondary">
   }
+  /**
+   * Documents list display type
+   *
+   * TODO: consider moving to a synced collection like userdata
+   */
+  documentsListDisplayType: DocumentsListDisplayType
 }
 
 export type LocalSettingsDocType = Omit<LocalSettings, "tabs"> & {

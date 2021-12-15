@@ -18,7 +18,7 @@ const expandedKeysArray = {
 export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
   title: "local settings schema",
   description: "describes a set of local settings",
-  version: 5,
+  version: 6,
   primaryKey: "userId",
   type: "object",
   properties: {
@@ -97,6 +97,7 @@ export const localSettingsSchema: RxJsonSchema<LocalSettingsDocType> = {
         },
       },
     },
+    documentsListDisplayType: { type: "string" },
   },
   required: ["userId"],
 }

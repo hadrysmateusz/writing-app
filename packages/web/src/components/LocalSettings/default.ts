@@ -32,6 +32,7 @@ export const defaultLocalSettings: LocalSettings = {
       },
     },
   },
+  documentsListDisplayType: "tree",
 }
 
 export function tabsInit(): TabsState {
