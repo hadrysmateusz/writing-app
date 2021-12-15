@@ -21,7 +21,7 @@ export const AddTagButton = styled.div`
 `
 
 export const TagsContainer = styled.div<{ isPopupOpen: boolean }>`
-  --tags-gap: 10px;
+  --tags-gap: 8px;
 
   margin: 4px 0;
 

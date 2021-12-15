@@ -71,10 +71,12 @@ const Row = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 4px 0;
+  color: var(--light-400);
 `
 
 const Value = styled.div`
   font-weight: 500;
+  color: var(--light-500);
 `
 
 export default TextStats
