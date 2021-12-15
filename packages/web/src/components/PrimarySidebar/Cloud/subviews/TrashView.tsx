@@ -33,6 +33,7 @@ export const TrashView: FunctionComponent = () => {
     <PrimarySidebarViewContainer>
       <MainHeader
         title="Trash"
+        numDocuments={documents?.length}
         buttons={[
           <GoUpMainHeaderButton
             goUpPath={SIDEBAR_VAR.primary.cloud.all}

@@ -32,6 +32,7 @@ export const InboxView: React.FC = () => {
     <PrimarySidebarViewContainer>
       <MainHeader
         title="Inbox"
+        numDocuments={documents?.length}
         buttons={[
           <GoUpMainHeaderButton
             goUpPath={SIDEBAR_VAR.primary.cloud.all}

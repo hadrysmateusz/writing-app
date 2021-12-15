@@ -38,6 +38,8 @@ export const AllDocumentsView: React.FC = () => {
     <PrimarySidebarViewContainer>
       <MainHeader
         title="All Documents"
+        numDocuments={documents?.length}
+        numSubgroups={groupsTree.children.length}
         buttons={[<SortingMainHeaderButton key="sorting" />]}
       />
       <InnerContainer>

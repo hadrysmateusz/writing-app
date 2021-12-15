@@ -71,6 +71,7 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
     <PrimarySidebarViewContainer>
       <MainHeader
         title={formatOptional(group.name, "Unnamed Collection")}
+        numDocuments={documents?.length}
         numSubgroups={childGroups.length}
         buttons={[
           <GoUpMainHeaderButton goUpPath={goUpPath} key={goUpPath} />,
