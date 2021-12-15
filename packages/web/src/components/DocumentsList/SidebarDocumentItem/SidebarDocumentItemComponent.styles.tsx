@@ -53,8 +53,9 @@ export const MainContainer = styled.div<{ isCurrent: boolean }>`
   min-width: 0;
   overflow: hidden;
   user-select: none;
-  padding: 10px 12px 12px;
+  padding: 13px 12px 13px;
   border-radius: 4px;
+  margin-bottom: 4px;
 
   cursor: pointer;
 
