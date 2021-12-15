@@ -38,3 +38,15 @@ export const createFindDeletedDocumentsQuery = (
     .eq(true)
     .sort({ [sorting.index]: sorting.direction })
 }
+
+export const createFindAllDocumentsQuery = (
+  db: MyDatabase,
+  sorting: Sorting
+) => {
+  return db.documents
+    .findNotRemoved()
+
+    .sort({
+      [sorting.index]: sorting.direction,
+    })
+}
