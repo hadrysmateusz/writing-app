@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react"
+import React, { FC, useCallback, useMemo } from "react"
 
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
@@ -68,10 +68,37 @@ export const TagsView: React.FC = () => {
 }
 
 const TagsList: FC<{ tags: TagDoc[] }> = ({ tags }) => {
+  const db = useDatabase()
+
+  const { data: documents } = useRxSubscription(db.documents.findNotRemoved())
+
+  const numDocsInTags = useMemo(() => {
+    const _numDocsInTags = {}
+
+    if (!documents) {
+      return {}
+    }
+
+    for (let doc of documents) {
+      for (let tag of doc.tags) {
+        if (!_numDocsInTags[tag]) {
+          _numDocsInTags[tag] = 0
+        }
+        _numDocsInTags[tag] += 1
+      }
+    }
+    return _numDocsInTags
+  }, [documents])
+
   return (
     <>
       {tags.map((tag) => (
-        <TagListItem key={tag.id} id={tag.id} name={tag.name} />
+        <TagListItem
+          key={tag.id}
+          id={tag.id}
+          name={tag.name}
+          numDocs={numDocsInTags[tag.id]}
+        />
       ))}
     </>
   )

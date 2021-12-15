@@ -7,10 +7,11 @@ import { usePrimarySidebar } from "../ViewState"
 
 import { TagListItemContainer } from "./TagListItem.styles"
 
-export const TagListItem: React.FC<{ id: string; name: string }> = ({
-  id,
-  name,
-}) => {
+export const TagListItem: React.FC<{
+  id: string
+  name: string
+  numDocs: number | null
+}> = ({ id, name, numDocs }) => {
   const { permanentlyDeleteTag, renameTag } = useTagsAPI()
   const { switchSubview } = usePrimarySidebar()
 
@@ -44,12 +45,13 @@ export const TagListItem: React.FC<{ id: string; name: string }> = ({
   return (
     <>
       <TagListItemContainer>
-        <div
-          className="Tag_Name"
-          onClick={handleTagClick}
-          title="View documents with this tag"
-        >
-          <EditableText {...getRenamingInputProps()}>{name}</EditableText>
+        <div className="Tag_LeftSideContainer" onClick={handleTagClick}>
+          <div className="Tag_Name" title="View documents with this tag">
+            <EditableText {...getRenamingInputProps()}>{name}</EditableText>
+          </div>
+          {numDocs !== null ? (
+            <div className="Tag_Details">{numDocs} Documents</div>
+          ) : null}
         </div>
         <div className="Tag_ActionsContainer">
           <div className="Tag_Action" onClick={handleRename} title="Rename">
