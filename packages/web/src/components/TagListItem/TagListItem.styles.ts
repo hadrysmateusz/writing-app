@@ -40,7 +40,7 @@ export const TagListItemContainer = styled.div`
     margin-right: auto;
     flex-grow: 1;
 
-    color: var(--light-400);
+    color: var(--light-500);
     font-weight: 500;
     font-family: "Poppins";
     line-height: 18px;
