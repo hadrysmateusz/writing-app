@@ -29,6 +29,7 @@ const INITIAL_DOCUMENT_STATE: DocumentState = {
   document: undefined,
 }
 
+// TODO: support missing documents like VSCode does, by showing special styling on tab but keeping content cached in memory/state allowing the user to re-save the document with changes even if it was deleted in FS
 export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
   currentDocumentPath,
 }) => {
