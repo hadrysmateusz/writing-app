@@ -37,7 +37,6 @@ export const TagListItemContainer = styled.div`
   } */
 
   .Tag_Name {
-    padding-bottom: 4px;
     margin-right: auto;
     flex-grow: 1;
 
