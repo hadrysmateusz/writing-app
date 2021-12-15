@@ -1,10 +1,16 @@
+import { withDelayRender } from "../../../withDelayRender"
 import { Wrapper } from "./MainHeader.styles"
+
+const EmptyDetails = withDelayRender(1000)(() => (
+  <>Figure out details for this view</>
+))
 
 export const MainHeader: React.FC<{
   title: string
+  numDocuments?: number
   numSubgroups?: number
   buttons: React.ReactElement[]
-}> = ({ title, numSubgroups, buttons }) => {
+}> = ({ title, numSubgroups, numDocuments, buttons }) => {
   // TODO: use real documents data in MainHeader_Detail
   return (
     <Wrapper>
@@ -12,7 +18,9 @@ export const MainHeader: React.FC<{
         <div>
           <div className="MainHeader_MainText">{title}</div>
           <div className="MainHeader_Details">
-            X documents{numSubgroups ? `, ${numSubgroups} collections` : null}
+            {numDocuments ? `${numDocuments} documents` : null}
+            {numSubgroups ? `, ${numSubgroups} collections` : null}
+            {!numDocuments && !numSubgroups ? <EmptyDetails /> : null}
           </div>
         </div>
         <>{buttons}</>
