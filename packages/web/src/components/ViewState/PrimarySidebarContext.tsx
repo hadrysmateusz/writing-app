@@ -26,6 +26,10 @@ export const PrimarySidebarProvider: FC<{
   const { updateLocalSetting, getLocalSetting } = useLocalSettings()
   const navigatorSidebar = useNavigatorSidebar()
 
+  const [documentsListDisplayType, setDocumentsListDisplayType] = useState<
+    LocalSettings["documentsListDisplayType"]
+  >(defaultLocalSettings.documentsListDisplayType)
+
   // TODO: this depends on the NavigatorSidebarProvider being an ancestor of the PrimarySidebarProvider and might cause issues in the future, find a different solution (maybe an effect in the navigator or primary sidebar component but that seems hacky)
   // TODO: maybe move this to become a property of the navigator sidebar
   const [wasNavigatorOpen, setWasNavigatorOpen] = useState(
@@ -46,7 +50,11 @@ export const PrimarySidebarProvider: FC<{
 
   useEffect(() => {
     ;(async () => {
+      const documentsListDisplayType_ = await getLocalSetting(
+        "documentsListDisplayType"
+      )
       const sidebars = await getLocalSetting("sidebars")
+      setDocumentsListDisplayType(documentsListDisplayType_)
       setPrimarySidebarCurrentView(sidebars.primary.currentView)
       setPrimarySidebarCurrentSubviews(sidebars.primary.currentPaths)
       loadingStateDispatch({ type: "sidebar-ready", sidebarId: "primary" })
@@ -57,12 +65,10 @@ export const PrimarySidebarProvider: FC<{
     defaultLocalSettings.sidebars.primary.currentView
   )
 
-  const [
-    primarySidebarCurrentSubviews,
-    setPrimarySidebarCurrentSubviews,
-  ] = useState<SidebarPaths<"primary">>(
-    defaultLocalSettings.sidebars.primary.currentPaths
-  )
+  const [primarySidebarCurrentSubviews, setPrimarySidebarCurrentSubviews] =
+    useState<SidebarPaths<"primary">>(
+      defaultLocalSettings.sidebars.primary.currentPaths
+    )
 
   const switchPrimaryView = useCallback(
     async (view: SidebarView<"primary">) => {
@@ -136,6 +142,14 @@ export const PrimarySidebarProvider: FC<{
     [getLocalSetting, switchPrimaryView, updateLocalSetting]
   )
 
+  const switchDocumentsListDisplayType = useCallback(
+    (value: LocalSettings["documentsListDisplayType"]) => {
+      setDocumentsListDisplayType(value)
+      updateLocalSetting("documentsListDisplayType", value)
+    },
+    [updateLocalSetting]
+  )
+
   const value = useMemo(
     () => ({
       ...toggleable,
@@ -143,17 +157,21 @@ export const PrimarySidebarProvider: FC<{
       side: Side.left,
       minWidth: 180,
       maxWidth: 400,
+      documentsListDisplayType,
       currentView: primarySidebarCurrentView,
       currentSubviews: primarySidebarCurrentSubviews,
       switchView: switchPrimaryView,
       switchSubview: switchPrimarySubview,
+      switchDocumentsListDisplayType,
     }),
     [
-      primarySidebarCurrentSubviews,
-      primarySidebarCurrentView,
       toggleable,
-      switchPrimarySubview,
+      documentsListDisplayType,
+      primarySidebarCurrentView,
+      primarySidebarCurrentSubviews,
       switchPrimaryView,
+      switchPrimarySubview,
+      switchDocumentsListDisplayType,
     ]
   )
   return (

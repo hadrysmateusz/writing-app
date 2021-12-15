@@ -132,6 +132,10 @@ export type SwitchPrimarySidebarViewFn = <View extends SidebarView<"primary">>(
 ) => Promise<void>
 
 export interface PrimarySidebar extends MultiViewSidebar<"primary"> {
+  documentsListDisplayType: LocalSettings["documentsListDisplayType"]
+  switchDocumentsListDisplayType: (
+    value: LocalSettings["documentsListDisplayType"]
+  ) => void
   currentSubviews: SidebarPaths<"primary">
   switchSubview: SwitchPrimarySidebarViewFn
 }
