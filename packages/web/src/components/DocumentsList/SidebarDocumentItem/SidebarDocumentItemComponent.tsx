@@ -5,6 +5,7 @@ import { EditableText, EditableTextProps } from "../../RenamingInput"
 
 import {
   DateModified,
+  GroupName,
   MainContainer,
   Snippet,
   TagAltContainer,
@@ -21,6 +22,7 @@ export const SidebarDocumentItemComponent: React.FC<{
   createdAt: number
   isCurrent: boolean
   tags?: string[]
+  groupName?: string
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement>) => void
   getEditableProps?: () => EditableTextProps
@@ -31,6 +33,7 @@ export const SidebarDocumentItemComponent: React.FC<{
   createdAt,
   isCurrent,
   tags,
+  groupName,
   onClick,
   onContextMenu,
   getEditableProps,
@@ -54,6 +57,7 @@ export const SidebarDocumentItemComponent: React.FC<{
       onContextMenu={onContextMenu}
       isCurrent={isCurrent}
     >
+      {groupName ? <GroupName>{groupName}</GroupName> : null}
       <Title isUnsynced={/* isUnsynced */ false}>
         {getEditableProps ? (
           <EditableText {...getEditableProps()}>{title}</EditableText>

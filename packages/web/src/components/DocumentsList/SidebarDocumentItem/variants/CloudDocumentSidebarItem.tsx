@@ -3,7 +3,8 @@ import { Ancestor, Node } from "slate"
 
 import { formatOptional } from "../../../../utils"
 
-import { DocumentDoc } from "../../../Database"
+import { useCloudGroupsState } from "../../../CloudGroupsProvider"
+import { DocumentDoc, LocalSettings } from "../../../Database"
 import { useDocumentContextMenu } from "../../../DocumentContextMenu"
 import { useTabsAPI, useTabsState } from "../../../TabsProvider"
 
@@ -13,9 +14,21 @@ const SNIPPET_LENGTH = 340
 
 export const CloudDocumentSidebarItem: React.FC<{
   document: DocumentDoc
-}> = ({ document }) => {
+  listType?: LocalSettings["documentsListDisplayType"]
+}> = ({ document, listType = "tree" }) => {
   const { openDocument } = useTabsAPI()
   const { currentCloudDocumentId } = useTabsState()
+  const { groups } = useCloudGroupsState() // TODO: move the groupName related logic to separate component to decouple this from groups changes when not needed
+
+  const groupName = useMemo(() => {
+    if (listType === "flat") {
+      const foundGroup = groups.find(
+        (group) => group.id === document.parentGroup
+      )
+      return foundGroup?.name
+    }
+    return undefined
+  }, [document.parentGroup, listType, groups])
 
   const { openMenu, DocumentContextMenu, getEditableProps } =
     useDocumentContextMenu(document)
@@ -82,6 +95,7 @@ export const CloudDocumentSidebarItem: React.FC<{
         createdAt={document.createdAt}
         isCurrent={isCurrent}
         tags={document.tags}
+        groupName={groupName}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         getEditableProps={getEditableProps}

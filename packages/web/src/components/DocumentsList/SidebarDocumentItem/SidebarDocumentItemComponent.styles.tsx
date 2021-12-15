@@ -7,6 +7,14 @@ export const DateModified = styled.div`
   line-height: 13px;
 `
 
+export const GroupName = styled.div`
+  text-transform: uppercase;
+  color: var(--light-100);
+  font-size: 8.5px;
+  font-weight: bold;
+  margin-bottom: 4px;
+`
+
 export const Title = styled.div<{ isUnsynced: boolean }>`
   width: 100%;
   color: var(--light-500);
