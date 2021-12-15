@@ -70,7 +70,7 @@ export const SidebarDocumentItemComponent: React.FC<{
         <DateModified title={dateModifiedTooltip}>
           {formattedModifiedAt}
         </DateModified>
-        {tags ? <TagsList tags={tags} /> : null}
+        {tags && tags.length > 0 ? <TagsList tags={tags} /> : null}
       </>
       {/* )} */}
     </MainContainer>
