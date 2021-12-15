@@ -2,11 +2,12 @@ import React from "react"
 import styled from "styled-components/macro"
 
 import { CloudDocumentSidebarItem } from "./SidebarDocumentItem"
-import { DocumentDoc } from "../Database"
+import { DocumentDoc, LocalSettings } from "../Database"
 
 export const DocumentsList: React.FC<{
   documents: DocumentDoc[]
-}> = ({ documents }) => {
+  listType?: LocalSettings["documentsListDisplayType"]
+}> = ({ documents, listType = "tree" }) => {
   // console.log(
   //   "documents:",
   //   documents.map((doc) => doc.toJSON())
@@ -16,7 +17,11 @@ export const DocumentsList: React.FC<{
   ) : (
     <>
       {documents.map((document) => (
-        <CloudDocumentSidebarItem key={document.id} document={document} />
+        <CloudDocumentSidebarItem
+          key={document.id}
+          document={document}
+          listType={listType}
+        />
       ))}
     </>
   )

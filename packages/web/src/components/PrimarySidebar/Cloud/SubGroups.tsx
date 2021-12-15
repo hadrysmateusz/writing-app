@@ -59,7 +59,7 @@ export const SubGroupDocumentsList: FC<{
       </CloudDocumentSectionHeader>
       {isOpen ? (
         <>
-          <DocumentsList documents={documents} />
+          <DocumentsList documents={documents} listType="tree" />
           <SubGroups groups={group.children} />
         </>
       ) : null}
