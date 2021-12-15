@@ -1,7 +1,6 @@
 import React, { useMemo } from "react"
 import moment from "moment"
 
-import { Outline } from "../../SecondarySidebar/Outline"
 import { EditableText, EditableTextProps } from "../../RenamingInput"
 
 import {
@@ -63,17 +62,17 @@ export const SidebarDocumentItemComponent: React.FC<{
         )}
       </Title>
 
-      {isCurrent ? (
+      {/* {isCurrent ? (
         <Outline />
-      ) : (
-        <>
-          {hasSnippet ? <Snippet>{snippet}</Snippet> : null}
-          <DateModified title={dateModifiedTooltip}>
-            {formattedModifiedAt}
-          </DateModified>
+      ) : ( */}
+      <>
+        {hasSnippet ? <Snippet>{snippet}</Snippet> : null}
+        <DateModified title={dateModifiedTooltip}>
+          {formattedModifiedAt}
+        </DateModified>
         {tags ? <TagsList tags={tags} /> : null}
-        </>
-      )}
+      </>
+      {/* )} */}
     </MainContainer>
   )
 }
