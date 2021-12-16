@@ -2,18 +2,26 @@ import React, { useCallback, useState } from "react"
 
 import { myDeserializeMd } from "../../slate-helpers/deserialize"
 import { formatOptional } from "../../utils"
-import { useToggleable } from "../../hooks"
 
-import { ContextMenuItem, ContextMenuSeparator } from "../ContextMenu/Old"
 import Icon from "../Icon"
 import { Button } from "../Button"
 import { usePrimarySidebar } from "../ViewState"
 import { serialize } from "../Editor"
-import { CloseModalFn } from "../Modal/types"
-import { ModalContainer, ModalButtonsContainer } from "../Modal"
+import {
+  ModalContainer,
+  ModalButtonsContainer,
+  ModalSecondaryMessageContainer,
+  ModalMessageContainer,
+  CloseModalFn,
+} from "../Modal"
 import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useTabsAPI } from "../TabsProvider"
 import { useCloudGroupsState } from "../CloudGroupsProvider"
+import {
+  CollectionSelector,
+  useCollectionSelector,
+} from "../CollectionSelector"
+import { Option } from "../Autocomplete"
 
 import { DropdownContainer, DropdownContent } from "./ImportModal.styles"
 
@@ -105,49 +113,68 @@ export const ImportModalContent: React.FC<{
     importFile("md")
   }, [importFile])
 
-  const { toggle, isOpen } = useToggleable(false)
-
   const groupName = formatOptional(
     groups.find((group) => group.id === targetGroup)?.name,
     "Inbox"
   )
 
+  const {
+    getCollectionSelectorPropsAndRef,
+    close: closeGroupSelector,
+    toggle: toggleGroupSelector,
+    isOpen,
+  } = useCollectionSelector({ initialState: false })
+
+  const handleSelectGroupSubmit = useCallback(
+    async (option: Option) => {
+      const selectedGroupId = option.value
+
+      setTargetGroup(selectedGroupId)
+
+      closeGroupSelector()
+    },
+    [closeGroupSelector]
+  )
+
   // TODO: add a selector for the target collection
   return (
-    <ModalContainer>
-      <h2>Import</h2>
-      {/* <p>Select Target Group</p> */}
+    <ModalContainer style={{ width: "500px" }}>
+      <ModalMessageContainer>Import</ModalMessageContainer>
+      <ModalSecondaryMessageContainer>
+        Import a markdown file and transform it into a cloud document in
+        specified collection
+        <ol>
+          <li>
+            Select collection from <em>dropdown</em>
+          </li>
+          <li>
+            Click <em>'Import Markdown File'</em> button
+          </li>
+          <li>
+            Select a <em>markdown</em> file
+          </li>
+        </ol>
+      </ModalSecondaryMessageContainer>
       <ModalButtonsContainer>
         <DropdownContainer
           onClick={() => {
-            toggle()
+            toggleGroupSelector()
           }}
         >
-          {groupName}
-          <Icon icon="caretDown" />
+          <span>{groupName}</span>
+          <Icon icon="caretDown" color="var(--light-300)" />
           {isOpen ? (
             <DropdownContent>
-              <ContextMenuItem
-                key="__INBOX__"
-                onClick={() => setTargetGroup(null)}
-              >
-                Inbox
-              </ContextMenuItem>
-              <ContextMenuSeparator />
-              {groups.map((group) => (
-                <ContextMenuItem
-                  key={group.id}
-                  onClick={() => setTargetGroup(group.id)}
-                >
-                  {formatOptional(group.name, "Unnamed Collection")}
-                </ContextMenuItem>
-              ))}
+              <CollectionSelector
+                {...getCollectionSelectorPropsAndRef()}
+                onSubmit={handleSelectGroupSubmit}
+              />
             </DropdownContent>
           ) : null}
         </DropdownContainer>
 
-        <Button onClick={handleImportMarkdown} autoFocus>
-          Markdown
+        <Button onClick={handleImportMarkdown} autoFocus variant="primary">
+          Import Markdown File
         </Button>
       </ModalButtonsContainer>
     </ModalContainer>

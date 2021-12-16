@@ -28,13 +28,17 @@ export const DropdownContainer = styled.div`
   position: relative;
   cursor: pointer;
   user-select: none;
+
+  span {
+    margin-right: 6px;
+  }
 `
 
 export const DropdownContent = styled.div`
   /* Base styles */
   position: absolute;
   /* left: 100%; */
-  top: 26px; /* based on the padding of the the container and border width*/
+  top: -7px; /* based on the padding of the the container and border width */
   max-height: 322px;
   overflow-y: auto;
 
