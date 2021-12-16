@@ -6,6 +6,7 @@ import {
   ModalContainer,
   ModalButtonsContainer,
   ModalMessageContainer,
+  ModalSecondaryMessageContainer,
 } from "../Modal"
 import { useDocumentsAPI } from "./CloudDocumentsProvider"
 
@@ -58,6 +59,9 @@ export const ConfirmDeleteModalContent: FC<
   return (
     <ModalContainer>
       <ModalMessageContainer>{msgPrompt}</ModalMessageContainer>
+      <ModalSecondaryMessageContainer>
+        This action can't be undone
+      </ModalSecondaryMessageContainer>
       <ModalButtonsContainer>
         {/* TODO: add progress spinner (that only shows up if the confirmation takes more than X miliseconds) */}
         <Button onClick={handleConfirm} variant={"danger"} fullWidth>

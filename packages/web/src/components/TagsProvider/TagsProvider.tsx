@@ -16,6 +16,7 @@ import {
 const ConfirmDeleteTagModalContent = getConfirmModalContent({
   confirmMessage: "Delete",
   promptMessage: "Are you sure you want to delete this tag?",
+  secondaryPromptMessage: "This action can't be undone",
 })
 
 export const [TagsAPIContext, useTagsAPI] = createContext<TagsAPI>()
