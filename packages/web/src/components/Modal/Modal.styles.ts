@@ -5,19 +5,15 @@ export const ModalContainer = styled.div`
   border: 1px solid var(--dark-500);
   padding: 20px 20px 20px;
   border-radius: 4px;
-  color: white;
-  font-weight: bold;
-
-  h2 {
-    color: var(--light-500);
-    font-size: 20px;
-    line-height: 24px;
-    margin-top: 0;
-  }
+  color: var(--light-400);
+  font-size: 13px;
 `
 
 export const ModalMessageContainer = styled.div`
+  color: var(--light-500);
+  font-weight: bold;
   margin-bottom: 14px;
+  font-size: 16px;
 `
 
 export const ModalSecondaryMessageContainer = styled.div`
@@ -26,6 +22,23 @@ export const ModalSecondaryMessageContainer = styled.div`
   font-size: 11px;
   font-weight: normal;
   color: var(--light-300);
+  line-height: 1.5;
+
+  ul,
+  ol {
+    margin: 6px 0 0;
+    padding-left: 0;
+    list-style-position: inside;
+  }
+
+  li::marker {
+    color: var(--light-500);
+  }
+
+  em {
+    font-style: normal;
+    color: var(--light-500);
+  }
 `
 
 export const ModalButtonsContainer = styled.div`
