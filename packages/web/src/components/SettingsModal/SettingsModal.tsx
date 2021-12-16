@@ -1,7 +1,11 @@
 import { useState } from "react"
 
 import { LogoutButton } from "../Auth"
-import { ModalContainer, ModalContentProps } from "../Modal"
+import {
+  ModalContainer,
+  ModalContentProps,
+  ModalMessageContainer,
+} from "../Modal"
 import { useUserdata } from "../Userdata"
 
 import { InnerContainer } from "./SettingsModal.styles"
@@ -26,22 +30,25 @@ export const SettingsModalContent: React.FC<SettingsModalContentProps> = ({
 
   return (
     <ModalContainer>
-      <h2>Settings</h2>
+      <ModalMessageContainer>Settings</ModalMessageContainer>
       <InnerContainer>
         {/* 
         TODO: support language choice and auto-detection, and maybe custom dictionaries 
         https://www.electronjs.org/docs/tutorial/spellchecker 
       */}
-        <label htmlFor="isSpellCheckEnabledField">Spell Check&nbsp;</label>
-        <input
-          name="isSpellCheckEnabledField"
-          type="checkbox"
-          defaultChecked={isSpellCheckEnabledField}
-          onChange={onChangeIsSpellCheckEnabled}
-        />
+        <label>
+          Spell Check&nbsp;&nbsp;
+          <input
+            name="isSpellCheckEnabledField"
+            type="checkbox"
+            defaultChecked={isSpellCheckEnabledField}
+            onChange={onChangeIsSpellCheckEnabled}
+          />
+        </label>
       </InnerContainer>
 
-      <h2>Account</h2>
+      <ModalMessageContainer>Account</ModalMessageContainer>
+
       <LogoutButton onBeforeLogout={close} />
     </ModalContainer>
   )
