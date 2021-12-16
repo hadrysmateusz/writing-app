@@ -1,23 +1,39 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useMemo, useRef } from "react"
 import styled from "styled-components/macro"
 
-import {
-  useOnClickOutside,
-  useRxSubscription,
-  useToggleable,
-} from "../../hooks"
+import { Toggleable, useOnClickOutside, useRxSubscription } from "../../hooks"
 
 import { Autocomplete, Option } from "../Autocomplete"
+import { useCloudGroupsAPI } from "../CloudGroupsProvider"
 import { useDatabase } from "../Database"
-// import { useTabsState } from "../TabsProvider"
 
-export const CollectionSelector = ({
-  onSubmit,
-}: {
+export type CollectionSelectorProps = Toggleable & {
   onSubmit: (option: Option) => void
+  excludeGroupIds?: (string | null)[]
+  disabledGroupIds?: (string | null)[]
+  inputRef: React.MutableRefObject<HTMLInputElement | null>
+}
+
+// TODO: when there are changes inside (e.g. a dirty input) force the submenu to start open (that would have to be a functionality higher up probably with this only integrating with it)
+export const CollectionSelector: React.FC<CollectionSelectorProps> = ({
+  onSubmit,
+  close,
+  isOpen,
+  excludeGroupIds = [],
+  disabledGroupIds = [],
+  inputRef,
 }) => {
   const db = useDatabase()
-  // const { currentCloudDocument } = useTabsState()
+  const { createGroup } = useCloudGroupsAPI()
+
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
+  useOnClickOutside(containerRef, () => {
+    // TODO: reset autocomplete inputValue on close (this might actually be desirable as accidental closes right now aren't exactly uncommon, I should maybe think about it again when I make the Submenu stay open while this component is dirty)
+    if (isOpen) {
+      close()
+    }
+  })
 
   // TODO: maybe use the global groups array and manually sort on the client
   const { data: groups } = useRxSubscription(
@@ -25,54 +41,45 @@ export const CollectionSelector = ({
     db.groups.find().sort({ name: "asc" })
   )
 
-  const [options, setOptions] = useState<Option[]>([])
+  const options = useMemo(() => {
+    if (groups === null) return []
 
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const autocompleteInputRef = useRef<HTMLInputElement | null>(null)
-
-  const { isOpen, close } = useToggleable(true, {
-    onAfterOpen: () => {
-      console.dir("after open", autocompleteInputRef?.current)
-      // setTimeout is important for this to work
-      setTimeout(() => {
-        autocompleteInputRef?.current?.focus()
-      }, 0)
-    },
-  })
-
-  useOnClickOutside(containerRef, () => {
-    // TODO: reset autocomplete inputValue on close
-    if (isOpen) {
-      close()
-    }
-  })
-
-  useEffect(() => {
-    if (groups === null) return
-
-    let options = groups.map((group) => ({
+    let options: Option[] = groups.map((group) => ({
       value: group.id,
       label: group.name,
+      disabled: disabledGroupIds.includes(group.id),
     }))
 
-    // TODO: only re-enable this when I add a way for this component to know if it's used on the current document or any other
-    // // If there is a currentCloudDocument filter out its parentGroup
-    // if (currentCloudDocument !== null) {
-    //   options = options.filter(
-    //     (tagOption) => currentCloudDocument.parentGroup !== tagOption.value
-    //   )
-    // }
+    options.unshift({
+      value: null,
+      label: "Inbox",
+      disabled: disabledGroupIds.includes(null),
+    })
 
-    setOptions(options)
-  }, [groups])
+    // Exclude specified groups
+    options = options.filter(
+      (option) => !excludeGroupIds.includes(option.value)
+    )
+
+    return options
+  }, [disabledGroupIds, excludeGroupIds, groups])
+
+  const handleMoveToGroupCreate = useCallback(
+    async (value: string) => {
+      const newGroup = await createGroup(null, { name: value })
+      onSubmit({ value: newGroup.id, label: value })
+    },
+    [createGroup, onSubmit]
+  )
 
   return (
-    <CollectionSelectorContainer>
+    <CollectionSelectorContainer ref={containerRef}>
       <Autocomplete
-        ref={autocompleteInputRef}
         suggestions={options}
         submit={onSubmit}
-        placeholder="Search"
+        create={handleMoveToGroupCreate}
+        createNewPrompt="Press 'Enter' to create new collection"
+        inputRef={inputRef}
       />
     </CollectionSelectorContainer>
   )
@@ -81,6 +88,6 @@ export const CollectionSelector = ({
 export default CollectionSelector
 
 const CollectionSelectorContainer = styled.div`
-  width: 220px;
+  width: 225px;
   padding: 0 6px;
 `
