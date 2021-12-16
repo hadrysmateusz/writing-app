@@ -15,7 +15,10 @@ import {
   ExportModalProps,
   ExportModalReturnValue,
 } from "../ExportModal"
-import { CollectionSelector } from "../CollectionSelector"
+import {
+  CollectionSelector,
+  useCollectionSelector,
+} from "../CollectionSelector"
 import { Option } from "../Autocomplete"
 import { useDocumentsAPI } from "../CloudDocumentsProvider"
 
@@ -134,6 +137,8 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     [closeMenu, document.id, updateDocument]
   )
 
+  const { getCollectionSelectorPropsAndRef } = useCollectionSelector()
+
   const DocumentContextMenu: React.FC<{}> = () => {
     return (
       <>
@@ -159,8 +164,11 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
 
                 <ContextMenuSeparator />
                 <ContextSubmenu text="Move to">
-                  {/* FIXME: options list of CollectionSelector is empty when a non-cloud document is in current tab */}
-                  <CollectionSelector onSubmit={handleMoveToGroupSubmit} />
+                  <CollectionSelector
+                    onSubmit={handleMoveToGroupSubmit}
+                    {...getCollectionSelectorPropsAndRef()}
+                    disabledGroupIds={[document.parentGroup]}
+                  />
                 </ContextSubmenu>
                 <ContextMenuSeparator />
                 <ContextMeta>
