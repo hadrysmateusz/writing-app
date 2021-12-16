@@ -9,6 +9,7 @@ import {
   ModalContainer,
   ModalMessageContainer,
   ModalContentProps,
+  ModalSecondaryMessageContainer,
 } from "../Modal"
 import { TextInput } from "../TextInput"
 
@@ -33,11 +34,13 @@ export function usePromptModal(
 
 export function getPromptModalContent({
   promptMessage,
+  secondaryPromptMessage,
   submitMessage = "OK",
   inputPlaceholder = "",
 }: {
   promptMessage: string
-  submitMessage: string
+  secondaryPromptMessage?: string
+  submitMessage?: string
   inputPlaceholder?: string
 }) {
   const PromptModalContent: React.FC<PromptModalContentProps> = ({
@@ -70,6 +73,11 @@ export function getPromptModalContent({
       <ModalContainer>
         <form onSubmit={onSubmit}>
           <ModalMessageContainer>{promptMessage}</ModalMessageContainer>
+          {secondaryPromptMessage ? (
+            <ModalSecondaryMessageContainer>
+              {secondaryPromptMessage}
+            </ModalSecondaryMessageContainer>
+          ) : null}
           <PromptModalInnerContainer>
             <TextInput
               type="text"

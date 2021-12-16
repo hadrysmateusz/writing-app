@@ -17,7 +17,15 @@ export const ModalContainer = styled.div`
 `
 
 export const ModalMessageContainer = styled.div`
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+`
+
+export const ModalSecondaryMessageContainer = styled.div`
+  margin-top: -4px;
+  margin-bottom: 14px;
+  font-size: 11px;
+  font-weight: normal;
+  color: var(--light-300);
 `
 
 export const ModalButtonsContainer = styled.div`

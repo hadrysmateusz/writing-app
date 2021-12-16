@@ -6,6 +6,7 @@ import {
   ModalContainer,
   ModalButtonsContainer,
   ModalMessageContainer,
+  ModalSecondaryMessageContainer,
 } from "../Modal"
 import { ModalContentProps } from "../Modal/types"
 
@@ -44,11 +45,13 @@ export function useConfirmModal(options: ConfirmModalOptions = {}) {
 
 export function getConfirmModalContent({
   promptMessage = "Are you sure?",
+  secondaryPromptMessage,
   confirmMessage = "OK",
   cancelMessage = "Cancel",
   confirmButtonVariant = "danger", // TODO: replace with primary when it's fixed
 }: {
   promptMessage?: string
+  secondaryPromptMessage?: string
   confirmMessage?: string
   cancelMessage?: string
   confirmButtonVariant?: ButtonVariants
@@ -75,8 +78,12 @@ export function getConfirmModalContent({
 
     return (
       <ModalContainer>
-        {/* TODO: extract this prompt element and share between prompt and confirm modals */}
         <ModalMessageContainer>{promptMessage}</ModalMessageContainer>
+        {secondaryPromptMessage ? (
+          <ModalSecondaryMessageContainer>
+            {secondaryPromptMessage}
+          </ModalSecondaryMessageContainer>
+        ) : null}
         <ModalButtonsContainer>
           <Button
             onClick={handleConfirm}
