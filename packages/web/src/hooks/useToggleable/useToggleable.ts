@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react"
 import { ToggleableHooks } from "./types"
 
 // TODO: add a loading state - trigger it when running onBeforeOpen and open after it's done
-export const useToggleable = <T = undefined>(
+export const useToggleable = <T = void>(
   initialState: boolean,
   {
     onBeforeOpen,

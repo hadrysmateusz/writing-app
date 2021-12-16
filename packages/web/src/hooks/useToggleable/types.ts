@@ -1,4 +1,4 @@
-export interface Toggleable<T> {
+export interface Toggleable<T = void> {
   isOpen: boolean
   open: () => Promise<T | undefined> | void // TODO: the void here is just a temporary patch
   close: (resolveValue?: T) => void
