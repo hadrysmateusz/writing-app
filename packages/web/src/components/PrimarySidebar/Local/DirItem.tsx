@@ -1,5 +1,4 @@
-import { useState } from "react"
-import { useToggleable } from "../../../hooks"
+import { useIsHovered, useToggleable } from "../../../hooks"
 import { formatOptional } from "../../../utils"
 
 import { useLocalFS } from "../../LocalFSProvider"
@@ -22,14 +21,7 @@ export const DirItem: React.FC<
 
   const isEmpty = files.length === 0 && dirs.length === 0
 
-  // TODO: reduce duplication with subgroups
-  const [isHovered, setIsHovered] = useState(false)
-  const handleMouseEnter = (e) => {
-    setIsHovered(true)
-  }
-  const handleMouseLeave = (e) => {
-    setIsHovered(false)
-  }
+  const { getHoverContainerProps, isHovered } = useIsHovered()
 
   return !isEmpty ? (
     <PrimarySidebarSectionContainer isHovered={isHovered}>
@@ -38,8 +30,7 @@ export const DirItem: React.FC<
         isOpen={isOpen}
         onToggle={toggle}
         removeDir={deleteDir}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        {...getHoverContainerProps()}
       >
         {formatOptional(name, "Unknown")}
       </LocalDocumentSectionHeader>
