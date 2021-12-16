@@ -1,5 +1,5 @@
 import fetch from "node-fetch"
-import { MEDIUM_API_BASE_URL, MEDIUM_CLIENT_ID } from "@writing-tool/shared"
+import { MEDIUM_API_BASE_URL, MEDIUM_CLIENT_ID } from "shared"
 
 export async function requestMediumAccessToken(code, redirect_uri) {
   try {

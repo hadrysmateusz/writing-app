@@ -1,10 +1,11 @@
 {
-  "name": "@writing-tool/desktop",
+  "name": "desktop",
   "version": "0.1.0",
   "private": true,
   "homepage": "./",
   "main": "dist/main.js",
   "scripts": {
+    "dev": "concurrently --kill-others \"tsc -w\" \"wait-on http://localhost:3000 && yarn run start",
     "build": "yarn compile && yarn build:web && yarn build:web:post && electron-builder",
     "build:web": "yarn --cwd ../web build",
     "build:web:post": "shx cp -Rf ../web/build dist/web",
@@ -51,6 +52,8 @@
     "wait-on": "^4.0.2"
   },
   "dependencies": {
+    "web": "*",
+    "shared": "*",
     "chokidar": "^3.5.2",
     "fs-extra": "^10.0.0",
     "mime-types": "^2.1.34",

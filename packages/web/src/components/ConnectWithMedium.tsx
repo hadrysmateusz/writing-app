@@ -7,7 +7,7 @@ import {
   MEDIUM_API_AUTH_URL,
   API_BASE_URL_DEV,
   FRONTEND_BASE_URL_PROD,
-} from "@writing-tool/shared"
+} from "shared"
 
 import { openPopupWindow } from "../utils"
 

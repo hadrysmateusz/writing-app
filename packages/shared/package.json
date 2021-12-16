@@ -1,12 +1,21 @@
 {
-  "name": "@writing-tool/shared",
+  "name": "shared",
   "version": "0.1.0",
   "private": true,
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "eslintConfig": {
     "extends": "react-app"
   },
   "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc",
     "lint": "echo \"No lint script for package 'shared'\" && exit 0"
+  },
+  "devDependencies": {
+    "typescript": "4.5.2"
   }
 }

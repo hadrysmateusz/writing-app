@@ -1,5 +1,5 @@
 {
-  "name": "@writing-tool/api",
+  "name": "api",
   "description": "Main Serverless Service",
   "version": "0.1.0",
   "private": true,

@@ -1,5 +1,5 @@
 import fetch from "node-fetch"
-import { MEDIUM_API_BASE_URL } from "@writing-tool/shared"
+import { MEDIUM_API_BASE_URL } from "shared"
 
 export async function getMediumUserDetails(access_token) {
   try {

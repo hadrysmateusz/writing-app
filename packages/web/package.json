@@ -1,11 +1,12 @@
 {
-  "name": "@writing-tool/web",
+  "name": "web",
   "description": "React Web application",
   "version": "0.1.0",
   "private": true,
   "homepage": "./",
   "main": "src/index.ts",
   "scripts": {
+    "dev": "react-scripts start",
     "clean": "shx rm -f *.tsbuildinfo && shx rm -rf build",
     "start": "react-scripts start",
     "test": "react-scripts test",
@@ -16,6 +17,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "shared": "*",
     "@types/body-scroll-lock": "^3.1.0",
     "@types/is-url": "^1.2.28",
     "@types/jest": "^26.0.15",
