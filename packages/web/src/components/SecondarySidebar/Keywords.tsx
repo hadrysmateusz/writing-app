@@ -59,23 +59,23 @@ export const Keywords = () => {
         return
       }
 
-      const trimmedInputValue = option.label.trim()
-      if (trimmedInputValue === "") return
-
-      // The createTag function takes care of making sure the tag with this name doesn't exist already
-      const newTag = await createTag({ name: trimmedInputValue })
-
-      if (newTag === null) {
-        // This tag already exists (something went wrong)
-        return
-      }
-
-      await updateDocument(currentCloudDocument.id, {
-        tags: [...oldTagIds, newTag.id],
-      })
-
       return
     }
+  }
+
+  const handleCreate = async (value: string) => {
+    const trimmedInputValue = value.trim()
+    if (trimmedInputValue === "") return
+
+    // The createTag function takes care of making sure the tag with this name doesn't exist already
+    const newTag = await createTag({ name: trimmedInputValue })
+
+    if (newTag === null) {
+      // This tag already exists (something went wrong)
+      return
+    }
+
+    handleSubmit({ value: newTag.id, label: trimmedInputValue })
   }
 
   useEffect(() => {
@@ -133,9 +133,11 @@ export const Keywords = () => {
         : null}
       <div className="Tags_Popup" ref={containerRef}>
         <Autocomplete
-          ref={autocompleteInputRef}
+          inputRef={autocompleteInputRef}
           suggestions={options}
           submit={handleSubmit}
+          create={handleCreate}
+          createNewPrompt="Press 'Enter' to create new tag"
         />
       </div>
     </TagsContainer>
