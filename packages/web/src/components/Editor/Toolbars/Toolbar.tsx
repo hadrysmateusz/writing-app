@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from "styled-components/macro"
 import {
   ELEMENT_BLOCKQUOTE,
   ELEMENT_CODE_BLOCK,

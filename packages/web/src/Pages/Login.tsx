@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from "react"
 import { Link, Redirect } from "react-router-dom"
-import styled from "styled-components"
+import styled from "styled-components/macro"
 
 import { useAuthContext } from "../components/Auth"
 import { Button } from "../components/Button"

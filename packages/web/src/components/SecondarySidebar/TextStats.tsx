@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import styled from "styled-components"
+import styled from "styled-components/macro"
 import { unified } from "unified"
 import latin from "retext-latin"
 import size from "unist-util-size"
