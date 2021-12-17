@@ -12,7 +12,7 @@
     "clean": "yarn workspaces run clean",
     "dev:desktop": "cross-env BROWSER=none concurrently --kill-others \"yarn dev:web\" \"yarn workspace desktop compile -w\" \"wait-on http://localhost:3000 && yarn workspace desktop start\"",
     "dev:web": "yarn workspace web start",
-    "start": "yarn dev:desktop",
+    "start": "yarn turbo run dev",
     "build": "yarn workspace desktop build",
     "lint": "yarn workspaces run lint",
     "prepare": "husky install"
