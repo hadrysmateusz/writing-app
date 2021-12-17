@@ -297,7 +297,7 @@ const LocalFSProvider: React.FC = ({ children }) => {
   })
 
   // TODO: rename these to avoid confusing with dirState properties
-  const { dirs, isLoading: isLoadingDirs, updateDirs } = useValidateDirs()
+  const { dirs, updateDirs } = useValidateDirs()
 
   useFetchInitialDirTrees(dirs, setDirState)
 

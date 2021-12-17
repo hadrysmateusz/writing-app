@@ -1,3 +1,5 @@
-export default {
+const dndTypes = {
   GROUP: "group",
 }
+
+export default dndTypes

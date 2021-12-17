@@ -6,7 +6,6 @@ import { usePlateEventId, usePlateEditorRef } from "@udecode/plate-core"
 import { createContext } from "../../utils"
 
 import { serialize } from "../Editor"
-import { useDatabase } from "../Database"
 import { useTabsState } from "../TabsProvider"
 
 // TODO: this needs a significant rework/rethinking since the migration to plate
