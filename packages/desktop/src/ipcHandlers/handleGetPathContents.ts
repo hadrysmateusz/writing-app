@@ -1,6 +1,5 @@
-import { GetPathContentsPayload } from "shared"
+import { GetPathContentsPayload, IpcResponseStatus } from "shared"
 
-import { IpcResponseStatus } from "../types"
 import { createDirObjectRecursive } from "../helpers"
 
 export const handleGetPathContents = async (

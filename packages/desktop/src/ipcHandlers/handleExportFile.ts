@@ -3,9 +3,8 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { ExportFilePayload } from "shared"
+import { ExportFilePayload, IpcResponseStatus } from "shared"
 
-import { IpcResponseStatus } from "../types"
 import { APP_NAME, filters } from "../constants"
 
 export const handleExportFile = async (_event, payload: ExportFilePayload) => {

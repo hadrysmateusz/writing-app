@@ -3,9 +3,8 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { ImportFilePayload } from "shared"
+import { ImportFilePayload, IpcResponseStatus, OpenFileObject } from "shared"
 
-import { IpcResponseStatus, OpenFileObject } from "../types"
 import { filters } from "../constants"
 import { readFileForLocalEditor } from "../helpers"
 

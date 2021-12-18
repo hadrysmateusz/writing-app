@@ -3,9 +3,7 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { AddPathPayload } from "shared"
-
-import { IpcResponseStatus } from "../types"
+import { AddPathPayload, IpcResponseStatus } from "shared"
 
 export const handleAddPath = async (_event, payload: AddPathPayload) => {
   // TODO: better default path

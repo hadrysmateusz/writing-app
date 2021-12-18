@@ -1,6 +1,5 @@
-import { StopWatchDirPayload } from "shared"
+import { IpcResponseStatus, StopWatchDirPayload } from "shared"
 import { closeWatcherForDir } from "../helpers"
-import { IpcResponseStatus } from "../types"
 
 export const handleStopWatchDir = async (
   _event,

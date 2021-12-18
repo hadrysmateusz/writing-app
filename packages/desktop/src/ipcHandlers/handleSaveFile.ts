@@ -1,8 +1,6 @@
 import fs from "fs-extra"
 
-import { SaveFilePayload } from "shared"
-
-import { IpcResponseStatus } from "../types"
+import { IpcResponseStatus, SaveFilePayload } from "shared"
 
 export const handleSaveFile = async (_event, payload: SaveFilePayload) => {
   const { filePath, content } = payload

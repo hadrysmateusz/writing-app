@@ -3,9 +3,7 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { CreateDirPayload } from "shared"
-
-import { IpcResponseStatus } from "../types"
+import { CreateDirPayload, IpcResponseStatus } from "shared"
 
 export const handleCreateDir = async (_event, payload: CreateDirPayload) => {
   let { name, parentPath } = payload

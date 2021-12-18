@@ -1,8 +1,6 @@
 import rimraf from "rimraf"
 
-import { DeleteDirPayload } from "shared"
-
-import { IpcResponseStatus } from "../types"
+import { DeleteDirPayload, IpcResponseStatus } from "shared"
 
 export const handleDeleteDir = async (_event, payload: DeleteDirPayload) => {
   const { dirPath } = payload

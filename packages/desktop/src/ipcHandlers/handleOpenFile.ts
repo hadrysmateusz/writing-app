@@ -1,8 +1,7 @@
 import fs from "fs-extra"
 
-import { OpenFilePayload } from "shared"
+import { IpcResponseStatus, OpenFilePayload } from "shared"
 
-import { IpcResponseStatus } from "../types"
 import { readFileForLocalEditor } from "../helpers"
 
 export const handleOpenFile = async (_event, payload: OpenFilePayload) => {

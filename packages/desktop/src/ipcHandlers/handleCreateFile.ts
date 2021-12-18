@@ -3,9 +3,8 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { CreateFilePayload } from "shared"
+import { CreateFilePayload, IpcResponseStatus } from "shared"
 
-import { IpcResponseStatus } from "../types"
 import { filters } from "../constants"
 
 export const handleCreateFile = async (

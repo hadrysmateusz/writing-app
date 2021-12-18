@@ -4,8 +4,9 @@ import installExtension, {
 } from "electron-devtools-installer"
 import path from "path"
 
+import { WatcherUnsubObj } from "shared"
+
 import { setUpApplicationMenu } from "./menu"
-import { WatcherUnsubObj } from "./types"
 import { APP_NAME, START_URL } from "./constants"
 import { getDirWatchers, getMainWindow, IS_DEV } from "./helpers"
 import registerIpcHandlers from "./ipcHandlers/registerIpcHandlers"

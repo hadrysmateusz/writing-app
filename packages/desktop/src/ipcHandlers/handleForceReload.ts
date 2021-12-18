@@ -1,8 +1,7 @@
 import { Notification } from "electron"
-import { ForceReloadPayload } from "shared/src/ipcMessageTypes"
+import { ForceReloadPayload, IpcResponseStatus } from "shared"
 
 import { getMainWindow } from "../helpers"
-import { IpcResponseStatus } from "../types"
 
 // TODO: add a retry counter to prevent infinite loops on serious issues
 export const handleForceReload = async (

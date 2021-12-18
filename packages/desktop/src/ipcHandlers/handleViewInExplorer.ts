@@ -1,9 +1,7 @@
 import { shell } from "electron"
 import fs from "fs-extra"
 
-import { ViewInExplorerPayload } from "shared"
-
-import { IpcResponseStatus } from "../types"
+import { IpcResponseStatus, ViewInExplorerPayload } from "shared"
 
 export const handleViewInExplorer = (
   _event,

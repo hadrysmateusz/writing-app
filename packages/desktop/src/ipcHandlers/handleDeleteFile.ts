@@ -1,8 +1,6 @@
 import fs from "fs-extra"
 
-import { DeleteFilePayload } from "shared"
-
-import { IpcResponseStatus } from "../types"
+import { DeleteFilePayload, IpcResponseStatus } from "shared"
 
 export const handleDeleteFile = (_event, payload: DeleteFilePayload) => {
   const { targetPath } = payload

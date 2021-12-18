@@ -1,9 +1,13 @@
 import path from "path"
 import chokidar from "chokidar"
 
-import { WatchDirPayload, WatchDirResPayload } from "shared"
+import {
+  DirObjectRecursive,
+  IpcResponseStatus,
+  WatchDirPayload,
+  WatchDirResPayload,
+} from "shared"
 
-import { IpcResponseStatus, DirObjectRecursive } from "../types"
 import {
   closeWatcherForDir,
   createDirObjectRecursive,
@@ -135,15 +139,4 @@ export const handleWatchDir = async (_event, payload: WatchDirPayload) => {
       data: null,
     }
   }
-
-  // TODO: handle add/unlink dir events
-
-  // More possible events.
-  // watcher
-  //   .on("addDir", (path) => log(`Directory ${path} has been added`))
-  //   .on("unlinkDir", (path) => log(`Directory ${path} has been removed`))
-  //   .on("error", (error) => log(`Watcher error: ${error}`))
-  //   .on("ready", () => log("Initial scan complete. Ready for changes"))
-  // .on("change", (path) => console.log(`File ${path} has been changed`))
-  // .on("error", (error) => console.log(`Watcher error: ${error}`))
 }

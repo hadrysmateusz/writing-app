@@ -1,9 +1,11 @@
 import fs from "fs-extra"
 import path from "path"
 
-import { ValidatePathsPayload } from "shared"
-
-import { ValidatePathsObj, IpcResponseStatus } from "../types"
+import {
+  IpcResponseStatus,
+  ValidatePathsObj,
+  ValidatePathsPayload,
+} from "shared"
 
 export const handleValidatePaths = async (
   _event,
