@@ -2,7 +2,8 @@ import { ELEMENT_H1, ELEMENT_H2 } from "@udecode/plate"
 import { Transforms, Node, Editor } from "slate"
 import { ReactEditor } from "slate-react"
 
-import { ContextMenuItem, ContextMenuSeparator } from "../../ContextMenu/Old"
+import { ContextMenuItem } from "../../ContextMenu/Old"
+import { ContextMenuSeparator } from "../../ContextMenu/Common"
 
 export const TurnIntoContextMenuContent: React.FC<{
   /**

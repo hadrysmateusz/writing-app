@@ -17,16 +17,17 @@ import {
 } from "@udecode/plate"
 
 import {
-  ContextMenuItem,
   useContextMenu,
-  ContextMenuSeparator,
+  ContextMenuItem,
   ContextSubmenu,
 } from "../../ContextMenu/Old"
+import { ContextMenuSeparator } from "../../ContextMenu/Common"
 import Icon from "../../Icon"
 
 import { useLinkModal } from "../LinkModal"
 import { useImageModal } from "../ImageModal"
 import { ToolbarLink } from "../Toolbars" // TODO: refactor those components to make them more general
+
 import { TurnIntoContextMenuContent } from "./TurnIntoContextMenuContent"
 
 type ContextMenuType = {
@@ -42,10 +43,8 @@ export const useEditorContextMenu = () => {
   const { insertImageFromModal } = useImageModal()
   const { getLinkUrl } = useLinkModal()
 
-  const [
-    contextMenuType,
-    setContextMenuType,
-  ] = useState<ContextMenuType | null>(null)
+  const [contextMenuType, setContextMenuType] =
+    useState<ContextMenuType | null>(null)
 
   // TODO: ensure this works properly in both electron and the browser by checking for permissions etc.
   const addSelectionToClipboard = async (): Promise<void> => {

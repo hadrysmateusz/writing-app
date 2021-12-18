@@ -5,9 +5,9 @@ import { useSlateStatic, useFocused, useSelected } from "slate-react"
 import {
   useContextMenu,
   ContextMenuItem,
-  ContextMenuSeparator,
   ContextSubmenu,
 } from "./ContextMenu/Old"
+import { ContextMenuSeparator } from "./ContextMenu/Common"
 import { TurnIntoContextMenuContent } from "./Editor/hooks/TurnIntoContextMenuContent"
 
 // The toolbar requires the parent element to have position: relative

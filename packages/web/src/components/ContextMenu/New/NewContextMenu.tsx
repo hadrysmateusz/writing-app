@@ -1,16 +1,24 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo } from "react"
-import styled, { css } from "styled-components/macro"
-import { Portal } from "react-portal"
+import { useState, useRef, useCallback, useEffect, useMemo } from "react"
 import { BsCaretRightFill } from "react-icons/bs"
+import { Portal } from "react-portal"
 
 import { useOnClickOutside } from "../../../hooks/useOnClickOutside"
 import { ToggleableHooks, useToggleable } from "../../../hooks"
+
+import {
+  CaretContainer,
+  ContextMenuItemContainer,
+  MenuContainer,
+  SubmenuContainer,
+  SubmenuLabel,
+} from "../Common"
 
 type ContextMenuHookOptions = ToggleableHooks & {
   renderWhenClosed?: boolean
   toggleOnNestedDOMNodes?: boolean
   stopPropagation?: boolean
   closeAfterClick?: boolean
+  closeOnScroll?: boolean
 }
 
 // TODO: replace old context menu with this one
@@ -25,6 +33,7 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
     toggleOnNestedDOMNodes = true,
     stopPropagation = true,
     closeAfterClick = true,
+    closeOnScroll = true,
     ...toggleableHooks
   } = options
 
@@ -62,8 +71,24 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
   }, [close])
 
   const getContextMenuProps = useCallback(() => {
-    return { eventX, eventY, close, isOpen, closeAfterClick, renderWhenClosed }
-  }, [close, closeAfterClick, eventX, eventY, isOpen, renderWhenClosed])
+    return {
+      eventX,
+      eventY,
+      close,
+      isOpen,
+      closeAfterClick,
+      closeOnScroll,
+      renderWhenClosed,
+    }
+  }, [
+    close,
+    closeAfterClick,
+    closeOnScroll,
+    eventX,
+    eventY,
+    isOpen,
+    renderWhenClosed,
+  ])
 
   return useMemo(
     () => ({
@@ -82,6 +107,7 @@ export const ContextMenu: React.FC<{
   close: () => void
   isOpen: boolean
   closeAfterClick: boolean
+  closeOnScroll: boolean
   renderWhenClosed: boolean
 }> = ({
   children,
@@ -89,6 +115,7 @@ export const ContextMenu: React.FC<{
   eventY,
   isOpen,
   closeAfterClick,
+  closeOnScroll,
   renderWhenClosed,
   close,
 }) => {
@@ -104,6 +131,22 @@ export const ContextMenu: React.FC<{
   useEffect(() => {
     console.log("mount")
   }, [])
+
+  useOnClickOutside(containerRef, () => {
+    close()
+  })
+
+  useEffect(() => {
+    if (closeOnScroll) {
+      const listener = () => {
+        close()
+      }
+      document.addEventListener("wheel", listener, { once: true })
+      return () => document.removeEventListener("wheel", listener)
+    } else {
+      return undefined
+    }
+  }, [close, closeOnScroll])
 
   useEffect(() => {
     console.log("coords changed", eventX, eventY)
@@ -138,10 +181,6 @@ export const ContextMenu: React.FC<{
 
     // setIsAdjusted(true)
   }, [eventX, eventY])
-
-  useOnClickOutside(containerRef, () => {
-    close()
-  })
 
   useEffect(() => {
     // TODO: this is broken and only works one time for some reason
@@ -265,73 +304,3 @@ export const ContextMenuItem: React.FC<{
     </ContextMenuItemContainer>
   )
 }
-
-const CaretContainer = styled.div`
-  font-size: 0.77em;
-  color: var(--light-400);
-  margin-right: -5px;
-  padding-top: 2px;
-`
-
-export const menuContainerCommon = css`
-  background: var(--dark-400);
-  border: 1px solid var(--dark-500);
-  border-radius: 3px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  padding: 6px 0;
-  min-width: 150px;
-`
-
-const MenuContainer = styled.div<{
-  xPos: number
-  yPos: number
-}>`
-  /* Base function styles */
-  position: absolute;
-  top: ${(p) => p.yPos}px;
-  left: ${(p) => p.xPos}px;
-  z-index: 3000;
-  /* Visual styles */
-  ${menuContainerCommon}
-`
-
-export const ContextMenuSeparator = styled.div`
-  height: 1px;
-  background: var(--dark-500);
-  margin: 6px 0;
-`
-
-export const ContextMenuItemContainer = styled.div<{ disabled?: boolean }>`
-  color: ${(p) => (p.disabled ? "var(--light-300)" : "white")};
-  cursor: ${(p) => (p.disabled ? "default" : "pointer")};
-
-  ${(p) => !p.disabled && `:hover { background: var(--dark-500); }`}
-
-  position: relative;
-  padding: 6px 20px;
-  font-size: 12px;
-`
-
-export const SubmenuLabel = styled.div`
-  display: flex;
-  align-items: center;
-  & *:first-child {
-    margin-right: auto;
-  }
-`
-
-export const SubmenuContainer = styled.div`
-  /* Base styles */
-  position: absolute;
-  left: 100%;
-  top: -7px; /* based on the padding of the the container and border width*/
-  max-height: 322px;
-  overflow-y: auto;
-  /* Toggling logic */
-  display: none;
-  ${ContextMenuItemContainer}:hover & {
-    display: block;
-  }
-  /* Visual styles */
-  ${menuContainerCommon}
-`

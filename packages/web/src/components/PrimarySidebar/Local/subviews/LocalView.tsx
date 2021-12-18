@@ -9,7 +9,7 @@ import {
   InnerContainer,
 } from "../../../SidebarCommon"
 import { useLocalFS } from "../../../LocalFSProvider"
-import { ContextMenuSeparator } from "../../../ContextMenu/Old"
+import { ContextMenuSeparator } from "../../../ContextMenu/Common"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 

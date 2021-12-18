@@ -4,9 +4,9 @@ import { GenericTreeItem, GenericAddButton } from "../TreeItem"
 import {
   useContextMenu,
   ContextMenuItem,
-  ContextMenuSeparator,
   ContextSubmenu,
 } from "../ContextMenu/Old"
+import { ContextMenuSeparator } from "../ContextMenu/Common"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { SidebarView } from "../ViewState"
 
@@ -75,20 +75,14 @@ export const GroupingItemTreeItemComponent: React.FC<{
       ? "folderEmpty"
       : "folderClosed"
 
-    const {
-      drag,
-      drop,
-      droppableRef,
-      hoverState,
-      isDragging,
-      isOverCurrent,
-    } = useGroupingItemDnd({
-      childItems,
-      index,
-      itemId,
-      moveItem,
-      parentItemId,
-    })
+    const { drag, drop, droppableRef, hoverState, isDragging, isOverCurrent } =
+      useGroupingItemDnd({
+        childItems,
+        index,
+        itemId,
+        moveItem,
+        parentItemId,
+      })
 
     const { startRenaming, getProps, isRenaming } = useEditableText(
       itemName,

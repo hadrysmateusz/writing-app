@@ -4,11 +4,8 @@ import styled from "styled-components/macro"
 import { formatOptional } from "../../utils"
 import { getGroupName } from "../../helpers/getGroupName"
 
-import {
-  useContextMenu,
-  ContextMenuItem,
-  ContextMenuSeparator,
-} from "../ContextMenu/Old"
+import { useContextMenu, ContextMenuItem } from "../ContextMenu/Old"
+import { ContextMenuSeparator } from "../ContextMenu/Common"
 import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useCloudGroupsState } from "../CloudGroupsProvider"
 
