@@ -1,5 +1,6 @@
+import { WatcherUnsubObj } from "shared"
+
 import { getDirWatchers } from "./getDirWatchers"
-import { WatcherUnsubObj } from "../types"
 
 export const closeWatcherForDir = async (
   dirPath: string,

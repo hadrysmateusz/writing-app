@@ -1,8 +1,9 @@
 import path from "path"
 import fs from "fs-extra"
 
-import { DirObjectRecursive, FileObject } from "../types"
-import { fileTypeIsAllowedDocumentType } from "."
+import { DirObjectRecursive, FileObject } from "shared"
+
+import { fileTypeIsAllowedDocumentType } from "./fileTypeIsAllowedDocumentType"
 
 export const createDirObjectRecursive = (
   pathStr: string

@@ -1,4 +1,4 @@
-import { WatcherUnsubObj } from "../types"
+import { WatcherUnsubObj } from "shared"
 
 export const getDirWatchers = () => {
   if (!global.dirWatchers) {
