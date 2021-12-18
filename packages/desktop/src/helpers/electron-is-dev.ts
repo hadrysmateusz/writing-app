@@ -9,4 +9,6 @@ const getFromEnv =
   !!process.env.ELECTRON_IS_DEV &&
   parseInt(process.env.ELECTRON_IS_DEV, 10) === 1
 
-export default isEnvSet ? getFromEnv : !app.isPackaged
+export const IS_DEV = isEnvSet ? getFromEnv : !app.isPackaged
+
+export default IS_DEV
