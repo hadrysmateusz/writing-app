@@ -43,7 +43,7 @@ export const Keywords = () => {
   )
 
   const handleSubmit = async (option: Option) => {
-    close()
+    // close()
 
     if (currentCloudDocument !== null) {
       const oldTagIds = currentCloudDocument.tags
