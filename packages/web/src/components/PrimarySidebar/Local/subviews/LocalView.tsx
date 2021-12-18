@@ -1,4 +1,5 @@
 import {
+  AddLocalPathMenuItem,
   DocumentListDisplayTypeSubmenu,
   MainHeader,
   MoreMainHeaderButton,
@@ -8,6 +9,7 @@ import {
   InnerContainer,
 } from "../../../SidebarCommon"
 import { useLocalFS } from "../../../LocalFSProvider"
+import { ContextMenuSeparator } from "../../../ContextMenu/Old"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
@@ -35,6 +37,8 @@ export const LocalView: React.FC<{}> = () => {
               <>
                 {/* <CloudDocumentSortingSubmenu /> // TODO: support sorting for local directories */}
                 <DocumentListDisplayTypeSubmenu />
+                <ContextMenuSeparator />
+                <AddLocalPathMenuItem />
               </>
             }
           />,

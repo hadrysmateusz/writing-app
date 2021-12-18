@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react"
 
 import {
+  AddLocalPathMenuItem,
   DocumentListDisplayTypeSubmenu,
   GoUpMainHeaderButton,
   MainHeader,
@@ -149,6 +150,7 @@ const DirectoryViewInner: React.FC<{
               <>
                 {/* <CloudDocumentSortingSubmenu /> // TODO: support sorting for local directories */}
                 <DocumentListDisplayTypeSubmenu />
+                <AddLocalPathMenuItem />
               </>
             }
           />,
