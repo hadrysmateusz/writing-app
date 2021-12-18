@@ -1,5 +1,7 @@
 import React, { useCallback, useState } from "react"
 
+import { ImportFileResponseData } from "shared"
+
 import { myDeserializeMd } from "../../slate-helpers/deserialize"
 import { formatOptional } from "../../utils"
 
@@ -43,17 +45,17 @@ export const ImportModalContent: React.FC<{
   })
 
   const handleSuccess = useCallback(
-    async (result: any, format: "md") => {
+    async (data: ImportFileResponseData, format: "md") => {
       const deserializer = { md: myDeserializeMd }[format]
 
-      const files = result.data as { fileName: string; content: string }[]
+      const { files } = data
 
       // TODO: add some validation, and make sure importing files can't be exploited
 
       const parsed = files.map((file) => {
-        const { fileName, content } = file
+        const { name, content } = file
         return {
-          title: fileName,
+          title: name,
           content: deserializer(content),
         }
       })
@@ -101,7 +103,7 @@ export const ImportModalContent: React.FC<{
       }
 
       if (result.status === "success") {
-        handleSuccess(result, format)
+        handleSuccess(result.data, format)
       }
 
       close(undefined)
