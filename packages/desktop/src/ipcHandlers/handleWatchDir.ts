@@ -1,7 +1,9 @@
 import path from "path"
 import chokidar from "chokidar"
 
-import { DialogStatus, DirObjectRecursive } from "../types"
+import { WatchDirPayload, WatchDirResPayload } from "shared"
+
+import { IpcResponseStatus, DirObjectRecursive } from "../types"
 import {
   closeWatcherForDir,
   createDirObjectRecursive,
@@ -10,12 +12,7 @@ import {
   getMainWindow,
 } from "../helpers"
 
-export const handleWatchDir = async (
-  _event,
-  payload: {
-    watchedDirPath: string
-  }
-) => {
+export const handleWatchDir = async (_event, payload: WatchDirPayload) => {
   try {
     const { watchedDirPath } = payload
     console.log(`setting up dir watcher for ${watchedDirPath}`, payload)
@@ -68,17 +65,19 @@ export const handleWatchDir = async (
       })
       console.log("parentDirPathArr", parentDirPathArr)
 
-      getMainWindow().webContents.send("WATCH_DIR:RES", {
-        eventType: eventType,
+      const resPayload: WatchDirResPayload = {
+        eventType,
         watchedDirPath,
 
         itemPath,
         itemName,
-        parentDirPath: parentDirPath,
-        parentDirPathArr: parentDirPathArr,
+        parentDirPath,
+        parentDirPathArr,
 
         dirTree,
-      })
+      }
+
+      getMainWindow().webContents.send("WATCH_DIR:RES", resPayload)
     }
 
     // const onWatcherReady = async () => {
@@ -123,7 +122,7 @@ export const handleWatchDir = async (
       .on("unlinkDir", onWatcherUnlinkDir)
 
     return {
-      status: DialogStatus.SUCCESS,
+      status: IpcResponseStatus.SUCCESS,
       error: null,
       data: {},
     }
@@ -131,7 +130,7 @@ export const handleWatchDir = async (
     console.log("Error in WATCH_DIR handler:")
     console.log(err)
     return {
-      status: DialogStatus.ERROR,
+      status: IpcResponseStatus.ERROR,
       error: err,
       data: null,
     }

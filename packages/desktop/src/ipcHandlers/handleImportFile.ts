@@ -3,11 +3,13 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { DialogStatus, OpenFileObject } from "../types"
+import { ImportFilePayload } from "shared"
+
+import { IpcResponseStatus, OpenFileObject } from "../types"
 import { filters } from "../constants"
 import { readFileForLocalEditor } from "../helpers"
 
-export const handleImportFile = async (_event, payload) => {
+export const handleImportFile = async (_event, payload: ImportFilePayload) => {
   const { format } = payload
 
   // TODO: better default path
@@ -28,7 +30,7 @@ export const handleImportFile = async (_event, payload) => {
 
   // TODO: consider making canceled and empty separate statuses
   if (dialogRes.canceled || dialogRes.filePaths.length === 0) {
-    return { status: DialogStatus.CANCELED, error: null, data: null }
+    return { status: IpcResponseStatus.CANCELED, error: null, data: null }
   }
 
   const files: OpenFileObject[] = []
@@ -39,12 +41,12 @@ export const handleImportFile = async (_event, payload) => {
       files.push(file)
     } catch (error) {
       return {
-        status: DialogStatus.ERROR,
+        status: IpcResponseStatus.ERROR,
         error: "An error ocurred reading the file :" + error.message,
         data: null,
       }
     }
   }
 
-  return { status: DialogStatus.SUCCESS, error: null, data: files }
+  return { status: IpcResponseStatus.SUCCESS, error: null, data: { files } }
 }

@@ -3,12 +3,11 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { DialogStatus } from "../types"
+import { AddPathPayload } from "shared"
 
-export const handleAddPath = async (
-  _event,
-  payload: { defaultPath?: string }
-) => {
+import { IpcResponseStatus } from "../types"
+
+export const handleAddPath = async (_event, payload: AddPathPayload) => {
   // TODO: better default path
   // TODO: maybe save the last used path for later
   const { defaultPath = os.homedir() } = payload
@@ -25,13 +24,13 @@ export const handleAddPath = async (
 
   // TODO: consider making canceled and empty separate statuses
   if (dialogRes.canceled || dialogRes.filePaths.length === 0) {
-    return { status: DialogStatus.CANCELED, error: null, data: null }
+    return { status: IpcResponseStatus.CANCELED, error: null, data: null }
   }
 
   const dirPath = dialogRes.filePaths[0]
 
   return {
-    status: DialogStatus.SUCCESS,
+    status: IpcResponseStatus.SUCCESS,
     error: null,
     data: {
       dirPath: dirPath,

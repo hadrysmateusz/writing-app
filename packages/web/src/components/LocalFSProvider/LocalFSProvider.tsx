@@ -311,7 +311,7 @@ const LocalFSProvider: React.FC = ({ children }) => {
   // TODO: rename to createFile
   const createDocument = useCallback(async (defaultPath?: string) => {
     await window.electron.invoke("CREATE_FILE", {
-      defaultPath: defaultPath,
+      defaultPath,
     })
   }, [])
 

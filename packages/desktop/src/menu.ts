@@ -11,7 +11,7 @@ function setUpApplicationMenu() {
             const [win] = BrowserWindow.getAllWindows()
             // TODO: consider creating a wrapper function that will also 'restore' the window on macOS
             // TODO: move the message name to a shared constants file
-            win.webContents.send("new-cloud-document", "whoooooooh!")
+            win.webContents.send("NEW_CLOUD_DOCUMENT", {})
           },
         },
       ],

@@ -1,9 +1,14 @@
 import fs from "fs-extra"
 import path from "path"
 
-import { ValidatePathsObj, DialogStatus } from "../types"
+import { ValidatePathsPayload } from "shared"
 
-export const handleValidatePaths = async (_event, payload) => {
+import { ValidatePathsObj, IpcResponseStatus } from "../types"
+
+export const handleValidatePaths = async (
+  _event,
+  payload: ValidatePathsPayload
+) => {
   try {
     const dirs: ValidatePathsObj[] = []
     for (let pathStr of payload.paths) {
@@ -21,13 +26,13 @@ export const handleValidatePaths = async (_event, payload) => {
       })
     }
     return {
-      status: DialogStatus.SUCCESS,
+      status: IpcResponseStatus.SUCCESS,
       error: null,
       data: {
         dirs,
       },
     }
   } catch (err) {
-    return { status: DialogStatus.ERROR, error: err, data: null }
+    return { status: IpcResponseStatus.ERROR, error: err, data: null }
   }
 }

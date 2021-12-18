@@ -3,15 +3,14 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { DialogStatus } from "../types"
+import { CreateFilePayload } from "shared"
+
+import { IpcResponseStatus } from "../types"
 import { filters } from "../constants"
 
 export const handleCreateFile = async (
   _event,
-  payload: {
-    name?: string
-    defaultPath?: string
-  } = {}
+  payload: CreateFilePayload = {}
 ) => {
   const {
     name = undefined,
@@ -36,7 +35,7 @@ export const handleCreateFile = async (
 
   if (!filePath || dialogRes.canceled === true) {
     return {
-      status: DialogStatus.CANCELED,
+      status: IpcResponseStatus.CANCELED,
       error: null,
       data: null,
     }
@@ -49,7 +48,7 @@ export const handleCreateFile = async (
     // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
     await fs.writeFile(filePath, "")
     return {
-      status: DialogStatus.SUCCESS,
+      status: IpcResponseStatus.SUCCESS,
       error: null,
       data: {
         filePath,
@@ -58,7 +57,7 @@ export const handleCreateFile = async (
     }
   } catch (error) {
     return {
-      status: DialogStatus.ERROR,
+      status: IpcResponseStatus.ERROR,
       error: "An error ocurred writing to file :" + error.message,
       data: null,
     }

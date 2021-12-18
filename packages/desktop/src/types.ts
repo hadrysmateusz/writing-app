@@ -20,14 +20,7 @@ export type ValidatePathsObj = {
   exists: boolean
 }
 
-// TODO: move to shared location
-export enum FileFormats {
-  MARKDOWN = "md",
-  HTML = "html",
-}
-
-// TODO: move to shared location
-export enum DialogStatus {
+export enum IpcResponseStatus {
   SUCCESS = "success",
   ERROR = "error",
   CANCELED = "canceled",

@@ -1,14 +1,10 @@
 import fs from "fs-extra"
 
-import { DialogStatus } from "../types"
+import { SaveFilePayload } from "shared"
 
-export const handleSaveFile = async (
-  _event,
-  payload: {
-    filePath: string
-    content: string
-  }
-) => {
+import { IpcResponseStatus } from "../types"
+
+export const handleSaveFile = async (_event, payload: SaveFilePayload) => {
   const { filePath, content } = payload
 
   const fileExists =
@@ -17,7 +13,7 @@ export const handleSaveFile = async (
   if (!fileExists) {
     // TODO: better handling, maybe create the file, or let the user know using a prompt to either create the file or not
     return {
-      status: DialogStatus.ERROR,
+      status: IpcResponseStatus.ERROR,
       error: "File doesn't exists",
       data: null,
     }
@@ -26,13 +22,13 @@ export const handleSaveFile = async (
     // TODO: investigate different encodings and flags - do I need to do more to make this work with all files
     await fs.writeFile(filePath, content)
     return {
-      status: DialogStatus.SUCCESS,
+      status: IpcResponseStatus.SUCCESS,
       error: null,
       data: {},
     }
   } catch (error) {
     return {
-      status: DialogStatus.ERROR,
+      status: IpcResponseStatus.ERROR,
       error: "An error ocurred writing to file :" + error.message,
       data: null,
     }

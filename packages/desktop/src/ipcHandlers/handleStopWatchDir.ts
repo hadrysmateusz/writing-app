@@ -1,12 +1,20 @@
+import { StopWatchDirPayload } from "shared"
 import { closeWatcherForDir } from "../helpers"
+import { IpcResponseStatus } from "../types"
 
 export const handleStopWatchDir = async (
   _event,
-  payload: {
-    watchedDirPath: string
-    timestamp: number
-  }
+  payload: StopWatchDirPayload
 ) => {
-  const { watchedDirPath, timestamp } = payload
-  await closeWatcherForDir(watchedDirPath, timestamp)
+  try {
+    const { watchedDirPath, timestamp } = payload
+    await closeWatcherForDir(watchedDirPath, timestamp)
+    return { status: IpcResponseStatus.SUCCESS, data: {}, error: null }
+  } catch (err) {
+    return {
+      status: IpcResponseStatus.ERROR,
+      data: null,
+      error: err?.message || "Unknown error",
+    }
+  }
 }

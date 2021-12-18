@@ -3,17 +3,12 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { FileFormats, DialogStatus } from "../types"
+import { ExportFilePayload } from "shared"
+
+import { IpcResponseStatus } from "../types"
 import { APP_NAME, filters } from "../constants"
 
-export const handleExportFile = async (
-  _event,
-  payload: {
-    content: string
-    format: FileFormats
-    name: string | undefined
-  }
-) => {
+export const handleExportFile = async (_event, payload: ExportFilePayload) => {
   try {
     const { content, format, name } = payload
 
@@ -40,7 +35,7 @@ export const handleExportFile = async (
     })
 
     if (file.canceled) {
-      return { status: DialogStatus.CANCELED, error: null }
+      return { status: IpcResponseStatus.CANCELED, error: null }
     }
 
     // filePath is always string if the dialog wasn't cancelled
@@ -48,9 +43,9 @@ export const handleExportFile = async (
 
     fs.writeFile(filePath, content)
     shell.showItemInFolder(filePath) // TODO: make this optional
-    return { status: DialogStatus.SUCCESS, error: null }
+    return { status: IpcResponseStatus.SUCCESS, data: {}, error: null }
   } catch (error) {
     console.log(error)
-    return { status: DialogStatus.ERROR, error }
+    return { status: IpcResponseStatus.ERROR, data: null, error }
   }
 }

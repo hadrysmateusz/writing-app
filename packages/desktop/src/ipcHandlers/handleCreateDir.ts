@@ -3,15 +3,11 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { DialogStatus } from "../types"
+import { CreateDirPayload } from "shared"
 
-export const handleCreateDir = async (
-  _event,
-  payload: {
-    name: string
-    parentPath?: string
-  }
-) => {
+import { IpcResponseStatus } from "../types"
+
+export const handleCreateDir = async (_event, payload: CreateDirPayload) => {
   let { name, parentPath } = payload
 
   console.log("create dir handler", payload)
@@ -26,13 +22,13 @@ export const handleCreateDir = async (
     })
     if (dialogRes.canceled) {
       return {
-        status: DialogStatus.CANCELED,
+        status: IpcResponseStatus.CANCELED,
         error: null,
         data: null,
       }
     } else if (!dialogRes.filePaths[0]) {
       return {
-        status: DialogStatus.ERROR,
+        status: IpcResponseStatus.ERROR,
         error: "An error ocurred creating a dir: No file path chosen",
         data: null,
       }
@@ -51,7 +47,7 @@ export const handleCreateDir = async (
     })
     noti.show()
     return {
-      status: DialogStatus.CANCELED,
+      status: IpcResponseStatus.CANCELED,
       error: null,
       data: null,
     }
@@ -61,13 +57,13 @@ export const handleCreateDir = async (
     fs.mkdirSync(dirPath)
 
     return {
-      status: DialogStatus.SUCCESS,
+      status: IpcResponseStatus.SUCCESS,
       error: null,
-      data: null,
+      data: {},
     }
   } catch (error) {
     return {
-      status: DialogStatus.ERROR,
+      status: IpcResponseStatus.ERROR,
       error: "An error ocurred creating a dir:" + error.message,
       data: null,
     }

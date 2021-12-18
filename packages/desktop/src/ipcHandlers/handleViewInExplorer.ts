@@ -1,13 +1,22 @@
 import { shell } from "electron"
 import fs from "fs-extra"
 
-import { DialogStatus } from "../types"
+import { ViewInExplorerPayload } from "shared"
 
-export const handleViewInExplorer = (_event, payload) => {
-  const { targetPath }: { targetPath: string } = payload
+import { IpcResponseStatus } from "../types"
+
+export const handleViewInExplorer = (
+  _event,
+  payload: ViewInExplorerPayload
+) => {
+  const { targetPath } = payload
   if (!fs.pathExistsSync(targetPath)) {
-    return { status: DialogStatus.ERROR, error: "File/Dir doesn't exist" }
+    return {
+      status: IpcResponseStatus.ERROR,
+      error: "File/Dir doesn't exist",
+      data: null,
+    }
   }
   shell.showItemInFolder(targetPath)
-  return { status: DialogStatus.SUCCESS }
+  return { status: IpcResponseStatus.SUCCESS, error: null, data: {} }
 }
