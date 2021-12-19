@@ -3,7 +3,10 @@ import styled, { css } from "styled-components/macro"
 import { customScrollbar } from "../../style-utils"
 
 export const AutocompleteContainer = styled.div`
+  font-size: 12px;
+
   .Autocomplete_EmptyState {
+    font-size: 11px;
     color: var(--light-100);
     padding: 4px 10px 4px;
   }
@@ -23,6 +26,7 @@ export const AutocompleteContainer = styled.div`
     ${customScrollbar}
   }
   .Autocomplete_ConfirmPrompt {
+    font-size: 11px;
     border-top: 1px solid var(--dark-500);
     color: var(--light-100);
     padding: 10px 6px 4px 16px;
