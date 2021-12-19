@@ -6,7 +6,6 @@ import { formatOptional } from "../../../../utils"
 import {
   CloudDocumentSortingSubmenu,
   DocumentListDisplayTypeSubmenu,
-  DocumentsList,
   GoUpMainHeaderButton,
   MainHeader,
   MoreMainHeaderButton,
@@ -25,7 +24,7 @@ import { useSorting } from "../../../SortingProvider"
 
 import { NewButton } from "../../NewButton"
 
-import { SubGroups } from "../SubGroups"
+import { DocumentsListAndSubGroups } from "../SubGroups"
 import { createFindDocumentsInGroupQuery } from "../queries"
 import { useFindGroupAndChildGroups } from "../helpers"
 
@@ -91,10 +90,11 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
       />
       <InnerContainer>
         {!isLoading ? (
-          <>
-            <DocumentsList documents={documents || []} />
-            {childGroups ? <SubGroups groups={group.children} /> : null}
-          </>
+          <DocumentsListAndSubGroups
+            documents={documents || []}
+            groups={group.children}
+            listType="tree"
+          />
         ) : null}
       </InnerContainer>
       <NewButton groupId={groupId} />

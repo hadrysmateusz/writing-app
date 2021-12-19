@@ -21,7 +21,7 @@ import { usePrimarySidebar } from "../../../ViewState"
 
 import { NewButton } from "../../NewButton"
 
-import { SubGroups } from "../SubGroups"
+import { DocumentsListAndSubGroups } from "../SubGroups"
 import {
   createFindAllDocumentsQuery,
   createFindDocumentsAtRootQuery,
@@ -90,9 +90,10 @@ const TreeDocumentsList = () => {
   const groupsTree = useMemo(() => createGroupTree(groups), [groups])
 
   return !isLoading ? (
-    <>
-      <DocumentsList documents={documents || []} listType="tree" />
-      <SubGroups groups={groupsTree.children} />
-    </>
+    <DocumentsListAndSubGroups
+      documents={documents || []}
+      groups={groupsTree.children}
+      listType="tree"
+    />
   ) : null
 }

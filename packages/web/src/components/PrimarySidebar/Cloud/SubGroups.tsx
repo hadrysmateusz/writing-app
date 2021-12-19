@@ -1,27 +1,35 @@
-import { FC, useState } from "react"
+import { memo, useState } from "react"
 
 import { GroupTreeBranch } from "../../../helpers/createGroupTree"
 import { useToggleable, useRxSubscription } from "../../../hooks"
 
 import { DocumentsList, CloudDocumentSectionHeader } from "../../DocumentsList"
-import { useDatabase } from "../../Database"
+import { DocumentDoc, LocalSettings, useDatabase } from "../../Database"
 
-import { PrimarySidebarSectionContainer } from "../PrimarySidebar.styles"
+import {
+  PrimarySidebarSectionContainer,
+  PrimarySidebarToggleableSectionContainer,
+} from "../PrimarySidebar.styles"
 
 import { createFindDocumentsInGroupQuery } from "./queries"
 import { useSorting } from "../../SortingProvider"
 
 // TODO: use stateless toggleables and keep state higher up, persisting it between path changes (either as a global collection of group.ids that are open or closed, or a per-path one)
 
-export const SubGroups: FC<{ groups: GroupTreeBranch[] }> = ({ groups }) => (
-  <>
+export const DocumentsListAndSubGroups: React.FC<{
+  groups: GroupTreeBranch[]
+  documents: DocumentDoc[]
+  listType: LocalSettings["documentsListDisplayType"]
+}> = memo(({ groups, documents, listType }) => (
+  <PrimarySidebarToggleableSectionContainer>
+    <DocumentsList documents={documents} listType={listType} />
     {groups.map((group) => (
       <SubGroupDocumentsList key={group.id} group={group} />
     ))}
-  </>
-)
+  </PrimarySidebarToggleableSectionContainer>
+))
 
-export const SubGroupDocumentsList: FC<{
+export const SubGroupDocumentsList: React.FC<{
   group: GroupTreeBranch
 }> = ({ group }) => {
   const db = useDatabase()
@@ -58,10 +66,11 @@ export const SubGroupDocumentsList: FC<{
         {group.name}
       </CloudDocumentSectionHeader>
       {isOpen ? (
-        <>
-          <DocumentsList documents={documents} listType="tree" />
-          <SubGroups groups={group.children} />
-        </>
+        <DocumentsListAndSubGroups
+          documents={documents}
+          groups={group.children}
+          listType="tree"
+        />
       ) : null}
     </PrimarySidebarSectionContainer>
   ) : null
