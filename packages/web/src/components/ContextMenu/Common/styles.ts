@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components/macro"
+import styled, { css, keyframes } from "styled-components/macro"
 
 export const MENU_CONTAINER_PADDING_Y_VALUE = 6
 const MENU_CONTAINER_PADDING_Y = MENU_CONTAINER_PADDING_Y_VALUE + "px"
@@ -14,6 +14,23 @@ interface IAdjustable {
   isAdjusted: boolean
 }
 
+export const ANIMATION_OPEN = keyframes`
+  from {
+    opacity: 0.55;
+    transform: scale(0.4);
+    transform-origin: 0% 0%;
+  }
+  80% {
+    transform: scale(1.025);
+    transform-origin: 0% 0%;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    transform-origin: 0% 0%;
+  }
+`
+
 export const menuContainerBaseStyles = css`
   min-width: 150px;
   padding: ${MENU_CONTAINER_PADDING_Y} 0;
@@ -25,6 +42,8 @@ export const menuContainerBaseStyles = css`
 
   background: var(--dark-400);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+  animation: ${ANIMATION_OPEN} 90ms ease-out both;
 
   /* overflow: hidden; */
 `

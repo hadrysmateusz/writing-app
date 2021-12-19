@@ -2,7 +2,7 @@ import styled, { keyframes } from "styled-components/macro"
 
 export const ANIMATION_OPEN = keyframes`
   from {
-    opacity: 0.6;
+    opacity: 0.45;
     /* transform: scaleY(0.4);
     transform-origin: 100% 0%; */
   }
@@ -14,7 +14,7 @@ export const ANIMATION_OPEN = keyframes`
 `
 
 export const PrimarySidebarToggleableSectionContainer = styled.div`
-  animation: ${ANIMATION_OPEN} 300ms ease-out both;
+  animation: ${ANIMATION_OPEN} 250ms ease-out both;
 `
 
 export const PrimarySidebarSectionContainer = styled.div<{
@@ -22,7 +22,7 @@ export const PrimarySidebarSectionContainer = styled.div<{
 }>`
   border-radius: 4px;
 
-  transition: background-color 200ms ease;
+  transition: background-color 200ms ease-out;
 
   ${(p) => (p.isHovered ? `background-color: var(--dark-400)` : undefined)}
 `
