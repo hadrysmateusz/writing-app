@@ -1,4 +1,4 @@
-import { ContextMenuItemContainer } from "../Common"
+import { ContextMenuItemContainer } from "./styles"
 
 type ContextMenuItemProps = {
   text?: string

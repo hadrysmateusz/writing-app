@@ -1,20 +1,16 @@
 import { useState, useRef, useCallback, useEffect, memo } from "react"
 import { Portal } from "react-portal"
 
-import { useIsHovered, useToggleable } from "../../../hooks"
+import { useIsHovered, useToggleable } from "../../hooks"
 
-import Icon from "../../Icon"
+import Icon from "../Icon"
 
-import { CaretContainer, MenuContainer, SubmenuLabel } from "../Common"
-
+import { CaretContainer, MenuContainer, SubmenuLabel } from "./styles"
 import { Coords } from "./types"
 import { INITIAL_COORDS } from "./constants"
 import { adjustSubmenuCoords } from "./helpers"
 import { ContextMenuItem } from "./ContextMenuItem"
-import {
-  ContextMenuContext,
-  useContextMenuContext,
-} from "./ContextMenuInternalContext"
+import { ContextMenuContext, useContextMenuContext } from "./ContextMenuContext"
 
 type ContextSubmenuProps = {
   text: string

@@ -5,11 +5,11 @@ import {
   useContextMenu,
   ContextMenu,
   ContextMenuItem,
-} from "../../../ContextMenu/New"
+} from "../../../ContextMenu"
 import { findTabWithPath } from "../../../PrimarySidebar/Local/helpers"
+import { useTabsDispatch, useTabsState } from "../../../TabsProvider"
 
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
-import { useTabsDispatch, useTabsState } from "../../../TabsProvider"
 
 export const LocalDocumentSidebarItem: React.FC<{
   path: string

@@ -6,8 +6,8 @@ import {
   ContextMenuItem,
   ContextSubmenu,
   ContextMenu,
-} from "../ContextMenu/New"
-import { ContextMenuSeparator } from "../ContextMenu/Common"
+  ContextMenuSeparator,
+} from "../ContextMenu"
 import { DocumentDoc } from "../Database"
 import { useEditableText } from "../RenamingInput"
 import { useModal } from "../Modal"

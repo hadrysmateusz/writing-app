@@ -21,8 +21,8 @@ import {
   ContextMenuItem,
   ContextSubmenu,
   ContextMenu,
-} from "../../ContextMenu/New"
-import { ContextMenuSeparator } from "../../ContextMenu/Common"
+  ContextMenuSeparator,
+} from "../../ContextMenu"
 import Icon from "../../Icon"
 
 import { useLinkModal } from "../LinkModal"

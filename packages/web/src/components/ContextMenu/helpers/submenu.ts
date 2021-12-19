@@ -1,7 +1,7 @@
 import {
   MENU_CONTAINER_BORDER_WIDTH_VALUE,
   MENU_CONTAINER_PADDING_Y_VALUE,
-} from "../../Common"
+} from "../styles"
 import { ADJUST_OFFSET_MARGIN } from "../constants"
 import { Coords } from "../types"
 

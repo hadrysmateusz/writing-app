@@ -1,4 +1,4 @@
-import React, { useCallback, useState, memo } from "react"
+import { useCallback, useState, memo } from "react"
 
 import { GenericTreeItem, GenericAddButton } from "../TreeItem"
 import {
@@ -6,8 +6,8 @@ import {
   ContextMenuItem,
   ContextSubmenu,
   ContextMenu,
-} from "../ContextMenu/New"
-import { ContextMenuSeparator } from "../ContextMenu/Common"
+  ContextMenuSeparator,
+} from "../ContextMenu"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { SidebarView } from "../ViewState"
 

@@ -1,6 +1,6 @@
 // TODO: figure out better place to put this
 
-import { ContextMenuItem } from "../../../ContextMenu/New"
+import { ContextMenuItem } from "../../../ContextMenu"
 import { useLocalFS } from "../../../LocalFSProvider"
 
 export const AddLocalPathMenuItem = () => {

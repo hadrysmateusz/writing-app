@@ -3,11 +3,7 @@ import styled from "styled-components/macro"
 
 import { customScrollbar } from "../../style-utils"
 
-import {
-  ContextMenu,
-  ContextMenuItem,
-  useContextMenu,
-} from "../ContextMenu/New"
+import { ContextMenu, ContextMenuItem, useContextMenu } from "../ContextMenu"
 import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 

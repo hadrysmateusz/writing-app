@@ -8,8 +8,8 @@ import {
   useContextMenu,
   ContextMenuItem,
   ContextMenu,
-} from "../ContextMenu/New"
-import { ContextMenuSeparator } from "../ContextMenu/Common"
+  ContextMenuSeparator,
+} from "../ContextMenu"
 import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useCloudGroupsState } from "../CloudGroupsProvider"
 

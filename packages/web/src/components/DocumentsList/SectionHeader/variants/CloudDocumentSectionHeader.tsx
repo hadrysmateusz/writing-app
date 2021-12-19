@@ -2,7 +2,7 @@ import {
   ContextMenu,
   ContextMenuItem,
   useContextMenu,
-} from "../../../ContextMenu/New"
+} from "../../../ContextMenu"
 import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
 

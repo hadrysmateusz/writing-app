@@ -1,4 +1,4 @@
-import { ContextMenuItem, ContextSubmenu } from "../../../ContextMenu/New"
+import { ContextMenuItem, ContextSubmenu } from "../../../ContextMenu"
 import { LocalSettings } from "../../../Database"
 import { usePrimarySidebar } from "../../../ViewState"
 

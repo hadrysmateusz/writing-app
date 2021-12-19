@@ -2,11 +2,7 @@ import { useCallback } from "react"
 
 import { GenericTreeItem } from "../TreeItem"
 import { EditableText, useEditableText } from "../RenamingInput"
-import {
-  ContextMenu,
-  ContextMenuItem,
-  useContextMenu,
-} from "../ContextMenu/New"
+import { ContextMenu, ContextMenuItem, useContextMenu } from "../ContextMenu"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 import { useTagsAPI } from "../TagsProvider"
 

@@ -1,15 +1,14 @@
 import { useState, useRef, useCallback, useEffect, useMemo, memo } from "react"
 import { Portal } from "react-portal"
 
-import { useOnClickOutside } from "../../../hooks/useOnClickOutside"
-import { ToggleableHooks, useToggleable } from "../../../hooks"
-
-import { MenuContainer } from "../Common"
+import { useOnClickOutside } from "../../hooks/useOnClickOutside"
+import { ToggleableHooks, useToggleable } from "../../hooks"
 
 import { Coords } from "./types"
 import { INITIAL_COORDS } from "./constants"
 import { adjustMenuCoords } from "./helpers"
-import { ContextMenuContext } from "./ContextMenuInternalContext"
+import { ContextMenuContext } from "./ContextMenuContext"
+import { MenuContainer } from "./styles"
 
 type ContextMenuHookOptions = ToggleableHooks & {
   renderWhenClosed?: boolean

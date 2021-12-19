@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 
-import { ContextMenu, useContextMenu } from "../../../ContextMenu/New"
+import { ContextMenu, useContextMenu } from "../../../ContextMenu"
 
 import { MainHeaderButton } from "./MainHeaderButton"
 

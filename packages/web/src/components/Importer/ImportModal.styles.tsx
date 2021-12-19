@@ -1,6 +1,6 @@
 import styled from "styled-components/macro"
 
-import { menuContainerBaseStyles } from "../ContextMenu/Common"
+import { menuContainerBaseStyles } from "../ContextMenu"
 
 export const DropdownContainer = styled.div`
   display: flex;

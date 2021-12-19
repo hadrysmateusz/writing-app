@@ -7,8 +7,8 @@ import {
   ContextMenuItem,
   ContextSubmenu,
   ContextMenu,
-} from "./ContextMenu/New"
-import { ContextMenuSeparator } from "./ContextMenu/Common"
+  ContextMenuSeparator,
+} from "./ContextMenu"
 import { TurnIntoContextMenuContent } from "./Editor/hooks/TurnIntoContextMenuContent"
 
 // The toolbar requires the parent element to have position: relative
