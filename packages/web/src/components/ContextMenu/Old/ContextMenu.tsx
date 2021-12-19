@@ -175,6 +175,7 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
           yPos={y}
           ref={containerRef}
           onClick={handleClick}
+          isAdjusted={true} // TODO: temp hack, remove later
         >
           {children}
         </MenuContainer>

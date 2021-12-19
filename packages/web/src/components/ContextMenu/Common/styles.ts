@@ -1,15 +1,37 @@
 import styled, { css } from "styled-components/macro"
 
+const MENU_CONTAINER_PADDING_Y = "6px"
+const MENU_CONTAINER_BORDER_WIDTH = "1px"
+
 export const menuContainerCommon = css`
-  background: var(--dark-400);
-  border: 1px solid var(--dark-500);
-  border-radius: 3px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  padding: 6px 0;
+  /* --menu-container-padding-y: 6px;
+  --menu-container-border-width: 1px;
+
   min-width: 150px;
+  padding: var(--menu-container-padding-y) 0;
+
+  border-width: var(--menu-container-border-width);
+  border-style: solid;
+  border-color: var(--dark-500)
+  border-radius: 3px;
+
+  background: var(--dark-400);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); */
+
+  min-width: 150px;
+  padding: ${MENU_CONTAINER_PADDING_Y} 0;
+
+  border-width: ${MENU_CONTAINER_BORDER_WIDTH};
+  border-style: solid;
+  border-color: var(--dark-500);
+  border-radius: 3px;
+
+  background: var(--dark-400);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 `
 
 type MenuContainerProps = {
+  isAdjusted: boolean
   xPos: number
   yPos: number
 }
@@ -20,7 +42,9 @@ export const MenuContainer = styled.div<MenuContainerProps>`
   left: ${(p) => p.xPos}px;
   z-index: 3000;
   /* Visual styles */
-  ${menuContainerCommon}
+  ${menuContainerCommon};
+  /* Visibility based on isAdjusted */
+  opacity: ${(p) => (p.isAdjusted ? "1" : "0")};
 `
 
 type ContextMenuItemContainerProps = { disabled?: boolean }
@@ -35,20 +59,26 @@ export const ContextMenuItemContainer = styled.div<ContextMenuItemContainerProps
   font-size: 12px;
 `
 
-export const SubmenuContainer = styled.div`
+// TODO: de-optionalize these props
+type SubmenuContainerProps = {
+  isAdjusted?: boolean
+  xPos?: number
+  yPos?: number
+}
+export const SubmenuContainer = styled.div<SubmenuContainerProps>`
   /* Base styles */
   position: absolute;
-  left: 100%;
-  top: -7px; /* based on the padding of the the container and border width*/
-  max-height: 322px;
-  overflow-y: auto;
-  /* Toggling logic */
-  display: none;
-  ${ContextMenuItemContainer}:hover & {
-    display: block;
-  }
+  top: ${(p) => p.yPos}px;
+  left: ${(p) => p.xPos}px;
+  z-index: 3000;
+
+  /* Visibility based on isAdjusted */
+  opacity: ${(p) => (p.isAdjusted ? "1" : "0")};
+
   /* Visual styles */
   ${menuContainerCommon}
+
+  overflow: hidden;
 `
 
 export const SubmenuLabel = styled.div`

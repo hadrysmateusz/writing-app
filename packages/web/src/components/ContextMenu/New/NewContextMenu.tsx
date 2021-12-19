@@ -1,9 +1,17 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from "react"
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  memo,
+} from "react"
 import { BsCaretRightFill } from "react-icons/bs"
 import { Portal } from "react-portal"
 
 import { useOnClickOutside } from "../../../hooks/useOnClickOutside"
-import { ToggleableHooks, useToggleable } from "../../../hooks"
+import { ToggleableHooks, useIsHovered, useToggleable } from "../../../hooks"
+import { createContext } from "../../../utils"
 
 import {
   CaretContainer,
@@ -21,15 +29,17 @@ type ContextMenuHookOptions = ToggleableHooks & {
   closeOnScroll?: boolean
 }
 
+const INITIAL_COORDS: [number, number] = [0, 0]
+
 // TODO: replace old context menu with this one
 
 // TODO: unify how context menus are opened, because some are opened on mousedown and some on click, which leads to very different behaviors, especially when opening a menu with another already open
 // TODO: prevent submenus from going-offscreen. Probably by positioning them with js like regular menus. Prevent the main menu from being closed when a submenu is open.
-// TODO: look into replacing some of the code and types with the useToggleable logic - probably will require removing the react-useportal dependency first to have full control over the portal state
 // TODO: use ellipsis to hide overflow without hiding submenus (possible solutions include: portals, wrapper component for the static text)
+// TODO: capture focus inside the context menu and restore it when it closes
+
 export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
   const {
-    renderWhenClosed = false,
     toggleOnNestedDOMNodes = true,
     stopPropagation = true,
     closeAfterClick = true,
@@ -37,12 +47,10 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
     ...toggleableHooks
   } = options
 
-  const { close, open, isOpen } = useToggleable(false, toggleableHooks)
+  const [eventCoords, setEventCoords] =
+    useState<[number, number]>(INITIAL_COORDS)
 
-  // TODO: capture focus inside the context menu and restore it when it closes
-  // TODO: maybe - replace the usePortal hook for more control (try using a single designated root DOM node instead of creating millions of empty divs)
-  const [eventX, setEventX] = useState(0)
-  const [eventY, setEventY] = useState(0)
+  const { close, open, isOpen } = useToggleable(false, toggleableHooks)
 
   const openMenu = useCallback(
     (event: React.MouseEvent) => {
@@ -54,9 +62,7 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
         event.stopPropagation()
       }
 
-      setEventX(event.pageX)
-      setEventY(event.pageY)
-
+      setEventCoords([event.pageX, event.pageY])
       open()
     },
     [open, stopPropagation, toggleOnNestedDOMNodes]
@@ -64,31 +70,19 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
 
   const closeMenu = useCallback(() => {
     close()
-
     // Reset the coordinates
-    setEventX(0)
-    setEventY(0)
+    setEventCoords(INITIAL_COORDS)
   }, [close])
 
   const getContextMenuProps = useCallback(() => {
     return {
-      eventX,
-      eventY,
+      eventCoords,
       close,
       isOpen,
       closeAfterClick,
       closeOnScroll,
-      renderWhenClosed,
     }
-  }, [
-    close,
-    closeAfterClick,
-    closeOnScroll,
-    eventX,
-    eventY,
-    isOpen,
-    renderWhenClosed,
-  ])
+  }, [close, closeAfterClick, closeOnScroll, eventCoords, isOpen])
 
   return useMemo(
     () => ({
@@ -101,176 +95,366 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
   )
 }
 
+const ADJUST_OFFSET_MARGIN = 6
+type Coords = [number, number]
+const adjustMenuCoords = (
+  menuEl: HTMLElement,
+  referenceCoords: Coords
+): Coords => {
+  const refX = referenceCoords[0]
+  const refY = referenceCoords[1]
+
+  let newX: number
+  let newY: number
+
+  const rect = menuEl.getBoundingClientRect()
+  const menuWidth = Math.ceil(rect.width)
+  const menuHeight = Math.ceil(rect.height)
+  const rightMenuEdge = refX + menuWidth
+  const bottomMenuEdge = refY + menuHeight
+  const windowWidth = window.innerWidth
+  const windowHeight = window.innerHeight
+
+  if (rightMenuEdge > windowWidth) {
+    const overflowOffset = rightMenuEdge - windowWidth + ADJUST_OFFSET_MARGIN
+    newX = refX - overflowOffset
+  } else {
+    newX = refX
+  }
+
+  if (bottomMenuEdge > windowHeight) {
+    // console.log("adjusting newY", refY, menuHeight, refY - menuHeight)
+    const overflowOffset = bottomMenuEdge - windowHeight + ADJUST_OFFSET_MARGIN
+    newY = refY - overflowOffset
+  } else {
+    newY = refY
+  }
+
+  return [newX, newY]
+}
+
+const [ContextMenuContext, useContextMenuContext] =
+  createContext<{ menuRef: React.MutableRefObject<HTMLDivElement | null> }>()
+
 export const ContextMenu: React.FC<{
-  eventX: number
-  eventY: number
+  eventCoords: Coords
   close: () => void
   isOpen: boolean
   closeAfterClick: boolean
   closeOnScroll: boolean
-  renderWhenClosed: boolean
-}> = ({
-  children,
-  eventX,
-  eventY,
-  isOpen,
-  closeAfterClick,
-  closeOnScroll,
-  renderWhenClosed,
-  close,
-}) => {
-  const [x, setX] = useState(eventX)
-  const [y, setY] = useState(eventY)
-  // const [isAdjusted, setIsAdjusted] = useState(false)
-  const containerRef = useRef<HTMLDivElement | null>(null)
+}> = memo(
+  ({
+    children,
+    eventCoords,
+    isOpen,
+    closeAfterClick,
+    closeOnScroll,
+    close,
+  }) => {
+    const containerRef = useRef<HTMLDivElement | null>(null)
 
-  console.log("----")
-  console.log(x, y)
-  console.log(eventX, eventY)
+    const [state, setState] = useState<{
+      coords: Coords
+      isAdjusted: boolean
+    }>(() => {
+      console.log("context menu mount, setting initial state")
+      return {
+        coords: eventCoords,
+        isAdjusted: false,
+      }
+    })
 
-  useEffect(() => {
-    console.log("mount")
-  }, [])
+    useEffect(() => {
+      console.log("event coords changed:", eventCoords)
+      setState({ coords: eventCoords, isAdjusted: false })
+    }, [eventCoords])
 
-  useOnClickOutside(containerRef, () => {
-    close()
-  })
+    useOnClickOutside(containerRef, () => {
+      close()
+    })
 
-  useEffect(() => {
-    if (closeOnScroll) {
-      const listener = () => {
+    useEffect(() => {
+      if (closeOnScroll) {
+        const listener = () => {
+          close()
+        }
+        document.addEventListener("wheel", listener, { once: true })
+        return () => document.removeEventListener("wheel", listener)
+      } else {
+        return undefined
+      }
+    }, [close, closeOnScroll])
+
+    useEffect(() => {
+      const handler = () => {
+        // the isOpen check might be important to properly registering and removing the listener (or at least the isOpen dependency)
+        if (isOpen) {
+          close()
+        }
+      }
+      document.addEventListener("wheel", handler)
+      return () => document.removeEventListener("wheel", handler)
+    }, [close, isOpen])
+
+    const adjust = useCallback(() => {
+      setState((prevState) => {
+        const menuEl = containerRef?.current
+
+        if (!menuEl) {
+          console.log("--------------- element unavailable ---------------")
+          return prevState
+        }
+
+        if (prevState.isAdjusted) {
+          console.log("--------------- already adjusted ---------------")
+          return prevState
+        }
+
+        console.log("--------------- adjusting ---------------")
+
+        const newCoords = adjustMenuCoords(menuEl, prevState.coords)
+
+        return { coords: newCoords, isAdjusted: true }
+      })
+    }, [])
+
+    useEffect(() => {
+      adjust()
+    }, [adjust])
+
+    const handleClick = useCallback(
+      (event: React.MouseEvent<HTMLDivElement>) => {
+        /* Stops click events inside the context menu from propagating down the DOM tree
+        TODO: see if this can be done without using event.stopPropagation */
+        event.stopPropagation()
+
+        /* Close the menu after a click inside*/
+        if (closeAfterClick) {
+          close()
+        }
+      },
+      [close, closeAfterClick]
+    )
+
+    console.log("----------- render CONTEXT -----------")
+    console.log("internal coords:", state.coords)
+    console.log("event coords:   ", eventCoords)
+    console.log("state", state)
+
+    return (
+      <Portal>
+        <ContextMenuContext.Provider value={{ menuRef: containerRef }}>
+          <MenuContainer
+            isAdjusted={state.isAdjusted}
+            xPos={state.coords[0]}
+            yPos={state.coords[1]}
+            ref={containerRef}
+            onClick={handleClick}
+          >
+            {children}
+          </MenuContainer>
+        </ContextMenuContext.Provider>
+      </Portal>
+    )
+  }
+)
+
+export const ContextSubmenu: React.FC<{ text: string }> = memo(
+  ({ text, children, ...rest }) => {
+    const menuItemRef = useRef<HTMLDivElement>(null)
+
+    const { close, open, isOpen } = useToggleable(false)
+
+    const { getHoverContainerProps, isHovered } = useIsHovered()
+
+    useEffect(() => {
+      if (isHovered) {
+        open()
+      } else {
         close()
       }
-      document.addEventListener("wheel", listener, { once: true })
-      return () => document.removeEventListener("wheel", listener)
-    } else {
-      return undefined
-    }
-  }, [close, closeOnScroll])
+    }, [close, isHovered, open])
 
-  useEffect(() => {
-    console.log("coords changed", eventX, eventY)
-    // setIsAdjusted(false)
-
-    setX(eventX)
-    setY(eventY)
-
-    const menuEl = containerRef?.current
-
-    if (!menuEl) {
-      console.log("element unavailable")
-      return
-    }
-
-    // const rect = menuEl.getBoundingClientRect()
-
-    // const menuWidth = Math.ceil(rect.width)
-    // const menuHeight = Math.ceil(rect.height)
-
-    // setY((y) => {
-    //   if (y + menuHeight > window.innerHeight) {
-    //     return y - menuHeight
-    //   } else return y
-    // })
-
-    // setX((x) => {
-    //   if (x + menuWidth > window.innerWidth) {
-    //     return x - menuWidth
-    //   } else return x
-    // })
-
-    // setIsAdjusted(true)
-  }, [eventX, eventY])
-
-  useEffect(() => {
-    // TODO: this is broken and only works one time for some reason
-    const listener = () => {
-      close()
-    }
-    document.addEventListener("wheel", listener, { once: true })
-    return () => document.removeEventListener("wheel", listener)
-  }, [close])
-
-  // useLayoutEffect(() => {
-  //   // if (x !== eventX || y !== eventY) {
-  //   //   console.log("already adjusted")
-  //   //   return
-  //   // }
-  //   const menuEl = containerRef?.current
-
-  //   if (!menuEl) {
-  //     console.log("element unavailable")
-  //     return
-  //   }
-
-  //   const rect = menuEl.getBoundingClientRect()
-
-  //   const menuWidth = Math.ceil(rect.width)
-  //   const menuHeight = Math.ceil(rect.height)
-
-  //   // const rightMenuEdge = x + menuWidth
-  //   // const bottomMenuEdge = y + menuHeight
-  //   // debugger
-
-  //   setY((y) => {
-  //     if (y + menuHeight > window.innerHeight) {
-  //       return y - menuHeight
-  //     } else return y
-  //   })
-
-  //   setX((x) => {
-  //     if (x + menuWidth > window.innerWidth) {
-  //       return x - menuWidth
-  //     } else return x
-  //   })
-  // }, [eventX, eventY])
-
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    /* Stops click events inside the context menu from propagating down the DOM tree
-    TODO: see if this can be done without using event.stopPropagation */
-    event.stopPropagation()
-
-    /* Close the menu after a click inside*/
-    if (closeAfterClick) {
-      close()
-    }
+    return (
+      <ContextMenuItem
+        menuItemRef={menuItemRef}
+        {...rest}
+        onClick={(e) => e.stopPropagation()}
+        {...getHoverContainerProps()}
+      >
+        <SubmenuLabel>
+          <div>{text}</div>
+          <CaretContainer>
+            <BsCaretRightFill />
+          </CaretContainer>
+        </SubmenuLabel>
+        {isOpen ? (
+          <ContextSubmenuMenu menuItemRef={menuItemRef}>
+            {children}
+          </ContextSubmenuMenu>
+        ) : null}
+      </ContextMenuItem>
+    )
   }
+)
 
-  const shouldRender = isOpen || renderWhenClosed
+const BORDER_WIDTH = 1
 
-  return shouldRender ? (
-    <Portal>
-      <MenuContainer xPos={x} yPos={y} ref={containerRef} onClick={handleClick}>
-        {children}
-      </MenuContainer>
-    </Portal>
-  ) : null
-}
+const ContextSubmenuMenu: React.FC<{
+  // TODO: maybe replace this ref with coords passed as props (like the base menu gets from event)
+  menuItemRef: React.RefObject<HTMLDivElement>
+}> = ({ children, menuItemRef }) => {
+  const { menuRef: parentMenuRef } = useContextMenuContext()
 
-export const ContextSubmenu: React.FC<{ text: string }> = ({
-  text,
-  children,
-  ...rest
-}) => {
+  const submenuContainerRef = useRef<HTMLDivElement>(null)
+
+  const [state, setState] = useState<{
+    coords: Coords
+    isAdjusted: boolean
+  }>(() => {
+    console.log("context submenu menu mount, setting initial state")
+
+    // get dom elements
+    const parentMenuEl = parentMenuRef?.current
+    const menuItemEl = menuItemRef?.current
+
+    // ensure dom elements exist
+    if (!parentMenuEl || !menuItemEl) {
+      console.log("--------------- some element not available ---------------")
+      return { coords: INITIAL_COORDS, isAdjusted: false }
+    }
+
+    // get parent menu measurements
+    const parentMenuRect = parentMenuEl?.getBoundingClientRect()
+    const parentMenuWidth = Math.ceil(parentMenuRect.width)
+    const parentMenuRightEdge = parentMenuRect.x + parentMenuWidth
+
+    // get menu item measurements
+    const menuItemRect = menuItemEl?.getBoundingClientRect()
+    const menuItemTopEdge = menuItemRect.y
+
+    // reference position (intented position without need for adjustments)
+    const refX = parentMenuRightEdge
+    const refY = menuItemTopEdge
+
+    return {
+      coords: [refX, refY],
+      isAdjusted: false,
+    }
+  })
+
+  const adjust = useCallback(() => {
+    setState((prevState) => {
+      if (prevState.isAdjusted) {
+        console.log("--------------- already adjusted ---------------")
+        return prevState
+      }
+
+      // get dom elements
+      const parentMenuEl = parentMenuRef?.current
+      const menuEl = submenuContainerRef?.current
+      const menuItemEl = menuItemRef?.current
+
+      // ensure dom elements exist
+      if (!menuEl || !parentMenuEl || !menuItemEl) {
+        console.log(
+          "--------------- some element not available ---------------"
+        )
+        return prevState
+      }
+
+      console.log("--------------- adjusting ---------------")
+
+      // window dimensions
+      const windowWidth = window.innerWidth
+      const windowHeight = window.innerHeight
+
+      // get parent menu measurements
+      const parentMenuRect = parentMenuEl?.getBoundingClientRect()
+      const parentMenuWidth = Math.ceil(parentMenuRect.width)
+      const parentMenuLeftEdge = parentMenuRect.x
+      const parentMenuRightEdge = parentMenuRect.x + parentMenuWidth
+
+      // get menu item measurements
+      const menuItemRect = menuItemEl?.getBoundingClientRect()
+      const menuItemTopEdge = menuItemRect.y
+
+      // reference position (intented position without need for adjustments)
+      const refX = parentMenuRightEdge
+      const refY = menuItemTopEdge
+
+      let newX: number
+      let newY: number
+
+      const rect = menuEl.getBoundingClientRect()
+      const menuWidth = Math.ceil(rect.width)
+      const menuHeight = Math.ceil(rect.height)
+      const menuRightEdge = refX + menuWidth
+      const menuBottomEdge = refY + menuHeight
+
+      if (menuRightEdge > windowWidth) {
+        newX = parentMenuLeftEdge - menuWidth + BORDER_WIDTH
+      } else {
+        newX = refX - BORDER_WIDTH
+      }
+
+      if (menuBottomEdge > windowHeight) {
+        const overflowOffset =
+          menuBottomEdge - windowHeight + ADJUST_OFFSET_MARGIN
+        newY = refY - overflowOffset
+      } else {
+        newY = refY
+      }
+
+      const newCoords: [number, number] = [Math.ceil(newX), Math.ceil(newY)]
+
+      return {
+        coords: newCoords,
+        isAdjusted: true,
+      }
+    })
+  }, [menuItemRef, parentMenuRef])
+
+  useEffect(() => {
+    adjust()
+  }, [adjust])
+
+  console.log("----------- render SUBMENU -----------")
+  console.log("internal coords:", state.coords)
+  console.log("state", state)
+
   return (
-    <ContextMenuItem {...rest}>
-      <SubmenuLabel>
-        <div>{text}</div>
-        <CaretContainer>
-          <BsCaretRightFill />
-        </CaretContainer>
-      </SubmenuLabel>
-      <SubmenuContainer>{children}</SubmenuContainer>
-    </ContextMenuItem>
+    <Portal>
+      <SubmenuContainer
+        ref={submenuContainerRef}
+        isAdjusted={state.isAdjusted}
+        xPos={state.coords[0]}
+        yPos={state.coords[1]}
+      >
+        <ContextMenuContext.Provider value={{ menuRef: submenuContainerRef }}>
+          {children}
+        </ContextMenuContext.Provider>
+      </SubmenuContainer>
+    </Portal>
   )
 }
 
-export const ContextMenuItem: React.FC<{
+type ContextMenuItemProps = {
   text?: string
   disabled?: boolean
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void
   onMouseDown?: (event: React.MouseEvent<HTMLDivElement>) => void
-}> = ({ text, disabled = false, onClick, onMouseDown, children, ...rest }) => {
+  menuItemRef?: React.RefObject<HTMLDivElement>
+}
+export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
+  text,
+  disabled = false,
+  onClick,
+  onMouseDown,
+  children,
+  menuItemRef,
+  ...rest
+}) => {
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (disabled) {
       event.preventDefault()
@@ -295,6 +479,7 @@ export const ContextMenuItem: React.FC<{
 
   return (
     <ContextMenuItemContainer
+      ref={menuItemRef}
       disabled={disabled}
       onClick={handleClick}
       onMouseDown={handleMouseDown}
