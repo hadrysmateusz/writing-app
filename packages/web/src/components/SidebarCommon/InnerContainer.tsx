@@ -3,7 +3,11 @@ import styled from "styled-components/macro"
 
 import { customScrollbar } from "../../style-utils"
 
-import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
+import {
+  ContextMenu,
+  ContextMenuItem,
+  useContextMenu,
+} from "../ContextMenu/New"
 import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 
@@ -11,7 +15,7 @@ export const InnerContainer: React.FC<{}> = ({ children }) => {
   const { createDocument } = useDocumentsAPI()
   const primarySidebar = usePrimarySidebar()
 
-  const { openMenu, ContextMenu } = useContextMenu({
+  const { getContextMenuProps, openMenu, isMenuOpen } = useContextMenu({
     toggleOnNestedDOMNodes: false,
   })
 
@@ -99,11 +103,14 @@ export const InnerContainer: React.FC<{}> = ({ children }) => {
     <InnerContainerSC onContextMenu={handleContextMenu}>
       {children}
 
-      <ContextMenu>
-        <ContextMenuItem onClick={handleNewDocument}>
-          New Document
-        </ContextMenuItem>
-      </ContextMenu>
+      {isMenuOpen ? (
+        <ContextMenu {...getContextMenuProps()}>
+          {/* TODO: refactor this entire component to support context menu contents for other view types */}
+          <ContextMenuItem onClick={handleNewDocument}>
+            New Document
+          </ContextMenuItem>
+        </ContextMenu>
+      ) : null}
     </InnerContainerSC>
   )
 }

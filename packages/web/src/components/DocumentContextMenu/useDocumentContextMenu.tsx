@@ -5,7 +5,8 @@ import {
   useContextMenu,
   ContextMenuItem,
   ContextSubmenu,
-} from "../ContextMenu/Old"
+  ContextMenu,
+} from "../ContextMenu/New"
 import { ContextMenuSeparator } from "../ContextMenu/Common"
 import { DocumentDoc } from "../Database"
 import { useEditableText } from "../RenamingInput"
@@ -35,10 +36,11 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
 
   const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)
 
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu({
-    closeAfterClick: false,
-    closeOnScroll: false,
-  })
+  const { getContextMenuProps, openMenu, closeMenu, isMenuOpen } =
+    useContextMenu({
+      closeAfterClick: false,
+      closeOnScroll: false,
+    })
 
   const { startRenaming, getProps: getEditableProps } = useEditableText(
     document.title,
@@ -143,7 +145,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     return (
       <>
         {isMenuOpen ? (
-          <ContextMenu>
+          <ContextMenu {...getContextMenuProps()}>
             {!document.isDeleted ? (
               <>
                 <ContextMenuItem onClick={handleRenameDocument}>
@@ -192,6 +194,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
             )}
           </ContextMenu>
         ) : null}
+
         <ExportModal component={ExportModalContent} />
       </>
     )

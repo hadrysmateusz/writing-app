@@ -6,7 +6,8 @@ import {
   useContextMenu,
   ContextMenuItem,
   ContextSubmenu,
-} from "./ContextMenu/Old"
+  ContextMenu,
+} from "./ContextMenu/New"
 import { ContextMenuSeparator } from "./ContextMenu/Common"
 import { TurnIntoContextMenuContent } from "./Editor/hooks/TurnIntoContextMenuContent"
 
@@ -18,7 +19,7 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
   nodeRef,
   slateNode,
 }) => {
-  const { ContextMenu } = useContextMenu()
+  const { getContextMenuProps, isMenuOpen } = useContextMenu()
   const editor = useSlateStatic()
   const isFocused = useFocused()
   const isSelected = useSelected()
@@ -60,44 +61,45 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
         <FaEllipsisV />
       </SideToolbarContainer> */}
 
-      <ContextMenu>
-        <ContextMenuItem
-          onMouseDown={() => {
-            console.warn("TODO: implement")
-          }}
-        >
-          Delete
-        </ContextMenuItem>
+      {isMenuOpen ? (
+        <ContextMenu {...getContextMenuProps()}>
+          <ContextMenuItem
+            onMouseDown={() => {
+              console.warn("TODO: implement")
+            }}
+          >
+            Delete
+          </ContextMenuItem>
 
-        <ContextMenuItem
-          onMouseDown={() => {
-            console.warn("TODO: implement")
-          }}
-        >
-          Duplicate
-        </ContextMenuItem>
+          <ContextMenuItem
+            onMouseDown={() => {
+              console.warn("TODO: implement")
+            }}
+          >
+            Duplicate
+          </ContextMenuItem>
 
-        <ContextSubmenu text="Turn into">
-          <TurnIntoContextMenuContent
-            editor={editor}
-            nodeRef={nodeRef}
-            slateNode={slateNode}
-          />
-        </ContextSubmenu>
+          <ContextSubmenu text="Turn into">
+            <TurnIntoContextMenuContent
+              editor={editor}
+              nodeRef={nodeRef}
+              slateNode={slateNode}
+            />
+          </ContextSubmenu>
 
-        <ContextMenuSeparator />
+          <ContextMenuSeparator />
 
-        <ContextMenuItem
-          onMouseDown={() => {
-            console.warn("TODO: implement")
-          }}
-        >
-          Comment
-        </ContextMenuItem>
+          <ContextMenuItem
+            onMouseDown={() => {
+              console.warn("TODO: implement")
+            }}
+          >
+            Comment
+          </ContextMenuItem>
 
-        <ContextMenuSeparator />
+          <ContextMenuSeparator />
 
-        {/* <ContextSubmenu text="Insert">
+          {/* <ContextSubmenu text="Insert">
           <ContextMenuItem onMouseDown={handleInsertHorizontalRule}>
             Horizontal Rule
           </ContextMenuItem>
@@ -105,7 +107,8 @@ export const Toolbar: React.FC<{ nodeRef: any; slateNode: Node }> = ({
             Image
           </ContextMenuItem>
         </ContextSubmenu> */}
-      </ContextMenu>
+        </ContextMenu>
+      ) : null}
     </>
   ) : null
 }

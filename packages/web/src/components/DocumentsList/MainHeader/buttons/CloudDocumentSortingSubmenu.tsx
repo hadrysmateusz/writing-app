@@ -1,4 +1,4 @@
-import { ContextMenuItem, ContextSubmenu } from "../../../ContextMenu/Old"
+import { ContextMenuItem, ContextSubmenu } from "../../../ContextMenu/New"
 import {
   SortingDirection,
   SortingIndex,

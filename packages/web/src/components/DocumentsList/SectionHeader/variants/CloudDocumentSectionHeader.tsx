@@ -1,4 +1,8 @@
-import { ContextMenuItem, useContextMenu } from "../../../ContextMenu/Old"
+import {
+  ContextMenu,
+  ContextMenuItem,
+  useContextMenu,
+} from "../../../ContextMenu/New"
 import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
 
@@ -20,13 +24,14 @@ export const CloudDocumentSectionHeader: React.FC<{
   const { switchSubview } = usePrimarySidebar()
   const { createDocument } = useDocumentsAPI()
 
-  const { openMenu, closeMenu, ContextMenu } = useContextMenu()
+  const { getContextMenuProps, openMenu, closeMenu, isMenuOpen } =
+    useContextMenu()
 
   const handleNewDocument = () => {
     if (groupId !== undefined) {
       createDocument({ parentGroup: groupId })
     }
-    closeMenu()
+    closeMenu() // TODO: this is probably redundant
   }
 
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -56,11 +61,13 @@ export const CloudDocumentSectionHeader: React.FC<{
         {children}
       </SectionHeaderComponent>
 
-      <ContextMenu>
-        <ContextMenuItem onClick={handleNewDocument}>
-          New Document
-        </ContextMenuItem>
-      </ContextMenu>
+      {isMenuOpen ? (
+        <ContextMenu {...getContextMenuProps()}>
+          <ContextMenuItem onClick={handleNewDocument}>
+            New Document
+          </ContextMenuItem>
+        </ContextMenu>
+      ) : null}
     </>
   )
 }

@@ -1,13 +1,13 @@
 import { useCallback } from "react"
 
-import { useContextMenu } from "../../../ContextMenu/Old"
+import { ContextMenu, useContextMenu } from "../../../ContextMenu/New"
 
 import { MainHeaderButton } from "./MainHeaderButton"
 
 export const MoreMainHeaderButton: React.FC<{
   contextMenuContent: React.ReactNode
 }> = ({ contextMenuContent }) => {
-  const { isMenuOpen, openMenu, ContextMenu } = useContextMenu()
+  const { getContextMenuProps, openMenu, isMenuOpen } = useContextMenu()
 
   const handleOnSortingButtonClick = useCallback(
     (e) => {
@@ -24,7 +24,11 @@ export const MoreMainHeaderButton: React.FC<{
         action={handleOnSortingButtonClick}
       />
 
-      {isMenuOpen ? <ContextMenu>{contextMenuContent}</ContextMenu> : null}
+      {isMenuOpen ? (
+        <ContextMenu {...getContextMenuProps()}>
+          {contextMenuContent}
+        </ContextMenu>
+      ) : null}
     </>
   )
 }

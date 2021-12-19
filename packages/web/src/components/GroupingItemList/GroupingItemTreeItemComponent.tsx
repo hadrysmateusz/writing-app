@@ -5,7 +5,8 @@ import {
   useContextMenu,
   ContextMenuItem,
   ContextSubmenu,
-} from "../ContextMenu/Old"
+  ContextMenu,
+} from "../ContextMenu/New"
 import { ContextMenuSeparator } from "../ContextMenu/Common"
 import { useEditableText, EditableText } from "../RenamingInput"
 import { SidebarView } from "../ViewState"
@@ -65,7 +66,8 @@ export const GroupingItemTreeItemComponent: React.FC<{
     revealItem,
     removePath,
   }) => {
-    const { openMenu, closeMenu, ContextMenu } = useContextMenu()
+    const { getContextMenuProps, openMenu, closeMenu, isMenuOpen } =
+      useContextMenu()
 
     const [isCreatingGroup, setIsCreatingGroup] = useState(false)
 
@@ -165,67 +167,69 @@ export const GroupingItemTreeItemComponent: React.FC<{
           />
         </div>
 
-        <ContextMenu>
-          {view === "cloud" ? (
-            <>
-              <ContextSubmenu text="Create New">
-                <ContextMenuItem onClick={handleCreateDocument}>
-                  Document
-                </ContextMenuItem>
-                <ContextMenuItem onClick={handleCreateItem}>
-                  Collection
-                </ContextMenuItem>
-              </ContextSubmenu>
-
-              <ContextMenuSeparator />
-
-              <ContextMenuItem onClick={handleRenameItem}>
-                Rename
-              </ContextMenuItem>
-              {/* TODO: add confirmation dialog (emphasise the fact that this action can't be reversed) */}
-              <ContextMenuItem onClick={handleDeleteItem}>
-                Delete
-              </ContextMenuItem>
-            </>
-          ) : view === "local" ? (
-            <>
-              <ContextSubmenu text="Create New">
-                <ContextMenuItem onClick={handleCreateDocument}>
-                  File
-                </ContextMenuItem>
-                <ContextMenuItem onClick={handleCreateItem}>
-                  Folder
-                </ContextMenuItem>
-              </ContextSubmenu>
-
-              <ContextMenuSeparator />
-
-              <ContextMenuItem onClick={handleReveal}>
-                Reveal in Explorer
-              </ContextMenuItem>
-              <ContextMenuItem onClick={handleRenameItem}>
-                Rename
-              </ContextMenuItem>
-
-              {/* TODO: use a less error-prone solution than a depth check */}
-              {depth === 1 ? (
-                <ContextSubmenu text="Delete">
-                  <ContextMenuItem onClick={handleRemovePath}>
-                    From Library
+        {isMenuOpen ? (
+          <ContextMenu {...getContextMenuProps()}>
+            {view === "cloud" ? (
+              <>
+                <ContextSubmenu text="Create New">
+                  <ContextMenuItem onClick={handleCreateDocument}>
+                    Document
                   </ContextMenuItem>
-                  <ContextMenuItem onClick={handleDeleteItem}>
-                    From Disk
+                  <ContextMenuItem onClick={handleCreateItem}>
+                    Collection
                   </ContextMenuItem>
                 </ContextSubmenu>
-              ) : (
-                <ContextMenuItem onClick={handleDeleteItem}>
-                  Delete From Disk
+
+                <ContextMenuSeparator />
+
+                <ContextMenuItem onClick={handleRenameItem}>
+                  Rename
                 </ContextMenuItem>
-              )}
-              {/* TODO: add confirmation dialog (emphasise the fact that this action can't be reversed) */}
-            </>
-          ) : null}
-        </ContextMenu>
+                {/* TODO: add confirmation dialog (emphasise the fact that this action can't be reversed) */}
+                <ContextMenuItem onClick={handleDeleteItem}>
+                  Delete
+                </ContextMenuItem>
+              </>
+            ) : view === "local" ? (
+              <>
+                <ContextSubmenu text="Create New">
+                  <ContextMenuItem onClick={handleCreateDocument}>
+                    File
+                  </ContextMenuItem>
+                  <ContextMenuItem onClick={handleCreateItem}>
+                    Folder
+                  </ContextMenuItem>
+                </ContextSubmenu>
+
+                <ContextMenuSeparator />
+
+                <ContextMenuItem onClick={handleReveal}>
+                  Reveal in Explorer
+                </ContextMenuItem>
+                <ContextMenuItem onClick={handleRenameItem}>
+                  Rename
+                </ContextMenuItem>
+
+                {/* TODO: use a less error-prone solution than a depth check */}
+                {depth === 1 ? (
+                  <ContextSubmenu text="Delete">
+                    <ContextMenuItem onClick={handleRemovePath}>
+                      From Library
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={handleDeleteItem}>
+                      From Disk
+                    </ContextMenuItem>
+                  </ContextSubmenu>
+                ) : (
+                  <ContextMenuItem onClick={handleDeleteItem}>
+                    Delete From Disk
+                  </ContextMenuItem>
+                )}
+                {/* TODO: add confirmation dialog (emphasise the fact that this action can't be reversed) */}
+              </>
+            ) : null}
+          </ContextMenu>
+        ) : null}
       </>
     )
   }

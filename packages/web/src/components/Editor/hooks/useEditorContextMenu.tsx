@@ -20,7 +20,8 @@ import {
   useContextMenu,
   ContextMenuItem,
   ContextSubmenu,
-} from "../../ContextMenu/Old"
+  ContextMenu,
+} from "../../ContextMenu/New"
 import { ContextMenuSeparator } from "../../ContextMenu/Common"
 import Icon from "../../Icon"
 
@@ -39,7 +40,8 @@ type ContextMenuType = {
 export const useEditorContextMenu = () => {
   const editor = usePlateEditorRef(usePlateEventId("focus"))
 
-  const { openMenu, closeMenu, isMenuOpen, ContextMenu } = useContextMenu()
+  const { getContextMenuProps, openMenu, closeMenu, isMenuOpen } =
+    useContextMenu()
   const { insertImageFromModal } = useImageModal()
   const { getLinkUrl } = useLinkModal()
 
@@ -47,15 +49,13 @@ export const useEditorContextMenu = () => {
     useState<ContextMenuType | null>(null)
 
   // TODO: ensure this works properly in both electron and the browser by checking for permissions etc.
-  const addSelectionToClipboard = async (): Promise<void> => {
+  const addSelectionToClipboard = useCallback(async (): Promise<void> => {
     if (editor && editor.selection) {
       const fragment = Editor.fragment(editor, editor.selection)
 
       const html = serializeHtml(editor, {
         nodes: fragment,
       })
-
-      console.log(html)
 
       const items = {}
 
@@ -72,26 +72,26 @@ export const useEditorContextMenu = () => {
 
       const data = [new ClipboardItem(items)]
 
-      navigator.clipboard.write(data).then(async () => {
+      navigator.clipboard.write(data).then(() => {
         console.log("success")
       })
     }
-  }
+  }, [editor])
 
-  const copySelectionToClipboard = async (): Promise<void> => {
+  const copySelectionToClipboard = useCallback(async (): Promise<void> => {
     addSelectionToClipboard()
-  }
+  }, [addSelectionToClipboard])
 
-  const cutSelectionToClipboard = async (): Promise<void> => {
-    addSelectionToClipboard()
+  const cutSelectionToClipboard = useCallback(async (): Promise<void> => {
+    await addSelectionToClipboard()
 
     if (editor !== undefined) {
       Transforms.delete(editor)
     }
-  }
+  }, [addSelectionToClipboard, editor])
 
   // TODO: figure out how to programmatically paste formatted HTML
-  const pasteFromClipboard = async (): Promise<void> => {
+  const pasteFromClipboard = useCallback(async (): Promise<void> => {
     console.warn("TODO: make this work")
     const clipboardItems = await navigator.clipboard.read()
 
@@ -111,25 +111,33 @@ export const useEditorContextMenu = () => {
         }
       }
     }
-  }
+  }, [editor])
 
-  const handleCopySelectionToClipboard = () => {
+  const handleCopySelectionToClipboard = useCallback(() => {
     copySelectionToClipboard()
-  }
-  const handleCutSelectionToClipboard = () => {
+  }, [copySelectionToClipboard])
+
+  const handleCutSelectionToClipboard = useCallback(() => {
     cutSelectionToClipboard()
-  }
-  const handlePasteFromClipboard = () => {
+  }, [cutSelectionToClipboard])
+
+  const handlePasteFromClipboard = useCallback(() => {
     pasteFromClipboard()
-  }
-  const handleInsertImage = async (event) => {
-    event.preventDefault()
-    insertImageFromModal()
-  }
+  }, [pasteFromClipboard])
+
+  const handleInsertImage = useCallback(
+    async (event) => {
+      event.preventDefault()
+      insertImageFromModal()
+    },
+    [insertImageFromModal]
+  )
+
   // const handleToggleLink = async (event) => {
   //   event.preventDefault()
   //   upsertLinkFromModal()
   // }
+
   const handleSelectBlock = useCallback(
     (e) => {
       if (!editor) {
@@ -152,169 +160,177 @@ export const useEditorContextMenu = () => {
     [editor]
   )
 
-  const renderContextMenu = useCallback(
-    () => {
-      if (contextMenuType === null) {
-        throw new Error(
-          "This context menu can't be opened without a proper type."
+  const renderContextMenu = useCallback(() => {
+    if (contextMenuType === null) {
+      throw new Error(
+        "This context menu can't be opened without a proper type."
+      )
+    }
+
+    if (editor === undefined) {
+      throw new Error(
+        "Context menu can't be opened because the editor is undefined"
+      )
+    }
+
+    const renderItems = () => {
+      const { base, node } = contextMenuType
+
+      if (base === "expanded") {
+        return (
+          <>
+            <InlineFormattingContainer>
+              <MarkToolbarButton
+                type={getPluginType(editor, MARK_BOLD)}
+                icon={<Icon icon={MARK_BOLD} />}
+              />
+              <MarkToolbarButton
+                type={getPluginType(editor, MARK_ITALIC)}
+                icon={<Icon icon={MARK_ITALIC} />}
+              />
+              <MarkToolbarButton
+                type={getPluginType(editor, MARK_STRIKETHROUGH)}
+                icon={<Icon icon={MARK_STRIKETHROUGH} />}
+              />
+              <MarkToolbarButton
+                type={getPluginType(editor, MARK_CODE)}
+                icon={<Icon icon={MARK_CODE} />}
+              />
+              <ToolbarLink
+                getLinkUrl={getLinkUrl}
+                icon={<Icon icon={ELEMENT_LINK} />}
+              />
+            </InlineFormattingContainer>
+
+            <ContextMenuSeparator />
+
+            <ContextMenuItem
+              text="Copy"
+              onMouseDown={handleCopySelectionToClipboard}
+            />
+            <ContextMenuItem
+              text="Cut"
+              onMouseDown={handleCutSelectionToClipboard}
+            />
+            <ContextMenuItem
+              text="Paste"
+              onMouseDown={handlePasteFromClipboard}
+            />
+
+            <ContextMenuSeparator />
+
+            <ContextMenuItem
+              text="Select Block"
+              onMouseDown={handleSelectBlock}
+            />
+          </>
         )
       }
 
-      if (editor === undefined) {
-        throw new Error(
-          "Context menu can't be opened because the editor is undefined"
+      if (base === "collapsed") {
+        return (
+          <>
+            <ContextMenuItem
+              text="Paste"
+              onMouseDown={handlePasteFromClipboard}
+            />
+
+            <ContextMenuSeparator />
+
+            <ContextMenuItem
+              text="Select Block"
+              onMouseDown={handleSelectBlock}
+            />
+          </>
         )
       }
 
-      const renderItems = () => {
-        const { base, node } = contextMenuType
+      if (base === "node") {
+        let slateNode: Node
 
-        if (base === "expanded") {
-          return (
-            <>
-              <InlineFormattingContainer>
-                <MarkToolbarButton
-                  type={getPluginType(editor, MARK_BOLD)}
-                  icon={<Icon icon={MARK_BOLD} />}
-                />
-                <MarkToolbarButton
-                  type={getPluginType(editor, MARK_ITALIC)}
-                  icon={<Icon icon={MARK_ITALIC} />}
-                />
-                <MarkToolbarButton
-                  type={getPluginType(editor, MARK_STRIKETHROUGH)}
-                  icon={<Icon icon={MARK_STRIKETHROUGH} />}
-                />
-                <MarkToolbarButton
-                  type={getPluginType(editor, MARK_CODE)}
-                  icon={<Icon icon={MARK_CODE} />}
-                />
-                <ToolbarLink
-                  getLinkUrl={getLinkUrl}
-                  icon={<Icon icon={ELEMENT_LINK} />}
-                />
-              </InlineFormattingContainer>
-
-              <ContextMenuSeparator />
-
-              <ContextMenuItem
-                text="Copy"
-                onMouseDown={handleCopySelectionToClipboard}
-              />
-              <ContextMenuItem
-                text="Cut"
-                onMouseDown={handleCutSelectionToClipboard}
-              />
-              <ContextMenuItem
-                text="Paste"
-                onMouseDown={handlePasteFromClipboard}
-              />
-
-              <ContextMenuSeparator />
-
-              <ContextMenuItem
-                text="Select Block"
-                onMouseDown={handleSelectBlock}
-              />
-            </>
-          )
+        try {
+          slateNode = ReactEditor.toSlateNode(editor, node!)
+        } catch (error) {
+          // TODO: when the error boundary for this error is created this might not be necessary (or maybe some custom logic for recovering could be used)
+          console.log("couldn't resolve slate node")
+          return
         }
 
-        if (base === "collapsed") {
-          return (
-            <>
-              <ContextMenuItem
-                text="Paste"
-                onMouseDown={handlePasteFromClipboard}
-              />
+        const nodeType = "type" in slateNode ? slateNode.type : undefined
 
-              <ContextMenuSeparator />
-
-              <ContextMenuItem
-                text="Select Block"
-                onMouseDown={handleSelectBlock}
-              />
-            </>
-          )
+        if (nodeType === undefined) {
+          throw new Error("node type can't be undefined (invalid node)")
         }
 
-        if (base === "node") {
-          let slateNode: Node
+        return (
+          <>
+            <ContextMenuItem
+              text="Delete"
+              disabled
+              onMouseDown={() => {
+                console.warn("TODO: implement")
+              }}
+            />
 
-          try {
-            slateNode = ReactEditor.toSlateNode(editor, node!)
-          } catch (error) {
-            // TODO: when the error boundary for this error is created this might not be necessary (or maybe some custom logic for recovering could be used)
-            console.log("couldn't resolve slate node")
-            return
-          }
+            <ContextMenuItem
+              text="Duplicate"
+              disabled
+              onMouseDown={() => {
+                console.warn("TODO: implement")
+              }}
+            />
 
-          const nodeType = "type" in slateNode ? slateNode.type : undefined
-
-          if (nodeType === undefined) {
-            throw new Error("node type can't be undefined (invalid node)")
-          }
-
-          return (
-            <>
-              <ContextMenuItem
-                text="Delete"
-                disabled
-                onMouseDown={() => {
-                  console.warn("TODO: implement")
-                }}
+            <ContextSubmenu text="Turn into">
+              <TurnIntoContextMenuContent
+                editor={editor}
+                node={node}
+                slateNode={slateNode}
               />
+            </ContextSubmenu>
 
-              <ContextMenuItem
-                text="Duplicate"
-                disabled
-                onMouseDown={() => {
-                  console.warn("TODO: implement")
-                }}
-              />
+            <ContextMenuSeparator />
 
-              <ContextSubmenu text="Turn into">
-                <TurnIntoContextMenuContent
-                  editor={editor}
-                  node={node}
-                  slateNode={slateNode}
-                />
-              </ContextSubmenu>
+            <ContextMenuItem
+              text="Comment"
+              disabled
+              onMouseDown={() => {
+                console.warn("TODO: implement")
+              }}
+            />
 
-              <ContextMenuSeparator />
+            <ContextMenuSeparator />
+
+            <ContextSubmenu text="Insert">
+              <ContextMenuItem text="Image" onMouseDown={handleInsertImage} />
 
               <ContextMenuItem
-                text="Comment"
+                text="Horizontal Rule"
                 disabled
-                onMouseDown={() => {
-                  console.warn("TODO: implement")
-                }}
+                /* onMouseDown={handleInsertHorizontalRule} */
               />
-
-              <ContextMenuSeparator />
-
-              <ContextSubmenu text="Insert">
-                <ContextMenuItem text="Image" onMouseDown={handleInsertImage} />
-
-                <ContextMenuItem
-                  text="Horizontal Rule"
-                  disabled
-                  /* onMouseDown={handleInsertHorizontalRule} */
-                />
-              </ContextSubmenu>
-            </>
-          )
-        }
-
-        throw new Error(`invalid context menu type: ${base}`)
+            </ContextSubmenu>
+          </>
+        )
       }
 
-      return <ContextMenu>{renderItems()}</ContextMenu>
-    },
-    // TODO: I'm not sure but I think ContextMenu is excluded from dependencies to solve rerender issues, I should find a way to fix this (the warning is disabled for now)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [/* ContextMenu,  */ contextMenuType, editor]
-  )
+      throw new Error(`invalid context menu type: ${base}`)
+    }
+
+    return isMenuOpen ? (
+      <ContextMenu {...getContextMenuProps()}>{renderItems()}</ContextMenu>
+    ) : null
+  }, [
+    contextMenuType,
+    editor,
+    getContextMenuProps,
+    getLinkUrl,
+    handleCopySelectionToClipboard,
+    handleCutSelectionToClipboard,
+    handleInsertImage,
+    handlePasteFromClipboard,
+    handleSelectBlock,
+    isMenuOpen,
+  ])
 
   const openMenuWithType = (
     event: React.MouseEvent<Element, globalThis.MouseEvent>,

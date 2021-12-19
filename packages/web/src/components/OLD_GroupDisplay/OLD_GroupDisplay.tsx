@@ -4,7 +4,11 @@ import styled from "styled-components/macro"
 import { formatOptional } from "../../utils"
 import { getGroupName } from "../../helpers/getGroupName"
 
-import { useContextMenu, ContextMenuItem } from "../ContextMenu/Old"
+import {
+  useContextMenu,
+  ContextMenuItem,
+  ContextMenu,
+} from "../ContextMenu/New"
 import { ContextMenuSeparator } from "../ContextMenu/Common"
 import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useCloudGroupsState } from "../CloudGroupsProvider"
@@ -12,7 +16,7 @@ import { useCloudGroupsState } from "../CloudGroupsProvider"
 export const GroupDisplay: React.FC = () => {
   const { groups } = useCloudGroupsState()
   const { moveDocumentToGroup } = useDocumentsAPI()
-  const { openMenu, ContextMenu } = useContextMenu()
+  const { getContextMenuProps, openMenu, isMenuOpen } = useContextMenu()
 
   let currentDocument: any // TODO: this is a temp hack to silence TS errors as this component isn't currently used anywhere
 
@@ -28,57 +32,59 @@ export const GroupDisplay: React.FC = () => {
         {groupName ?? <InboxContainer>Inbox</InboxContainer>}
       </GroupContainer>
 
-      <ContextMenu>
-        <ContextMenuItem disabled>Move to</ContextMenuItem>
-        <ContextMenuSeparator />
-        {groupName !== null && (
-          <>
-            <ContextMenuItem
-              onClick={() => {
-                if (currentDocument === null) {
-                  // TODO: handle new documents
-                } else {
-                  moveDocumentToGroup(currentDocument.id, null)
-                }
-              }}
-            >
-              Inbox
-            </ContextMenuItem>
-          </>
-        )}
+      {isMenuOpen ? (
+        <ContextMenu {...getContextMenuProps()}>
+          <ContextMenuItem disabled>Move to</ContextMenuItem>
+          <ContextMenuSeparator />
+          {groupName !== null && (
+            <>
+              <ContextMenuItem
+                onClick={() => {
+                  if (currentDocument === null) {
+                    // TODO: handle new documents
+                  } else {
+                    moveDocumentToGroup(currentDocument.id, null)
+                  }
+                }}
+              >
+                Inbox
+              </ContextMenuItem>
+            </>
+          )}
 
-        {/* TODO: add active styles */}
-        {groups.length > 0 ? (
-          groups.map((group) => (
-            <ContextMenuItem
-              key={group.id}
-              onClick={() => {
-                if (currentDocument === null) {
-                  // TODO: handle new documents
-                } else {
-                  moveDocumentToGroup(currentDocument.id, group.id)
-                }
-              }}
-            >
-              {formatOptional(group.name, "Unnamed Collection")}
-            </ContextMenuItem>
-          ))
-        ) : (
-          <ContextMenuItem disabled>No collections</ContextMenuItem>
-        )}
+          {/* TODO: add active styles */}
+          {groups.length > 0 ? (
+            groups.map((group) => (
+              <ContextMenuItem
+                key={group.id}
+                onClick={() => {
+                  if (currentDocument === null) {
+                    // TODO: handle new documents
+                  } else {
+                    moveDocumentToGroup(currentDocument.id, group.id)
+                  }
+                }}
+              >
+                {formatOptional(group.name, "Unnamed Collection")}
+              </ContextMenuItem>
+            ))
+          ) : (
+            <ContextMenuItem disabled>No collections</ContextMenuItem>
+          )}
 
-        <ContextMenuSeparator />
+          <ContextMenuSeparator />
 
-        <ContextMenuItem
-          onClick={() => {
-            console.warn("TODO")
-          }}
-        >
-          Create new
-        </ContextMenuItem>
+          <ContextMenuItem
+            onClick={() => {
+              console.warn("TODO")
+            }}
+          >
+            Create new
+          </ContextMenuItem>
 
-        {/* TODO: add an option to create new group and move it there (DO THE SAME IN THE GROUP TREE ITEM) */}
-      </ContextMenu>
+          {/* TODO: add an option to create new group and move it there (DO THE SAME IN THE GROUP TREE ITEM) */}
+        </ContextMenu>
+      ) : null}
     </>
   )
 }

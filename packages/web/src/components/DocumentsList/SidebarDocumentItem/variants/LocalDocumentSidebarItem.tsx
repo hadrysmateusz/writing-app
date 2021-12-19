@@ -5,7 +5,6 @@ import {
   useContextMenu,
   ContextMenu,
   ContextMenuItem,
-  ContextSubmenu,
 } from "../../../ContextMenu/New"
 import { findTabWithPath } from "../../../PrimarySidebar/Local/helpers"
 
@@ -97,50 +96,9 @@ export const LocalDocumentSidebarItem: React.FC<{
         <ContextMenu {...getContextMenuProps()}>
           <ContextMenuItem
             text="Reveal in Explorer"
-            /* TODO: use OS-agnostic naming */ onClick={handleRevealInExplorer}
+            onClick={handleRevealInExplorer} /* TODO: use OS-agnostic naming */
           />
-          {/* TODO: obiously just for testing purposes, fix later */}
           <ContextMenuItem text="Delete" onClick={handleRemove} />
-          <ContextMenuItem text="Delete" onClick={handleRemove} />
-          <ContextMenuItem text="Delete" onClick={handleRemove} />
-          <ContextSubmenu text="Submenu">
-            <ContextMenuItem text="Delete" onClick={handleRemove} />
-            <ContextMenuItem text="Delete" onClick={handleRemove} />
-            <ContextMenuItem text="Delete" onClick={handleRemove} />
-            <ContextSubmenu text="Nested Submenu">
-              <ContextMenuItem text="1" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="Delete" onClick={handleRemove} />
-              <ContextMenuItem text="999999" onClick={handleRemove} />
-            </ContextSubmenu>
-          </ContextSubmenu>
         </ContextMenu>
       ) : null}
     </>

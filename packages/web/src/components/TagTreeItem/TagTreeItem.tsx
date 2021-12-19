@@ -2,7 +2,11 @@ import { useCallback } from "react"
 
 import { GenericTreeItem } from "../TreeItem"
 import { EditableText, useEditableText } from "../RenamingInput"
-import { ContextMenuItem, useContextMenu } from "../ContextMenu/Old"
+import {
+  ContextMenu,
+  ContextMenuItem,
+  useContextMenu,
+} from "../ContextMenu/New"
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 import { useTagsAPI } from "../TagsProvider"
 
@@ -13,7 +17,8 @@ export const TagTreeItem: React.FC<{ tagId: string; tagName: string }> = ({
   const { permanentlyDeleteTag, renameTag } = useTagsAPI()
   const { switchSubview, currentSubviews, currentView } = usePrimarySidebar()
 
-  const { openMenu, closeMenu, ContextMenu } = useContextMenu()
+  const { getContextMenuProps, openMenu, closeMenu, isMenuOpen } =
+    useContextMenu()
 
   const handleRenameSubmit = useCallback(
     (value: string) => {
@@ -58,10 +63,12 @@ export const TagTreeItem: React.FC<{ tagId: string; tagName: string }> = ({
         <EditableText {...getRenamingInputProps()}>{tagName}</EditableText>
       </GenericTreeItem>
 
-      <ContextMenu>
-        <ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>
-        <ContextMenuItem onClick={handleDelete}>Delete</ContextMenuItem>
-      </ContextMenu>
+      {isMenuOpen ? (
+        <ContextMenu {...getContextMenuProps()}>
+          <ContextMenuItem onClick={handleRename}>Rename</ContextMenuItem>
+          <ContextMenuItem onClick={handleDelete}>Delete</ContextMenuItem>
+        </ContextMenu>
+      ) : null}
     </>
   )
 }
