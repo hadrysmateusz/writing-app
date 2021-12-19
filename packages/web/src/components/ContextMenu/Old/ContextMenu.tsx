@@ -17,7 +17,6 @@ import {
   CaretContainer,
   ContextMenuItemContainer,
   MenuContainer,
-  SubmenuContainer,
   SubmenuLabel,
 } from "../Common"
 
@@ -217,7 +216,10 @@ export const ContextSubmenu: React.FC<{ text: string }> = ({
           <BsCaretRightFill />
         </CaretContainer>
       </SubmenuLabel>
-      <SubmenuContainer>{children}</SubmenuContainer>
+      {/* TODO: these props are temp */}
+      <MenuContainer isAdjusted={true} xPos={0} yPos={0}>
+        {children}
+      </MenuContainer>
     </ContextMenuItem>
   )
 }

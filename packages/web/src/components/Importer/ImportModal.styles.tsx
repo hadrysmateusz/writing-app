@@ -1,6 +1,6 @@
 import styled from "styled-components/macro"
 
-import { menuContainerCommon } from "../ContextMenu/Common"
+import { menuContainerBaseStyles } from "../ContextMenu/Common"
 
 export const DropdownContainer = styled.div`
   display: flex;
@@ -43,5 +43,5 @@ export const DropdownContent = styled.div`
   overflow-y: auto;
 
   /* Visual styles */
-  ${menuContainerCommon}
+  ${menuContainerBaseStyles}// TODO: create a generalized set of styles for these types of ui elements and don't depend on context menu related styles as they could get changed without realizing the impact
 `
