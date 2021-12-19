@@ -1,4 +1,21 @@
-import styled from "styled-components/macro"
+import styled, { keyframes } from "styled-components/macro"
+
+export const ANIMATION_OPEN = keyframes`
+  from {
+    opacity: 0.6;
+    /* transform: scaleY(0.4);
+    transform-origin: 100% 0%; */
+  }
+  to {
+    opacity: 1;
+    /* transform: scaleY(1);
+    transform-origin: 100% 0%; */
+  }
+`
+
+export const PrimarySidebarToggleableSectionContainer = styled.div`
+  animation: ${ANIMATION_OPEN} 300ms ease-out both;
+`
 
 export const PrimarySidebarSectionContainer = styled.div<{
   isHovered: boolean

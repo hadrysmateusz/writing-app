@@ -20,7 +20,7 @@ export const SectionName = styled.div<SectionNameProps>`
   ${(p) =>
     p.isClickable
       ? css`
-          transition: color 200ms ease;
+          transition: color 200ms ease-out;
           &:hover {
             color: ${p.isOpen ? `var(--light-400)` : `var(--light-400)`};
             cursor: pointer;
@@ -42,7 +42,7 @@ export const SectionHeaderContainer = styled.div<SectionHeaderContainerProps>`
   display: flex;
   user-select: none;
 
-  transition: color 200ms ease;
+  transition: color 200ms ease-out;
 
   color: ${(p) => (p.isOpen ? `var(--light-300)` : `var(--light-100)`)};
 
