@@ -20,7 +20,7 @@ export const adjustMenuHorizontally = (
   if (menuRightEdge > windowWidth) {
     // ADJUST_OFFSET_MARGIN used to provide some padding against window edges
     const overflowOffset = menuRightEdge - windowWidth
-    const adjustedX = referenceX - overflowOffset + ADJUST_OFFSET_MARGIN
+    const adjustedX = referenceX - overflowOffset - ADJUST_OFFSET_MARGIN
     return adjustedX
   } else {
     return referenceX
@@ -44,7 +44,7 @@ export const adjustMenuVertically = (
   if (menuBottomEdge > windowHeight) {
     // ADJUST_OFFSET_MARGIN used to provide some padding against window edges
     const overflowOffset = menuBottomEdge - windowHeight
-    const adjustedY = referenceY - overflowOffset + ADJUST_OFFSET_MARGIN
+    const adjustedY = referenceY - overflowOffset - ADJUST_OFFSET_MARGIN
     return adjustedY
   } else {
     return referenceY

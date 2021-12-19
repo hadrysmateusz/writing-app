@@ -37,10 +37,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
   const [isLoadingFavorite, setIsLoadingFavorite] = useState<boolean>(false)
 
   const { getContextMenuProps, openMenu, closeMenu, isMenuOpen } =
-    useContextMenu({
-      closeAfterClick: false,
-      closeOnScroll: false,
-    })
+    useContextMenu()
 
   const { startRenaming, getProps: getEditableProps } = useEditableText(
     document.title,
@@ -145,7 +142,11 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     return (
       <>
         {isMenuOpen ? (
-          <ContextMenu {...getContextMenuProps()}>
+          <ContextMenu
+            {...getContextMenuProps()}
+            closeAfterClick={false}
+            closeOnScroll={false}
+          >
             {!document.isDeleted ? (
               <>
                 <ContextMenuItem onClick={handleRenameDocument}>

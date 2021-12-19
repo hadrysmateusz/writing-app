@@ -1,6 +1,10 @@
-import { BORDER_WIDTH } from "../constants"
+import {
+  MENU_CONTAINER_BORDER_WIDTH_VALUE,
+  MENU_CONTAINER_PADDING_Y_VALUE,
+} from "../../Common"
+import { ADJUST_OFFSET_MARGIN } from "../constants"
 import { Coords } from "../types"
-import { adjustMenuVertically } from "./menu"
+
 import { getElementMeasurements } from "./misc"
 
 /**
@@ -21,20 +25,41 @@ export const adjustSubmenuHorizontally = (
 ) => {
   const windowWidth = window.innerWidth
 
-  // BORDER_WIDTH used to nudge in order to prevent single-pixel gaps closing submenu on slower mouse movements
+  // TODO: check if if the submenu is moved to the left side it will overflow from that side if so, just nudge it left like the menu adjustment
+
+  // MENU_CONTAINER_BORDER_WIDTH_VALUE used to nudge in order to prevent single-pixel gaps closing submenu on slower mouse movements
   if (submenuRightEdge > windowWidth) {
-    return parentMenuLeftEdge - submenuWidth + BORDER_WIDTH
+    return parentMenuLeftEdge - submenuWidth + MENU_CONTAINER_BORDER_WIDTH_VALUE
   } else {
-    return referenceX - BORDER_WIDTH
+    return referenceX - MENU_CONTAINER_BORDER_WIDTH_VALUE
   }
 }
 
 /**
- * See adjustMenuVertically.
+ * A specific helper used for adjusting a context menu's vertical position to prevent overflow.
  *
- * Currently just an alias of adjustMenuVertically as they both have the same requirements.
+ * @param referenceY Reference Y coordinate representing the menu's current top edge position.
+ * @param menuBottomEdge Current Y coordinate of the menu's bottom edge, used for comparison against the window height.
+ *
+ * @returns Adjusted Y coordinate that fits inside the window.
  */
-export const adjustSubmenuVertically = adjustMenuVertically
+export const adjustSubmenuVertically = (
+  referenceY: number,
+  menuBottomEdge: number
+) => {
+  const windowHeight = window.innerHeight
+  const stylesOffset =
+    MENU_CONTAINER_PADDING_Y_VALUE + MENU_CONTAINER_BORDER_WIDTH_VALUE
+
+  if (menuBottomEdge > windowHeight) {
+    // ADJUST_OFFSET_MARGIN used to provide some padding against window edges
+    const overflowOffset = menuBottomEdge - windowHeight
+    const adjustedY = referenceY - overflowOffset - ADJUST_OFFSET_MARGIN
+    return adjustedY
+  } else {
+    return referenceY - stylesOffset
+  }
+}
 
 /**
  * Specific helper for adjusting a context submenu to prevent it from overflowing window.
@@ -77,7 +102,7 @@ export const adjustSubmenuCoords = (
     menuWidth,
     parentMenuLeftEdge
   )
-  const newY = adjustMenuVertically(refY, menuBottomEdge)
+  const newY = adjustSubmenuVertically(refY, menuBottomEdge)
   const newCoords: Coords = [newX, newY]
 
   return newCoords

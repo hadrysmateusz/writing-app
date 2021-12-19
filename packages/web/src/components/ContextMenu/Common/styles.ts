@@ -1,7 +1,10 @@
 import styled, { css } from "styled-components/macro"
 
-const MENU_CONTAINER_PADDING_Y = "6px"
-const MENU_CONTAINER_BORDER_WIDTH = "1px"
+export const MENU_CONTAINER_PADDING_Y_VALUE = 6
+const MENU_CONTAINER_PADDING_Y = MENU_CONTAINER_PADDING_Y_VALUE + "px"
+
+export const MENU_CONTAINER_BORDER_WIDTH_VALUE = 1
+const MENU_CONTAINER_BORDER_WIDTH = MENU_CONTAINER_BORDER_WIDTH_VALUE + "px"
 
 interface IPositioned {
   xPos: number

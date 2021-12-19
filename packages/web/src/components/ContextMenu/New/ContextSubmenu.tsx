@@ -16,9 +16,12 @@ import {
   useContextMenuContext,
 } from "./ContextMenuInternalContext"
 
-type ContextSubmenuProps = { text: string }
+type ContextSubmenuProps = {
+  text: string
+  secondAdjustDelay?: number
+}
 export const ContextSubmenu: React.FC<ContextSubmenuProps> = memo(
-  ({ text, children, ...rest }) => {
+  ({ text, children, secondAdjustDelay = 100, ...rest }) => {
     const menuItemRef = useRef<HTMLDivElement | null>(null)
 
     const { close, open, isOpen } = useToggleable(false)
@@ -47,7 +50,10 @@ export const ContextSubmenu: React.FC<ContextSubmenuProps> = memo(
           </CaretContainer>
         </SubmenuLabel>
         {isOpen ? (
-          <ContextSubmenuMenu parentMenuItemRef={menuItemRef}>
+          <ContextSubmenuMenu
+            parentMenuItemRef={menuItemRef}
+            secondAdjustDelay={secondAdjustDelay}
+          >
             {children}
           </ContextSubmenuMenu>
         ) : null}
@@ -59,10 +65,12 @@ export const ContextSubmenu: React.FC<ContextSubmenuProps> = memo(
 type ContextSubmenuMenuProps = {
   // TODO: maybe replace this ref with coords passed as props (like the base menu gets from event)
   parentMenuItemRef: React.MutableRefObject<HTMLDivElement | null>
+  secondAdjustDelay: number
 }
 const ContextSubmenuMenu: React.FC<ContextSubmenuMenuProps> = ({
   children,
   parentMenuItemRef,
+  secondAdjustDelay,
 }) => {
   const { parentMenuContainerRef } = useContextMenuContext()
 
@@ -103,15 +111,11 @@ const ContextSubmenuMenu: React.FC<ContextSubmenuMenuProps> = ({
     }
   })
 
-  const adjust = useCallback(() => {
-    setState((prevState) => {
+  const adjustState = useCallback(
+    (prevState) => {
       const menuEl = submenuContainerRef?.current
       const parentMenuItemEl = parentMenuItemRef?.current
       const parentMenuEl = parentMenuContainerRef?.current
-
-      if (prevState.isAdjusted) {
-        return prevState
-      }
 
       if (!menuEl || !parentMenuEl || !parentMenuItemEl) {
         return prevState
@@ -127,12 +131,34 @@ const ContextSubmenuMenu: React.FC<ContextSubmenuMenuProps> = ({
         coords: newCoords,
         isAdjusted: true,
       }
+    },
+    [parentMenuContainerRef, parentMenuItemRef]
+  )
+  const adjustWithCheck = useCallback(() => {
+    setState((prevState) => {
+      if (prevState.isAdjusted) {
+        return prevState
+      } else {
+        return adjustState(prevState)
+      }
     })
-  }, [parentMenuItemRef, parentMenuContainerRef])
+  }, [adjustState])
 
+  // TODO: maybe use this timeout system on base ContextMenu too
   useEffect(() => {
-    adjust()
-  }, [adjust])
+    const timeoutA = setTimeout(adjustWithCheck, 0)
+    // second timeout to adjust items that take a long time to render
+    // TODO: probably should be replaced by some kind of resize observer
+    // TODO: maybe if secondAdjustDelay is undefined/not provided don't create the second timeout and only adjust once
+    const timeoutB = setTimeout(() => {
+      setState((prevState) => adjustState(prevState))
+    }, secondAdjustDelay)
+
+    return () => {
+      clearTimeout(timeoutA)
+      clearTimeout(timeoutB)
+    }
+  }, [adjustState, adjustWithCheck, secondAdjustDelay])
 
   console.log("----------- render SUBMENU -----------")
   console.log("internal coords:", state.coords)
@@ -145,6 +171,12 @@ const ContextSubmenuMenu: React.FC<ContextSubmenuMenuProps> = ({
         isAdjusted={state.isAdjusted}
         xPos={state.coords[0]}
         yPos={state.coords[1]}
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
+        onMouseDown={(e) => {
+          e.stopPropagation()
+        }}
       >
         <ContextMenuContext.Provider
           value={{ parentMenuContainerRef: submenuContainerRef }}

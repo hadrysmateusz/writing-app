@@ -15,23 +15,15 @@ type ContextMenuHookOptions = ToggleableHooks & {
   renderWhenClosed?: boolean
   toggleOnNestedDOMNodes?: boolean
   stopPropagation?: boolean
-  closeAfterClick?: boolean
-  closeOnScroll?: boolean
 }
 
-// TODO: replace old context menu with this one
-
 // TODO: unify how context menus are opened, because some are opened on mousedown and some on click, which leads to very different behaviors, especially when opening a menu with another already open
-// TODO: prevent submenus from going-offscreen. Probably by positioning them with js like regular menus. Prevent the main menu from being closed when a submenu is open.
-// TODO: use ellipsis to hide overflow without hiding submenus (possible solutions include: portals, wrapper component for the static text)
 // TODO: capture focus inside the context menu and restore it when it closes
 
 export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
   const {
     toggleOnNestedDOMNodes = true,
     stopPropagation = true,
-    closeAfterClick = true,
-    closeOnScroll = true,
     ...toggleableHooks
   } = options
 
@@ -67,10 +59,8 @@ export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
       eventCoords,
       close,
       isOpen,
-      closeAfterClick,
-      closeOnScroll,
     }
-  }, [close, closeAfterClick, closeOnScroll, eventCoords, isOpen])
+  }, [close, eventCoords, isOpen])
 
   return useMemo(
     () => ({
@@ -87,16 +77,17 @@ type ContextMenuProps = {
   eventCoords: Coords
   close: () => void
   isOpen: boolean
-  closeAfterClick: boolean
-  closeOnScroll: boolean
+
+  closeAfterClick?: boolean
+  closeOnScroll?: boolean
 }
 export const ContextMenu: React.FC<ContextMenuProps> = memo(
   ({
     children,
     eventCoords,
     isOpen,
-    closeAfterClick,
-    closeOnScroll,
+    closeAfterClick = true,
+    closeOnScroll = true,
     close,
   }) => {
     const containerRef = useRef<HTMLDivElement | null>(null)
@@ -122,27 +113,15 @@ export const ContextMenu: React.FC<ContextMenuProps> = memo(
     })
 
     useEffect(() => {
-      if (closeOnScroll) {
-        const listener = () => {
-          close()
-        }
-        document.addEventListener("wheel", listener, { once: true })
-        return () => document.removeEventListener("wheel", listener)
-      } else {
-        return undefined
-      }
-    }, [close, closeOnScroll])
-
-    useEffect(() => {
       const handler = () => {
         // the isOpen check might be important to properly registering and removing the listener (or at least the isOpen dependency)
-        if (isOpen) {
+        if (isOpen && closeOnScroll) {
           close()
         }
       }
       document.addEventListener("wheel", handler)
       return () => document.removeEventListener("wheel", handler)
-    }, [close, isOpen])
+    }, [close, closeOnScroll, isOpen])
 
     const adjust = useCallback(() => {
       setState((prevState) => {
@@ -180,7 +159,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = memo(
       [close, closeAfterClick]
     )
 
-    console.log("----------- render CONTEXT -----------")
+    console.log("----------- render MENU -----------")
     console.log("internal coords:", state.coords)
     console.log("event coords:   ", eventCoords)
     console.log("state", state)
