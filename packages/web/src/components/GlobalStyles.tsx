@@ -119,6 +119,11 @@ code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:0 0;text-s
     border-color: transparent;
   } */
 
+
+
+  body {
+    overflow: hidden;
+  }
 `
 
 export default GlobalStyles
