@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react"
 
-import { DirObjectRecursive } from "../../PrimarySidebar/Local"
+import { DirObjectRecursive } from "shared"
+
 import { ItemsBranch } from "../../GroupingItemList"
 import { useLocalFS } from "../../LocalFSProvider"
 import { GenericAddButton } from "../../TreeItem"

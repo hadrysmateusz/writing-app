@@ -1,14 +1,13 @@
+import { FileObject, DirObjectRecursive } from "shared"
+
 import { useIsHovered, useToggleable } from "../../../hooks"
 import { formatOptional } from "../../../utils"
 
 import { useLocalFS } from "../../LocalFSProvider"
-
 import { LocalDocumentSectionHeader } from "../../DocumentsList/SectionHeader"
 import { LocalDocumentSidebarItem } from "../../DocumentsList/SidebarDocumentItem"
 
 import { PrimarySidebarSectionContainer } from "../PrimarySidebar.styles"
-
-import { FileObject, DirObjectRecursive } from "./types"
 
 export const DirItem: React.FC<
   DirObjectRecursive & {

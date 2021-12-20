@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react"
 
+import { DirObjectRecursive, ValidatePathsObj } from "shared"
+
 import {
   AddLocalPathMenuItem,
   DocumentListDisplayTypeSubmenu,
@@ -20,7 +22,6 @@ import { useLocalFS } from "../../../LocalFSProvider"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
-import { DirObjectRecursive, ValidatePathsObj } from "../types"
 import { LocalDocumentsSubGroupInner } from "../DirItem"
 
 const findClosestMatch = (dirs: DirObjectRecursive[], wantedPath: string) => {

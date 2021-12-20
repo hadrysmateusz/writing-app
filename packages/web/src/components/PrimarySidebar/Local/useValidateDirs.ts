@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 
+import { ValidatePathsObj } from "shared"
+
 import { useLocalSettings } from "../../LocalSettings"
 import { useDatabase } from "../../Database"
 import { useCurrentUser } from "../../Auth"
-
-import { ValidatePathsObj } from "./types"
 
 // TODO: figure out a name for this step
 export const useValidateDirs = () => {
