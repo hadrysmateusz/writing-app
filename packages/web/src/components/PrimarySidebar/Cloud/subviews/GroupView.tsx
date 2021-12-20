@@ -15,7 +15,6 @@ import {
 } from "../../../ViewState"
 import { useSorting } from "../../../SortingProvider"
 
-import { NewButton } from "../../NewButton"
 import {
   CloudDocumentSortingSubmenu,
   DocumentListDisplayTypeSubmenu,
@@ -23,6 +22,7 @@ import {
   MainHeader,
   MoreMainHeaderButton,
 } from "../../MainHeader"
+import { NewButton } from "../../PrimarySidebarBottomButton"
 
 import { CloudDocumentsListAndSubGroups } from "../SubGroups"
 import { createFindDocumentsInGroupQuery } from "../queries"

@@ -20,7 +20,8 @@ import {
   MainHeader,
   MoreMainHeaderButton,
 } from "../../MainHeader"
-import { NewButton } from "../../NewButton"
+import { NewButton } from "../../PrimarySidebarBottomButton"
+
 import { CloudDocumentsList } from "../SubGroups"
 
 export const TagView: React.FC = () => {
@@ -87,7 +88,7 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
           <CloudDocumentsList documents={documents || []} listType="flat" />
         ) : null}
       </InnerContainer>
-      {/* TODO:  Rework NewButton to work with tags as well as groups */}
+      {/* TODO:  Rework NewButton to work with tags as well as groups, or create additional variants */}
       <NewButton groupId={null} />
     </PrimarySidebarViewContainer>
   ) : null

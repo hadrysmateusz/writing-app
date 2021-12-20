@@ -1,8 +1,8 @@
 import { useCallback } from "react"
 
-import { useDocumentsAPI } from "../CloudDocumentsProvider"
+import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 
-import { PrimarySidebarBottomButton } from "./PrimarySidebarBottomButton"
+import { PrimarySidebarBottomButton } from "../PrimarySidebarBottomButton"
 
 export const NewButton: React.FC<{ groupId: string | null }> = ({
   groupId = null,

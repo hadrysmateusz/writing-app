@@ -18,7 +18,7 @@ import {
   MainHeader,
   MoreMainHeaderButton,
 } from "../../MainHeader"
-import { NewButton } from "../../NewButton"
+import { NewButton } from "../../PrimarySidebarBottomButton"
 
 import { createFindDocumentsAtRootQuery } from "../queries"
 import { CloudDocumentsList } from "../SubGroups"

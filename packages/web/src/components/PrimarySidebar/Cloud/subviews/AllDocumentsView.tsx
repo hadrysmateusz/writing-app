@@ -12,13 +12,13 @@ import { useSorting } from "../../../SortingProvider"
 import { useCloudGroupsState } from "../../../CloudGroupsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
 
-import { NewButton } from "../../NewButton"
 import {
   CloudDocumentSortingSubmenu,
   DocumentListDisplayTypeSubmenu,
   MainHeader,
   MoreMainHeaderButton,
 } from "../../MainHeader"
+import { NewButton } from "../../PrimarySidebarBottomButton"
 
 import {
   CloudDocumentsList,
