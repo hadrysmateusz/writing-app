@@ -1,10 +1,17 @@
 export type OpenFileObject = { name: string; content: string }
 
-export type FileObject = { name: string; path: string }
-
-export type DirObjectRecursive = {
+export type LocalResourceCommon = {
   path: string
   name: string
+  parentDirectory: string
+}
+
+export type FileObject = LocalResourceCommon & {
+  createdAt: Date
+  modifiedAt: Date
+}
+
+export type DirObjectRecursive = LocalResourceCommon & {
   dirs: DirObjectRecursive[]
   files: FileObject[]
 }
@@ -31,4 +38,9 @@ export type SerializedEditorContent = string
 export enum FileFormats {
   MARKDOWN = "md",
   HTML = "html",
+}
+
+export enum SupportedResourceTypes {
+  file = "file",
+  dir = "dir",
 }

@@ -1,6 +1,6 @@
-import { TabsState } from "../../TabsProvider/tabsSlice"
+import { DirObjectRecursive } from "shared"
 
-import { DirObjectRecursive } from "./types"
+import { TabsState } from "../../TabsProvider/tabsSlice"
 
 /**
  * Checks tabs state for a tab with a local document with path matching the param
@@ -25,7 +25,7 @@ export const findDirInDir = (
   checkedDir: DirObjectRecursive,
   dirPathArr: string[],
   i: number
-) => {
+): DirObjectRecursive | undefined => {
   console.log("findDirInDir", checkedDir, dirPathArr, dirPathArr[i])
 
   const isCurrentDirTheDir = checkedDir.path === dirPathArr[i]
@@ -42,4 +42,6 @@ export const findDirInDir = (
       }
     }
   }
+
+  return undefined
 }

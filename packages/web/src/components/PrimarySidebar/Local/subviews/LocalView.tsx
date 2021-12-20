@@ -52,6 +52,7 @@ export const LocalView: React.FC<{}> = () => {
             name={dirTree.name}
             dirs={dirTree.dirs}
             files={dirTree.files}
+            parentDirectory={dirTree.parentDirectory}
             startOpen={true}
           />
         ))}

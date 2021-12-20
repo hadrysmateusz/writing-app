@@ -1,3 +1,4 @@
+import { FileObject, SupportedResourceTypes } from ".."
 import { DirObjectRecursive, FileFormats } from "../types"
 
 // ====== payload types =======
@@ -70,17 +71,22 @@ export type ForceReloadPayload = {}
 // TODO: maybe move these to other file
 
 // TODO: figure out a better name for this event
-export type WatchDirResPayload = {
-  eventType: string // TODO: maybe make union type of possible event types
-
+export type WatchDirResPayload = WatchDirResFilePayload | WatchDirResDirPayload
+type WatcherFileEvent = "add" | "unlink"
+type WatcherDirEvent = "addDir" | "unlinkDir"
+type WatchDirResCommon = {
   watchedDirPath: string
-
-  itemPath: string
-  itemName: string
-  parentDirPath: string
   parentDirPathArr: string[]
-
-  dirTree: DirObjectRecursive | undefined
+}
+type WatchDirResFilePayload = WatchDirResCommon & {
+  resourceType: SupportedResourceTypes.file
+  eventType: WatcherFileEvent
+  file: FileObject
+}
+type WatchDirResDirPayload = WatchDirResCommon & {
+  resourceType: SupportedResourceTypes.dir
+  eventType: WatcherDirEvent
+  dirTree: DirObjectRecursive
 }
 
 // TODO: rework this or rename the event, or do nothing if I use custom window chrome

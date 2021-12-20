@@ -1,129 +1,35 @@
-import path from "path"
-import chokidar from "chokidar"
+import fs from "fs-extra"
 
-import {
-  DirObjectRecursive,
-  IpcResponseStatus,
-  WatchDirPayload,
-  WatchDirResPayload,
-} from "shared"
+import { IpcResponseStatus, WatchDirPayload } from "shared"
 
-import {
-  closeWatcherForDir,
-  createDirObjectRecursive,
-  fileTypeIsAllowedDocumentType,
-  getDirWatchers,
-  getMainWindow,
-} from "../helpers"
+import { closeWatcherForDir, createAndSaveWatcher } from "../helpers"
+
+import { dirWatcherEventHandler as createHandler } from "./handleWatchDir.helpers"
 
 export const handleWatchDir = async (_event, payload: WatchDirPayload) => {
   try {
     const { watchedDirPath } = payload
+
     console.log(`setting up dir watcher for ${watchedDirPath}`, payload)
 
-    // TODO: ensure or just check for path
+    // Ensure the directory exists
+    fs.ensureDirSync(watchedDirPath) // TODO: maybe just check and report if it's missing
 
-    const watcher = chokidar.watch(watchedDirPath, {
-      persistent: true,
-      ignoreInitial: true,
-    })
-    const watcherClose = () => {
-      const boundClose = watcher.close.bind(watcher)
-      return boundClose()
-    }
+    // Close previous watcher
     await closeWatcherForDir(watchedDirPath)
-    getDirWatchers()[watchedDirPath] = {
-      close: watcherClose,
-      added: Date.now(),
-    }
-    // console.log("saved watcher")
 
-    const sendResponse = ({
-      eventType,
-      itemPath,
-      dirTree,
-    }: {
-      eventType: string
-      itemPath: string
-      dirTree?: DirObjectRecursive
-    }) => {
-      console.log(itemPath + " " + eventType)
-      const parentDirPath = path.dirname(itemPath)
-      const itemName = path.basename(itemPath)
+    // Create new watcher (and save it)
+    const watcher = createAndSaveWatcher(watchedDirPath)
 
-      console.log("parentDirPath: ", parentDirPath)
-      // console.log("search for: ", watchedDirPath)
-      let relativePath = parentDirPath.replace(watchedDirPath, "")
-      console.log("relativePath: ", relativePath)
+    // Create handler creator for watched dir
+    const createHandlerForEvent = createHandler(watchedDirPath)
 
-      const dirPathArr = relativePath.split(path.sep)
-      // console.log("dirPathArr: ", dirPathArr)
-
-      const parentDirPathArr = dirPathArr.map((_fragment, i, fragArr) => {
-        let newActualDirPath = watchedDirPath
-        for (let j = 0; j <= i; j++) {
-          newActualDirPath = path.join(newActualDirPath, fragArr[j])
-          newActualDirPath = path.normalize(newActualDirPath)
-        }
-        return newActualDirPath
-      })
-      console.log("parentDirPathArr", parentDirPathArr)
-
-      const resPayload: WatchDirResPayload = {
-        eventType,
-        watchedDirPath,
-
-        itemPath,
-        itemName,
-        parentDirPath,
-        parentDirPathArr,
-
-        dirTree,
-      }
-
-      getMainWindow().webContents.send("WATCH_DIR:RES", resPayload)
-    }
-
-    // const onWatcherReady = async () => {
-    //   console.log("watcher ready")
-    //   // TODO: refactoring
-    //   await closeWatcherForDir(watchedDirPath)
-    //   getDirWatchers()[watchedDirPath] = {
-    //     close: watcherClose,
-    //     added: Date.now(),
-    //   }
-    //   console.log("saved watcher")
-    //   console.log(getDirWatchers())
-    // }
-
-    const onWatcherAdd = (itemPath: string) => {
-      if (!fileTypeIsAllowedDocumentType(itemPath)) {
-        console.log(`unsupported file type, skipping`)
-        return
-      }
-      sendResponse({ eventType: "add", itemPath })
-    }
-
-    const onWatcherUnlink = (itemPath: string) => {
-      sendResponse({ eventType: "unlink", itemPath })
-    }
-
-    const onWatcherAddDir = (itemPath: string) => {
-      const dirTree = createDirObjectRecursive(itemPath)
-
-      sendResponse({ eventType: "addDir", itemPath, dirTree })
-    }
-
-    const onWatcherUnlinkDir = (itemPath: string) => {
-      sendResponse({ eventType: "unlinkDir", itemPath })
-    }
-
+    // Set up watcher event handlers
     watcher
-      // .on("ready", onWatcherReady)
-      .on("add", onWatcherAdd)
-      .on("unlink", onWatcherUnlink)
-      .on("addDir", onWatcherAddDir)
-      .on("unlinkDir", onWatcherUnlinkDir)
+      .on("add", createHandlerForEvent("add"))
+      .on("unlink", createHandlerForEvent("unlink"))
+      .on("addDir", createHandlerForEvent("addDir"))
+      .on("unlinkDir", createHandlerForEvent("unlinkDir"))
 
     return {
       status: IpcResponseStatus.SUCCESS,
@@ -131,8 +37,7 @@ export const handleWatchDir = async (_event, payload: WatchDirPayload) => {
       data: {},
     }
   } catch (err) {
-    console.log("Error in WATCH_DIR handler:")
-    console.log(err)
+    console.log("Error in WATCH_DIR handler:", err)
     return {
       status: IpcResponseStatus.ERROR,
       error: err,
@@ -140,3 +45,110 @@ export const handleWatchDir = async (_event, payload: WatchDirPayload) => {
     }
   }
 }
+
+// const getParentDirPathArr = (relativePath: string, watchedDirPath: string) => {
+//   const relativePathSegmentArr = relativePath.split(path.sep)
+//   return relativePathSegmentArr.map((_segment, i, segmentArr) => {
+//     let newActualDirPath = watchedDirPath
+//     for (let j = 0; j <= i; j++) {
+//       newActualDirPath = path.join(newActualDirPath, segmentArr[j])
+//       newActualDirPath = path.normalize(newActualDirPath)
+//     }
+//     return newActualDirPath
+//   })
+// }
+
+// const getResponseMetaValues = (
+//   eventType: string,
+//   watchedDirPath: string,
+//   itemPath: string
+// ) => {
+//   const resourceType = getResourceType(itemPath)
+
+//   if (!resourceType) {
+//     throw new Error("Invalid resource type")
+//   }
+
+//   return {
+//     eventType,
+//     watchedDirPath,
+//     resourceType,
+//   }
+// }
+
+// const getCommonResourceValues = (
+//   watchedDirPath: string,
+//   itemPath: string
+// ): Pick<
+//   WatchDirResPayload,
+//   "itemPath" | "itemName" | "parentDirPath" | "parentDirPathArr"
+// > => {
+//   const parentDirPath = path.dirname(itemPath)
+//   const itemName = path.basename(itemPath)
+//   const relativePath = parentDirPath.replace(watchedDirPath, "")
+//   const parentDirPathArr = getParentDirPathArr(relativePath, watchedDirPath)
+
+//   console.log("- parentDirPath: ", parentDirPath)
+//   console.log("- relativePath: ", relativePath)
+//   console.log("- parentDirPathArr", parentDirPathArr)
+
+//   return {
+//     itemPath,
+//     itemName,
+//     parentDirPath,
+//     parentDirPathArr,
+//   }
+// }
+
+// const createResponse = (
+//   eventType: string,
+//   watchedDirPath: string,
+//   itemPath: string
+// ) => {
+//   const DIR_EVENT_TYPES = ["addDir", "unlinkDir"]
+
+//   try {
+//     const responseMetaValues = getResponseMetaValues(
+//       eventType,
+//       watchedDirPath,
+//       itemPath
+//     )
+
+//     const dirTree = DIR_EVENT_TYPES.includes(eventType)
+//       ? createDirObjectRecursive(itemPath)
+//       : undefined
+
+//     const commonResourceValues = getCommonResourceValues(
+//       watchedDirPath,
+//       itemPath
+//     )
+
+//     const responseObject = {
+//       ...responseMetaValues,
+//       ...commonResourceValues,
+//       dirTree,
+//     }
+
+//     return responseObject
+//   } catch (error) {
+//     return null
+//   }
+// }
+
+// const sendResponse = (resPayload: WatchDirResPayload) => {
+//   console.log(`watcher event ${resPayload.eventType}: itemPath`)
+//   getMainWindow().webContents.send("WATCH_DIR:RES", resPayload)
+// }
+
+// const createAndSendResponse = (
+//   eventType: string,
+//   watchedDirPath: string,
+//   itemPath: string
+// ) => {
+//   const responseObject = createResponse(eventType, watchedDirPath, itemPath)
+//   if (!responseObject) {
+//     console.log("there was an issue creating response object")
+//     return
+//   }
+//   sendResponse(responseObject)
+// }
