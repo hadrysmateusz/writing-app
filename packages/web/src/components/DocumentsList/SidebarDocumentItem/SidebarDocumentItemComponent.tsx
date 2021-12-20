@@ -1,7 +1,10 @@
 import React, { useMemo } from "react"
 import moment from "moment"
 
+import { useRxSubscription } from "../../../hooks"
+
 import { EditableText, EditableTextProps } from "../../RenamingInput"
+import { LocalSettings, useDatabase } from "../../Database"
 
 import {
   DateModified,
@@ -12,21 +15,21 @@ import {
   TagsContainer,
   Title,
 } from "./SidebarDocumentItemComponent.styles"
-import { useRxSubscription } from "../../../hooks"
-import { useDatabase } from "../../Database"
 
 export const SidebarDocumentItemComponent: React.FC<{
+  listType?: LocalSettings["documentsListDisplayType"]
   title: string
   snippet?: string
   modifiedAt: number
   createdAt: number
   isCurrent: boolean
   tags?: string[]
-  groupName?: string
+  groupName?: string // TODO: probably rename with something local/cloud generic
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement>) => void
   getEditableProps?: () => EditableTextProps
 }> = ({
+  listType,
   title,
   snippet,
   modifiedAt,
@@ -48,6 +51,11 @@ export const SidebarDocumentItemComponent: React.FC<{
     [createdAt]
   )
 
+  // Whether the grouping item name should be shown depends on current listType
+  const parentGroupingItemName = useMemo(() => {
+    return listType === "flat" ? groupName : undefined
+  }, [groupName, listType])
+
   const hasSnippet = snippet ? snippet.trim().length > 0 : false
   const dateModifiedTooltip = `Modified at: ${formattedModifiedAt}\nCreated at: ${formattedCreatedAt}`
 
@@ -57,7 +65,9 @@ export const SidebarDocumentItemComponent: React.FC<{
       onContextMenu={onContextMenu}
       isCurrent={isCurrent}
     >
-      {groupName ? <GroupName>{groupName}</GroupName> : null}
+      {parentGroupingItemName ? (
+        <GroupName>{parentGroupingItemName}</GroupName>
+      ) : null}
       <Title isUnsynced={/* isUnsynced */ false}>
         {getEditableProps ? (
           <EditableText {...getEditableProps()}>{title}</EditableText>

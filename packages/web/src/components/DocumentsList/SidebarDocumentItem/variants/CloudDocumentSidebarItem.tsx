@@ -21,14 +21,9 @@ export const CloudDocumentSidebarItem: React.FC<{
   const { groups } = useCloudGroupsState() // TODO: move the groupName related logic to separate component to decouple this from groups changes when not needed
 
   const groupName = useMemo(() => {
-    if (listType === "flat") {
-      const foundGroup = groups.find(
-        (group) => group.id === document.parentGroup
-      )
-      return foundGroup?.name
-    }
-    return undefined
-  }, [document.parentGroup, listType, groups])
+    const foundGroup = groups.find((group) => group.id === document.parentGroup)
+    return foundGroup?.name
+  }, [document.parentGroup, groups])
 
   const { openMenu, DocumentContextMenu, getEditableProps } =
     useDocumentContextMenu(document)
@@ -89,6 +84,7 @@ export const CloudDocumentSidebarItem: React.FC<{
   return (
     <>
       <SidebarDocumentItemComponent
+        listType={listType}
         title={formattedTitle}
         snippet={snippet}
         modifiedAt={document.modifiedAt}

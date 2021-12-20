@@ -10,11 +10,16 @@ import { findTabWithPath } from "../../../PrimarySidebar/Local/helpers"
 import { useTabsDispatch, useTabsState } from "../../../TabsProvider"
 
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
+import { FileObject } from "shared"
+import { LocalSettings } from "../../../Database"
 
 export const LocalDocumentSidebarItem: React.FC<{
-  path: string
-  name: string
-}> = ({ path, name }) => {
+  file: FileObject
+  listType?: LocalSettings["documentsListDisplayType"]
+}> = ({
+  file: { path, name, createdAt, modifiedAt, parentDirectory },
+  listType,
+}) => {
   const tabsDispatch = useTabsDispatch()
   const { tabsState, currentTabObject } = useTabsState()
   const { deleteFile, revealItem } = useLocalFS()
@@ -83,11 +88,12 @@ export const LocalDocumentSidebarItem: React.FC<{
   return (
     <>
       <SidebarDocumentItemComponent
+        listType={listType}
         key={path}
         title={name}
-        // TODO: replace these timestamps with real data
-        modifiedAt={Date.now()}
-        createdAt={Date.now()}
+        modifiedAt={modifiedAt.getTime()}
+        createdAt={createdAt.getTime()}
+        groupName={parentDirectory}
         isCurrent={isCurrent}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
