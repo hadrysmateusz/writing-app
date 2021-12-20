@@ -46,15 +46,7 @@ export const LocalView: React.FC<{}> = () => {
       />
       <InnerContainer>
         {dirTrees.map((dirTree) => (
-          <DirItem
-            key={dirTree.path}
-            path={dirTree.path}
-            name={dirTree.name}
-            dirs={dirTree.dirs}
-            files={dirTree.files}
-            parentDirectory={dirTree.parentDirectory}
-            startOpen={true}
-          />
+          <DirItem key={dirTree.path} dir={dirTree} startOpen={true} />
         ))}
       </InnerContainer>
 

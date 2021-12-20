@@ -5,7 +5,6 @@ import createGroupTree from "../../../../helpers/createGroupTree"
 
 import { useDatabase } from "../../../Database"
 import {
-  DocumentsList,
   MainHeader,
   MoreMainHeaderButton,
   DocumentListDisplayTypeSubmenu,
@@ -21,7 +20,10 @@ import { usePrimarySidebar } from "../../../ViewState"
 
 import { NewButton } from "../../NewButton"
 
-import { DocumentsListAndSubGroups } from "../SubGroups"
+import {
+  CloudDocumentsList,
+  CloudDocumentsListAndSubGroups,
+} from "../SubGroups"
 import {
   createFindAllDocumentsQuery,
   createFindDocumentsAtRootQuery,
@@ -74,7 +76,7 @@ const FlatDocumentsList = () => {
   )
   return !isLoading ? (
     <>
-      <DocumentsList documents={documents || []} listType="flat" />
+      <CloudDocumentsList documents={documents || []} listType="flat" />
     </>
   ) : null
 }
@@ -90,7 +92,7 @@ const TreeDocumentsList = () => {
   const groupsTree = useMemo(() => createGroupTree(groups), [groups])
 
   return !isLoading ? (
-    <DocumentsListAndSubGroups
+    <CloudDocumentsListAndSubGroups
       documents={documents || []}
       groups={groupsTree.children}
       listType="tree"

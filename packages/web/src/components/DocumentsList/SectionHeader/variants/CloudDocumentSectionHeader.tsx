@@ -7,6 +7,7 @@ import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
 
 import SectionHeaderComponent from "../SectionHeaderComponent"
+import { useCallback } from "react"
 
 /**
  * Section header for cloud document lists
@@ -27,24 +28,27 @@ export const CloudDocumentSectionHeader: React.FC<{
   const { getContextMenuProps, openMenu, closeMenu, isMenuOpen } =
     useContextMenu()
 
-  const handleNewDocument = () => {
+  const handleNewDocument = useCallback(() => {
     if (groupId !== undefined) {
       createDocument({ parentGroup: groupId })
     }
     closeMenu() // TODO: this is probably redundant
-  }
+  }, [closeMenu, createDocument, groupId])
 
-  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation()
-    if (groupId === undefined) return
-    openMenu(e)
-  }
-
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (typeof groupId === "string") {
       switchSubview("cloud", "group", groupId)
     }
-  }
+  }, [groupId, switchSubview])
+
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation()
+      if (groupId === undefined) return
+      openMenu(e)
+    },
+    [groupId, openMenu]
+  )
 
   return (
     <>

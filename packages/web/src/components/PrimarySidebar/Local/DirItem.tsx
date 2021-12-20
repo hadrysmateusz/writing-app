@@ -1,44 +1,44 @@
 import { FileObject, DirObjectRecursive } from "shared"
 
 import { useIsHovered, useToggleable } from "../../../hooks"
-import { formatOptional } from "../../../utils"
 
-import { useLocalFS } from "../../LocalFSProvider"
-import { LocalDocumentSectionHeader } from "../../DocumentsList/SectionHeader"
-import { LocalDocumentSidebarItem } from "../../DocumentsList/SidebarDocumentItem"
-
-import { PrimarySidebarSectionContainer } from "../PrimarySidebar.styles"
 import { LocalSettings } from "../../Database"
+import {
+  LocalDocumentSectionHeader,
+  LocalDocumentSidebarItem,
+} from "../../DocumentsList"
 
-export const DirItem: React.FC<
-  DirObjectRecursive & {
-    // exists?: boolean
-    startOpen?: boolean
-    listType?: LocalSettings["documentsListDisplayType"]
-  }
-> = ({ path, name, files, dirs, startOpen = false, listType }) => {
+import {
+  PrimarySidebarSectionContainer,
+  PrimarySidebarToggleableSectionContainer,
+} from "../PrimarySidebar.styles"
+
+export const DirItem: React.FC<{
+  dir: DirObjectRecursive
+  // exists?: boolean
+  startOpen?: boolean
+  listType?: LocalSettings["documentsListDisplayType"]
+}> = ({ dir, startOpen = false, listType }) => {
   const { isOpen, toggle } = useToggleable(startOpen)
-  const { deleteDir } = useLocalFS()
-
-  const isEmpty = files.length === 0 && dirs.length === 0
 
   const { getHoverContainerProps, isHovered } = useIsHovered()
+
+  const isEmpty = dir.files.length === 0 && dir.dirs.length === 0
 
   return !isEmpty ? (
     <PrimarySidebarSectionContainer isHovered={isHovered}>
       <LocalDocumentSectionHeader
-        path={path}
         isOpen={isOpen}
         onToggle={toggle}
-        removeDir={deleteDir}
+        path={dir.path}
         {...getHoverContainerProps()}
       >
-        {formatOptional(name, "Unknown")}
+        {dir.name}
       </LocalDocumentSectionHeader>
       {isOpen ? (
         <LocalDocumentsSubGroupInner
-          dirs={dirs}
-          files={files}
+          dirs={dir.dirs}
+          files={dir.files}
           listType={listType}
         />
       ) : null}
@@ -46,15 +46,18 @@ export const DirItem: React.FC<
   ) : null
 }
 
-// TODO: remove duplication with DocumentsList
-// TODO: add empty state (maybe)
-export const LocalDocumentItemsList: React.FC<{
+// TODO: remove duplication with CloudDocumentsList
+export const LocalDocumentsList: React.FC<{
   files: FileObject[]
   listType?: LocalSettings["documentsListDisplayType"]
-}> = ({ files }) => (
+}> = ({ files, listType }) => (
   <>
     {files.map((file) => (
-      <LocalDocumentSidebarItem key={file.path} file={file} />
+      <LocalDocumentSidebarItem
+        key={file.path}
+        file={file}
+        listType={listType}
+      />
     ))}
   </>
 )
@@ -66,16 +69,16 @@ export const LocalDocumentsSubGroupInner: React.FC<{
   listType?: LocalSettings["documentsListDisplayType"]
 }> = ({ files, dirs, listType }) => {
   return (
-    <>
-      <LocalDocumentItemsList files={files} listType={listType} />
+    <PrimarySidebarToggleableSectionContainer>
+      <LocalDocumentsList files={files} listType={listType} />
       {dirs.map((dir) => (
         <DirItem
           key={dir.path}
+          dir={dir}
           listType={listType}
-          {...dir}
           // exists={"exists" in dir ? dir.exists : undefined}
         />
       ))}
-    </>
+    </PrimarySidebarToggleableSectionContainer>
   )
 }

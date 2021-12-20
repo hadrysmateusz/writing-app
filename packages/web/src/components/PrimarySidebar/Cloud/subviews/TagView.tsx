@@ -4,7 +4,6 @@ import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import {
   CloudDocumentSortingSubmenu,
-  DocumentsList,
   GoUpMainHeaderButton,
   MainHeader,
   MoreMainHeaderButton,
@@ -22,6 +21,7 @@ import {
 import { useSorting } from "../../../SortingProvider"
 
 import { NewButton } from "../../NewButton"
+import { CloudDocumentsList } from "../SubGroups"
 
 export const TagView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -84,7 +84,7 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
       />
       <InnerContainer>
         {!isTagLoading && !isDocumentsLoading ? (
-          <DocumentsList documents={documents || []} listType="flat" />
+          <CloudDocumentsList documents={documents || []} listType="flat" />
         ) : null}
       </InnerContainer>
       {/* TODO:  Rework NewButton to work with tags as well as groups */}

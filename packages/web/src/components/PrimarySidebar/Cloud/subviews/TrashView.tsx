@@ -9,7 +9,6 @@ import {
 import {
   CloudDocumentSortingSubmenu,
   DocumentListDisplayTypeSubmenu,
-  DocumentsList,
   GoUpMainHeaderButton,
   MainHeader,
   MoreMainHeaderButton,
@@ -22,6 +21,7 @@ import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 import { createFindDeletedDocumentsQuery } from "../queries"
+import { CloudDocumentsList } from "../SubGroups"
 
 export const TrashView: FunctionComponent = () => {
   const db = useDatabase()
@@ -54,7 +54,7 @@ export const TrashView: FunctionComponent = () => {
       />
       <InnerContainer>
         {!isLoading ? (
-          <DocumentsList documents={documents || []} listType="flat" />
+          <CloudDocumentsList documents={documents || []} listType="flat" />
         ) : null}
       </InnerContainer>
       <DeleteAllButton />

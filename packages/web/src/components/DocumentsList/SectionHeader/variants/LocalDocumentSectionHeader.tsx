@@ -5,6 +5,7 @@ import {
   ContextMenuItem,
   useContextMenu,
 } from "../../../ContextMenu"
+import { useLocalFS } from "../../../LocalFSProvider"
 import { usePrimarySidebar } from "../../../ViewState"
 
 import SectionHeaderComponent from "../SectionHeaderComponent"
@@ -13,38 +14,33 @@ export const LocalDocumentSectionHeader: React.FC<{
   path: string
   isOpen: boolean
   onToggle: () => void
-  removeDir: (path: string) => void
 
   onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void
   onMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => void
-}> = ({
-  path,
-  children,
-  removeDir,
-  isOpen,
-  onToggle,
-  onMouseEnter,
-  onMouseLeave,
-}) => {
+}> = ({ path, children, isOpen, onToggle, onMouseEnter, onMouseLeave }) => {
   const { switchSubview } = usePrimarySidebar()
+  const { deleteDir } = useLocalFS()
 
   const { openMenu, isMenuOpen, getContextMenuProps } = useContextMenu()
 
   const handleRemoveDir = useCallback(
     (_e) => {
-      removeDir(path)
+      deleteDir(path)
     },
-    [path, removeDir]
+    [path, deleteDir]
   )
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     switchSubview("local", "directory", path)
-  }
+  }, [path, switchSubview])
 
-  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation()
-    openMenu(e)
-  }
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation()
+      openMenu(e)
+    },
+    [openMenu]
+  )
 
   return (
     <>
@@ -63,6 +59,7 @@ export const LocalDocumentSectionHeader: React.FC<{
 
       {isMenuOpen ? (
         <ContextMenu {...getContextMenuProps()}>
+          {/* TODO: add option to create new file */}
           <ContextMenuItem onClick={handleRemoveDir}>
             Remove Directory
           </ContextMenuItem>

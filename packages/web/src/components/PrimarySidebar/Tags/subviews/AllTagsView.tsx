@@ -5,17 +5,14 @@ import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import { DocumentDoc, TagDoc, useDatabase } from "../../../Database"
 import { useDocumentsAPI } from "../../../CloudDocumentsProvider/CloudDocumentsProvider"
-import {
-  DocumentsList,
-  MainHeader,
-  CloudDocumentSectionHeader,
-} from "../../../DocumentsList"
+import { MainHeader, CloudDocumentSectionHeader } from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
+import { CloudDocumentsList } from "../../Cloud/SubGroups"
 
 function assignDocsToTags(tags: TagDoc[], documents: DocumentDoc[]) {
   // simplify tag docs to only the necessary data and add a docCount field for later
@@ -108,7 +105,7 @@ const TagDocumentsList: FC<{
       >
         {tagName}
       </CloudDocumentSectionHeader>
-      {isOpen ? <DocumentsList documents={documents} /> : null}
+      {isOpen ? <CloudDocumentsList documents={documents} /> : null}
     </>
   ) : null
 }

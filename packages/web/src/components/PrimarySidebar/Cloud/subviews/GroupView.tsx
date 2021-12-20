@@ -24,7 +24,7 @@ import { useSorting } from "../../../SortingProvider"
 
 import { NewButton } from "../../NewButton"
 
-import { DocumentsListAndSubGroups } from "../SubGroups"
+import { CloudDocumentsListAndSubGroups } from "../SubGroups"
 import { createFindDocumentsInGroupQuery } from "../queries"
 import { useFindGroupAndChildGroups } from "../helpers"
 
@@ -90,7 +90,7 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
       />
       <InnerContainer>
         {!isLoading ? (
-          <DocumentsListAndSubGroups
+          <CloudDocumentsListAndSubGroups
             documents={documents || []}
             groups={group.children}
             listType="tree"

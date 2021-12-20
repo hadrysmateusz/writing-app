@@ -6,7 +6,6 @@ import { useDatabase } from "../../../Database"
 import {
   CloudDocumentSortingSubmenu,
   DocumentListDisplayTypeSubmenu,
-  DocumentsList,
   GoUpMainHeaderButton,
   MainHeader,
   MoreMainHeaderButton,
@@ -21,6 +20,7 @@ import { SIDEBAR_VAR } from "../../../ViewState"
 import { NewButton } from "../../NewButton"
 
 import { createFindDocumentsAtRootQuery } from "../queries"
+import { CloudDocumentsList } from "../SubGroups"
 
 export const InboxView: React.FC = () => {
   const db = useDatabase()
@@ -52,7 +52,7 @@ export const InboxView: React.FC = () => {
         ]}
       />
       <InnerContainer>
-        {!isLoading ? <DocumentsList documents={documents || []} /> : null}
+        {!isLoading ? <CloudDocumentsList documents={documents || []} /> : null}
       </InnerContainer>
       <NewButton groupId={null} />
     </PrimarySidebarViewContainer>
