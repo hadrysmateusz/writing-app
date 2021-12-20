@@ -1,10 +1,4 @@
 import {
-  AddLocalPathMenuItem,
-  DocumentListDisplayTypeSubmenu,
-  MainHeader,
-  MoreMainHeaderButton,
-} from "../../../DocumentsList"
-import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
@@ -14,6 +8,12 @@ import { ContextMenuSeparator } from "../../../ContextMenu"
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 import { DirItem } from "../DirItem"
+import {
+  AddLocalPathMenuItem,
+  DocumentListDisplayTypeSubmenu,
+  MainHeader,
+  MoreMainHeaderButton,
+} from "../../MainHeader"
 
 // TODO: rename to localdocumentsallview
 export const LocalView: React.FC<{}> = () => {

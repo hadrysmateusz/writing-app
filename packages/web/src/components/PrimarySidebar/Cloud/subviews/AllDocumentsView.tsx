@@ -3,22 +3,22 @@ import { useCallback, useMemo } from "react"
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 import createGroupTree from "../../../../helpers/createGroupTree"
 
-import { useDatabase } from "../../../Database"
-import {
-  MainHeader,
-  MoreMainHeaderButton,
-  DocumentListDisplayTypeSubmenu,
-  CloudDocumentSortingSubmenu,
-} from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
+import { useDatabase } from "../../../Database"
 import { useSorting } from "../../../SortingProvider"
 import { useCloudGroupsState } from "../../../CloudGroupsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
 
 import { NewButton } from "../../NewButton"
+import {
+  CloudDocumentSortingSubmenu,
+  DocumentListDisplayTypeSubmenu,
+  MainHeader,
+  MoreMainHeaderButton,
+} from "../../MainHeader"
 
 import {
   CloudDocumentsList,

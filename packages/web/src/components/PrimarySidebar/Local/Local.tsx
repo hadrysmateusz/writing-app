@@ -4,7 +4,7 @@ import { parseSidebarPath, usePrimarySidebar } from "../../ViewState"
 import { Switch, Case } from "../../Conditional"
 
 import { DirectoryView } from "./subviews/DirectoryView"
-import { LocalView } from "./subviews/LocalView"
+import { LocalView } from "./subviews/AllLocalDocumentsView"
 
 export const Local: React.FC = memo(() => {
   const { currentSubviews } = usePrimarySidebar()

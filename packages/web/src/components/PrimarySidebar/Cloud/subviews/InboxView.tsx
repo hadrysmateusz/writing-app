@@ -3,13 +3,7 @@ import React from "react"
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import { useDatabase } from "../../../Database"
-import {
-  CloudDocumentSortingSubmenu,
-  DocumentListDisplayTypeSubmenu,
-  GoUpMainHeaderButton,
-  MainHeader,
-  MoreMainHeaderButton,
-} from "../../../DocumentsList"
+
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -17,6 +11,13 @@ import {
 import { useSorting } from "../../../SortingProvider"
 import { SIDEBAR_VAR } from "../../../ViewState"
 
+import {
+  CloudDocumentSortingSubmenu,
+  DocumentListDisplayTypeSubmenu,
+  GoUpMainHeaderButton,
+  MainHeader,
+  MoreMainHeaderButton,
+} from "../../MainHeader"
 import { NewButton } from "../../NewButton"
 
 import { createFindDocumentsAtRootQuery } from "../queries"

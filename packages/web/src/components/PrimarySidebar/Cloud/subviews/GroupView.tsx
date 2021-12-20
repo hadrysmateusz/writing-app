@@ -3,13 +3,6 @@ import React, { useEffect, useMemo } from "react"
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 import { formatOptional } from "../../../../utils"
 
-import {
-  CloudDocumentSortingSubmenu,
-  DocumentListDisplayTypeSubmenu,
-  GoUpMainHeaderButton,
-  MainHeader,
-  MoreMainHeaderButton,
-} from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
 import {
   PrimarySidebarViewContainer,
@@ -23,6 +16,13 @@ import {
 import { useSorting } from "../../../SortingProvider"
 
 import { NewButton } from "../../NewButton"
+import {
+  CloudDocumentSortingSubmenu,
+  DocumentListDisplayTypeSubmenu,
+  GoUpMainHeaderButton,
+  MainHeader,
+  MoreMainHeaderButton,
+} from "../../MainHeader"
 
 import { CloudDocumentsListAndSubGroups } from "../SubGroups"
 import { createFindDocumentsInGroupQuery } from "../queries"

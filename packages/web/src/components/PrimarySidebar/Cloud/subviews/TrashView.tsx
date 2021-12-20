@@ -6,18 +6,18 @@ import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
+import { useDatabase } from "../../../Database"
+import { SIDEBAR_VAR } from "../../../ViewState"
+import { useSorting } from "../../../SortingProvider"
+import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
+
 import {
   CloudDocumentSortingSubmenu,
   DocumentListDisplayTypeSubmenu,
   GoUpMainHeaderButton,
   MainHeader,
   MoreMainHeaderButton,
-} from "../../../DocumentsList"
-import { useDatabase } from "../../../Database"
-import { SIDEBAR_VAR } from "../../../ViewState"
-import { useSorting } from "../../../SortingProvider"
-import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
-
+} from "../../MainHeader"
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 import { createFindDeletedDocumentsQuery } from "../queries"

@@ -2,12 +2,6 @@ import { useMemo } from "react"
 
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
-import {
-  CloudDocumentSortingSubmenu,
-  GoUpMainHeaderButton,
-  MainHeader,
-  MoreMainHeaderButton,
-} from "../../../DocumentsList"
 import { useDatabase } from "../../../Database"
 import {
   PrimarySidebarViewContainer,
@@ -20,6 +14,12 @@ import {
 } from "../../../ViewState"
 import { useSorting } from "../../../SortingProvider"
 
+import {
+  CloudDocumentSortingSubmenu,
+  GoUpMainHeaderButton,
+  MainHeader,
+  MoreMainHeaderButton,
+} from "../../MainHeader"
 import { NewButton } from "../../NewButton"
 import { CloudDocumentsList } from "../SubGroups"
 

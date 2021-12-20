@@ -1,14 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
-import { DirObjectRecursive, ValidatePathsObj } from "shared"
+import { ValidatePathsObj } from "shared"
 
-import {
-  AddLocalPathMenuItem,
-  DocumentListDisplayTypeSubmenu,
-  GoUpMainHeaderButton,
-  MainHeader,
-  MoreMainHeaderButton,
-} from "../../../DocumentsList"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -20,40 +13,17 @@ import {
 } from "../../../ViewState"
 import { useLocalFS } from "../../../LocalFSProvider"
 
+import {
+  AddLocalPathMenuItem,
+  DocumentListDisplayTypeSubmenu,
+  GoUpMainHeaderButton,
+  MainHeader,
+  MoreMainHeaderButton,
+} from "../../MainHeader"
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 import { LocalDocumentsSubGroupInner } from "../DirItem"
-
-const findClosestMatch = (dirs: DirObjectRecursive[], wantedPath: string) => {
-  const closestMatch = dirs.find((dir) => {
-    return wantedPath.includes(dir.path)
-  })
-  return closestMatch
-}
-
-const findExactMatch = (dirs: DirObjectRecursive[], wantedPath: string) => {
-  const exactMatch = dirs.find((dir) => {
-    return dir.path === wantedPath
-  })
-  return exactMatch
-}
-
-const findDirInTrees = (
-  dirs: DirObjectRecursive[],
-  wantedPath: string
-): DirObjectRecursive | undefined => {
-  const exactMatch = findExactMatch(dirs, wantedPath)
-  if (exactMatch) {
-    return exactMatch
-  } else {
-    const closestMatch = findClosestMatch(dirs, wantedPath)
-    if (!closestMatch) {
-      return undefined
-    } else {
-      return findDirInTrees(closestMatch.dirs, wantedPath)
-    }
-  }
-}
+import { findDirInTrees } from "./DirectoryView.helpers"
 
 export const DirectoryView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()

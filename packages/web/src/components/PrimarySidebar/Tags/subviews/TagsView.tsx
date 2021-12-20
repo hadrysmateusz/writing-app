@@ -1,9 +1,8 @@
-import React, { FC, useCallback, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 import useRxSubscription from "../../../../hooks/useRxSubscription"
 
 import { TagDoc, useDatabase } from "../../../Database"
-import { MainHeader } from "../../../DocumentsList"
 import { getPromptModalContent, usePromptModal } from "../../../PromptModal"
 import {
   PrimarySidebarViewContainer,
@@ -11,6 +10,7 @@ import {
 } from "../../../SidebarCommon"
 import { TagListItem } from "../../../TagListItem"
 import { useTagsAPI } from "../../../TagsProvider"
+import { MainHeader } from "../../MainHeader"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
@@ -67,7 +67,7 @@ export const TagsView: React.FC = () => {
   )
 }
 
-const TagsList: FC<{ tags: TagDoc[] }> = ({ tags }) => {
+const TagsList: React.FC<{ tags: TagDoc[] }> = ({ tags }) => {
   const db = useDatabase()
 
   const { data: documents } = useRxSubscription(db.documents.findNotRemoved())

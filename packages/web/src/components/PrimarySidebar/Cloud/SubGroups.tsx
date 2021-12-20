@@ -1,20 +1,19 @@
-import { memo, useState } from "react"
+import { memo } from "react"
 
 import { GroupTreeBranch } from "../../../helpers/createGroupTree"
 import { useToggleable, useRxSubscription, useIsHovered } from "../../../hooks"
 
 import { DocumentDoc, LocalSettings, useDatabase } from "../../Database"
 import { useSorting } from "../../SortingProvider"
-import {
-  CloudDocumentSectionHeader,
-  CloudDocumentSidebarItem,
-} from "../../DocumentsList"
 
-import { createFindDocumentsInGroupQuery } from "./queries"
 import {
   PrimarySidebarSectionContainer,
   PrimarySidebarToggleableSectionContainer,
 } from "../PrimarySidebar.styles"
+import { CloudDocumentSectionHeader } from "../SectionHeader"
+import { CloudDocumentSidebarItem } from "../SidebarDocumentItem"
+
+import { createFindDocumentsInGroupQuery } from "./queries"
 
 // TODO: use stateless toggleables and keep state higher up, persisting it between path changes (either as a global collection of group.ids that are open or closed, or a per-path one)
 
