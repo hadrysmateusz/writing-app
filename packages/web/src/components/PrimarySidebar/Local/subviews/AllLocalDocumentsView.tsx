@@ -6,14 +6,14 @@ import { useLocalFS } from "../../../LocalFSProvider"
 import { ContextMenuSeparator } from "../../../ContextMenu"
 
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
-
-import { DirItem } from "../DirItem"
 import {
   AddLocalPathMenuItem,
   DocumentListDisplayTypeSubmenu,
   MainHeader,
   MoreMainHeaderButton,
 } from "../../MainHeader"
+
+import { DirItem } from "../DirItem"
 
 // TODO: rename to localdocumentsallview
 export const LocalView: React.FC<{}> = () => {

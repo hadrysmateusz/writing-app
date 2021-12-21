@@ -54,7 +54,7 @@ export const useSetUpWatchers = (
             const resultDir = getDirToModify(prevDirState, res)
 
             if (resultDir) {
-              removeFileFromDirFiles(resultDir, res.file.path)
+              removeFileFromDirFiles(resultDir, res.itemPath)
             }
 
             return cloneDeep(prevDirState)
@@ -78,7 +78,7 @@ export const useSetUpWatchers = (
             const resultDir = getDirToModify(prevDirState, res)
 
             if (resultDir) {
-              removeDirFromDirDirs(resultDir, res.dirTree.path)
+              removeDirFromDirDirs(resultDir, res.itemPath)
             }
 
             return cloneDeep(prevDirState)

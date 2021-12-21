@@ -72,22 +72,45 @@ export type ForceReloadPayload = {}
 
 // TODO: figure out a better name for this event
 export type WatchDirResPayload = WatchDirResFilePayload | WatchDirResDirPayload
-type WatcherFileEvent = "add" | "unlink"
-type WatcherDirEvent = "addDir" | "unlinkDir"
-type WatchDirResCommon = {
+export type WatcherFileEvent = "add" | "unlink"
+export type WatcherDirEvent = "addDir" | "unlinkDir"
+export type WatcherAddEvent = "add" | "addDir"
+export type WatcherUnlinkEvent = "unlink" | "unlinkDir"
+export type WatcherEvent = WatcherFileEvent | WatcherDirEvent
+export type WatchDirResCommon = {
+  itemName: string
+  itemPath: string
   watchedDirPath: string
   parentDirPathArr: string[]
 }
-type WatchDirResFilePayload = WatchDirResCommon & {
+type WatchDirResFileCommon = WatchDirResCommon & {
   resourceType: SupportedResourceTypes.file
-  eventType: WatcherFileEvent
-  file: FileObject
 }
-type WatchDirResDirPayload = WatchDirResCommon & {
+export type WatchDirResFilePayload = WatchDirResFileCommon &
+  (
+    | {
+        eventType: "add"
+        file: FileObject
+      }
+    | {
+        eventType: "unlink"
+        file: null
+      }
+  )
+type WatchDirResDirCommon = WatchDirResCommon & {
   resourceType: SupportedResourceTypes.dir
-  eventType: WatcherDirEvent
-  dirTree: DirObjectRecursive
 }
+export type WatchDirResDirPayload = WatchDirResDirCommon &
+  (
+    | {
+        eventType: "addDir"
+        dirTree: DirObjectRecursive
+      }
+    | {
+        eventType: "unlinkDir"
+        dirTree: null
+      }
+  )
 
 // TODO: rework this or rename the event, or do nothing if I use custom window chrome
 export type NewCloudDocumentPayload = {}

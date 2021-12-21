@@ -37,7 +37,8 @@ export const createDirObjectRecursive = (
   }
 }
 
-const createFileObject = (
+// TODO: make this function accept just a path string like createDirObjectRecursive and infer the values of parentDirPath and resourceName inside
+export const createFileObject = (
   parentDirPath: string,
   resourceName: string
 ): FileObject | null => {

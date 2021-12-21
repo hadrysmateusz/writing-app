@@ -1,16 +1,32 @@
 import path from "path"
+import {
+  SupportedResourceTypes,
+  WatchDirResCommon,
+  WatchDirResPayload,
+  WatcherEvent,
+} from "shared"
 
 import {
   createDirObjectRecursive,
+  createFileObject,
   getMainWindow,
   getResourceType,
 } from "../helpers"
 
-const DIR_EVENT_TYPES = ["addDir", "unlinkDir"]
+export class ResourceTypeMismatchError extends Error {
+  constructor(received: any, expected: SupportedResourceTypes) {
+    super(
+      `Unexpected resource type. \nReceived: ${received}. \nExpected: ${expected} `
+    )
+    this.name = "ResourceTypeMismatchError"
+  }
+}
 
 export const dirWatcherEventHandler =
-  (watchedDirPath: string) => (itemPath: string) => (eventType: string) => {
-    console.log(`watcher event ${eventType}: itemPath`)
+  (watchedDirPath: string) =>
+  (eventType: WatcherEvent) =>
+  (itemPath: string) => {
+    console.log(`watcher event ${eventType}: ${itemPath}`)
 
     const responseObject = createResponse(eventType, watchedDirPath, itemPath)
 
@@ -23,39 +39,80 @@ export const dirWatcherEventHandler =
   }
 
 const createResponse = (
-  eventType: string,
+  eventType: WatcherEvent,
   watchedDirPath: string,
   itemPath: string
-) => {
+): WatchDirResPayload | null => {
   try {
-    const resourceType = getResourceType(itemPath)
-
-    if (!resourceType) {
-      throw new Error("Invalid resource type")
-    }
-
     const parentDirPath = path.dirname(itemPath)
     const itemName = path.basename(itemPath)
     const parentDirPathArr = getParentDirPathArr(parentDirPath, watchedDirPath)
 
-    // create dirTree if resource is a directory
-    const dirTree = DIR_EVENT_TYPES.includes(eventType)
-      ? createDirObjectRecursive(itemPath)
-      : undefined
-
-    const responseObject = {
-      eventType,
-      watchedDirPath,
-      resourceType,
-      itemPath,
+    const responseObjectCommon: WatchDirResCommon = {
       itemName,
-      parentDirPath,
+      itemPath,
+      watchedDirPath,
       parentDirPathArr,
-      dirTree,
     }
 
-    return responseObject
+    switch (eventType) {
+      case "add": {
+        const file = createFileObject(parentDirPath, itemName)
+        if (!file) throw new Error("Failed to create file object")
+
+        const resourceType = getResourceType(itemPath)
+        if (resourceType !== SupportedResourceTypes.file) {
+          throw new ResourceTypeMismatchError(
+            resourceType,
+            SupportedResourceTypes.file
+          )
+        }
+
+        return {
+          ...responseObjectCommon,
+          eventType,
+          resourceType,
+          file,
+        }
+      }
+      case "unlink": {
+        return {
+          ...responseObjectCommon,
+          eventType,
+          resourceType: SupportedResourceTypes.file,
+          file: null,
+        }
+      }
+      case "addDir": {
+        const dirTree = createDirObjectRecursive(itemPath)
+        if (!dirTree) throw new Error("Failed to create dir object")
+
+        const resourceType = getResourceType(itemPath)
+        if (resourceType !== SupportedResourceTypes.dir) {
+          throw new ResourceTypeMismatchError(
+            resourceType,
+            SupportedResourceTypes.dir
+          )
+        }
+
+        return {
+          ...responseObjectCommon,
+          eventType,
+          resourceType,
+          dirTree,
+        }
+      }
+      case "unlinkDir": {
+        return {
+          ...responseObjectCommon,
+          eventType,
+          resourceType: SupportedResourceTypes.dir,
+          dirTree: null,
+        }
+      }
+    }
   } catch (error) {
+    console.log(error)
     return null
   }
 }
