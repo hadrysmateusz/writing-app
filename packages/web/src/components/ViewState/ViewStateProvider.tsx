@@ -25,6 +25,7 @@ const reducer: SidebarsLoadingReducer = (state, action) => {
   }
 }
 
+// TODO: this could be replaced with a set of promises passed to components which get resolved one by one when one of those is ready and a promise.all/allSettled is used at the top to update isReady
 const initialState: SidebarsLoadingState = {
   navigator: false,
   primary: false,
