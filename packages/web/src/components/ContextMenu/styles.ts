@@ -14,8 +14,21 @@ interface IAdjustable {
   isAdjusted: boolean
 }
 
+// The scale 1 opacity 0 at first is to prevent the scale transform from changing the element's dimensions before they're read by the adjustment logic
+
 export const ANIMATION_OPEN = keyframes`
-  from {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+    transform-origin: 0% 0%;
+  }
+  1% {
+    opacity: 0;
+    transform: scale(0.4);
+    transform-origin: 0% 0%;
+  }
+
+  2% {
     opacity: 0.55;
     transform: scale(0.4);
     transform-origin: 0% 0%;
@@ -24,7 +37,7 @@ export const ANIMATION_OPEN = keyframes`
     transform: scale(1.025);
     transform-origin: 0% 0%;
   }
-  to {
+  100% {
     opacity: 1;
     transform: scale(1);
     transform-origin: 0% 0%;
