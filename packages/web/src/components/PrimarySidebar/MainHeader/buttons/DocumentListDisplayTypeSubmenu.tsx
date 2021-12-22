@@ -8,8 +8,10 @@ import { SortingMenuItemInnerWrapper } from "../MainHeader.styles"
 export const DocumentListDisplayTypeSubmenu: React.FC = () => {
   return (
     <ContextSubmenu text="Display Type">
-      <DisplayTypeMenuItem value="tree">Tree</DisplayTypeMenuItem>
-      <DisplayTypeMenuItem value="flat">Flat</DisplayTypeMenuItem>
+      <DisplayTypeMenuItem value="nested_list">Nested List</DisplayTypeMenuItem>
+      <DisplayTypeMenuItem value="flat_list">Flat List</DisplayTypeMenuItem>
+      {/* TODO: add a tree layout similiar to ones in navigator sidebar but with documents as well */}
+      {/* TODO: when I add the 3rd display type, update the actual typing of the value */}
     </ContextSubmenu>
   )
 }

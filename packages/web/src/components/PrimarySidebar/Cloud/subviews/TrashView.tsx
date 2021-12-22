@@ -54,7 +54,10 @@ export const TrashView: FunctionComponent = () => {
       />
       <InnerContainer>
         {!isLoading ? (
-          <CloudDocumentsList documents={documents || []} listType="flat" />
+          <CloudDocumentsList
+            documents={documents || []}
+            listType="flat_list"
+          />
         ) : null}
       </InnerContainer>
       <DeleteAllButton />

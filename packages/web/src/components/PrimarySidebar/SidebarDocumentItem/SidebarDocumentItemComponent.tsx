@@ -53,7 +53,7 @@ export const SidebarDocumentItemComponent: React.FC<{
 
   // Whether the grouping item name should be shown depends on current listType
   const parentGroupingItemName = useMemo(() => {
-    return listType === "flat" ? groupName : undefined
+    return listType === "flat_list" ? groupName : undefined
   }, [groupName, listType])
 
   const hasSnippet = snippet ? snippet.trim().length > 0 : false

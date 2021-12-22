@@ -93,7 +93,7 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
           <CloudDocumentsListAndSubGroups
             documents={documents || []}
             groups={group.children}
-            listType="tree"
+            listType="nested_list"
           />
         ) : null}
       </InnerContainer>

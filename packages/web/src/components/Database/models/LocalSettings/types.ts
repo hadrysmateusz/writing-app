@@ -10,7 +10,8 @@ type NewSidebarType<S extends SidebarSidebar> = {
   currentPaths: Record<SidebarView<S>, string>
 }
 
-type DocumentsListDisplayType = "tree" | "flat"
+// TODO: add tree type
+type DocumentsListDisplayType = "nested_list" | "flat_list"
 
 /**
  * Contains only the actual user preferences/settings, for use elsewhere

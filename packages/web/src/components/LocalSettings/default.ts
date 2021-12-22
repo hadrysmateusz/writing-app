@@ -32,7 +32,7 @@ export const defaultLocalSettings: LocalSettings = {
       },
     },
   },
-  documentsListDisplayType: "tree",
+  documentsListDisplayType: "nested_list",
 }
 
 export function tabsInit(): TabsState {

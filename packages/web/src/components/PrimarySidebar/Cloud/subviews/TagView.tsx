@@ -85,7 +85,10 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
       />
       <InnerContainer>
         {!isTagLoading && !isDocumentsLoading ? (
-          <CloudDocumentsList documents={documents || []} listType="flat" />
+          <CloudDocumentsList
+            documents={documents || []}
+            listType="flat_list"
+          />
         ) : null}
       </InnerContainer>
       {/* TODO:  Rework NewButton to work with tags as well as groups, or create additional variants */}

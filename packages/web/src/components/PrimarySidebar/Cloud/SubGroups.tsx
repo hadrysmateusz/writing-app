@@ -47,7 +47,7 @@ export const SubGroupDocumentsList: React.FC<{
         <CloudDocumentsListAndSubGroups
           documents={documents}
           groups={group.children}
-          listType="tree"
+          listType="nested_list"
         />
       ) : null}
     </PrimarySidebarSectionContainer>
@@ -58,7 +58,7 @@ export const SubGroupDocumentsList: React.FC<{
 export const CloudDocumentsList: React.FC<{
   documents: DocumentDoc[]
   listType?: LocalSettings["documentsListDisplayType"]
-}> = ({ documents, listType = "tree" }) => {
+}> = ({ documents, listType = "nested_list" }) => {
   return (
     <>
       {documents.map((document) => (

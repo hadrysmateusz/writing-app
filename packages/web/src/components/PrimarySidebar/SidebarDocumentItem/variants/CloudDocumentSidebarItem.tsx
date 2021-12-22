@@ -15,7 +15,7 @@ const SNIPPET_LENGTH = 340
 export const CloudDocumentSidebarItem: React.FC<{
   document: DocumentDoc
   listType?: LocalSettings["documentsListDisplayType"]
-}> = ({ document, listType = "tree" }) => {
+}> = ({ document, listType = "nested_list" }) => {
   const { openDocument } = useTabsAPI()
   const { currentCloudDocumentId } = useTabsState()
   const { groups } = useCloudGroupsState() // TODO: move the groupName related logic to separate component to decouple this from groups changes when not needed

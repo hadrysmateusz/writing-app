@@ -34,9 +34,9 @@ export const AllDocumentsView: React.FC = () => {
 
   const renderCorrectList = useCallback(() => {
     switch (documentsListDisplayType) {
-      case "flat":
+      case "flat_list":
         return <FlatDocumentsList />
-      case "tree":
+      case "nested_list":
         return <TreeDocumentsList />
       default:
         // TODO: handle this scenario better
@@ -76,7 +76,7 @@ const FlatDocumentsList = () => {
   )
   return !isLoading ? (
     <>
-      <CloudDocumentsList documents={documents || []} listType="flat" />
+      <CloudDocumentsList documents={documents || []} listType="flat_list" />
     </>
   ) : null
 }
@@ -95,7 +95,7 @@ const TreeDocumentsList = () => {
     <CloudDocumentsListAndSubGroups
       documents={documents || []}
       groups={groupsTree.children}
-      listType="tree"
+      listType="nested_list"
     />
   ) : null
 }
