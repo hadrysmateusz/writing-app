@@ -1,4 +1,11 @@
-import { useState, useRef, useCallback, useEffect, memo } from "react"
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  memo,
+  useLayoutEffect,
+} from "react"
 import { Portal } from "react-portal"
 
 import { useIsHovered, useToggleable } from "../../hooks"
@@ -11,6 +18,8 @@ import { INITIAL_COORDS } from "./constants"
 import { adjustSubmenuCoords } from "./helpers"
 import { ContextMenuItem } from "./ContextMenuItem"
 import { ContextMenuContext, useContextMenuContext } from "./ContextMenuContext"
+
+// TODO: add way to prevent menu from closing on mouse leave (e.g. when a certain element is focused)
 
 type ContextSubmenuProps = {
   text: string
@@ -141,18 +150,17 @@ const ContextSubmenuMenu: React.FC<ContextSubmenuMenuProps> = ({
   }, [adjustState])
 
   // TODO: maybe use this timeout system on base ContextMenu too
-  useEffect(() => {
-    const timeoutA = setTimeout(adjustWithCheck, 0)
+  useLayoutEffect(() => {
+    adjustWithCheck()
     // second timeout to adjust items that take a long time to render
     // TODO: probably should be replaced by some kind of resize observer
     // TODO: maybe if secondAdjustDelay is undefined/not provided don't create the second timeout and only adjust once
-    const timeoutB = setTimeout(() => {
+    const timeout = setTimeout(() => {
       setState((prevState) => adjustState(prevState))
     }, secondAdjustDelay)
 
     return () => {
-      clearTimeout(timeoutA)
-      clearTimeout(timeoutB)
+      clearTimeout(timeout)
     }
   }, [adjustState, adjustWithCheck, secondAdjustDelay])
 

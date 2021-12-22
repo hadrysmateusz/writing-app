@@ -1,4 +1,11 @@
-import { useState, useRef, useCallback, useEffect, useMemo, memo } from "react"
+import {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  memo,
+  useLayoutEffect,
+} from "react"
 import { Portal } from "react-portal"
 
 import { useOnClickOutside } from "../../hooks/useOnClickOutside"
@@ -24,17 +31,34 @@ export const ContextMenu: React.FC<ContextMenuProps> = memo(
       coords: Coords
       isAdjusted: boolean
     }>(() => {
-      console.log("context menu mount, setting initial state")
       return {
         coords: eventCoords,
         isAdjusted: false,
       }
     })
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       console.log("event coords changed:", eventCoords)
       setState({ coords: eventCoords, isAdjusted: false })
     }, [eventCoords])
+
+    useLayoutEffect(() => {
+      if (state.isAdjusted) {
+        return
+      }
+
+      const menuEl = containerRef?.current
+
+      console.log(menuEl)
+
+      if (!menuEl) {
+        return
+      }
+
+      const newCoords = adjustMenuCoords(menuEl, state.coords)
+
+      setState({ coords: newCoords, isAdjusted: true })
+    }, [state.coords, state.isAdjusted])
 
     useOnClickOutside(containerRef, () => {
       close()
@@ -51,28 +75,6 @@ export const ContextMenu: React.FC<ContextMenuProps> = memo(
       return () => document.removeEventListener("wheel", handler)
     }, [close, closeOnScroll, isOpen])
 
-    const adjust = useCallback(() => {
-      setState((prevState) => {
-        const menuEl = containerRef?.current
-
-        if (!menuEl) {
-          return prevState
-        }
-
-        if (prevState.isAdjusted) {
-          return prevState
-        }
-
-        const newCoords = adjustMenuCoords(menuEl, prevState.coords)
-
-        return { coords: newCoords, isAdjusted: true }
-      })
-    }, [])
-
-    useEffect(() => {
-      adjust()
-    }, [adjust])
-
     const handleClick = useCallback(
       (event: React.MouseEvent<HTMLDivElement>) => {
         /* Stops click events inside the context menu from propagating down the DOM tree
@@ -87,10 +89,10 @@ export const ContextMenu: React.FC<ContextMenuProps> = memo(
       [close, closeAfterClick]
     )
 
-    console.log("----------- render MENU -----------")
-    console.log("internal coords:", state.coords)
-    console.log("event coords:   ", eventCoords)
-    console.log("state", state)
+    // console.log("----------- render MENU -----------")
+    // console.log("internal coords:", state.coords)
+    // console.log("event coords:   ", eventCoords)
+    // console.log("state", state)
 
     return (
       <Portal>
