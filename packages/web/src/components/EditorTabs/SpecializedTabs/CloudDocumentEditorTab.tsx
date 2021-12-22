@@ -58,8 +58,13 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
     group: string | null
   }>(initialTabData)
 
-  const { DocumentContextMenu, getEditableProps, getContainerProps } =
-    useDocumentContextMenu(document)
+  const {
+    isMenuOpen,
+    DocumentContextMenu,
+    getEditableProps,
+    getContainerProps,
+    getContextMenuProps,
+  } = useDocumentContextMenu(document)
 
   useEffect(() => {
     const title = formatOptional(document.title, "Untitled")
@@ -96,7 +101,7 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
       </div>
       {tabData.group ? <div className="tab-group">{tabData.group}</div> : null}
       <TabCloseButton handleCloseTab={handleCloseTab} />
-      <DocumentContextMenu />
+      {isMenuOpen ? <DocumentContextMenu {...getContextMenuProps()} /> : null}
     </EditorTabContainer>
   )
 }

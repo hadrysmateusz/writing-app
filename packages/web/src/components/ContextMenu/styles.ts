@@ -108,3 +108,14 @@ export const CaretContainer = styled.div`
   margin-right: -5px;
   padding-top: 2px;
 `
+
+export const ContextMeta = styled.div`
+  font-weight: 500;
+  padding: 6px 20px;
+  font-size: 11px;
+  color: var(--light-100);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+`

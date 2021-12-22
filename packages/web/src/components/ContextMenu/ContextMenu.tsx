@@ -2,84 +2,13 @@ import { useState, useRef, useCallback, useEffect, useMemo, memo } from "react"
 import { Portal } from "react-portal"
 
 import { useOnClickOutside } from "../../hooks/useOnClickOutside"
-import { ToggleableHooks, useToggleable } from "../../hooks"
 
-import { Coords } from "./types"
-import { INITIAL_COORDS } from "./constants"
+import { ContextMenuProps, Coords } from "./types"
 import { adjustMenuCoords } from "./helpers"
-import { ContextMenuContext } from "./ContextMenuContext"
 import { MenuContainer } from "./styles"
+import { ContextMenuContext } from "./ContextMenuContext"
 
-type ContextMenuHookOptions = ToggleableHooks & {
-  renderWhenClosed?: boolean
-  toggleOnNestedDOMNodes?: boolean
-  stopPropagation?: boolean
-}
-
-// TODO: unify how context menus are opened, because some are opened on mousedown and some on click, which leads to very different behaviors, especially when opening a menu with another already open
 // TODO: capture focus inside the context menu and restore it when it closes
-
-export const useContextMenu = (options: ContextMenuHookOptions = {}) => {
-  const {
-    toggleOnNestedDOMNodes = true,
-    stopPropagation = true,
-    ...toggleableHooks
-  } = options
-
-  const [eventCoords, setEventCoords] =
-    useState<[number, number]>(INITIAL_COORDS)
-
-  const { close, open, isOpen } = useToggleable(false, toggleableHooks)
-
-  const openMenu = useCallback(
-    (event: React.MouseEvent) => {
-      if (!toggleOnNestedDOMNodes && event.target !== event.currentTarget) {
-        return
-      }
-
-      if (stopPropagation) {
-        event.stopPropagation()
-      }
-
-      setEventCoords([event.pageX, event.pageY])
-      open()
-    },
-    [open, stopPropagation, toggleOnNestedDOMNodes]
-  )
-
-  const closeMenu = useCallback(() => {
-    close()
-    // Reset the coordinates
-    setEventCoords(INITIAL_COORDS)
-  }, [close])
-
-  const getContextMenuProps = useCallback(() => {
-    return {
-      eventCoords,
-      close,
-      isOpen,
-    }
-  }, [close, eventCoords, isOpen])
-
-  return useMemo(
-    () => ({
-      openMenu,
-      closeMenu,
-      isMenuOpen: isOpen,
-      getContextMenuProps,
-    }),
-    [closeMenu, getContextMenuProps, isOpen, openMenu]
-  )
-}
-
-type ContextMenuProps = {
-  eventCoords: Coords
-  close: () => void
-  isOpen: boolean
-
-  closeAfterClick?: boolean
-  closeOnScroll?: boolean
-}
 export const ContextMenu: React.FC<ContextMenuProps> = memo(
   ({
     children,

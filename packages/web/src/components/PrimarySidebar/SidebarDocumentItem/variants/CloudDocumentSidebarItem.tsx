@@ -25,8 +25,13 @@ export const CloudDocumentSidebarItem: React.FC<{
     return foundGroup?.name
   }, [document.parentGroup, groups])
 
-  const { openMenu, DocumentContextMenu, getEditableProps } =
-    useDocumentContextMenu(document)
+  const {
+    openMenu,
+    getEditableProps,
+    getContextMenuProps,
+    DocumentContextMenu,
+    isMenuOpen,
+  } = useDocumentContextMenu(document)
 
   const isCurrent = useMemo(() => {
     if (currentCloudDocumentId === null) return false
@@ -96,7 +101,7 @@ export const CloudDocumentSidebarItem: React.FC<{
         onContextMenu={handleContextMenu}
         getEditableProps={getEditableProps}
       />
-      <DocumentContextMenu />
+      {isMenuOpen ? <DocumentContextMenu {...getContextMenuProps()} /> : null}
     </>
   )
 }

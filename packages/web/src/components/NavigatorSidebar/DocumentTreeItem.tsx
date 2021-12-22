@@ -15,8 +15,13 @@ const DocumentTreeItem: React.FC<{
 }> = ({ document, depth = 0, icon }) => {
   const { openDocument } = useTabsAPI()
 
-  const { DocumentContextMenu, getEditableProps, getContainerProps } =
-    useDocumentContextMenu(document)
+  const {
+    isMenuOpen,
+    DocumentContextMenu,
+    getEditableProps,
+    getContainerProps,
+    getContextMenuProps,
+  } = useDocumentContextMenu(document)
 
   // TODO: consider extracting the specific document renaming logic into another hook
 
@@ -39,8 +44,7 @@ const DocumentTreeItem: React.FC<{
       >
         <EditableText {...getEditableProps()}>{title}</EditableText>
       </GenericTreeItem>
-
-      <DocumentContextMenu />
+      {isMenuOpen ? <DocumentContextMenu {...getContextMenuProps()} /> : null}
     </>
   )
 }
