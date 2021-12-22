@@ -17,7 +17,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "shared": "*",
     "@types/body-scroll-lock": "^3.1.0",
     "@types/is-url": "^1.2.28",
     "@types/jest": "^26.0.15",
@@ -65,6 +64,7 @@
     "retext-latin": "^2.0.4",
     "rxdb": "10.1.0",
     "rxjs": "7.3.1",
+    "shared": "*",
     "slate": "0.70.0",
     "slate-history": "0.66.0",
     "slate-hyperscript": "0.67.0",
@@ -75,6 +75,7 @@
     "typeface-poppins": "^0.0.72",
     "unified": "^10.1.1",
     "unist-util-size": "^2.0.0",
+    "use-async-effect": "^2.2.3",
     "uuid": "^8.3.1",
     "web-vitals": "^0.2.4",
     "workbox-core": "^5.1.3",
