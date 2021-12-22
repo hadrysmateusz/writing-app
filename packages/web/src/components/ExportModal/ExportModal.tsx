@@ -6,8 +6,7 @@ import { mySerializeMd } from "../../slate-helpers/deserialize"
 import { deserialize } from "../Editor/helpers"
 
 import { Button } from "../Button"
-import { ModalButtonsContainer, ModalContainer } from "../Modal"
-import { CloseModalFn } from "../Modal/types"
+import { Modal, CloseModalFn } from "../Modal"
 
 export type ExportModalProps = {
   documentContent: string
@@ -56,14 +55,14 @@ export const ExportModalContent: React.FC<
   }, [exportFile])
 
   return (
-    <ModalContainer>
+    <Modal.Container>
       <h2>Export as</h2>
-      <ModalButtonsContainer>
+      <Modal.ButtonsContainer>
         <Button onClick={handleExportMarkdown} autoFocus>
           Markdown
         </Button>
         <Button onClick={handleExportHTML}>HTML</Button>
-      </ModalButtonsContainer>
-    </ModalContainer>
+      </Modal.ButtonsContainer>
+    </Modal.Container>
   )
 }

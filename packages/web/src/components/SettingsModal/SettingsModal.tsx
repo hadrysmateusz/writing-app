@@ -1,11 +1,7 @@
 import { useState } from "react"
 
 import { LogoutButton } from "../Auth"
-import {
-  ModalContainer,
-  ModalContentProps,
-  ModalMessageContainer,
-} from "../Modal"
+import { ModalContentProps, Modal } from "../Modal"
 import { useUserdata } from "../Userdata"
 
 import { InnerContainer } from "./SettingsModal.styles"
@@ -29,8 +25,8 @@ export const SettingsModalContent: React.FC<SettingsModalContentProps> = ({
   }
 
   return (
-    <ModalContainer>
-      <ModalMessageContainer>Settings</ModalMessageContainer>
+    <Modal.Container>
+      <Modal.Message>Settings</Modal.Message>
       <InnerContainer>
         {/* 
         TODO: support language choice and auto-detection, and maybe custom dictionaries 
@@ -47,9 +43,9 @@ export const SettingsModalContent: React.FC<SettingsModalContentProps> = ({
         </label>
       </InnerContainer>
 
-      <ModalMessageContainer>Account</ModalMessageContainer>
+      <Modal.Message>Account</Modal.Message>
 
       <LogoutButton onBeforeLogout={close} />
-    </ModalContainer>
+    </Modal.Container>
   )
 }

@@ -1,4 +1,9 @@
-import { FunctionComponent, ReactNode } from "react"
+import { ReactNode } from "react"
+import { StyledComponent } from "styled-components/macro"
+
+import { ToggleableHooks } from "../../hooks"
+
+export type ModalProps = { onRequestClose: (...args: any) => any }
 
 export type OpenModalFn<ReturnValue, ModalProps> = (
   props: ModalProps
@@ -16,7 +21,7 @@ export type UseModalReturn<ReturnValue, ModalProps> = ModalType<
   ReturnValue,
   ModalProps
 > & {
-  Modal: FunctionComponent<ModalRenderProps<ReturnValue, ModalProps>>
+  Modal: React.FC<ModalRenderProps<ReturnValue, ModalProps>>
 }
 
 export type ModalContextValue<ReturnValue, ModalProps, AdditionalValues> =
@@ -30,3 +35,17 @@ export interface ModalRenderProps<ReturnValue, ModalProps> {
   component?: React.ComponentType<ModalContentProps<ReturnValue, ModalProps>>
   children?: (props: ModalContentProps<ReturnValue, ModalProps>) => ReactNode
 }
+
+interface ModalCompoundComposition {
+  Container: StyledComponent<"div", any, {}, never>
+  Message: StyledComponent<"div", any, {}, never>
+  SecondaryMessage: StyledComponent<"div", any, {}, never>
+  ButtonsContainer: StyledComponent<"div", any, {}, never>
+  useModal: <ReturnValue, ModalProps extends object>(
+    initialState: boolean,
+    defaultModalProps: ModalProps,
+    options?: ToggleableHooks<ReturnValue>
+  ) => UseModalReturn<ReturnValue, ModalProps>
+}
+export type ModalCompoundComponent = React.FC<ModalProps> &
+  ModalCompoundComposition

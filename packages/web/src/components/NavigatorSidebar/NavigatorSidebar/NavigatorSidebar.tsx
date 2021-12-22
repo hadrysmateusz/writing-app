@@ -1,9 +1,9 @@
 import { forwardRef } from "react"
 
 import { GenericTreeItem, AddButton } from "../../TreeItem"
-import { useModal } from "../../Modal"
 import { SettingsModalContent } from "../../SettingsModal"
 import { SidebarImportButton } from "../../Importer"
+import { Modal } from "../../Modal"
 
 import { SectionContainer } from "../Common"
 
@@ -73,7 +73,10 @@ const TrashSidebarItem: React.FC<{}> = () => {
 }
 
 const SettingsSidebarItem: React.FC<{}> = () => {
-  const { open: openAccountModal, Modal: AccountModal } = useModal(false, {})
+  const { open: openAccountModal, Modal: AccountModal } = Modal.useModal(
+    false,
+    {}
+  )
 
   return (
     <>

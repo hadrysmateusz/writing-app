@@ -9,13 +9,7 @@ import Icon from "../Icon"
 import { Button } from "../Button"
 import { usePrimarySidebar } from "../ViewState"
 import { serialize } from "../Editor"
-import {
-  ModalContainer,
-  ModalButtonsContainer,
-  ModalSecondaryMessageContainer,
-  ModalMessageContainer,
-  CloseModalFn,
-} from "../Modal"
+import { CloseModalFn, Modal } from "../Modal"
 import { useDocumentsAPI } from "../CloudDocumentsProvider"
 import { useTabsAPI } from "../TabsProvider"
 import { useCloudGroupsState } from "../CloudGroupsProvider"
@@ -140,9 +134,9 @@ export const ImportModalContent: React.FC<{
 
   // TODO: add a selector for the target collection
   return (
-    <ModalContainer style={{ width: "500px" }}>
-      <ModalMessageContainer>Import</ModalMessageContainer>
-      <ModalSecondaryMessageContainer>
+    <Modal.Container style={{ width: "500px" }}>
+      <Modal.Message>Import</Modal.Message>
+      <Modal.SecondaryMessage>
         Import a markdown file and transform it into a cloud document in
         specified collection
         <ol>
@@ -156,8 +150,8 @@ export const ImportModalContent: React.FC<{
             Select a <em>markdown</em> file
           </li>
         </ol>
-      </ModalSecondaryMessageContainer>
-      <ModalButtonsContainer>
+      </Modal.SecondaryMessage>
+      <Modal.ButtonsContainer>
         <DropdownContainer
           onClick={() => {
             toggleGroupSelector()
@@ -178,7 +172,7 @@ export const ImportModalContent: React.FC<{
         <Button onClick={handleImportMarkdown} autoFocus variant="primary">
           Import Markdown File
         </Button>
-      </ModalButtonsContainer>
-    </ModalContainer>
+      </Modal.ButtonsContainer>
+    </Modal.Container>
   )
 }

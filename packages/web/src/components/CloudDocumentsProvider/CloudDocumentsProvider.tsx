@@ -6,7 +6,7 @@ import { createContext } from "../../utils"
 
 import { parseSidebarPath, usePrimarySidebar } from "../ViewState"
 import { useDatabase, DocumentDoc } from "../Database"
-import { useModal } from "../Modal"
+import { Modal } from "../Modal"
 import { useTabsAPI } from "../TabsProvider"
 import { serialize } from "../Editor/helpers"
 
@@ -44,7 +44,7 @@ export const DocumentsAPIProvider: React.FC = memo(({ children }) => {
     isOpen: isConfirmDeleteModalOpen,
     open: openConfirmDeleteModal,
     Modal: ConfirmDeleteModal,
-  } = useModal<boolean, ConfirmDeleteModalProps>(false, {
+  } = Modal.useModal<boolean, ConfirmDeleteModalProps>(false, {
     all: false,
     documentId: null,
   })

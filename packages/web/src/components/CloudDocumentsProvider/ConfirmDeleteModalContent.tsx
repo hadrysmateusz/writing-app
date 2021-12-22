@@ -2,12 +2,7 @@ import { FC } from "react"
 
 import { Button } from "../Button"
 import { CloseModalFn } from "../Modal/types"
-import {
-  ModalContainer,
-  ModalButtonsContainer,
-  ModalMessageContainer,
-  ModalSecondaryMessageContainer,
-} from "../Modal"
+import { Modal } from "../Modal"
 import { useDocumentsAPI } from "./CloudDocumentsProvider"
 
 export type ConfirmDeleteModalProps =
@@ -57,12 +52,12 @@ export const ConfirmDeleteModalContent: FC<
   const msgConfirm = options.all ? "Yes. Delete all" : "Yes. Delete it"
 
   return (
-    <ModalContainer>
-      <ModalMessageContainer>{msgPrompt}</ModalMessageContainer>
-      <ModalSecondaryMessageContainer>
+    <Modal.Container>
+      <Modal.Message>{msgPrompt}</Modal.Message>
+      <Modal.SecondaryMessage>
         This action can't be undone
-      </ModalSecondaryMessageContainer>
-      <ModalButtonsContainer>
+      </Modal.SecondaryMessage>
+      <Modal.ButtonsContainer>
         {/* TODO: add progress spinner (that only shows up if the confirmation takes more than X miliseconds) */}
         <Button onClick={handleConfirm} variant={"danger"} fullWidth>
           {msgConfirm}
@@ -70,7 +65,7 @@ export const ConfirmDeleteModalContent: FC<
         <Button onClick={handleCancel} fullWidth>
           Cancel
         </Button>
-      </ModalButtonsContainer>
-    </ModalContainer>
+      </Modal.ButtonsContainer>
+    </Modal.Container>
   )
 }

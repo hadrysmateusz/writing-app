@@ -10,7 +10,7 @@ import {
 } from "../ContextMenu"
 import { DocumentDoc } from "../Database"
 import { useEditableText } from "../RenamingInput"
-import { useModal } from "../Modal"
+import { Modal } from "../Modal"
 import {
   ExportModalContent,
   ExportModalProps,
@@ -46,7 +46,7 @@ export const useDocumentContextMenu = (document: DocumentDoc) => {
     }
   )
 
-  const { open: openExportModal, Modal: ExportModal } = useModal<
+  const { open: openExportModal, Modal: ExportModal } = Modal.useModal<
     ExportModalReturnValue,
     ExportModalProps
   >(

@@ -1,13 +1,7 @@
 import React, { useRef } from "react"
 import { ToggleableHooks } from "../../hooks"
 import { Button, ButtonVariants } from "../Button"
-import {
-  useModal,
-  ModalContainer,
-  ModalButtonsContainer,
-  ModalMessageContainer,
-  ModalSecondaryMessageContainer,
-} from "../Modal"
+import { Modal } from "../Modal"
 import { ModalContentProps } from "../Modal/types"
 
 export type ConfirmModalOpenReturnValue = boolean
@@ -24,7 +18,7 @@ export type ConfirmModalOptions =
 
 export function useConfirmModal(options: ConfirmModalOptions = {}) {
   const { onConfirm, onCancel, ...modalOptions } = options
-  return useModal<ConfirmModalOpenReturnValue, ConfirmModalProps>(
+  return Modal.useModal<ConfirmModalOpenReturnValue, ConfirmModalProps>(
     false,
     {},
     {
@@ -77,14 +71,14 @@ export function getConfirmModalContent({
     // }, [])
 
     return (
-      <ModalContainer>
-        <ModalMessageContainer>{promptMessage}</ModalMessageContainer>
+      <Modal.Container>
+        <Modal.Message>{promptMessage}</Modal.Message>
         {secondaryPromptMessage ? (
-          <ModalSecondaryMessageContainer>
+          <Modal.SecondaryMessage>
             {secondaryPromptMessage}
-          </ModalSecondaryMessageContainer>
+          </Modal.SecondaryMessage>
         ) : null}
-        <ModalButtonsContainer>
+        <Modal.ButtonsContainer>
           <Button
             onClick={handleConfirm}
             variant={confirmButtonVariant}
@@ -95,8 +89,8 @@ export function getConfirmModalContent({
           <Button onClick={handleCancel} ref={cancelBtnRef} fullWidth>
             {cancelMessage}
           </Button>
-        </ModalButtonsContainer>
-      </ModalContainer>
+        </Modal.ButtonsContainer>
+      </Modal.Container>
     )
   }
 

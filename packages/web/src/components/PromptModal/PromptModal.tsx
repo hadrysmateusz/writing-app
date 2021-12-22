@@ -4,13 +4,7 @@ import styled from "styled-components/macro"
 import { ToggleableHooks } from "../../hooks"
 
 import { Button } from "../Button"
-import {
-  useModal,
-  ModalContainer,
-  ModalMessageContainer,
-  ModalContentProps,
-  ModalSecondaryMessageContainer,
-} from "../Modal"
+import { Modal, ModalContentProps } from "../Modal"
 import { TextInput } from "../TextInput"
 
 export type PromptModalOpenReturnValue = string
@@ -25,7 +19,7 @@ export function usePromptModal(
   initialValue: string,
   options?: ToggleableHooks<PromptModalOpenReturnValue>
 ) {
-  return useModal<PromptModalOpenReturnValue, PromptModalProps>(
+  return Modal.useModal<PromptModalOpenReturnValue, PromptModalProps>(
     false,
     { initialValue },
     options
@@ -70,13 +64,13 @@ export function getPromptModalContent({
     }, [])
 
     return (
-      <ModalContainer>
+      <Modal.Container>
         <form onSubmit={onSubmit}>
-          <ModalMessageContainer>{promptMessage}</ModalMessageContainer>
+          <Modal.Message>{promptMessage}</Modal.Message>
           {secondaryPromptMessage ? (
-            <ModalSecondaryMessageContainer>
+            <Modal.SecondaryMessage>
               {secondaryPromptMessage}
-            </ModalSecondaryMessageContainer>
+            </Modal.SecondaryMessage>
           ) : null}
           <PromptModalInnerContainer>
             <TextInput
@@ -91,7 +85,7 @@ export function getPromptModalContent({
             </Button>
           </PromptModalInnerContainer>
         </form>
-      </ModalContainer>
+      </Modal.Container>
     )
   }
 

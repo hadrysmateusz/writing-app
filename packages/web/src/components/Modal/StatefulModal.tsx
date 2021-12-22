@@ -2,7 +2,7 @@ import { useMemo, useCallback, useState, FunctionComponent } from "react"
 
 import { useToggleable, ToggleableHooks } from "../../hooks"
 
-import Modal from "./Modal"
+import { Modal } from "./Modal"
 import {
   UseModalReturn,
   OpenModalFn,
