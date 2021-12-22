@@ -107,6 +107,12 @@
             "!styled-components/macro"
           ]
         }
+      ],
+      "react-hooks/exhaustive-deps": [
+        "warn",
+        {
+          "additionalHooks": "(useEffectAfterMount)"
+        }
       ]
     }
   },
