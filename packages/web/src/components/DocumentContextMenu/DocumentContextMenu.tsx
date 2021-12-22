@@ -164,7 +164,7 @@ export const DocumentContextMenu: React.FC<DocumentContextMenuProps> = memo(
           <ContextMenuSeparator />
 
           <ContextMeta>
-            <span>Last edited</span> {document.modifiedAt}
+            <span>Last edited</span> {formattedModifiedAt}
           </ContextMeta>
         </>
       )
