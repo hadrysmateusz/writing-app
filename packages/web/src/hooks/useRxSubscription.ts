@@ -46,4 +46,53 @@ export function useRxSubscription<RxDocumentType, RxQueryResult>(
   return { data, isLoading }
 }
 
+export function useRxSubscriptionWithTransformer<
+  RxDocumentType,
+  RxQueryResult,
+  TransformerResult
+>(
+  query: RxQuery<RxDocumentType, RxQueryResult>,
+  transformer: (
+    newData: RxQueryResult,
+    prevData: TransformerResult | null
+  ) => TransformerResult,
+  initialData: TransformerResult
+) {
+  const [data, setData] = useState<TransformerResult>(initialData)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let subscription: Subscription | undefined
+
+    const setup = async () => {
+      // TODO: this should probably be paged
+      // TODO: this should probably be cached somewhere above for better speed (but maybe not in MainProvider, it's a bit too high I think)
+      // TODO: in-memory caching for better performnce when frequently switching between groups in one session
+      // TODO: better decide when I should query the database directly and when to use (and where to store) the local documents list
+
+      try {
+        const newData = await query.exec()
+
+        // console.log("initial: query", JSON.stringify(query.toJSON(), null, 2))
+        setData((prevData) => transformer(newData, prevData))
+
+        subscription = query.$.subscribe((newData) => {
+          // console.log("sub: query", JSON.stringify(query.toJSON(), null, 2))
+          setData((prevData) => transformer(newData, prevData))
+        })
+      } catch (error) {
+        throw error // TODO: handle better in prod
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    setup()
+
+    return () => cancelRxSubscription(subscription)
+  }, [query, transformer])
+
+  return { data, isLoading }
+}
+
 export default useRxSubscription
