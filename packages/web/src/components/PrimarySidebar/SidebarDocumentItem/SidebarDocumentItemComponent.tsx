@@ -1,20 +1,17 @@
-import React, { useMemo } from "react"
+import { useMemo } from "react"
 import moment from "moment"
 
-import { useRxSubscription } from "../../../hooks"
-
 import { EditableText, EditableTextProps } from "../../RenamingInput"
-import { LocalSettings, useDatabase } from "../../Database"
+import { LocalSettings } from "../../Database"
 
 import {
   DateModified,
   GroupName,
   MainContainer,
   Snippet,
-  TagAltContainer,
-  TagsContainer,
   Title,
 } from "./SidebarDocumentItemComponent.styles"
+import { TagsList } from "./SidebarDocumentItemTagsList"
 
 export const SidebarDocumentItemComponent: React.FC<{
   listType?: LocalSettings["documentsListDisplayType"]
@@ -89,30 +86,6 @@ export const SidebarDocumentItemComponent: React.FC<{
       {/* )} */}
     </MainContainer>
   )
-}
-
-// TODO: extract this for general use and also expose a list of all tags through context to reduce queries/subscriptions across the app
-const TagsList: React.FC<{ tags: string[] }> = ({ tags }) => {
-  const db = useDatabase()
-  const { data: allTags } = useRxSubscription(db.tags.find())
-
-  return allTags ? (
-    <TagsContainer>
-      {tags.map((tagId) => (
-        // <Tag tagId={tagId} key={tagId}>
-        //   {allTags.find((tag) => tag.id === tagId)?.name || "..."}
-        // </Tag>
-        <TagAlt key={tagId}>
-          {allTags.find((tag) => tag.id === tagId)?.name || "..."}
-        </TagAlt>
-      ))}
-    </TagsContainer>
-  ) : null
-}
-
-// TODO: extract this
-const TagAlt: React.FC = ({ children }) => {
-  return <TagAltContainer>{children}</TagAltContainer>
 }
 
 export default SidebarDocumentItemComponent
