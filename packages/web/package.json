@@ -112,7 +112,7 @@
       "react-hooks/exhaustive-deps": [
         "warn",
         {
-          "additionalHooks": "(useEffectAfterMount)"
+          "additionalHooks": "(useEffectAfterMount|useQueryWithSorting)"
         }
       ]
     }
