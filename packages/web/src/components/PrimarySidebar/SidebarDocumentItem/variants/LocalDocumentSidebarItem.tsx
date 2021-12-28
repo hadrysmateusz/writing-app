@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react"
 import { Ancestor, Node } from "slate"
 
+import { usePrimarySidebar } from "../../../ViewState"
 import { useLocalFS } from "../../../LocalFSProvider"
 import {
   useContextMenu,
@@ -17,11 +18,10 @@ import { myDeserializeMd } from "../../../../slate-helpers/deserialize"
 
 export const LocalDocumentSidebarItem: React.FC<{
   file: FileObject
-  listType?: LocalSettings["documentsListDisplayType"]
 }> = ({
   file: { path, name, createdAt, modifiedAt, parentDirectory, content },
-  listType,
 }) => {
+  const { documentsListDisplayType } = usePrimarySidebar()
   const tabsDispatch = useTabsDispatch()
   const { tabsState, currentTabObject } = useTabsState()
   const { deleteFile, revealItem } = useLocalFS()
@@ -123,7 +123,7 @@ export const LocalDocumentSidebarItem: React.FC<{
   return (
     <>
       <SidebarDocumentItemComponent
-        listType={listType}
+        listType={documentsListDisplayType}
         key={path}
         title={name}
         snippet={snippet}

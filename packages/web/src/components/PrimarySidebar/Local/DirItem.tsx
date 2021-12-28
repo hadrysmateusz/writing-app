@@ -2,8 +2,6 @@ import { FileObject, DirObjectRecursive } from "shared"
 
 import { useIsHovered, useToggleable } from "../../../hooks"
 
-import { LocalSettings } from "../../Database"
-
 import {
   PrimarySidebarSectionContainer,
   PrimarySidebarToggleableSectionContainer,
@@ -15,8 +13,7 @@ export const DirItem: React.FC<{
   dir: DirObjectRecursive
   // exists?: boolean
   startOpen?: boolean
-  listType?: LocalSettings["documentsListDisplayType"]
-}> = ({ dir, startOpen = false, listType }) => {
+}> = ({ dir, startOpen = false }) => {
   const { isOpen, toggle } = useToggleable(startOpen)
 
   const { getHoverContainerProps, isHovered } = useIsHovered()
@@ -34,11 +31,7 @@ export const DirItem: React.FC<{
         {dir.name}
       </LocalDocumentSectionHeader>
       {isOpen ? (
-        <LocalDocumentsSubGroupInner
-          dirs={dir.dirs}
-          files={dir.files}
-          listType={listType}
-        />
+        <LocalDocumentsSubGroupInner dirs={dir.dirs} files={dir.files} />
       ) : null}
     </PrimarySidebarSectionContainer>
   ) : null
@@ -47,15 +40,10 @@ export const DirItem: React.FC<{
 // TODO: remove duplication with CloudDocumentsList
 export const LocalDocumentsList: React.FC<{
   files: FileObject[]
-  listType?: LocalSettings["documentsListDisplayType"]
-}> = ({ files, listType }) => (
+}> = ({ files }) => (
   <>
     {files.map((file) => (
-      <LocalDocumentSidebarItem
-        key={file.path}
-        file={file}
-        listType={listType}
-      />
+      <LocalDocumentSidebarItem key={file.path} file={file} />
     ))}
   </>
 )
@@ -64,16 +52,14 @@ export const LocalDocumentsList: React.FC<{
 export const LocalDocumentsSubGroupInner: React.FC<{
   files: FileObject[]
   dirs: DirObjectRecursive[]
-  listType?: LocalSettings["documentsListDisplayType"]
-}> = ({ files, dirs, listType }) => {
+}> = ({ files, dirs }) => {
   return (
     <PrimarySidebarToggleableSectionContainer>
-      <LocalDocumentsList files={files} listType={listType} />
+      <LocalDocumentsList files={files} />
       {dirs.map((dir) => (
         <DirItem
           key={dir.path}
           dir={dir}
-          listType={listType}
           // exists={"exists" in dir ? dir.exists : undefined}
         />
       ))}
