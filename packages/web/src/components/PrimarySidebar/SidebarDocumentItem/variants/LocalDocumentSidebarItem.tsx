@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react"
+import { Ancestor, Node } from "slate"
 
 import { useLocalFS } from "../../../LocalFSProvider"
 import {
@@ -12,12 +13,13 @@ import { useTabsDispatch, useTabsState } from "../../../TabsProvider"
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
 import { FileObject } from "shared"
 import { LocalSettings } from "../../../Database"
+import { myDeserializeMd } from "../../../../slate-helpers/deserialize"
 
 export const LocalDocumentSidebarItem: React.FC<{
   file: FileObject
   listType?: LocalSettings["documentsListDisplayType"]
 }> = ({
-  file: { path, name, createdAt, modifiedAt, parentDirectory },
+  file: { path, name, createdAt, modifiedAt, parentDirectory, content },
   listType,
 }) => {
   const tabsDispatch = useTabsDispatch()
@@ -25,6 +27,39 @@ export const LocalDocumentSidebarItem: React.FC<{
   const { deleteFile, revealItem } = useLocalFS()
 
   const { getContextMenuProps, openMenu, isMenuOpen } = useContextMenu()
+
+  const snippet = useMemo(() => {
+    // TODO: replace with a better solution that simply limits the text to some number of lines (probably with css)
+
+    let textContent = ""
+
+    // we get and deserialize the content of the document
+    const serializedContent = content
+
+    // if the content field was empty or unefined we return undefined to not render a snippet
+    if (!serializedContent?.trim()) return undefined
+
+    const deserializedContent = myDeserializeMd(serializedContent)
+
+    // the Node.nodes function operates on a slate node but the content is an array of children so we create a fake node object
+    const fakeRootNode: Ancestor = {
+      children: deserializedContent,
+      type: "fakeRoot",
+    }
+
+    // we iterate over all of the nodes and create a string of all of their text contents until we reach a desired length
+    for (let [node] of Node.nodes(fakeRootNode, {})) {
+      if ("text" in node) {
+        textContent += " " + node.text
+
+        if (textContent.length >= 340) {
+          break
+        }
+      }
+    }
+
+    return textContent.slice(0, 340)
+  }, [content])
 
   const isCurrent = useMemo(() => {
     if (currentTabObject.tabType === "localDocument") {
@@ -91,6 +126,7 @@ export const LocalDocumentSidebarItem: React.FC<{
         listType={listType}
         key={path}
         title={name}
+        snippet={snippet}
         modifiedAt={modifiedAt.getTime()}
         createdAt={createdAt.getTime()}
         groupName={parentDirectory}

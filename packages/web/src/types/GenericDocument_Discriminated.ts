@@ -52,7 +52,7 @@ export type GenericDocument_Discriminated_CloudSpecific = {
   tags: string[]
 
   /**
-   * Serialized document content
+   * Serialized document content (slate object format, JSON.stringified)
    */
   content: string
 }
@@ -69,21 +69,13 @@ export type GenericDocument_Discriminated_LocalSpecific = {
    */
   parentIdentifier: string
 
-  /*
-    Types to improve interoperability with cloud variant related logic.
-    Omit these when working with local variant generic documents.
-    TODO: unify the API of both cloud and local variants (at least when it comes to the content/snippet field) and either use these in both or remove them in both
-  */
-
   /**
-   * Document's content, undefined in local version, skip this
-   *
-   * This field exists for interoperability with the CloudVariant
+   * Serialized document content (slate object format, JSON.stringified)
    */
-  content?: undefined
+  content: string
 
   /**
-   * Document's tag, undefined in local version, skip this
+   * Document's tags, undefined in local version, skip this
    *
    * This field exists for interoperability with the CloudVariant
    */

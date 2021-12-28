@@ -9,6 +9,7 @@ export type LocalResourceCommon = {
 export type FileObject = LocalResourceCommon & {
   createdAt: Date
   modifiedAt: Date
+  content: string
 }
 
 export type DirObjectRecursive = LocalResourceCommon & {

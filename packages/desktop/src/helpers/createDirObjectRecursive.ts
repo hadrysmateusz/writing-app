@@ -5,6 +5,7 @@ import { DirObjectRecursive, FileObject, SupportedResourceTypes } from "shared"
 
 import { fileTypeIsAllowedDocumentType } from "./fileTypeIsAllowedDocumentType"
 import { getResourceType } from "./getResourceType"
+import { readFileContentForLocalEditor, readFileForLocalEditor } from "."
 
 export const createDirObjectRecursive = (
   pathStr: string
@@ -57,11 +58,14 @@ export const createFileObject = (
     return null
   }
 
+  const fileContent = readFileContentForLocalEditor(filePath)
+
   return {
     path: filePath,
     name: resourceName,
     createdAt: stats.ctime,
     modifiedAt: stats.mtime,
     parentDirectory: parentDirPath,
+    content: fileContent,
   }
 }
