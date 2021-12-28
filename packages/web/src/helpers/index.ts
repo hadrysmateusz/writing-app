@@ -1,3 +1,5 @@
 export * from "./createEmptyNode"
 export * from "./createGroupTree"
 export * from "./getGroupName"
+export * from "./genericDocuments"
+export * from "./createGenericGroupTree"
