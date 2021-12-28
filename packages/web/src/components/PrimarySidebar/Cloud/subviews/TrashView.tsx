@@ -1,14 +1,10 @@
-import { FunctionComponent } from "react"
-
-import useRxSubscription from "../../../../hooks/useRxSubscription"
+import { useQueryWithSorting } from "../../../../hooks"
 
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
-import { useDatabase } from "../../../Database"
 import { SIDEBAR_VAR } from "../../../ViewState"
-import { useSorting } from "../../../SortingProvider"
 import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 
 import {
@@ -21,21 +17,22 @@ import {
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
 import { createFindDeletedDocumentsQuery } from "../queries"
-import { CloudDocumentsList } from "../SubGroups"
+import { FlatDocumentsList } from "../GenericCloudDocumentsList"
+import { useGenericDocumentsFromCloudDocumentsQuery } from "../hooks"
 
-export const TrashView: FunctionComponent = () => {
-  const db = useDatabase()
-  const { sorting } = useSorting()
-
-  const { data: documents, isLoading } = useRxSubscription(
-    createFindDeletedDocumentsQuery(db, sorting)
+export const TrashView: React.FC = () => {
+  const query = useQueryWithSorting(
+    (db, sorting) => createFindDeletedDocumentsQuery(db, sorting),
+    []
   )
+
+  const [flatDocuments] = useGenericDocumentsFromCloudDocumentsQuery(query)
 
   return (
     <PrimarySidebarViewContainer>
       <MainHeader
         title="Trash"
-        numDocuments={documents?.length}
+        numDocuments={flatDocuments.length}
         buttons={[
           <GoUpMainHeaderButton
             goUpPath={SIDEBAR_VAR.primary.cloud.all}
@@ -53,19 +50,14 @@ export const TrashView: FunctionComponent = () => {
         ]}
       />
       <InnerContainer>
-        {!isLoading ? (
-          <CloudDocumentsList
-            documents={documents || []}
-            listType="flat_list"
-          />
-        ) : null}
+        <FlatDocumentsList documents={flatDocuments} />
       </InnerContainer>
       <DeleteAllButton />
     </PrimarySidebarViewContainer>
   )
 }
 
-const DeleteAllButton: FunctionComponent = () => {
+const DeleteAllButton: React.FC = () => {
   const { permanentlyRemoveAllDocuments } = useDocumentsAPI()
 
   return (

@@ -1,16 +1,12 @@
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 
-import useRxSubscription from "../../../../hooks/useRxSubscription"
-import createGroupTree from "../../../../helpers/createGroupTree"
+import { useQueryWithSorting } from "../../../../hooks"
+import { fillGenericGroupTreeWithDocuments } from "../../../../helpers"
 
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
-import { useDatabase } from "../../../Database"
-import { useSorting } from "../../../SortingProvider"
-import { useCloudGroupsState } from "../../../CloudGroupsProvider"
-import { usePrimarySidebar } from "../../../ViewState"
 
 import {
   CloudDocumentSortingSubmenu,
@@ -21,35 +17,35 @@ import {
 import { NewButton } from "../../PrimarySidebarBottomButton"
 
 import {
-  CloudDocumentsList,
-  CloudDocumentsListAndSubGroups,
-} from "../SubGroups"
-import {
-  createFindAllDocumentsQuery,
-  createFindDocumentsAtRootQuery,
-} from "../queries"
+  useGenericDocumentsFromCloudDocumentsQuery,
+  useGenericGroupTreeFromCloudGroups,
+} from "../hooks"
+import { DocumentsList } from "../GenericCloudDocumentsList"
 
 export const AllDocumentsView: React.FC = () => {
-  const { documentsListDisplayType } = usePrimarySidebar()
+  const genericGroupTree = useGenericGroupTreeFromCloudGroups(null)
 
-  const renderCorrectList = useCallback(() => {
-    switch (documentsListDisplayType) {
-      case "flat_list":
-        return <FlatDocumentsList />
-      case "nested_list":
-        return <TreeDocumentsList />
-      default:
-        // TODO: handle this scenario better
-        return <TreeDocumentsList />
-    }
-  }, [documentsListDisplayType])
+  const query = useQueryWithSorting(
+    (db, sorting) =>
+      db.documents
+        .findNotRemoved()
+        .sort({ [sorting.index]: sorting.direction }),
+    []
+  )
 
-  return (
+  const [flatDocuments] = useGenericDocumentsFromCloudDocumentsQuery(query)
+
+  const filledGroupTree = useMemo(
+    () => fillGenericGroupTreeWithDocuments(genericGroupTree, flatDocuments),
+    [flatDocuments, genericGroupTree]
+  )
+
+  return filledGroupTree ? (
     <PrimarySidebarViewContainer>
       <MainHeader
         title="All Documents"
-        // numDocuments={documents?.length}
-        // numSubgroups={groupsTree.children.length}
+        numDocuments={filledGroupTree?.childDocuments?.length}
+        numSubgroups={filledGroupTree?.childGroups?.length}
         buttons={[
           <MoreMainHeaderButton
             key="sorting"
@@ -62,40 +58,15 @@ export const AllDocumentsView: React.FC = () => {
           />,
         ]}
       />
-      <InnerContainer>{renderCorrectList()}</InnerContainer>
+
+      <InnerContainer>
+        <DocumentsList
+          groupTree={filledGroupTree}
+          flatDocumentsList={flatDocuments}
+        />
+      </InnerContainer>
+
       <NewButton groupId={null} />
     </PrimarySidebarViewContainer>
-  )
-}
-
-const FlatDocumentsList = () => {
-  const db = useDatabase()
-  const { sorting } = useSorting()
-  const { data: documents, isLoading } = useRxSubscription(
-    createFindAllDocumentsQuery(db, sorting)
-  )
-  return !isLoading ? (
-    <>
-      <CloudDocumentsList documents={documents || []} listType="flat_list" />
-    </>
-  ) : null
-}
-
-const TreeDocumentsList = () => {
-  const db = useDatabase()
-  const { sorting } = useSorting()
-  const { groups } = useCloudGroupsState()
-
-  const { data: documents, isLoading } = useRxSubscription(
-    createFindDocumentsAtRootQuery(db, sorting)
-  )
-  const groupsTree = useMemo(() => createGroupTree(groups), [groups])
-
-  return !isLoading ? (
-    <CloudDocumentsListAndSubGroups
-      documents={documents || []}
-      groups={groupsTree.children}
-      listType="nested_list"
-    />
   ) : null
 }

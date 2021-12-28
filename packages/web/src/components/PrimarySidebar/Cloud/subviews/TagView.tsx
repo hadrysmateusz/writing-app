@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import useRxSubscription from "../../../../hooks/useRxSubscription"
+import { useQueryWithSorting, useRxSubscription } from "../../../../hooks"
 
 import { useDatabase } from "../../../Database"
 import {
@@ -12,7 +12,6 @@ import {
   SIDEBAR_VAR,
   usePrimarySidebar,
 } from "../../../ViewState"
-import { useSorting } from "../../../SortingProvider"
 
 import {
   CloudDocumentSortingSubmenu,
@@ -22,7 +21,8 @@ import {
 } from "../../MainHeader"
 import { NewButton } from "../../PrimarySidebarBottomButton"
 
-import { CloudDocumentsList } from "../SubGroups"
+import { FlatDocumentsList } from "../GenericCloudDocumentsList"
+import { useGenericDocumentsFromCloudDocumentsQuery } from "../hooks"
 
 export const TagView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -37,32 +37,28 @@ export const TagView: React.FC = () => {
 
 const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
   const db = useDatabase()
-  // const { primarySidebar } = useViewState()
-  const { sorting } = useSorting()
 
   const { data: tag, isLoading: isTagLoading } = useRxSubscription(
     db.tags.findOne().where("id").eq(tagId)
   )
 
-  const { data: documents, isLoading: isDocumentsLoading } = useRxSubscription(
-    db.documents
-      .find()
-      .where("isDeleted")
-      .eq(false)
-      .where("tags")
-      .elemMatch({ $eq: tagId })
-      .sort({ [sorting.index]: sorting.direction })
+  // =======================================================================
+
+  const docsQuery = useQueryWithSorting(
+    (db, sorting) =>
+      db.documents
+        .findNotRemoved()
+        .where("tags")
+        .elemMatch({ $eq: tagId })
+        .sort({ [sorting.index]: sorting.direction }),
+    [tagId]
   )
 
-  const ok = !!documents && !!tag
+  const [flatDocuments] = useGenericDocumentsFromCloudDocumentsQuery(docsQuery)
 
-  // // If the tag wasn't found, switch to more general sidebar view
-  // useEffect(() => {
-  //   if (!ok) {
-  //     primarySidebar.switchSubview("cloud", "all")
-  //     // TODO: the auto-switching might be confusing and lead to issue, I could simply replace it with an error state, prompting the user to switch the view themselves, it should be very rare anyway
-  //   }
-  // }, [ok, primarySidebar])
+  // =======================================================================
+
+  const ok = !!flatDocuments && !!tag
 
   return ok ? (
     <PrimarySidebarViewContainer>
@@ -84,12 +80,7 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
         ]}
       />
       <InnerContainer>
-        {!isTagLoading && !isDocumentsLoading ? (
-          <CloudDocumentsList
-            documents={documents || []}
-            listType="flat_list"
-          />
-        ) : null}
+        {!isTagLoading ? <FlatDocumentsList documents={flatDocuments} /> : null}
       </InnerContainer>
       {/* TODO:  Rework NewButton to work with tags as well as groups, or create additional variants */}
       <NewButton groupId={null} />

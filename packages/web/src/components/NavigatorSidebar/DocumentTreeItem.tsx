@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from "react"
 
 import { formatOptional } from "../../utils"
+import { createGenericDocumentFromCloudDocument } from "../../helpers"
 
 import { DocumentDoc } from "../Database"
 import { EditableText } from "../RenamingInput"
@@ -15,24 +16,27 @@ const DocumentTreeItem: React.FC<{
 }> = ({ document, depth = 0, icon }) => {
   const { openDocument } = useTabsAPI()
 
+  // TODO: probably move the entire tree logic to the new generic document system
+  const genericDocument = createGenericDocumentFromCloudDocument(document)
+
   const {
     isMenuOpen,
     DocumentContextMenu,
     getEditableProps,
     getContainerProps,
     getContextMenuProps,
-  } = useDocumentContextMenu(document)
+  } = useDocumentContextMenu(genericDocument)
 
   // TODO: consider extracting the specific document renaming logic into another hook
 
   const title = useMemo(
-    () => formatOptional(document.title, "Untitled"),
-    [document.title]
+    () => formatOptional(genericDocument.name, "Untitled"),
+    [genericDocument.name]
   )
 
   const handleClick = useCallback(() => {
-    openDocument(document.id)
-  }, [document.id, openDocument])
+    openDocument(genericDocument.identifier)
+  }, [genericDocument.identifier, openDocument])
 
   return (
     <>

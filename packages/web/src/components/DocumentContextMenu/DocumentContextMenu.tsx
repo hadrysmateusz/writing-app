@@ -1,5 +1,8 @@
 import { memo, useCallback, useMemo, useState } from "react"
 
+import { useRxSubscription } from "../../hooks"
+import { GenericDocument_Discriminated } from "../../types"
+
 import {
   ContextMenuItem,
   ContextSubmenu,
@@ -19,12 +22,35 @@ import {
 } from "../CollectionSelector"
 import { Option } from "../Autocomplete"
 import { useDocumentsAPI } from "../CloudDocumentsProvider"
+import { useDatabase } from "../Database"
 
 import { DocumentContextMenuProps } from "./types"
 
 // TODO: remember to conditioanally render this component (or create and use a conditional rendering HOC)
 
-export const DocumentContextMenu: React.FC<DocumentContextMenuProps> = memo(
+type DocumentContextMenuLoaderProps = Omit<
+  DocumentContextMenuProps,
+  "document"
+> & {
+  genericDocument: GenericDocument_Discriminated
+}
+
+const withCloudDocument =
+  (
+    C: React.FC<DocumentContextMenuProps>
+  ): React.FC<DocumentContextMenuLoaderProps> =>
+  ({ genericDocument, ...props }) => {
+    const db = useDatabase()
+    const query = useMemo(
+      () => db.documents.findOne().where("id").eq(genericDocument.identifier),
+      [db.documents, genericDocument.identifier]
+    )
+    const { data: document } = useRxSubscription(query)
+
+    return document ? <C {...props} document={document} /> : null
+  }
+
+const __DocumentContextMenu: React.FC<DocumentContextMenuProps> = memo(
   ({
     document,
 
@@ -185,3 +211,5 @@ export const DocumentContextMenu: React.FC<DocumentContextMenuProps> = memo(
     )
   }
 )
+
+export const DocumentContextMenu = withCloudDocument(__DocumentContextMenu)

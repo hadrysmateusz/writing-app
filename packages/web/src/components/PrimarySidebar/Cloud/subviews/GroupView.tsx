@@ -1,9 +1,11 @@
-import React, { useEffect, useMemo } from "react"
+import { useEffect, useMemo } from "react"
 
-import useRxSubscription from "../../../../hooks/useRxSubscription"
-import { formatOptional } from "../../../../utils"
+import {
+  fillGenericGroupTreeWithDocuments,
+  getAllGroupIdsInGenericTree,
+} from "../../../../helpers"
+import { useQueryWithSorting } from "../../../../hooks"
 
-import { useDatabase } from "../../../Database"
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
@@ -13,7 +15,6 @@ import {
   SIDEBAR_VAR,
   usePrimarySidebar,
 } from "../../../ViewState"
-import { useSorting } from "../../../SortingProvider"
 
 import {
   CloudDocumentSortingSubmenu,
@@ -24,9 +25,12 @@ import {
 } from "../../MainHeader"
 import { NewButton } from "../../PrimarySidebarBottomButton"
 
-import { CloudDocumentsListAndSubGroups } from "../SubGroups"
-import { createFindDocumentsInGroupQuery } from "../queries"
+import {
+  useGenericDocumentsFromCloudDocumentsQuery,
+  useGenericGroupTreeFromCloudGroups,
+} from "../hooks"
 import { useFindGroupAndChildGroups } from "../helpers"
+import { DocumentsList } from "../GenericCloudDocumentsList"
 
 export const GroupView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -45,9 +49,7 @@ export const GroupView: React.FC = () => {
 const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
   groupId,
 }) => {
-  const db = useDatabase()
   const { switchSubview } = usePrimarySidebar()
-  const { sorting } = useSorting()
 
   const { group, childGroups } = useFindGroupAndChildGroups(groupId)
 
@@ -60,21 +62,48 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
     }
   }, [ok, switchSubview])
 
-  const { data: documents, isLoading } = useRxSubscription(
-    createFindDocumentsInGroupQuery(db, sorting, groupId)
+  // =======================================================================
+
+  const genericGroupTree = useGenericGroupTreeFromCloudGroups(groupId)
+
+  const groupIdsForQuery = useMemo(
+    () => getAllGroupIdsInGenericTree(genericGroupTree),
+    [genericGroupTree]
   )
 
-  const goUpPath = group?.parentGroup
-    ? `${SIDEBAR_VAR.primary.cloud.group}_${group.parentGroup}`
+  const query = useQueryWithSorting(
+    (db, sorting) =>
+      db.documents
+        .findNotRemoved()
+        .where("parentGroup")
+        .in(groupIdsForQuery)
+        .sort({ [sorting.index]: sorting.direction }),
+    [groupIdsForQuery]
+  )
+
+  const [flatDocuments] = useGenericDocumentsFromCloudDocumentsQuery(query)
+
+  const filledGroupTree = useMemo(
+    () => fillGenericGroupTreeWithDocuments(genericGroupTree, flatDocuments),
+    [flatDocuments, genericGroupTree]
+  )
+
+  // =======================================================================
+
+  const goUpPath = filledGroupTree?.identifier
+    ? `${SIDEBAR_VAR.primary.cloud.group}_${filledGroupTree.parentIdentifier}`
     : SIDEBAR_VAR.primary.cloud.all
 
-  // TODO: support flat view (probably recursively fetch all nested groups and use a query that matches any of those gorupIds)
-  return ok ? (
+  return filledGroupTree ? (
     <PrimarySidebarViewContainer>
       <MainHeader
-        title={formatOptional(group.name, "Unnamed Collection")}
-        numDocuments={documents?.length}
-        numSubgroups={childGroups.length}
+        title={
+          filledGroupTree.identifier
+            ? filledGroupTree.name
+            : "Unnamed Collection"
+        }
+        numDocuments={filledGroupTree?.childDocuments?.length}
+        numSubgroups={filledGroupTree?.childGroups?.length}
         buttons={[
           <GoUpMainHeaderButton goUpPath={goUpPath} key={goUpPath} />,
           <MoreMainHeaderButton
@@ -88,15 +117,14 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
           />,
         ]}
       />
+
       <InnerContainer>
-        {!isLoading ? (
-          <CloudDocumentsListAndSubGroups
-            documents={documents || []}
-            groups={group.children}
-            listType="nested_list"
-          />
-        ) : null}
+        <DocumentsList
+          groupTree={filledGroupTree}
+          flatDocumentsList={flatDocuments}
+        />
       </InnerContainer>
+
       <NewButton groupId={groupId} />
     </PrimarySidebarViewContainer>
   ) : null

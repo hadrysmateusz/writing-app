@@ -1,4 +1,4 @@
-import { GenericDocument } from "./GenericDocument"
+import { GenericDocument_Discriminated } from "./GenericDocument_Discriminated"
 
 export type GenericDocGroup = {
   identifier: string
@@ -6,17 +6,17 @@ export type GenericDocGroup = {
   parentIdentifier: string | null
 }
 
-// TODO: rethink the namingc
+// TODO: rethink the naming
 export type GenericDocGroupTreeRoot = {
   identifier: null
-  childDocuments: GenericDocument[]
+  childDocuments: GenericDocument_Discriminated[]
   childGroups: GenericDocGroupTree_Discriminated[]
 }
 export type GenericDocGroupTreeBranch = {
   identifier: string
   name: string
   parentIdentifier: string | null
-  childDocuments: GenericDocument[]
+  childDocuments: GenericDocument_Discriminated[]
   childGroups: GenericDocGroupTree_Discriminated[]
 }
 

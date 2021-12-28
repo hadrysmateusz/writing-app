@@ -1,14 +1,9 @@
-import React from "react"
-
-import useRxSubscription from "../../../../hooks/useRxSubscription"
-
-import { useDatabase } from "../../../Database"
+import { useQueryWithSorting } from "../../../../hooks"
 
 import {
   PrimarySidebarViewContainer,
   InnerContainer,
 } from "../../../SidebarCommon"
-import { useSorting } from "../../../SortingProvider"
 import { SIDEBAR_VAR } from "../../../ViewState"
 
 import {
@@ -20,22 +15,23 @@ import {
 } from "../../MainHeader"
 import { NewButton } from "../../PrimarySidebarBottomButton"
 
+import { FlatDocumentsList } from "../GenericCloudDocumentsList"
 import { createFindDocumentsAtRootQuery } from "../queries"
-import { CloudDocumentsList } from "../SubGroups"
+import { useGenericDocumentsFromCloudDocumentsQuery } from "../hooks"
 
 export const InboxView: React.FC = () => {
-  const db = useDatabase()
-  const { sorting } = useSorting()
-
-  const { data: documents, isLoading } = useRxSubscription(
-    createFindDocumentsAtRootQuery(db, sorting)
+  const query = useQueryWithSorting(
+    (db, sorting) => createFindDocumentsAtRootQuery(db, sorting),
+    []
   )
+
+  const [flatDocuments] = useGenericDocumentsFromCloudDocumentsQuery(query)
 
   return (
     <PrimarySidebarViewContainer>
       <MainHeader
         title="Inbox"
-        numDocuments={documents?.length}
+        numDocuments={flatDocuments.length}
         buttons={[
           <GoUpMainHeaderButton
             goUpPath={SIDEBAR_VAR.primary.cloud.all}
@@ -53,7 +49,7 @@ export const InboxView: React.FC = () => {
         ]}
       />
       <InnerContainer>
-        {!isLoading ? <CloudDocumentsList documents={documents || []} /> : null}
+        <FlatDocumentsList documents={flatDocuments} />
       </InnerContainer>
       <NewButton groupId={null} />
     </PrimarySidebarViewContainer>

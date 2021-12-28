@@ -1,29 +1,32 @@
 import { useCallback, useMemo } from "react"
 import { Ancestor, Node } from "slate"
+import { GenericDocument_Discriminated } from "../../../../types"
 
 import { formatOptional } from "../../../../utils"
 
 import { useCloudGroupsState } from "../../../CloudGroupsProvider"
-import { DocumentDoc, LocalSettings } from "../../../Database"
 import { useDocumentContextMenu } from "../../../DocumentContextMenu"
 import { useTabsAPI, useTabsState } from "../../../TabsProvider"
+import { usePrimarySidebar } from "../../../ViewState"
 
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
 
 const SNIPPET_LENGTH = 340
 
 export const CloudDocumentSidebarItem: React.FC<{
-  document: DocumentDoc
-  listType?: LocalSettings["documentsListDisplayType"]
-}> = ({ document, listType = "nested_list" }) => {
+  document: GenericDocument_Discriminated
+}> = ({ document }) => {
+  const { documentsListDisplayType } = usePrimarySidebar()
   const { openDocument } = useTabsAPI()
   const { currentCloudDocumentId } = useTabsState()
   const { groups } = useCloudGroupsState() // TODO: move the groupName related logic to separate component to decouple this from groups changes when not needed
 
   const groupName = useMemo(() => {
-    const foundGroup = groups.find((group) => group.id === document.parentGroup)
+    const foundGroup = groups.find(
+      (group) => group.id === document.parentIdentifier
+    )
     return foundGroup?.name
-  }, [document.parentGroup, groups])
+  }, [document.parentIdentifier, groups])
 
   const {
     openMenu,
@@ -35,8 +38,8 @@ export const CloudDocumentSidebarItem: React.FC<{
 
   const isCurrent = useMemo(() => {
     if (currentCloudDocumentId === null) return false
-    return document.id === currentCloudDocumentId
-  }, [currentCloudDocumentId, document.id])
+    return document.identifier === currentCloudDocumentId
+  }, [currentCloudDocumentId, document.identifier])
 
   const snippet = useMemo(() => {
     // TODO: replace with a better solution that simply limits the text to some number of lines (probably with css)
@@ -45,6 +48,10 @@ export const CloudDocumentSidebarItem: React.FC<{
 
     // we get and deserialize the content of the document
     const serializedContent = document.content
+
+    // if the content field was empty or unefined we return undefined to not render a snippet
+    if (!serializedContent?.trim()) return undefined
+
     const deserializedContent = JSON.parse(serializedContent)
 
     // the Node.nodes function operates on a slate node but the content is an array of children so we create a fake node object
@@ -65,16 +72,16 @@ export const CloudDocumentSidebarItem: React.FC<{
     }
 
     return textContent.slice(0, SNIPPET_LENGTH)
-  }, [document.content])
+  }, [document?.content])
 
   const formattedTitle = useMemo(
-    () => formatOptional(document.title, "Untitled"),
-    [document.title]
+    () => formatOptional(document.name, "Untitled"),
+    [document.name]
   )
 
   const handleClick = useCallback(() => {
-    openDocument(document.id)
-  }, [document.id, openDocument])
+    openDocument(document.identifier)
+  }, [document.identifier, openDocument])
 
   const handleContextMenu = useCallback(
     (e) => {
@@ -89,7 +96,7 @@ export const CloudDocumentSidebarItem: React.FC<{
   return (
     <>
       <SidebarDocumentItemComponent
-        listType={listType}
+        listType={documentsListDisplayType}
         title={formattedTitle}
         snippet={snippet}
         modifiedAt={document.modifiedAt}

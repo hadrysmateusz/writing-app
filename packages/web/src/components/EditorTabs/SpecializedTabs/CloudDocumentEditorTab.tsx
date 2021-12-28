@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react"
 
 import { formatOptional } from "../../../utils"
 import { useRxSubscription } from "../../../hooks"
+import { createGenericDocumentFromCloudDocument } from "../../../helpers"
+import { GenericDocument_Discriminated } from "../../../types"
 
 import { useDocumentContextMenu } from "../../DocumentContextMenu"
 import { EditableText } from "../../RenamingInput"
-import { DocumentDoc, useDatabase } from "../../Database"
+import { useDatabase } from "../../Database"
 import Icon from "../../Icon"
 import { useTabsAPI } from "../../TabsProvider"
+import { useCloudGroupsAPI } from "../../CloudGroupsProvider"
 
 import { EditorTabContainer } from "../EditorTab.styles"
 import { TabCloseButton } from "../EditorTabCommon"
-import { useCloudGroupsAPI } from "../../CloudGroupsProvider"
 
 const initialTabData = { title: "", group: null }
 
@@ -39,13 +41,20 @@ export const CloudDocumentEditorTab: React.FC<{
     }
   }, [closeTab, document, isDocumentLoading, tabId])
 
-  return !!document ? (
-    <CloudDocumentEditorTabWithFoundDocument document={document} {...rest} />
+  const genericDocument = document
+    ? createGenericDocumentFromCloudDocument(document)
+    : null
+
+  return !!genericDocument ? (
+    <CloudDocumentEditorTabWithFoundDocument
+      document={genericDocument}
+      {...rest}
+    />
   ) : null
 }
 
 const CloudDocumentEditorTabWithFoundDocument: React.FC<{
-  document: DocumentDoc
+  document: GenericDocument_Discriminated
   isActive: boolean
   keep: boolean
   handleSwitchTab: (e: React.MouseEvent) => void
@@ -67,24 +76,24 @@ const CloudDocumentEditorTabWithFoundDocument: React.FC<{
   } = useDocumentContextMenu(document)
 
   useEffect(() => {
-    const title = formatOptional(document.title, "Untitled")
+    const title = formatOptional(document.name, "Untitled")
 
     // Document has no parent group (is at root)
-    if (!document?.parentGroup) {
+    if (!document?.parentIdentifier) {
       setTabData({
         title: title,
         group: "",
       })
     } else {
       // Document has a parent group, so we find its name
-      findGroupById(document.parentGroup).then((group) => {
+      findGroupById(document.parentIdentifier).then((group) => {
         setTabData({
           title: title,
           group: group.name,
         })
       })
     }
-  }, [document.parentGroup, document.title, findGroupById])
+  }, [document.name, document.parentIdentifier, findGroupById])
 
   return (
     <EditorTabContainer

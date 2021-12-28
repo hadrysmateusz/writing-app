@@ -6,7 +6,7 @@ import {
   createGenericDocumentFromCloudDocument,
   createGenericGroupTreeFromCloudGroups,
 } from "../../../helpers"
-import { GenericDocument } from "../../../types"
+import { GenericDocument_Discriminated } from "../../../types"
 import { useRxSubscriptionWithTransformer } from "../../../hooks"
 
 import { DocumentDoc, DocumentDocType } from "../../Database"
@@ -27,7 +27,7 @@ export const useGenericGroupTreeFromCloudGroups = (
 
 export const useGenericDocumentsFromCloudDocumentsQuery = (
   query: RxQuery<DocumentDocType, DocumentDoc[]>
-): [GenericDocument[], boolean] => {
+): [GenericDocument_Discriminated[], boolean] => {
   const transformer = useCallback(
     (documents: DocumentDoc[]) =>
       documents.map((doc) => createGenericDocumentFromCloudDocument(doc)),
@@ -41,7 +41,11 @@ export const useGenericDocumentsFromCloudDocumentsQuery = (
   )
 
   return useMemo(
-    () => [cloneDeep(flatDocuments), isLoading] as [GenericDocument[], boolean],
+    () =>
+      [cloneDeep(flatDocuments), isLoading] as [
+        GenericDocument_Discriminated[],
+        boolean
+      ],
     [flatDocuments, isLoading]
   )
 }
