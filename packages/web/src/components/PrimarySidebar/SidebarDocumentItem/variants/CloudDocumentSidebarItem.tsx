@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from "react"
-import { Ancestor, Node } from "slate"
 import { GenericDocument_Discriminated } from "../../../../types"
 
 import { formatOptional } from "../../../../utils"
@@ -8,10 +7,9 @@ import { useCloudGroupsState } from "../../../CloudGroupsProvider"
 import { useDocumentContextMenu } from "../../../DocumentContextMenu"
 import { useTabsAPI, useTabsState } from "../../../TabsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
+import { useDocumentSnippet } from "../hooks"
 
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
-
-const SNIPPET_LENGTH = 340
 
 export const CloudDocumentSidebarItem: React.FC<{
   document: GenericDocument_Discriminated
@@ -41,38 +39,11 @@ export const CloudDocumentSidebarItem: React.FC<{
     return document.identifier === currentCloudDocumentId
   }, [currentCloudDocumentId, document.identifier])
 
-  const snippet = useMemo(() => {
-    // TODO: replace with a better solution that simply limits the text to some number of lines (probably with css)
-
-    let textContent = ""
-
-    // we get and deserialize the content of the document
-    const serializedContent = document.content
-
-    // if the content field was empty or unefined we return undefined to not render a snippet
-    if (!serializedContent?.trim()) return undefined
-
-    const deserializedContent = JSON.parse(serializedContent)
-
-    // the Node.nodes function operates on a slate node but the content is an array of children so we create a fake node object
-    const fakeRootNode: Ancestor = {
-      children: deserializedContent,
-      type: "fakeRoot",
-    }
-
-    // we iterate over all of the nodes and create a string of all of their text contents until we reach a desired length
-    for (let [node] of Node.nodes(fakeRootNode, {})) {
-      if ("text" in node) {
-        textContent += " " + node.text
-
-        if (textContent.length >= SNIPPET_LENGTH) {
-          break
-        }
-      }
-    }
-
-    return textContent.slice(0, SNIPPET_LENGTH)
-  }, [document?.content])
+  const contentDeserializer = useCallback(
+    (serializedContent: string) => JSON.parse(serializedContent),
+    []
+  )
+  const snippet = useDocumentSnippet(document.content, contentDeserializer)
 
   const formattedTitle = useMemo(
     () => formatOptional(document.name, "Untitled"),
