@@ -70,7 +70,9 @@ export type GenericDocument_Discriminated_LocalSpecific = {
   parentIdentifier: string
 
   /**
-   * Serialized document content (slate object format, JSON.stringified)
+   * File's contents, UTF-8 encoded.
+   *
+   * TODO: make sure this is in the same format as CloudVariant i.e. slate object format, JSON.stringified or even replace both with already deserialized Descendant[]
    */
   content: string
 
