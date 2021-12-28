@@ -24,6 +24,7 @@ export const Cloud: React.FC = memo(() => {
 
   return subview ? (
     <Switch value={subview}>
+      {/* TODO: create favorites view (useful when you have many documents favorited) */}
       <Case value={"all"} component={<AllDocumentsView />} />
       <Case value={"inbox"} component={<InboxView />} />
       <Case value={"trash"} component={<TrashView />} />
