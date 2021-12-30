@@ -5,7 +5,7 @@ import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 import {
   myDeserializeMd,
   mySerializeMd,
-} from "../../../slate-helpers/deserialize"
+} from "../../../slate-helpers/serialization"
 
 import { DEFAULT_EDITOR_VALUE } from "../../CloudDocumentsProvider"
 

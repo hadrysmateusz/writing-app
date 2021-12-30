@@ -16,7 +16,6 @@ const MSG_DIRECTORIES_HEADER = "Local Library"
 export const createGroupingItemBranchFromDirObject = (
   dirTree: GenericDocGroupTreeBranch
 ): ItemsBranch => {
-  console.log("createGroupingItemBranchFromDirObject", dirTree)
   return {
     itemId: dirTree.identifier,
     itemName: dirTree.name,

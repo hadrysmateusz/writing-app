@@ -2,7 +2,6 @@ import { useCallback, useMemo, memo } from "react"
 import { v4 as uuidv4 } from "uuid"
 import mudder from "mudder"
 
-import { GROUP_TREE_ROOT } from "../../constants"
 import { useRxSubscription } from "../../hooks"
 import { createContext } from "../../utils"
 
@@ -184,10 +183,6 @@ export const CloudGroupsProvider: React.FC = memo(({ children }) => {
       targetId
     ) => {
       try {
-        if (targetId === GROUP_TREE_ROOT) {
-          targetId = null
-        }
-
         // Make sure that the group is not being moved inside one of its descendants (or itself)
         let descendantId = targetId
         while (descendantId !== null) {

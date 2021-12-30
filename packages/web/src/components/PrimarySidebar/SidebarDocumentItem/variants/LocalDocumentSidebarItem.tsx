@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react"
 
-import { myDeserializeMd } from "../../../../slate-helpers/deserialize"
+import { myDeserializeMd } from "../../../../slate-helpers/serialization"
 
 import { usePrimarySidebar } from "../../../ViewState"
 import { useLocalFS } from "../../../LocalFSProvider"
@@ -38,8 +38,6 @@ export const LocalDocumentSidebarItem: React.FC<SidebarDocumentItemProps> = ({
     []
   )
   const snippet = useDocumentSnippet(content, contentDeserializer)
-
-  console.log("local, content", content)
 
   const isCurrent = useMemo(() => {
     if (currentTabObject.tabType === "localDocument") {

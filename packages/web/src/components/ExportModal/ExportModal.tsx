@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 
-import { mySerializeMd } from "../../slate-helpers/deserialize"
+import { mySerializeMd } from "../../slate-helpers/serialization"
 // import { serializeHTML, serializeMarkdown } from "../../slate-helpers"
 
 import { deserialize } from "../Editor/helpers"

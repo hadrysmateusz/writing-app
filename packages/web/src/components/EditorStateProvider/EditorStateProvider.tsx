@@ -60,7 +60,7 @@ export const EditorStateProvider: React.FC = ({ children }) => {
     const nodes = editor.children as Descendant[]
 
     currentCloudDocument.atomicUpdate((doc) => {
-      console.log("updating with", JSON.stringify(nodes, null, 2))
+      // console.log("updating with", JSON.stringify(nodes, null, 2))
       doc.content = serialize(nodes)
       return doc
     })

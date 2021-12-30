@@ -1,6 +1,7 @@
 import { Descendant } from "slate"
 
 // TODO: consider custom serialization
+// TODO: rename these to make their purpose clearer
 export const serialize = (value: Descendant[]) => {
   return JSON.stringify(value)
 }

@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react"
 
 import { ImportFileResponseData } from "shared"
 
-import { myDeserializeMd } from "../../slate-helpers/deserialize"
+import { myDeserializeMd } from "../../slate-helpers/serialization"
 import { formatOptional } from "../../utils"
 
 import Icon from "../Icon"
