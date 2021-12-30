@@ -6,6 +6,7 @@ import { useCloudGroupsState } from "../../../CloudGroupsProvider"
 import { useDocumentContextMenu } from "../../../DocumentContextMenu"
 import { useTabsAPI, useTabsState } from "../../../TabsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
+import { deserialize } from "../../../Editor/helpers"
 
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
 import { SidebarDocumentItemProps } from "../types"
@@ -18,8 +19,6 @@ export const CloudDocumentSidebarItem: React.FC<SidebarDocumentItemProps> = ({
   const { openDocument } = useTabsAPI()
   const { currentCloudDocumentId } = useTabsState()
   const { groups } = useCloudGroupsState() // TODO: move the groupName related logic to separate component to decouple this from groups changes when not needed
-
-  console.log("cloud, content", document.content)
 
   const groupName = useMemo(() => {
     const foundGroup = groups.find(
@@ -42,7 +41,7 @@ export const CloudDocumentSidebarItem: React.FC<SidebarDocumentItemProps> = ({
   }, [currentCloudDocumentId, document.identifier])
 
   const contentDeserializer = useCallback(
-    (serializedContent: string) => JSON.parse(serializedContent),
+    (serializedContent: string) => deserialize(serializedContent),
     []
   )
   const snippet = useDocumentSnippet(document.content, contentDeserializer)
