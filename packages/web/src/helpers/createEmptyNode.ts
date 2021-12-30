@@ -1,3 +1,4 @@
+import { ELEMENT_PARAGRAPH } from "@udecode/plate"
 import cloneDeep from "lodash/cloneDeep"
 
 /**
@@ -7,7 +8,7 @@ import cloneDeep from "lodash/cloneDeep"
  */
 export const createEmptyNode = () => {
   return cloneDeep({
-    type: "paragraph",
+    type: ELEMENT_PARAGRAPH,
     children: [{ text: "" }],
   })
 }
