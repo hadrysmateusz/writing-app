@@ -1,6 +1,7 @@
 import { DocumentDoc } from "../components/Database"
 import { GenericDocGroupTree_Discriminated } from "../types/GenericDocGroup"
 import { GenericDocument_Discriminated } from "../types"
+import { FileObject } from "shared"
 
 /**
  * Creates a generic document from a cloud document
@@ -20,6 +21,26 @@ export const createGenericDocumentFromCloudDocument = (
     modifiedAt: cloudDoc.modifiedAt,
     content: cloudDoc.content,
     tags: cloudDoc.tags,
+  }
+}
+
+/**
+ * Creates a generic document from a local file object
+ *
+ * @param fileObj A file object representing a file's basic properties
+ * @returns Generic document object (discriminated, local variant)
+ */
+export const createGenericDocumentFromLocalFile = (
+  fileObj: FileObject
+): GenericDocument_Discriminated => {
+  return {
+    documentType: "local",
+    identifier: fileObj.path,
+    name: fileObj.name,
+    parentIdentifier: fileObj.parentDirectory,
+    createdAt: fileObj.createdAt.getTime(),
+    modifiedAt: fileObj.modifiedAt.getTime(),
+    content: fileObj.content,
   }
 }
 

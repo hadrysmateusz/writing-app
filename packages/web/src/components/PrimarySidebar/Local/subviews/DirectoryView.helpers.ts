@@ -1,31 +1,32 @@
-import { DirObjectRecursive } from "shared"
+import { GenericDocGroupTree_Discriminated } from "../../../../types"
 
 // TODO: maybe move this to the more general helpers file in the parent dir
 
 export const findClosestMatch = (
-  dirs: DirObjectRecursive[],
+  dirs: GenericDocGroupTree_Discriminated[],
   wantedPath: string
 ) => {
   const closestMatch = dirs.find((dir) => {
-    return wantedPath.includes(dir.path)
+    if (dir.identifier === null) return false
+    return wantedPath.includes(dir.identifier)
   })
   return closestMatch
 }
 
 export const findExactMatch = (
-  dirs: DirObjectRecursive[],
+  dirs: GenericDocGroupTree_Discriminated[],
   wantedPath: string
 ) => {
   const exactMatch = dirs.find((dir) => {
-    return dir.path === wantedPath
+    return dir.identifier === wantedPath
   })
   return exactMatch
 }
 
 export const findDirInTrees = (
-  dirs: DirObjectRecursive[],
+  dirs: GenericDocGroupTree_Discriminated[],
   wantedPath: string
-): DirObjectRecursive | undefined => {
+): GenericDocGroupTree_Discriminated | undefined => {
   const exactMatch = findExactMatch(dirs, wantedPath)
   if (exactMatch) {
     return exactMatch
@@ -34,7 +35,7 @@ export const findDirInTrees = (
     if (!closestMatch) {
       return undefined
     } else {
-      return findDirInTrees(closestMatch.dirs, wantedPath)
+      return findDirInTrees(closestMatch.childGroups, wantedPath)
     }
   }
 }

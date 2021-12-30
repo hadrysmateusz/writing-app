@@ -6,18 +6,18 @@ export type GenericDocGroup = {
   parentIdentifier: string | null
 }
 
-// TODO: rethink the naming
+// TODO: rethink the naming (probably remove all of the _Discriminated suffixes and remove non-discriminated variants)
 export type GenericDocGroupTreeRoot = {
   identifier: null
   childDocuments: GenericDocument_Discriminated[]
-  childGroups: GenericDocGroupTree_Discriminated[]
+  childGroups: GenericDocGroupTreeBranch[]
 }
 export type GenericDocGroupTreeBranch = {
   identifier: string
   name: string
   parentIdentifier: string | null
   childDocuments: GenericDocument_Discriminated[]
-  childGroups: GenericDocGroupTree_Discriminated[]
+  childGroups: GenericDocGroupTreeBranch[]
 }
 
 export type GenericDocGroupTree_Discriminated =

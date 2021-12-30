@@ -22,8 +22,10 @@ import {
 } from "../../MainHeader"
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 
-import { LocalDocumentsSubGroupInner } from "../DirItem"
 import { findDirInTrees } from "./DirectoryView.helpers"
+import { NestedDocumentsList } from "../../DocumentsList"
+import { LocalDocumentSectionHeader } from "../../SectionHeader"
+import { LocalDocumentSidebarItem } from "../../SidebarDocumentItem"
 
 export const DirectoryView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -129,9 +131,11 @@ const DirectoryViewInner: React.FC<{
       />
       <InnerContainer>
         {dirTree ? (
-          <LocalDocumentsSubGroupInner
-            files={dirTree.files}
-            dirs={dirTree.dirs}
+          <NestedDocumentsList
+            documents={dirTree.childDocuments}
+            groups={dirTree.childGroups}
+            SectionHeaderComponent={LocalDocumentSectionHeader}
+            DocumentItemComponent={LocalDocumentSidebarItem}
           />
         ) : null}
       </InnerContainer>

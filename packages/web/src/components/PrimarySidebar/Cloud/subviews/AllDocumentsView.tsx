@@ -15,13 +15,16 @@ import {
   MoreMainHeaderButton,
 } from "../../MainHeader"
 import { NewButton } from "../../PrimarySidebarBottomButton"
+import { DocumentsList } from "../../DocumentsList"
+import { CloudDocumentSectionHeader } from "../../SectionHeader"
+import { CloudDocumentSidebarItem } from "../../SidebarDocumentItem"
 
 import {
   useGenericDocumentsFromCloudDocumentsQuery,
   useGenericGroupTreeFromCloudGroups,
 } from "../hooks"
-import { DocumentsList } from "../GenericCloudDocumentsList"
 
+// rename to allclouddocumentsview
 export const AllDocumentsView: React.FC = () => {
   const genericGroupTree = useGenericGroupTreeFromCloudGroups(null)
 
@@ -63,6 +66,8 @@ export const AllDocumentsView: React.FC = () => {
         <DocumentsList
           groupTree={filledGroupTree}
           flatDocumentsList={flatDocuments}
+          SectionHeaderComponent={CloudDocumentSectionHeader}
+          DocumentItemComponent={CloudDocumentSidebarItem}
         />
       </InnerContainer>
 

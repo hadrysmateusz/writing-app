@@ -1,10 +1,41 @@
-import { DirObjectRecursive, FileObject, WatchDirResPayload } from "shared"
+import { WatchDirResPayload } from "shared"
 
-import { findDirInDir } from "../PrimarySidebar/Local"
+import {
+  GenericDocGroupTreeBranch,
+  GenericDocument_Discriminated,
+} from "../../types"
+
 import { DirState } from "./types"
 
+// TODO: rename these functions to reflect the fact they work with generic groups and documents now
+
+export const findDirInDir = (
+  checkedDir: GenericDocGroupTreeBranch,
+  dirPathArr: string[],
+  i: number
+): GenericDocGroupTreeBranch | undefined => {
+  console.log("findDirInDir", checkedDir, dirPathArr, dirPathArr[i])
+
+  const isCurrentDirTheDir = checkedDir.identifier === dirPathArr[i]
+  if (isCurrentDirTheDir) {
+    const isCurrentCheckedPathLastInDirPathArr = i === dirPathArr.length - 1
+    if (isCurrentCheckedPathLastInDirPathArr) {
+      return checkedDir
+    } else {
+      for (let dir of checkedDir.childGroups) {
+        const foundDir = findDirInDir(dir, dirPathArr, i + 1)
+        if (foundDir) {
+          return foundDir
+        }
+      }
+    }
+  }
+
+  return undefined
+}
+
 const findCorrectDirInState = (dirState: DirState, dirPath: string) => {
-  return dirState.dirTrees.find((dirTree) => dirTree.path === dirPath)
+  return dirState.dirTrees.find((dirTree) => dirTree.identifier === dirPath)
 }
 
 export const getDirToModify = (
@@ -24,37 +55,49 @@ export const getDirToModify = (
 }
 
 export const addFileToDirFiles = (
-  dir: DirObjectRecursive,
-  fileToAdd: FileObject
+  group: GenericDocGroupTreeBranch,
+  documentToAdd: GenericDocument_Discriminated
 ) => {
   // check for existance first to prevent duplication
-  if (dir.files.find((file) => file.path === fileToAdd.path)) {
+  if (
+    group.childDocuments.find(
+      (file) => file.identifier === documentToAdd.identifier
+    )
+  ) {
     return
   }
-  dir.files.push(fileToAdd)
+  group.childDocuments.push(documentToAdd)
 }
 
 export const removeFileFromDirFiles = (
-  dir: DirObjectRecursive,
-  filePathToRemove: string
+  group: GenericDocGroupTreeBranch,
+  documentIdentifierToRemove: string
 ) => {
-  dir.files = dir.files.filter((file) => file.path !== filePathToRemove)
+  group.childDocuments = group.childDocuments.filter(
+    (file) => file.identifier !== documentIdentifierToRemove
+  )
 }
 
 export const addDirToDirDirs = (
-  dir: DirObjectRecursive,
-  dirToAdd: DirObjectRecursive
+  group: GenericDocGroupTreeBranch,
+  groupToAdd: GenericDocGroupTreeBranch
 ) => {
   // check for existance first to prevent duplication
-  if (dir.dirs.find((innerDir) => innerDir.path === dirToAdd.path)) {
+  if (
+    group.childGroups.find(
+      (innerDir) => innerDir.identifier === groupToAdd.identifier
+    )
+  ) {
     return
   }
-  dir.dirs.push(dirToAdd)
+  group.childGroups.push(groupToAdd)
 }
 
 export const removeDirFromDirDirs = (
-  dir: DirObjectRecursive,
-  dirPathToRemove: string
+  group: GenericDocGroupTreeBranch,
+  groupPathToRemove: string
 ) => {
-  dir.dirs = dir.dirs.filter((dirInner) => dirInner.path !== dirPathToRemove)
+  group.childGroups = group.childGroups.filter(
+    (dirInner) => dirInner.identifier !== groupPathToRemove
+  )
 }

@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from "react"
-import { GenericDocument_Discriminated } from "../../../../types"
 
 import { formatOptional } from "../../../../utils"
 
@@ -7,17 +6,20 @@ import { useCloudGroupsState } from "../../../CloudGroupsProvider"
 import { useDocumentContextMenu } from "../../../DocumentContextMenu"
 import { useTabsAPI, useTabsState } from "../../../TabsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
-import { useDocumentSnippet } from "../hooks"
 
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
+import { SidebarDocumentItemProps } from "../types"
+import { useDocumentSnippet } from "../hooks"
 
-export const CloudDocumentSidebarItem: React.FC<{
-  document: GenericDocument_Discriminated
-}> = ({ document }) => {
+export const CloudDocumentSidebarItem: React.FC<SidebarDocumentItemProps> = ({
+  document,
+}) => {
   const { documentsListDisplayType } = usePrimarySidebar()
   const { openDocument } = useTabsAPI()
   const { currentCloudDocumentId } = useTabsState()
   const { groups } = useCloudGroupsState() // TODO: move the groupName related logic to separate component to decouple this from groups changes when not needed
+
+  console.log("cloud, content", document.content)
 
   const groupName = useMemo(() => {
     const foundGroup = groups.find(

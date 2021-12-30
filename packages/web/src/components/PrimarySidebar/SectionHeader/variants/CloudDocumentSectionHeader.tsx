@@ -1,3 +1,5 @@
+import { useCallback } from "react"
+
 import {
   ContextMenu,
   ContextMenuItem,
@@ -7,21 +9,29 @@ import { useDocumentsAPI } from "../../../CloudDocumentsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
 
 import SectionHeaderComponent from "../SectionHeaderComponent"
-import { useCallback } from "react"
 
-/**
- * Section header for cloud document lists
- *
- * TODO: eventually rename this to CloudDocumentsSectionHeader or sth
- */
-export const CloudDocumentSectionHeader: React.FC<{
-  groupId?: string | null
+export type CloudDocumentSectionHeaderProps = {
+  identifier?: string | null
   isOpen: boolean
   onToggle: () => void
 
   onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void
   onMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => void
-}> = ({ groupId, onToggle, isOpen, children, onMouseEnter, onMouseLeave }) => {
+}
+
+/**
+ * Section header for cloud document lists
+ */
+export const CloudDocumentSectionHeader: React.FC<
+  CloudDocumentSectionHeaderProps
+> = ({
+  identifier,
+  onToggle,
+  isOpen,
+  children,
+  onMouseEnter,
+  onMouseLeave,
+}) => {
   const { switchSubview } = usePrimarySidebar()
   const { createDocument } = useDocumentsAPI()
 
@@ -29,25 +39,25 @@ export const CloudDocumentSectionHeader: React.FC<{
     useContextMenu()
 
   const handleNewDocument = useCallback(() => {
-    if (groupId !== undefined) {
-      createDocument({ parentGroup: groupId })
+    if (identifier !== undefined) {
+      createDocument({ parentGroup: identifier })
     }
     closeMenu() // TODO: this is probably redundant
-  }, [closeMenu, createDocument, groupId])
+  }, [closeMenu, createDocument, identifier])
 
   const handleClick = useCallback(() => {
-    if (typeof groupId === "string") {
-      switchSubview("cloud", "group", groupId)
+    if (typeof identifier === "string") {
+      switchSubview("cloud", "group", identifier)
     }
-  }, [groupId, switchSubview])
+  }, [identifier, switchSubview])
 
   const handleContextMenu = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
-      if (groupId === undefined) return
+      if (identifier === undefined) return
       openMenu(e)
     },
-    [groupId, openMenu]
+    [identifier, openMenu]
   )
 
   return (

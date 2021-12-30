@@ -1,7 +1,10 @@
 import { useEffect } from "react"
 import cloneDeep from "lodash/cloneDeep"
 
-import { DirObjectRecursive, WatchDirResPayload } from "shared"
+import { WatchDirResPayload } from "shared"
+
+import { GenericDocGroupTree_Discriminated } from "../../types"
+
 import {
   addDirToDirDirs,
   addFileToDirFiles,
@@ -10,6 +13,10 @@ import {
   removeFileFromDirFiles,
 } from "./helpers"
 import { DirState } from "./types"
+import {
+  createGenericDocumentFromLocalFile,
+  createGenericGroupTreeFromLocalDir,
+} from "../../helpers"
 
 const setUpFileWatcherForPath = async (path: string) => {
   const res = await window.electron.invoke("WATCH_DIR", {
@@ -21,7 +28,7 @@ const setUpFileWatcherForPath = async (path: string) => {
 
 export const useSetUpWatchers = (
   isReady: boolean,
-  dirTrees: DirObjectRecursive[],
+  dirTrees: GenericDocGroupTree_Discriminated[],
   setDirState: React.Dispatch<React.SetStateAction<DirState>>
 ) => {
   useEffect(() => {
@@ -40,9 +47,10 @@ export const useSetUpWatchers = (
         case "add": {
           setDirState((prevDirState) => {
             const resultDir = getDirToModify(prevDirState, res)
+            const genericDocument = createGenericDocumentFromLocalFile(res.file)
 
             if (resultDir) {
-              addFileToDirFiles(resultDir, res.file)
+              addFileToDirFiles(resultDir, genericDocument)
             }
 
             return cloneDeep(prevDirState)
@@ -64,9 +72,10 @@ export const useSetUpWatchers = (
         case "addDir": {
           setDirState((prevDirState) => {
             const resultDir = getDirToModify(prevDirState, res)
+            const genericGroup = createGenericGroupTreeFromLocalDir(res.dirTree)
 
             if (resultDir) {
-              addDirToDirDirs(resultDir, res.dirTree)
+              addDirToDirDirs(resultDir, genericGroup)
             }
 
             return cloneDeep(prevDirState)
@@ -93,17 +102,20 @@ export const useSetUpWatchers = (
 
     ;(async () => {
       for (let dirTree of dirTrees) {
-        console.log("setting up watcher for", dirTree.path)
-        setUpFileWatcherForPath(dirTree.path)
+        console.log("setting up watcher for", dirTree.identifier)
+        if (dirTree.identifier === null) {
+          return
+        }
+        setUpFileWatcherForPath(dirTree.identifier)
       }
       window.electron.receive("WATCH_DIR:RES", handleWatchDirResponse)
     })()
 
     return () => {
       for (let dirTree of dirTrees) {
-        console.log("invoking stop watch dir for:", dirTree.path)
+        console.log("invoking stop watch dir for:", dirTree.identifier)
         window.electron.invoke("STOP_WATCH_DIR", {
-          watchedDirPath: dirTree.path,
+          watchedDirPath: dirTree.identifier,
           timestamp: Date.now(),
         })
       }

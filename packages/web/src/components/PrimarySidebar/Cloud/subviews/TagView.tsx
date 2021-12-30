@@ -13,6 +13,7 @@ import {
   usePrimarySidebar,
 } from "../../../ViewState"
 
+import { FlatDocumentsList } from "../../DocumentsList"
 import {
   CloudDocumentSortingSubmenu,
   GoUpMainHeaderButton,
@@ -20,8 +21,8 @@ import {
   MoreMainHeaderButton,
 } from "../../MainHeader"
 import { NewButton } from "../../PrimarySidebarBottomButton"
+import { CloudDocumentSidebarItem } from "../../SidebarDocumentItem"
 
-import { FlatDocumentsList } from "../GenericCloudDocumentsList"
 import { useGenericDocumentsFromCloudDocumentsQuery } from "../hooks"
 
 export const TagView: React.FC = () => {
@@ -80,7 +81,12 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
         ]}
       />
       <InnerContainer>
-        {!isTagLoading ? <FlatDocumentsList documents={flatDocuments} /> : null}
+        {!isTagLoading ? (
+          <FlatDocumentsList
+            documents={flatDocuments}
+            DocumentItemComponent={CloudDocumentSidebarItem}
+          />
+        ) : null}
       </InnerContainer>
       {/* TODO:  Rework NewButton to work with tags as well as groups, or create additional variants */}
       <NewButton groupId={null} />

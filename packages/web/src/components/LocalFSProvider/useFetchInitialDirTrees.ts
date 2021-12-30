@@ -1,15 +1,20 @@
 import { useEffect } from "react"
 
-import { DirObjectRecursive, ValidatePathsObj } from "shared"
+import { ValidatePathsObj } from "shared"
+
+import { createGenericGroupTreeFromLocalDir } from "../../helpers"
+import { GenericDocGroupTreeBranch } from "../../types"
+
+import { DirState } from "./types"
 
 const fetchInitialDirTreeForPath = async (
   path: string
-): Promise<DirObjectRecursive | undefined> => {
+): Promise<GenericDocGroupTreeBranch | undefined> => {
   const res = await window.electron.invoke("GET_PATH_CONTENTS", { path })
 
   console.log("GET_PATH_CONTENTS", res)
   if (res.status === "success") {
-    return res.data.dirObj
+    return createGenericGroupTreeFromLocalDir(res.data.dirObj)
   } else if (res.status === "error") {
     console.log(res.error)
     return undefined
@@ -21,7 +26,7 @@ const fetchInitialDirTreeForPath = async (
 
 export const useFetchInitialDirTrees = (
   dirs: ValidatePathsObj[] | undefined,
-  setDirState
+  setDirState: React.Dispatch<React.SetStateAction<DirState>>
 ) => {
   useEffect(() => {
     if (!dirs) {
@@ -30,7 +35,7 @@ export const useFetchInitialDirTrees = (
 
     setDirState((prev) => ({ ...prev, isLoading: true }))
     ;(async () => {
-      const newDirTrees: DirObjectRecursive[] = []
+      const newDirTrees: GenericDocGroupTreeBranch[] = []
       for (let dir of dirs) {
         const dirTree = await fetchInitialDirTreeForPath(dir.path)
         if (dirTree) {

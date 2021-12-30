@@ -24,13 +24,15 @@ import {
   MoreMainHeaderButton,
 } from "../../MainHeader"
 import { NewButton } from "../../PrimarySidebarBottomButton"
+import { CloudDocumentSectionHeader } from "../../SectionHeader"
+import { DocumentsList } from "../../DocumentsList"
+import { CloudDocumentSidebarItem } from "../../SidebarDocumentItem"
 
 import {
   useGenericDocumentsFromCloudDocumentsQuery,
   useGenericGroupTreeFromCloudGroups,
 } from "../hooks"
 import { useFindGroupAndChildGroups } from "../helpers"
-import { DocumentsList } from "../GenericCloudDocumentsList"
 
 export const GroupView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -122,6 +124,8 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
         <DocumentsList
           groupTree={filledGroupTree}
           flatDocumentsList={flatDocuments}
+          SectionHeaderComponent={CloudDocumentSectionHeader}
+          DocumentItemComponent={CloudDocumentSidebarItem}
         />
       </InnerContainer>
 

@@ -1,5 +1,3 @@
-import { DirObjectRecursive } from "shared"
-
 import { TabsState } from "../../TabsProvider/tabsSlice"
 
 /**
@@ -19,29 +17,4 @@ export function findTabWithPath(
     return false
   })
   return foundTabId
-}
-
-export const findDirInDir = (
-  checkedDir: DirObjectRecursive,
-  dirPathArr: string[],
-  i: number
-): DirObjectRecursive | undefined => {
-  console.log("findDirInDir", checkedDir, dirPathArr, dirPathArr[i])
-
-  const isCurrentDirTheDir = checkedDir.path === dirPathArr[i]
-  if (isCurrentDirTheDir) {
-    const isCurrentCheckedPathLastInDirPathArr = i === dirPathArr.length - 1
-    if (isCurrentCheckedPathLastInDirPathArr) {
-      return checkedDir
-    } else {
-      for (let dir of checkedDir.dirs) {
-        const foundDir = findDirInDir(dir, dirPathArr, i + 1)
-        if (foundDir) {
-          return foundDir
-        }
-      }
-    }
-  }
-
-  return undefined
 }

@@ -1,6 +1,6 @@
-import { DirObjectRecursive } from "shared"
+import { GenericDocGroupTreeBranch } from "../../types"
 
 export type DirState = {
-  dirTrees: DirObjectRecursive[]
+  dirTrees: GenericDocGroupTreeBranch[]
   isLoading: boolean
 }

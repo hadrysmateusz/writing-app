@@ -14,8 +14,9 @@ import {
   MoreMainHeaderButton,
 } from "../../MainHeader"
 import { NewButton } from "../../PrimarySidebarBottomButton"
+import { FlatDocumentsList } from "../../DocumentsList"
+import { CloudDocumentSidebarItem } from "../../SidebarDocumentItem"
 
-import { FlatDocumentsList } from "../GenericCloudDocumentsList"
 import { createFindDocumentsAtRootQuery } from "../queries"
 import { useGenericDocumentsFromCloudDocumentsQuery } from "../hooks"
 
@@ -49,7 +50,10 @@ export const InboxView: React.FC = () => {
         ]}
       />
       <InnerContainer>
-        <FlatDocumentsList documents={flatDocuments} />
+        <FlatDocumentsList
+          documents={flatDocuments}
+          DocumentItemComponent={CloudDocumentSidebarItem}
+        />
       </InnerContainer>
       <NewButton groupId={null} />
     </PrimarySidebarViewContainer>

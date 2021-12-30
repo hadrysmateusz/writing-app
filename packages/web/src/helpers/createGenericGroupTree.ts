@@ -1,5 +1,13 @@
+import { DirObjectRecursive } from "shared"
+
 import { GroupDoc } from "../components/Database"
-import { GenericDocGroupTree_Discriminated } from "../types/GenericDocGroup"
+import {
+  GenericDocGroupTreeBranch,
+  GenericDocGroupTreeRoot,
+  GenericDocGroupTree_Discriminated,
+} from "../types"
+
+import { createGenericDocumentFromLocalFile } from "./genericDocuments"
 
 const getChildGroupIds = (
   allGroups: GroupDoc[],
@@ -17,8 +25,8 @@ const getChildGroupIds = (
 const createGenericChildGroupsFromIds = (
   allGroups: GroupDoc[],
   childGroupIds: string[]
-) => {
-  return childGroupIds.reduce<GenericDocGroupTree_Discriminated[]>(
+): GenericDocGroupTreeBranch[] => {
+  return childGroupIds.reduce<GenericDocGroupTreeBranch[]>(
     (childGroups, groupId) => {
       const childGroup = createGenericGroupTreeBranch(allGroups, groupId)
       return childGroup ? [...childGroups, childGroup] : childGroups
@@ -30,7 +38,7 @@ const createGenericChildGroupsFromIds = (
 const createGenericChildGroups = (
   allGroups: GroupDoc[],
   rootGroupId: string | null
-) => {
+): GenericDocGroupTreeBranch[] => {
   const childGroupIds = getChildGroupIds(allGroups, rootGroupId)
   const childGroups = createGenericChildGroupsFromIds(allGroups, childGroupIds)
   return childGroups
@@ -43,7 +51,7 @@ const findGroupMatchingId = (allGroups: GroupDoc[], groupId: string) => {
 export function createGenericGroupTreeBranch(
   allGroups: GroupDoc[],
   rootGroupId: string
-): GenericDocGroupTree_Discriminated | undefined {
+): GenericDocGroupTreeBranch | undefined {
   const group = findGroupMatchingId(allGroups, rootGroupId)
 
   if (!group) return undefined
@@ -61,7 +69,7 @@ export function createGenericGroupTreeBranch(
 
 export const createGenericGroupTreeRoot = (
   allGroups: GroupDoc[]
-): GenericDocGroupTree_Discriminated => {
+): GenericDocGroupTreeRoot => {
   const childGroups = createGenericChildGroups(allGroups, null)
 
   return {
@@ -79,5 +87,21 @@ export function createGenericGroupTreeFromCloudGroups(
     return createGenericGroupTreeBranch(allGroups, rootGroupId)
   } else {
     return createGenericGroupTreeRoot(allGroups)
+  }
+}
+
+export function createGenericGroupTreeFromLocalDir(
+  dir: DirObjectRecursive
+): GenericDocGroupTreeBranch {
+  return {
+    identifier: dir.path,
+    name: dir.name,
+    parentIdentifier: dir.parentDirectory,
+    childDocuments: dir.files.map((file) =>
+      createGenericDocumentFromLocalFile(file)
+    ),
+    childGroups: dir.dirs.map((childDir) =>
+      createGenericGroupTreeFromLocalDir(childDir)
+    ),
   }
 }

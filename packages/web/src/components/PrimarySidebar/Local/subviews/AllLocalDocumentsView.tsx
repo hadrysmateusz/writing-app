@@ -13,10 +13,11 @@ import {
   MoreMainHeaderButton,
 } from "../../MainHeader"
 
-import { DirItem } from "../DirItem"
+import { NestedDocumentsListSection } from "../../DocumentsList"
+import { LocalDocumentSectionHeader } from "../../SectionHeader"
+import { LocalDocumentSidebarItem } from "../../SidebarDocumentItem"
 
-// TODO: rename to localdocumentsallview
-export const LocalView: React.FC<{}> = () => {
+export const AllLocalDocumentsView: React.FC<{}> = () => {
   // TODO:  loading/empty state + handle errors
   const { dirTrees, createDocument } = useLocalFS()
 
@@ -46,7 +47,14 @@ export const LocalView: React.FC<{}> = () => {
       />
       <InnerContainer>
         {dirTrees.map((dirTree) => (
-          <DirItem key={dirTree.path} dir={dirTree} startOpen={true} />
+          <NestedDocumentsListSection
+            key={dirTree.identifier}
+            SectionHeaderComponent={LocalDocumentSectionHeader}
+            DocumentItemComponent={LocalDocumentSidebarItem}
+            groupTree={dirTree}
+            // documents={dirTree.childDocuments}
+            // groups={dirTree.childGroups}
+          />
         ))}
       </InnerContainer>
 

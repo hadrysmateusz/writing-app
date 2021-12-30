@@ -63,6 +63,7 @@ export const createFileObject = (
   return {
     path: filePath,
     name: resourceName,
+    // TODO: probably replace these with simple timestamps
     createdAt: stats.ctime,
     modifiedAt: stats.mtime,
     parentDirectory: parentDirPath,

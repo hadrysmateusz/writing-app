@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from "react"
 
-import { DirObjectRecursive } from "shared"
-
 import { ItemsBranch } from "../../GroupingItemList"
 import { useLocalFS } from "../../LocalFSProvider"
 import { GenericAddButton } from "../../TreeItem"
@@ -9,20 +7,22 @@ import { usePrimarySidebar } from "../../ViewState"
 import { DirsList } from "../../DirsList"
 
 import { SectionHeader, SectionContainer } from "../Common"
+import { GenericDocGroupTreeBranch } from "../../../types"
 
 // TODO: probably rename to dirs section
 
 const MSG_DIRECTORIES_HEADER = "Local Library"
 
 export const createGroupingItemBranchFromDirObject = (
-  dirTree: DirObjectRecursive
+  dirTree: GenericDocGroupTreeBranch
 ): ItemsBranch => {
+  console.log("createGroupingItemBranchFromDirObject", dirTree)
   return {
-    itemId: dirTree.path,
+    itemId: dirTree.identifier,
     itemName: dirTree.name,
     // TODO: add parentDir information to local dirs tree
     parentItemId: /* dirTree.parentGroup */ null,
-    childItems: dirTree.dirs.map((dirTree) =>
+    childItems: dirTree.childGroups.map((dirTree) =>
       createGroupingItemBranchFromDirObject(dirTree)
     ),
   }

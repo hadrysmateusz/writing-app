@@ -13,7 +13,7 @@ import {
 } from "./SidebarDocumentItemComponent.styles"
 import { TagsList } from "./SidebarDocumentItemTagsList"
 
-export const SidebarDocumentItemComponent: React.FC<{
+export type SidebarDocumentItemComponentProps = {
   listType?: LocalSettings["documentsListDisplayType"]
   title: string
   snippet?: string
@@ -21,11 +21,15 @@ export const SidebarDocumentItemComponent: React.FC<{
   createdAt: number
   isCurrent: boolean
   tags?: string[]
-  groupName?: string // TODO: probably rename with something local/cloud generic
+  groupName?: string | null // TODO: probably rename with something local/cloud generic
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   onContextMenu?: (e: React.MouseEvent<HTMLDivElement>) => void
   getEditableProps?: () => EditableTextProps
-}> = ({
+}
+
+export const SidebarDocumentItemComponent: React.FC<
+  SidebarDocumentItemComponentProps
+> = ({
   listType,
   title,
   snippet,

@@ -1,16 +1,16 @@
 import { useState, useCallback } from "react"
 
-import { DirObjectRecursive } from "shared"
-
+import { GenericDocGroupTreeBranch } from "../../types"
 import { createContext } from "../../utils"
 
 import { useValidateDirs } from "../PrimarySidebar/Local"
+
 import { DirState } from "./types"
 import { useFetchInitialDirTrees } from "./useFetchInitialDirTrees"
 import { useSetUpWatchers } from "./useSetUpWatchers"
 
 type LocalFSContextType = {
-  dirTrees: DirObjectRecursive[]
+  dirTrees: GenericDocGroupTreeBranch[]
   createDocument: (defaultPath?: string) => void
   createDir: (name: string, parentPath?: string) => void
   deleteDir: (dirPath: string) => void
@@ -104,6 +104,8 @@ const LocalFSProvider: React.FC = ({ children }) => {
   const revealItem = useCallback(async (targetPath: string) => {
     window.electron.invoke("VIEW_IN_EXPLORER", { targetPath })
   }, [])
+
+  console.log("dirState", dirState)
 
   return (
     <LocalFSContext.Provider

@@ -14,10 +14,11 @@ import {
   MainHeader,
   MoreMainHeaderButton,
 } from "../../MainHeader"
+import { FlatDocumentsList } from "../../DocumentsList"
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
+import { CloudDocumentSidebarItem } from "../../SidebarDocumentItem"
 
 import { createFindDeletedDocumentsQuery } from "../queries"
-import { FlatDocumentsList } from "../GenericCloudDocumentsList"
 import { useGenericDocumentsFromCloudDocumentsQuery } from "../hooks"
 
 export const TrashView: React.FC = () => {
@@ -50,7 +51,10 @@ export const TrashView: React.FC = () => {
         ]}
       />
       <InnerContainer>
-        <FlatDocumentsList documents={flatDocuments} />
+        <FlatDocumentsList
+          documents={flatDocuments}
+          DocumentItemComponent={CloudDocumentSidebarItem}
+        />
       </InnerContainer>
       <DeleteAllButton />
     </PrimarySidebarViewContainer>
