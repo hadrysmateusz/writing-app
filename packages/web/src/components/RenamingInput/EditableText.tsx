@@ -163,7 +163,7 @@ const StyledNamingInput = styled(NamingInput)`
   padding: 1px 2px;
 
   ::selection {
-    color: inherit;
+    color: white;
     background: var(--selection-color);
   }
 `

@@ -39,7 +39,7 @@ export const EditableContainer = styled.div`
 
   color: var(--light-600);
   *::selection {
-    color: inherit;
+    color: white;
     background: var(--selection-color);
   }
 `

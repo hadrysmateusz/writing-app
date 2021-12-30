@@ -18,6 +18,7 @@ export const TextInput = styled.input`
   border-radius: 3px;
 
   ::selection {
+    color: white;
     background: var(--selection-color);
   }
 

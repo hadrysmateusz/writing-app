@@ -24,7 +24,7 @@ const GlobalStyles = createGlobalStyle`
     --danger-200: #db4141;
     --danger-300: ;
 
-    --selection-color: #9cb8c5;
+    --selection-color: #6c8895;
 
     --bg-100: var(--dark-100);
     --bg-200: var(--dark-200);
