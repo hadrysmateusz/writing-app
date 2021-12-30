@@ -1,24 +1,12 @@
 import React, { useState, useRef, useEffect } from "react"
-import styled from "styled-components/macro"
 import { ReactEditor } from "slate-react"
 import { Transforms } from "slate"
 import isHotkey from "is-hotkey"
 import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
-import { NamingInput } from "../RenamingInput"
+import { createEmptyNode } from "../../helpers"
 
-import { createEmptyNode } from "../../helpers/createEmptyNode"
-
-export const StyledTitleNamingInput = styled(NamingInput)`
-  margin-top: 16px;
-  margin-bottom: 8px;
-  font-weight: bold;
-  font-family: "Poppins";
-  letter-spacing: 0.01em;
-  font-size: 36px;
-  line-height: 54px;
-  color: var(--light-600);
-`
+import { StyledTitleNamingInput } from "./TitleInput.styles"
 
 const TitleInput: React.FC<{
   title: string
