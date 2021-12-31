@@ -3,7 +3,7 @@ import { Descendant } from "slate"
 import { ReactEditor } from "slate-react"
 import { EditableProps } from "slate-react/dist/components/editable"
 import isHotkey from "is-hotkey"
-import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
+import { getPlateId, Plate, usePlateEditorRef } from "@udecode/plate"
 
 import { useEditorState } from "../EditorStateProvider"
 
@@ -36,7 +36,7 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
 }) => {
   const tabsDispatch = useTabsDispatch()
   const { onChange } = useEditorState()
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
+  const editor = usePlateEditorRef(getPlateId("focus"))
   // const { isSpellCheckEnabled } = useUserdata()
 
   const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
@@ -100,7 +100,7 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
         event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>
       ) => {
         // TODO: handle this better
-        if (editor === undefined) {
+        if (!editor) {
           console.log("can't open context menu because editor is undefined")
           return
         }

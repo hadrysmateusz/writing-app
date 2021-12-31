@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react"
-import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
+import { usePlateEditorRef, getPlateId } from "@udecode/plate-core"
 
 import createContext from "../../../utils/createContext"
 
@@ -21,7 +21,7 @@ const LinkModalContent = getPromptModalContent({
 // TODO: remove duplication with ImageModal code
 // TODO: support other link operations, like changing url or text
 export const LinkModalProvider: React.FC = ({ children }) => {
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
+  const editor = usePlateEditorRef(getPlateId("focus"))
   // const editor = useSlateStatic()
   // const [selection, setSelection] = useState<Range | null>(null)
 
