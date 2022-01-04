@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { Descendant } from "slate"
-import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
+import { usePlateEditorRef } from "@udecode/plate"
 
 import {
   myDeserializeMd,
@@ -37,7 +36,7 @@ export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
     INITIAL_DOCUMENT_STATE
   )
 
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
+  const editor = usePlateEditorRef()
 
   useEffect(() => {
     ;(async () => {

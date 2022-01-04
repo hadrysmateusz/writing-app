@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react"
 import { ReactEditor } from "slate-react"
 import { Transforms } from "slate"
 import isHotkey from "is-hotkey"
-import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
+import { usePlateEditorRef } from "@udecode/plate"
 
 import { createEmptyNode } from "../../helpers"
 
@@ -12,7 +12,7 @@ const TitleInput: React.FC<{
   title: string
   onRename: (value: string) => void
 }> = ({ title, onRename }) => {
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
+  const editor = usePlateEditorRef()
 
   const [value, setValue] = useState<string>(title)
   const titleRef = useRef<HTMLTextAreaElement | null>(null)
@@ -23,7 +23,7 @@ const TitleInput: React.FC<{
   }, [title])
 
   const onKeyDown = (event: React.KeyboardEvent) => {
-    if (editor === undefined) {
+    if (!editor) {
       console.error("editor is undefined ")
       return false
     }

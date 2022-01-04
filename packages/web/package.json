@@ -33,7 +33,7 @@
     "@types/react-router-dom": "^5.1.6",
     "@types/styled-components": "^5.1.4",
     "@types/uuid": "^8.3.0",
-    "@udecode/plate": "^8.3.1",
+    "@udecode/plate": "^9.1.2",
     "aws-amplify": "^3.3.3",
     "babel-plugin-macros": "^3.1.0",
     "body-scroll-lock": "^3.1.5",

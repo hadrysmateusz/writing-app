@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from "react"
-import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
+import { usePlateEditorRef } from "@udecode/plate-core"
 
 import createContext from "../../../utils/createContext"
 
@@ -19,7 +19,7 @@ const ImageModalContent = getPromptModalContent({
 })
 
 export const ImageModalProvider: React.FC = ({ children }) => {
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
+  const editor = usePlateEditorRef()
   // const editor = useSlateStatic()
   // const [selection, setSelection] = useState<Range | null>(null)
 

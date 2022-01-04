@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useMemo } from "react"
 import isEqual from "lodash/isEqual"
 import { Descendant } from "slate"
-import { usePlateEventId, usePlateEditorRef } from "@udecode/plate-core"
+import { usePlateEditorRef } from "@udecode/plate-core"
 
 import { createContext } from "../../utils"
 
@@ -17,7 +17,7 @@ export const [EditorStateContext, useEditorState] = createContext<any>() // TODO
  */
 export const EditorStateProvider: React.FC = ({ children }) => {
   const { currentCloudDocument } = useTabsState()
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
+  const editor = usePlateEditorRef()
 
   const [isModified, setIsModified] = useState(false)
 
