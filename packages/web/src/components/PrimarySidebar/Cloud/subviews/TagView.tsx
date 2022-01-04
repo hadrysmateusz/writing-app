@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 
 import { useQueryWithSorting, useRxSubscription } from "../../../../hooks"
 
@@ -38,6 +38,7 @@ export const TagView: React.FC = () => {
 
 const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
   const db = useDatabase()
+  const { switchSubview } = usePrimarySidebar()
 
   const { data: tag, isLoading: isTagLoading } = useRxSubscription(
     db.tags.findOne().where("id").eq(tagId)
@@ -60,6 +61,14 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
   // =======================================================================
 
   const ok = !!flatDocuments && !!tag
+
+  // If the tag wasn't found, switch to more general sidebar view
+  // TODO: I should probably move the tag subview to the tags view instead of being in cloud, when I do I should switch teh switchSubview below to "tags","all"
+  useEffect(() => {
+    if (!tag && !isTagLoading) {
+      switchSubview("cloud", "all")
+    }
+  }, [isTagLoading, switchSubview, tag])
 
   return ok ? (
     <PrimarySidebarViewContainer>
