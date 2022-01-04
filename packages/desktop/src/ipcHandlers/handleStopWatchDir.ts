@@ -7,6 +7,7 @@ export const handleStopWatchDir = async (
 ) => {
   try {
     const { watchedDirPath, timestamp } = payload
+    console.log(`stop watching dir: ${watchedDirPath}`)
     await closeWatcherForDir(watchedDirPath, timestamp)
     return { status: IpcResponseStatus.SUCCESS, data: {}, error: null }
   } catch (err) {

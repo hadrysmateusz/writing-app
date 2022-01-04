@@ -1,7 +1,7 @@
 import chokidar from "chokidar"
-import { WatcherUnsubObj } from "shared"
 
 import { getDirWatchers } from "../helpers"
+import { WatcherUnsubObj } from "../types"
 
 export const createAndSaveWatcher = (dirPath: string): chokidar.FSWatcher => {
   const watcher = createWatcher(dirPath)
@@ -21,15 +21,12 @@ export const saveWatcherForDir = (
   dirPath: string,
   watcher: chokidar.FSWatcher
 ) => {
-  getDirWatchers()[dirPath] = {
-    close: () => closeWatcher(watcher),
+  const newWatcherUnsubObj = {
+    watcher: watcher,
     added: Date.now(),
   }
-}
 
-export const closeWatcher = (watcher: chokidar.FSWatcher): Promise<void> => {
-  const boundClose = watcher.close.bind(watcher)
-  return boundClose()
+  getDirWatchers()[dirPath] = newWatcherUnsubObj
 }
 
 export const closeWatcherForDir = async (
@@ -37,13 +34,16 @@ export const closeWatcherForDir = async (
   timestamp?: number
 ) => {
   const oldWatcher: WatcherUnsubObj | undefined = getDirWatchers()[dirPath]
+
   if (oldWatcher) {
     if (!timestamp || timestamp > oldWatcher.added) {
-      await oldWatcher.close()
-      return true
+      await oldWatcher.watcher.close()
+      console.log(`SUCCESS: closed watcher for dir ${dirPath}`)
     } else {
-      return false
+      console.log(`FAILURE: couldn't close watcher for dir ${dirPath}`)
     }
+
+    delete getDirWatchers()[dirPath]
   }
   return false
 }

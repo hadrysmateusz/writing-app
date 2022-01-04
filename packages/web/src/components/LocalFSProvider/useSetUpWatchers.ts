@@ -1,9 +1,9 @@
-import { useEffect } from "react"
+import { useEffect, useCallback, useMemo, useRef } from "react"
 import cloneDeep from "lodash/cloneDeep"
 
 import { WatchDirResPayload } from "shared"
 
-import { GenericDocGroupTree_Discriminated } from "../../types"
+import { GenericDocGroupTreeBranch } from "../../types"
 
 import {
   addDirToDirDirs,
@@ -18,26 +18,13 @@ import {
   createGenericGroupTreeFromLocalDir,
 } from "../../helpers"
 
-const setUpFileWatcherForPath = async (path: string) => {
-  const res = await window.electron.invoke("WATCH_DIR", {
-    watchedDirPath: path,
-  })
-  console.log("WATCH_DIR response", res)
-  return res
-}
-
 export const useSetUpWatchers = (
   isReady: boolean,
-  dirTrees: GenericDocGroupTree_Discriminated[],
+  dirTrees: GenericDocGroupTreeBranch[],
   setDirState: React.Dispatch<React.SetStateAction<DirState>>
 ) => {
-  useEffect(() => {
-    // we only initiate watching after initial load is done
-    if (!isReady) {
-      return undefined
-    }
-
-    const handleWatchDirResponse = (res: WatchDirResPayload) => {
+  const handleWatchDirResponse = useCallback(
+    (res: WatchDirResPayload) => {
       console.log("=====================WATCH_DIR:RES======================")
       console.log(res)
 
@@ -98,29 +85,68 @@ export const useSetUpWatchers = (
           console.log("unknown eventType", eventType)
         }
       }
+    },
+    [setDirState]
+  )
+
+  const dirTreesRef = useRef<GenericDocGroupTreeBranch[]>(dirTrees)
+  dirTreesRef.current = dirTrees
+
+  // This string is used as dependency in the useEffect hook to check whether the dirTree paths have changed without relying on the dirTrees object
+  const dirPathsString: string = useMemo(
+    () =>
+      dirTrees
+        .map((dir) => dir.identifier)
+        .sort()
+        .join(";"),
+    [dirTrees]
+  )
+
+  useEffect(() => {
+    console.log(
+      "---------------------------------SETUP WATCHERS EFFECT HOOK---------------------------------"
+    )
+    // we only initiate watching after initial load is done
+    if (!isReady) {
+      return undefined
     }
 
-    ;(async () => {
-      for (let dirTree of dirTrees) {
-        console.log("setting up watcher for", dirTree.identifier)
-        if (dirTree.identifier === null) {
-          return
-        }
-        setUpFileWatcherForPath(dirTree.identifier)
+    // The dirPathsString dependency is essential for this effect to work so don't remove this line or eventually it's get removed from deps array by mistake )
+    console.info(dirPathsString)
+
+    // The concatenated paths string isn't used to source the dirPaths because it's hard to find a separator string that is GUARANTEED to never be in any path
+    // We create this here to avoid relying on a ref value in the cleanup method and make sure listeners are both registered and removed for the same set of paths
+    const dirPaths = Object.freeze(
+      cloneDeep(dirTreesRef.current.map((dir) => dir.identifier))
+    )
+
+    for (let dirPath of dirPaths) {
+      console.log("setting up watcher for", dirPath)
+      if (dirPath === null) {
+        return
       }
-      window.electron.receive("WATCH_DIR:RES", handleWatchDirResponse)
-    })()
+
+      window.electron
+        .invoke("WATCH_DIR", {
+          watchedDirPath: dirPath,
+        })
+        .then((res) => {
+          console.log("WATCH_DIR response", res)
+        })
+    }
+
+    window.electron.receive("WATCH_DIR:RES", handleWatchDirResponse)
 
     return () => {
-      for (let dirTree of dirTrees) {
-        console.log("invoking stop watch dir for:", dirTree.identifier)
+      for (let dirPath of dirPaths) {
+        console.log("invoking stop watch dir for:", dirPath)
         window.electron.invoke("STOP_WATCH_DIR", {
-          watchedDirPath: dirTree.identifier,
+          watchedDirPath: dirPath,
           timestamp: Date.now(),
         })
       }
 
       window.electron.removeListener("WATCH_DIR:RES", handleWatchDirResponse)
     }
-  }, [dirTrees, isReady, setDirState])
+  }, [dirPathsString, handleWatchDirResponse, isReady])
 }

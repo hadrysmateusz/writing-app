@@ -17,6 +17,8 @@ import { handleCreateFile } from "./handleCreateFile"
 import { handleAddPath } from "./handleAddPath"
 
 export const registerIpcHandlers = () => {
+  console.log("registering ipc handlers")
+
   ipcMain.handle("EXPORT_FILE", handleExportFile)
   ipcMain.handle("IMPORT_FILE", handleImportFile)
 

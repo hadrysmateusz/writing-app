@@ -4,11 +4,15 @@ import installExtension, {
 } from "electron-devtools-installer"
 import path from "path"
 
-import { WatcherUnsubObj } from "shared"
-
 import { setUpApplicationMenu } from "./menu"
 import { APP_NAME, START_URL } from "./constants"
-import { getDirWatchers, getMainWindow, IS_DEV } from "./helpers"
+import {
+  closeWatcherForDir,
+  getDirWatchers,
+  getMainWindow,
+  IS_DEV,
+} from "./helpers"
+import { WatcherUnsubObj } from "./types"
 import registerIpcHandlers from "./ipcHandlers/registerIpcHandlers"
 
 declare global {
@@ -50,10 +54,10 @@ async function createWindow() {
       body: "Cancelling watchers",
     })
     noti.show()
+
     // TODO: make sure this works
-    for (let [dirPath, watcherObj] of Object.entries(getDirWatchers())) {
-      watcherObj.close()
-      delete getDirWatchers()[dirPath]
+    for (let dirPath of Object.keys(getDirWatchers())) {
+      closeWatcherForDir(dirPath)
     }
   })
 

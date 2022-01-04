@@ -15,11 +15,6 @@ export type DirObjectRecursive = LocalResourceCommon & {
   files: FileObject[]
 }
 
-export type WatcherUnsubObj = {
-  close: () => Promise<void>
-  added: number
-}
-
 export type ValidatePathsObj =
   | {
       path: string
