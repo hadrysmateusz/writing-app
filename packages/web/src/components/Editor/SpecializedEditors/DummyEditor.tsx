@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 import { Descendant } from "slate"
-import { usePlateEditorRef, getPlateId } from "@udecode/plate"
+import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
 
 import {
   CreateDocumentFn,
@@ -13,7 +13,7 @@ import { serialize } from "../helpers"
 import EditorComponent from "../EditorComponent"
 
 export const DummyEditor = () => {
-  const editor = usePlateEditorRef(getPlateId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
   const { createDocument } = useDocumentsAPI()
   const {
     tabsState: { currentTab },
@@ -52,7 +52,7 @@ export const DummyEditor = () => {
   // TODO: remove duplication with onRename in DummyTitleInput
   const onSave = useCallback(async () => {
     // TODO: remove duplication with saveDocument function logic
-    if (!editor) {
+    if (editor === undefined) {
       console.error("Can't save, the editor is undefined")
       return
     }

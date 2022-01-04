@@ -8,7 +8,7 @@ import {
   MARK_ITALIC,
   MARK_STRIKETHROUGH,
   usePlateEditorRef,
-  getPlateId,
+  usePlateEventId,
   MarkToolbarButton,
   ELEMENT_LINK,
   serializeHtml,
@@ -38,7 +38,7 @@ type ContextMenuType = {
 
 // TODO: on any context menu that is fully inside a link node, show an option to edit and remove the link
 export const useEditorContextMenu = () => {
-  const editor = usePlateEditorRef(getPlateId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   const { getContextMenuProps, openMenu, closeMenu, isMenuOpen } =
     useContextMenu()
@@ -85,7 +85,7 @@ export const useEditorContextMenu = () => {
   const cutSelectionToClipboard = useCallback(async (): Promise<void> => {
     await addSelectionToClipboard()
 
-    if (editor) {
+    if (editor !== undefined) {
       Transforms.delete(editor)
     }
   }, [addSelectionToClipboard, editor])

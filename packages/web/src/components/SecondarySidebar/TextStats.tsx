@@ -6,13 +6,13 @@ import size from "unist-util-size"
 
 import { serializeText } from "../../slate-helpers"
 
-import { getPlateId, usePlateSelectors } from "@udecode/plate-core"
+import { usePlateEventId, usePlateValue } from "@udecode/plate-core"
 
 // TODO: add option to customise WPM reading speed
 const WPM = 275
 
 const TextStats: FC = () => {
-  const editorValue = usePlateSelectors(getPlateId("focus")).value()
+  const editorValue = usePlateValue(usePlateEventId("focus"))
 
   const [chars, setChars] = useState(0)
   const [words, setWords] = useState(0)
@@ -21,7 +21,7 @@ const TextStats: FC = () => {
 
   // TODO: debounce/throttle the calculations
   useEffect(() => {
-    if (!editorValue) return // TODO: handle this better (probably check higher up and ensure it's defined)
+    if (editorValue === undefined) return // TODO: handle this better (probably check higher up and ensure it's defined)
 
     const text = serializeText(editorValue)
 

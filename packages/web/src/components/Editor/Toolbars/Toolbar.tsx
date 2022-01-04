@@ -14,7 +14,7 @@ import {
   // MARK_STRIKETHROUGH,
   getPluginType,
   usePlateEditorRef,
-  getPlateId,
+  usePlateEventId,
   // MarkToolbarButton,
   BlockToolbarButton,
   CodeBlockToolbarButton,
@@ -30,7 +30,7 @@ import { useImageModal } from "../ImageModal"
 import { ToolbarImage } from "./ToolbarImage"
 
 export const Toolbar = () => {
-  const editor = usePlateEditorRef(getPlateId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
   // const { getLinkUrl } = useLinkModal()
   const { getImageUrl } = useImageModal()
 

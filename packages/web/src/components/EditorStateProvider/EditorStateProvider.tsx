@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useMemo } from "react"
 import isEqual from "lodash/isEqual"
 import { Descendant } from "slate"
-import { getPlateId, usePlateEditorRef } from "@udecode/plate-core"
+import { usePlateEventId, usePlateEditorRef } from "@udecode/plate-core"
 
 import { createContext } from "../../utils"
 
@@ -17,7 +17,7 @@ export const [EditorStateContext, useEditorState] = createContext<any>() // TODO
  */
 export const EditorStateProvider: React.FC = ({ children }) => {
   const { currentCloudDocument } = useTabsState()
-  const editor = usePlateEditorRef(getPlateId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   const [isModified, setIsModified] = useState(false)
 
@@ -48,7 +48,7 @@ export const EditorStateProvider: React.FC = ({ children }) => {
       console.log("skipping save, document wasn't changed")
       return null
     }
-    if (!editor) {
+    if (editor === undefined) {
       console.error("Can't save, the editor is undefined")
       return null
     }

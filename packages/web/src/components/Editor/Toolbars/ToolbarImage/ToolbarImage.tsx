@@ -1,5 +1,5 @@
-import { usePlateEditorRef, getPlateId } from "@udecode/plate-core"
-import { ToolbarButton, ToolbarButtonProps } from "@udecode/plate-ui-toolbar"
+import { usePlateEditorRef, usePlateEventId } from "@udecode/plate-core"
+import { ToolbarButton, ToolbarButtonProps } from "@udecode/plate-toolbar"
 
 import { insertImage } from "./helpers"
 
@@ -8,7 +8,7 @@ export interface ToolbarImageProps extends ToolbarButtonProps {
 }
 
 export const ToolbarImage = ({ getImageUrl, ...props }: ToolbarImageProps) => {
-  const editor = usePlateEditorRef(getPlateId("focus"))
+  const editor = usePlateEditorRef(usePlateEventId("focus"))
 
   return (
     <ToolbarButton
