@@ -24,6 +24,8 @@ export const handleWatchDir = async (_event, payload: WatchDirPayload) => {
     // Create handler creator for watched dir
     const createHandlerForEvent = createHandler(watchedDirPath)
 
+    // watcher.options.depth <- this option could be used to create the implementation I had in mind originally where each directory has its own watcher and only watches when it's toggled in the editor
+
     // Set up watcher event handlers
     watcher
       .on("add", createHandlerForEvent("add"))
