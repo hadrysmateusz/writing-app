@@ -55,12 +55,15 @@ export function useModal<ReturnValue, ModalProps extends object>(
     }
   }, [closeModal, isOpen, modalProps])
 
-  return {
-    close: closeModal,
-    open: openModal,
-    isOpen,
-    Modal: StatefulModal,
-  }
+  return useMemo(
+    () => ({
+      close: closeModal,
+      open: openModal,
+      isOpen,
+      Modal: StatefulModal,
+    }),
+    [StatefulModal, closeModal, isOpen, openModal]
+  )
 }
 
 // type ChildrenWrapper = (children: React.ReactNode) => JSX.Element | null
