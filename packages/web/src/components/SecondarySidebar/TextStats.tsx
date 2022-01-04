@@ -1,46 +1,12 @@
-import { FC, useEffect, useState } from "react"
-import styled from "styled-components/macro"
-import { unified } from "unified"
-import latin from "retext-latin"
-import size from "unist-util-size"
+import { Container, Row, Value } from "./TextStats.styles"
+import { useDocumentStats } from "./TextStats.hooks"
 
-import { serializeText } from "../../slate-helpers"
+export const TextStats: React.FC = () => {
+  const stats = useDocumentStats()
 
-import { usePlateSelectors } from "@udecode/plate-core"
+  if (!stats) return null
 
-// TODO: add option to customise WPM reading speed
-const WPM = 275
-
-const TextStats: FC = () => {
-  const editorValue = usePlateSelectors().value()
-
-  const [chars, setChars] = useState(0)
-  const [words, setWords] = useState(0)
-  // const [sentences, setSentences] = useState(0)
-  const [readingTime, setReadingTime] = useState(0)
-
-  // TODO: debounce/throttle the calculations
-  useEffect(() => {
-    if (!editorValue) return // TODO: handle this better (probably check higher up and ensure it's defined)
-
-    const text = serializeText(editorValue)
-
-    var tree = unified().use(latin).parse(text)
-
-    const _chars = text.length // TODO: filter newlines (will need to account for different line endings)
-    const _words = size(tree, "WordNode")
-    // const _sentences = size(tree, "SentenceNode")
-    // This uses words as defined by 5 characters instead of actual space-separated words TODO: make sure this is a good approach
-    const _readingTime = Math.round(_chars / 5 / (WPM / 60)) // In seconds
-
-    setChars(_chars)
-    setWords(_words)
-    // setSentences(_sentences)
-    setReadingTime(_readingTime)
-  }, [editorValue])
-
-  const readingTimeMin = Math.floor(readingTime / 60)
-  const readingTimeSec = readingTime - readingTimeMin * 60
+  const { chars, words, readingTimeMin, readingTimeSec } = stats
 
   return (
     <Container>
@@ -62,21 +28,5 @@ const TextStats: FC = () => {
     </Container>
   )
 }
-
-const Container = styled.div`
-  font-size: 12px;
-`
-
-const Row = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
-  color: var(--light-400);
-`
-
-const Value = styled.div`
-  font-weight: 500;
-  color: var(--light-500);
-`
 
 export default TextStats
