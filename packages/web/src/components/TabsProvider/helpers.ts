@@ -1,27 +1,74 @@
-import { TabsState } from "./tabsSlice"
+import { DUMMY_EDITOR_PLATE_ID } from "../Editor/SpecializedEditors"
+
+import { TabsState, TabsStateTab } from "./tabsSlice"
+import { TabsStateShapeError } from "./misc"
+
+/**
+ * Gets the current tab object based on tabsState. If one is not found it's most likely an invalid state shape so a NoTabError is thrown
+ * @returns TabsStateTab object of the current tab
+ */
+export const getCurrentTabObject = (tabsState: TabsState): TabsStateTab => {
+  const currentTab = tabsState.tabs[tabsState.currentTab]
+
+  if (!currentTab) {
+    console.warn("no tab with this id", tabsState)
+    throw new TabsStateShapeError(
+      `No tab with this id: ${tabsState.currentTab}`
+    )
+  }
+
+  return currentTab
+}
 
 /**
  * @returns string if there is a cloud document opened in the current tab, null if not
+ *
+ * TODO: replace all refrences with the new universal getCurrentDocumentIdentifier
  */
 export const getCurrentCloudDocumentId = (
   tabsState: TabsState
 ): string | null => {
-  const currentTab = tabsState.tabs[tabsState.currentTab]
+  try {
+    const currentTab = getCurrentTabObject(tabsState)
 
-  if (!currentTab) {
-    console.warn(
-      "handle this error more gracefully with some form of fallback",
-      tabsState
-    )
-    // throw new Error("no tab with this id")
+    if (currentTab.tabType === "cloudDocument") {
+      return currentTab.documentId
+    }
+
     return null
+  } catch (error) {
+    // in case of NoTabError, return null...
+    if (error instanceof TabsStateShapeError) {
+      return null
+    }
+    // ...otherwise rethrow
+    throw error
   }
+}
 
-  if (currentTab.tabType === "cloudDocument") {
-    return currentTab.documentId
+/**
+ * @returns
+ * - string corresponding to document identifier if there is a document opened in current tab
+ * - DUMMY_EDITOR_PLATE_ID if current tab is a cloudNew tab
+ * - In case of invalid TabsState shape, throws a TabsStateShapeError
+ */
+export const getCurrentDocumentIdentifier = (tabsState: TabsState): string => {
+  const currentTab = getCurrentTabObject(tabsState)
+
+  switch (currentTab.tabType) {
+    case "cloudDocument": {
+      return currentTab.documentId
+    }
+    case "localDocument": {
+      return currentTab.path
+    }
+    case "cloudNew": {
+      return DUMMY_EDITOR_PLATE_ID // TODO: maybe replace this with null
+    }
+    default: {
+      throw new TabsStateShapeError(`invalid tabType`)
+    }
   }
-
-  return null
 }
 
 /**

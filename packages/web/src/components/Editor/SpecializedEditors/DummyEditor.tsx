@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid"
 import { useCallback, useMemo } from "react"
 import { Descendant } from "slate"
 import { usePlateEditorRef } from "@udecode/plate"
@@ -13,6 +12,8 @@ import { useTabsDispatch, useTabsState } from "../../TabsProvider"
 import { serialize } from "../helpers"
 import EditorComponent from "../EditorComponent"
 import { GenericDocument_Discriminated } from "../../../types"
+
+export const DUMMY_EDITOR_PLATE_ID = "DUMMY_EDITOR_PLATE_ID"
 
 export const DummyEditor = () => {
   const editor = usePlateEditorRef()
@@ -79,7 +80,7 @@ export const DummyEditor = () => {
       modifiedAt: Date.now(),
       documentType: "cloud",
       parentIdentifier: null,
-      identifier: uuidv4(),
+      identifier: DUMMY_EDITOR_PLATE_ID,
       tags: [],
     }),
     []

@@ -10,6 +10,8 @@ export type OpenDocumentFn = (
 export type TabsStateContextType = {
   tabsState: TabsState
 
+  currentDocumentId: string
+
   currentCloudDocumentId: string | null
   currentCloudDocument: DocumentDoc | null
   isLoadingCurrentCloudDocument: boolean

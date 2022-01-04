@@ -14,7 +14,11 @@ import { defaultLocalSettings, useLocalSettings } from "../LocalSettings"
 import { AppLoadingState } from "../AppLoadingState"
 import { useDatabase } from "../Database"
 
-import { findTabWithDocumentId, getCurrentCloudDocumentId } from "./helpers"
+import {
+  findTabWithDocumentId,
+  getCurrentCloudDocumentId,
+  getCurrentDocumentIdentifier,
+} from "./helpers"
 import { TabsAction, TabsReducer, tabsReducer, TabsState } from "./tabsSlice"
 import {
   OpenDocumentFn,
@@ -65,6 +69,9 @@ export const TabsProvider: React.FC = memo(({ children }) => {
   )
 
   // console.log("TABS STATE:", JSON.stringify(tabsState, null, 2))
+
+  // TODO: catch the possible TabsStateShapeError and reset tabs state
+  const currentDocumentId = getCurrentDocumentIdentifier(tabsState)
 
   useEffect(() => {
     // TODO: check if this actually does something
@@ -218,6 +225,8 @@ export const TabsProvider: React.FC = memo(({ children }) => {
     () => ({
       tabsState,
 
+      currentDocumentId,
+
       // TODO: probably eventually replace (or supplement) with a generic currentDocument____ methods that get an abstracted current cloud/local document
       currentCloudDocumentId,
       currentCloudDocument,
@@ -229,6 +238,7 @@ export const TabsProvider: React.FC = memo(({ children }) => {
     [
       currentCloudDocument,
       currentCloudDocumentId,
+      currentDocumentId,
       currentTabObject,
       currentTabType,
       isLoadingCurrentCloudDocument,
