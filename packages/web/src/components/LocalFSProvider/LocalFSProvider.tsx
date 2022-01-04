@@ -2,12 +2,24 @@ import { useState, useCallback } from "react"
 
 import { GenericDocGroupTreeBranch } from "../../types"
 import { createContext } from "../../utils"
+import { getConfirmModalContent, useConfirmModal } from "../ConfirmModal"
 
 import { useValidateDirs } from "../PrimarySidebar/Local"
 
 import { DirState } from "./types"
 import { useFetchInitialDirTrees } from "./useFetchInitialDirTrees"
 import { useSetUpWatchers } from "./useSetUpWatchers"
+
+const ConfirmDeleteFileModalContent = getConfirmModalContent({
+  confirmMessage: "Delete",
+  promptMessage: "Are you sure you want to delete this file?",
+  secondaryPromptMessage: "This action can't be undone",
+})
+const ConfirmDeleteDirModalContent = getConfirmModalContent({
+  confirmMessage: "Delete",
+  promptMessage: "Are you sure you want to delete this folder?",
+  secondaryPromptMessage: "This action can't be undone",
+})
 
 type LocalFSContextType = {
   dirTrees: GenericDocGroupTreeBranch[]
@@ -23,6 +35,17 @@ type LocalFSContextType = {
 const [LocalFSContext, useLocalFS] = createContext<LocalFSContextType>()
 
 const LocalFSProvider: React.FC = ({ children }) => {
+  const {
+    open: openConfirmDeleteFileModal,
+    Modal: ConfirmDeleteFileModal,
+    isOpen: isConfirmDeleteFileModalOpen,
+  } = useConfirmModal()
+  const {
+    open: openConfirmDeleteDirModal,
+    Modal: ConfirmDeleteDirModal,
+    isOpen: isConfirmDeleteDirModalOpen,
+  } = useConfirmModal()
+
   const [dirState, setDirState] = useState<DirState>({
     isLoading: false,
     dirTrees: [],
@@ -47,9 +70,16 @@ const LocalFSProvider: React.FC = ({ children }) => {
     })
   }, [])
 
-  const deleteFile = useCallback(async (targetPath: string) => {
-    window.electron.invoke("DELETE_FILE", { targetPath })
-  }, [])
+  const deleteFile = useCallback(
+    async (targetPath: string) => {
+      const result = await openConfirmDeleteFileModal({})
+
+      if (result === true) {
+        window.electron.invoke("DELETE_FILE", { targetPath })
+      }
+    },
+    [openConfirmDeleteFileModal]
+  )
 
   const createDir = useCallback(async (name: string, parentPath?: string) => {
     await window.electron.invoke("CREATE_DIR", {
@@ -58,11 +88,18 @@ const LocalFSProvider: React.FC = ({ children }) => {
     })
   }, [])
 
-  const deleteDir = useCallback(async (dirPath: string) => {
-    await window.electron.invoke("DELETE_DIR", {
-      dirPath,
-    })
-  }, [])
+  const deleteDir = useCallback(
+    async (dirPath: string) => {
+      const result = await openConfirmDeleteDirModal({})
+
+      if (result === true) {
+        await window.electron.invoke("DELETE_DIR", {
+          dirPath,
+        })
+      }
+    },
+    [openConfirmDeleteDirModal]
+  )
 
   const addPath = useCallback(
     async (defaultPath?: string) => {
@@ -108,20 +145,30 @@ const LocalFSProvider: React.FC = ({ children }) => {
   console.log("dirState", dirState)
 
   return (
-    <LocalFSContext.Provider
-      value={{
-        dirTrees: dirState.dirTrees,
-        createDocument,
-        createDir,
-        deleteDir,
-        revealItem,
-        deleteFile,
-        addPath,
-        removePath,
-      }}
-    >
-      {children}
-    </LocalFSContext.Provider>
+    <>
+      <LocalFSContext.Provider
+        value={{
+          dirTrees: dirState.dirTrees,
+          createDocument,
+          createDir,
+          deleteDir,
+          revealItem,
+          deleteFile,
+          addPath,
+          removePath,
+        }}
+      >
+        {children}
+      </LocalFSContext.Provider>
+
+      {isConfirmDeleteFileModalOpen ? (
+        <ConfirmDeleteFileModal component={ConfirmDeleteFileModalContent} />
+      ) : null}
+
+      {isConfirmDeleteDirModalOpen ? (
+        <ConfirmDeleteDirModal component={ConfirmDeleteDirModalContent} />
+      ) : null}
+    </>
   )
 }
 
