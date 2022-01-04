@@ -1,5 +1,4 @@
-import { useCallback, useMemo } from "react"
-import { Descendant } from "slate"
+import { useCallback, useEffect, useMemo } from "react"
 import { ReactEditor } from "slate-react"
 import { EditableProps } from "slate-react/dist/components/editable"
 import isHotkey from "is-hotkey"
@@ -220,6 +219,12 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
     [saveDocument]
   )
 
+  useEffect(() => {
+    // Effect responsible for resetting the zustand/zustood or whatever it is, plate editor store for the given document identifier (plate editor id corresponds to document ids), because resetting the editor is synchronous there is no need for any kind of loading state to delay rendering the Plate component
+    console.log("new generic document", genericDocument.identifier)
+    getPlateActions(genericDocument.identifier).resetEditor()
+  }, [genericDocument.identifier])
+
   /* TODO: maybe use an rxdb subscription to the remove event to check for permanent deletion to close the tab (maybe do it higher up) */
   return (
     <OuterContainer onKeyDown={handleContainerKeyDown}>
@@ -227,7 +232,8 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
       <InnerContainer>
         <EditableContainer>
           <Plate
-            id="main"
+            key={genericDocument.identifier}
+            id={genericDocument.identifier} // important for rendering and using correct state based on the document being edited
             plugins={pluginsList}
             editableProps={editableProps}
             initialValue={JSON.parse(genericDocument.content)}
