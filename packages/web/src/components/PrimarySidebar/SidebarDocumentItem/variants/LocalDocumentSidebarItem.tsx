@@ -1,7 +1,5 @@
 import { useCallback, useMemo } from "react"
 
-import { myDeserializeMd } from "../../../../slate-helpers/serialization"
-
 import { usePrimarySidebar } from "../../../ViewState"
 import { useLocalFS } from "../../../LocalFSProvider"
 import {
@@ -33,11 +31,7 @@ export const LocalDocumentSidebarItem: React.FC<SidebarDocumentItemProps> = ({
 
   const { getContextMenuProps, openMenu, isMenuOpen } = useContextMenu()
 
-  const contentDeserializer = useCallback(
-    (serializedContent: string) => myDeserializeMd(serializedContent),
-    []
-  )
-  const snippet = useDocumentSnippet(content, contentDeserializer)
+  const snippet = useDocumentSnippet(content)
 
   const isCurrent = useMemo(() => {
     if (currentTabObject.tabType === "localDocument") {

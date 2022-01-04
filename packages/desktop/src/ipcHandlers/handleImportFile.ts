@@ -3,7 +3,7 @@ import fs from "fs-extra"
 import path from "path"
 import os from "os"
 
-import { ImportFilePayload, IpcResponseStatus, OpenFileObject } from "shared"
+import { ImportFilePayload, IpcResponseStatus, FileObject } from "shared"
 
 import { filters } from "../constants"
 import { readFileForLocalEditor } from "../helpers"
@@ -32,7 +32,7 @@ export const handleImportFile = async (_event, payload: ImportFilePayload) => {
     return { status: IpcResponseStatus.CANCELED, error: null, data: null }
   }
 
-  const files: OpenFileObject[] = []
+  const files: FileObject[] = []
 
   for (const filePath of dialogRes.filePaths) {
     try {

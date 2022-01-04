@@ -6,7 +6,6 @@ import { useCloudGroupsState } from "../../../CloudGroupsProvider"
 import { useDocumentContextMenu } from "../../../DocumentContextMenu"
 import { useTabsAPI, useTabsState } from "../../../TabsProvider"
 import { usePrimarySidebar } from "../../../ViewState"
-import { deserialize } from "../../../Editor/helpers"
 
 import SidebarDocumentItemComponent from "../SidebarDocumentItemComponent"
 import { SidebarDocumentItemProps } from "../types"
@@ -40,11 +39,7 @@ export const CloudDocumentSidebarItem: React.FC<SidebarDocumentItemProps> = ({
     return document.identifier === currentCloudDocumentId
   }, [currentCloudDocumentId, document.identifier])
 
-  const contentDeserializer = useCallback(
-    (serializedContent: string) => deserialize(serializedContent),
-    []
-  )
-  const snippet = useDocumentSnippet(document.content, contentDeserializer)
+  const snippet = useDocumentSnippet(document.content)
 
   const formattedTitle = useMemo(
     () => formatOptional(document.name, "Untitled"),

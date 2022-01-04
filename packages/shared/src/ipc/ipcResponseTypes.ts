@@ -1,18 +1,17 @@
-// ===== helper types
+import { DirObjectRecursive, ValidatePathsObj, FileObject } from "../types"
 
 import { IpcResponseObject } from "./ipcMiscTypes"
-import { DirObjectRecursive, OpenFileObject, ValidatePathsObj } from "../types"
 
 // ===== return types
 
 export type ExportFileResponseData = {}
 
 export type ImportFileResponseData = {
-  files: OpenFileObject[]
+  files: FileObject[]
 }
 
 export type OpenFileResponseData = {
-  file: OpenFileObject
+  file: FileObject
 }
 
 export type SaveFileResponseData = {}

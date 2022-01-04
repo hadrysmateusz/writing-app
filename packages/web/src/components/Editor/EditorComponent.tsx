@@ -5,7 +5,10 @@ import { EditableProps } from "slate-react/dist/components/editable"
 import isHotkey from "is-hotkey"
 import { getPlateActions, Plate, usePlateEditorRef } from "@udecode/plate"
 
+import { GenericDocument_Discriminated } from "../../types"
+
 import { useEditorState } from "../EditorStateProvider"
+import { useTabsDispatch } from "../TabsProvider"
 
 import {
   EditableContainer,
@@ -16,13 +19,14 @@ import { useEditorContextMenu } from "./hooks"
 import { pluginsList } from "./config"
 import TitleInput from "./TitleInput"
 import { BalloonToolbar, Toolbar } from "./Toolbars"
-import { useTabsDispatch } from "../TabsProvider"
 
 type EditorComponentProps = {
+  // handlers for actions that differ based on document/editor type
   saveDocument: () => void
   renameDocument: (value: string) => void
-  title: string
-  content: Descendant[]
+
+  // document object itself (could be replaced by name, content pair if this solution causes too many unnecessary re-renders)
+  genericDocument: GenericDocument_Discriminated
 }
 
 /**
@@ -30,9 +34,8 @@ type EditorComponentProps = {
  */
 export const EditorComponent: React.FC<EditorComponentProps> = ({
   saveDocument,
-  title,
-  content,
   renameDocument,
+  genericDocument,
 }) => {
   const tabsDispatch = useTabsDispatch()
   const { onChange } = useEditorState()
@@ -227,10 +230,13 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
             id="main"
             plugins={pluginsList}
             editableProps={editableProps}
-            initialValue={content}
+            initialValue={JSON.parse(genericDocument.content)}
             onChange={onChange}
           >
-            <TitleInput title={title} onRename={renameDocument} />
+            <TitleInput
+              title={genericDocument.name}
+              onRename={renameDocument}
+            />
             <Toolbar />
             <BalloonToolbar />
           </Plate>
