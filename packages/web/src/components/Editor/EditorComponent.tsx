@@ -1,11 +1,13 @@
-import { useCallback, useMemo } from "react"
-import { Descendant } from "slate"
+import { useCallback, useEffect, useMemo } from "react"
 import { ReactEditor } from "slate-react"
 import { EditableProps } from "slate-react/dist/components/editable"
 import isHotkey from "is-hotkey"
-import { Plate, usePlateEditorRef, usePlateEventId } from "@udecode/plate"
+import { getPlateActions, Plate, usePlateEditorRef } from "@udecode/plate"
+
+import { GenericDocument_Discriminated } from "../../types"
 
 import { useEditorState } from "../EditorStateProvider"
+import { useTabsDispatch } from "../TabsProvider"
 
 import {
   EditableContainer,
@@ -16,13 +18,14 @@ import { useEditorContextMenu } from "./hooks"
 import { pluginsList } from "./config"
 import TitleInput from "./TitleInput"
 import { BalloonToolbar, Toolbar } from "./Toolbars"
-import { useTabsDispatch } from "../TabsProvider"
 
 type EditorComponentProps = {
+  // handlers for actions that differ based on document/editor type
   saveDocument: () => void
   renameDocument: (value: string) => void
-  title: string
-  content: Descendant[]
+
+  // document object itself (could be replaced by name, content pair if this solution causes too many unnecessary re-renders)
+  genericDocument: GenericDocument_Discriminated
 }
 
 /**
@@ -30,14 +33,12 @@ type EditorComponentProps = {
  */
 export const EditorComponent: React.FC<EditorComponentProps> = ({
   saveDocument,
-  title,
-  content,
   renameDocument,
+  genericDocument,
 }) => {
   const tabsDispatch = useTabsDispatch()
   const { onChange } = useEditorState()
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
-  // const { isSpellCheckEnabled } = useUserdata()
+  const editor = usePlateEditorRef()
 
   const { openMenu, isMenuOpen, renderContextMenu } = useEditorContextMenu()
 
@@ -100,7 +101,7 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
         event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>
       ) => {
         // TODO: handle this better
-        if (editor === undefined) {
+        if (!editor) {
           console.log("can't open context menu because editor is undefined")
           return
         }
@@ -218,6 +219,12 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
     [saveDocument]
   )
 
+  useEffect(() => {
+    // Effect responsible for resetting the zustand/zustood or whatever it is, plate editor store for the given document identifier (plate editor id corresponds to document ids), because resetting the editor is synchronous there is no need for any kind of loading state to delay rendering the Plate component
+    console.log("new generic document", genericDocument.identifier)
+    getPlateActions(genericDocument.identifier).resetEditor()
+  }, [genericDocument.identifier])
+
   /* TODO: maybe use an rxdb subscription to the remove event to check for permanent deletion to close the tab (maybe do it higher up) */
   return (
     <OuterContainer onKeyDown={handleContainerKeyDown}>
@@ -225,13 +232,17 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
       <InnerContainer>
         <EditableContainer>
           <Plate
-            id="main"
+            key={genericDocument.identifier}
+            id={genericDocument.identifier} // important for rendering and using correct state based on the document being edited
             plugins={pluginsList}
             editableProps={editableProps}
-            initialValue={content}
+            initialValue={JSON.parse(genericDocument.content)}
             onChange={onChange}
           >
-            <TitleInput title={title} onRename={renameDocument} />
+            <TitleInput
+              title={genericDocument.name}
+              onRename={renameDocument}
+            />
             <Toolbar />
             <BalloonToolbar />
           </Plate>

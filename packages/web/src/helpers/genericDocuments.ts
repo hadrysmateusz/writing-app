@@ -1,7 +1,17 @@
-import { DocumentDoc } from "../components/Database"
-import { GenericDocGroupTree_Discriminated } from "../types/GenericDocGroup"
-import { GenericDocument_Discriminated } from "../types"
 import { FileObject } from "shared"
+
+import { myDeserializeMd } from "../slate-helpers"
+import { serialize } from "../components"
+import { DocumentDoc } from "../components/Database"
+import {
+  GenericDocument_CloudVariant,
+  GenericDocument_Discriminated,
+  GenericDocument_LocalVariant,
+  GenericDocGroupTree_Discriminated,
+} from "../types"
+import { DEFAULT_EDITOR_VALUE } from "../components/CloudDocumentsProvider"
+
+// TODO: probably add isDeleted to GenericDocument (the field could be undefined or simply false (which would be correct, or could even later serve to implement persistance deleted documents open in a tab) for local documents)
 
 /**
  * Creates a generic document from a cloud document
@@ -11,7 +21,7 @@ import { FileObject } from "shared"
  */
 export const createGenericDocumentFromCloudDocument = (
   cloudDoc: DocumentDoc
-): GenericDocument_Discriminated => {
+): GenericDocument_CloudVariant => {
   return {
     documentType: "cloud",
     identifier: cloudDoc.id,
@@ -32,7 +42,16 @@ export const createGenericDocumentFromCloudDocument = (
  */
 export const createGenericDocumentFromLocalFile = (
   fileObj: FileObject
-): GenericDocument_Discriminated => {
+): GenericDocument_LocalVariant => {
+  // TODO: support other deserializers (maybe, or probably just for importing to cloud documents)
+  let deserialized = myDeserializeMd(fileObj.content)
+  if (deserialized.length === 0) {
+    deserialized = DEFAULT_EDITOR_VALUE
+  }
+
+  // TODO: unless I decide to use the deserialized slate nodes tree as the generic document content field type, the value needs to be re-serialized to the same format cloud documents are stored in
+  const reserialized = serialize(deserialized)
+
   return {
     documentType: "local",
     identifier: fileObj.path,
@@ -40,7 +59,7 @@ export const createGenericDocumentFromLocalFile = (
     parentIdentifier: fileObj.parentDirectory,
     createdAt: fileObj.createdAt.getTime(),
     modifiedAt: fileObj.modifiedAt.getTime(),
-    content: fileObj.content,
+    content: reserialized,
   }
 }
 

@@ -1,4 +1,4 @@
-import { usePlateEventId, usePlateValue } from "@udecode/plate-core"
+import { usePlateSelectors } from "@udecode/plate-core"
 import React, { useEffect, useState } from "react"
 import styled from "styled-components/macro"
 
@@ -12,7 +12,7 @@ type OutlineType = {
 type OutlineItemType = { level: number; textContent: string }
 
 export const Outline: React.FC = () => {
-  const editorValue = usePlateValue(usePlateEventId("focus"))
+  const editorValue = usePlateSelectors().value()
 
   const [outline, setOutline] = useState<OutlineType>({
     baseLevel: 3,
@@ -20,7 +20,7 @@ export const Outline: React.FC = () => {
   })
 
   useEffect(() => {
-    if (editorValue === undefined) {
+    if (!editorValue) {
       // TODO: handle this better (probably check higher up and ensure it's defined)
       return
     }

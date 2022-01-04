@@ -1,5 +1,3 @@
-export type OpenFileObject = { name: string; content: string }
-
 export type LocalResourceCommon = {
   path: string
   name: string

@@ -1,11 +1,10 @@
 import {
   someNode,
   getPluginType,
-  usePlateEventId,
   usePlateEditorState,
 } from "@udecode/plate-core"
 import { ELEMENT_LINK } from "@udecode/plate-link"
-import { ToolbarButton, ToolbarButtonProps } from "@udecode/plate-toolbar"
+import { ToolbarButton, ToolbarButtonProps } from "@udecode/plate-ui-toolbar"
 
 import { getAndUpsertLink } from "./helpers"
 
@@ -15,7 +14,7 @@ export interface ToolbarLinkProps extends ToolbarButtonProps {
 
 // TODO: change name to be in line with plate's new ui elements naming style
 export const ToolbarLink = ({ getLinkUrl, ...props }: ToolbarLinkProps) => {
-  const editor = usePlateEditorState(usePlateEventId("focus"))
+  const editor = usePlateEditorState()
 
   const type = editor ? getPluginType(editor, ELEMENT_LINK) : null
   const isLink = !!editor?.selection && someNode(editor, { match: { type } })

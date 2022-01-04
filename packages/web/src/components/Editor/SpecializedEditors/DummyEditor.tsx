@@ -1,6 +1,7 @@
-import { useCallback } from "react"
+import { v4 as uuidv4 } from "uuid"
+import { useCallback, useMemo } from "react"
 import { Descendant } from "slate"
-import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
+import { usePlateEditorRef } from "@udecode/plate"
 
 import {
   CreateDocumentFn,
@@ -11,9 +12,10 @@ import { useTabsDispatch, useTabsState } from "../../TabsProvider"
 
 import { serialize } from "../helpers"
 import EditorComponent from "../EditorComponent"
+import { GenericDocument_Discriminated } from "../../../types"
 
 export const DummyEditor = () => {
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
+  const editor = usePlateEditorRef()
   const { createDocument } = useDocumentsAPI()
   const {
     tabsState: { currentTab },
@@ -52,7 +54,7 @@ export const DummyEditor = () => {
   // TODO: remove duplication with onRename in DummyTitleInput
   const onSave = useCallback(async () => {
     // TODO: remove duplication with saveDocument function logic
-    if (editor === undefined) {
+    if (!editor) {
       console.error("Can't save, the editor is undefined")
       return
     }
@@ -68,13 +70,26 @@ export const DummyEditor = () => {
     }
   }, [createDocumentAndReplaceTab, editor])
 
+  // TODO: this is a temp hack, figure out a better solution
+  const dummyGenericDocument: GenericDocument_Discriminated = useMemo(
+    () => ({
+      content: serialize(DEFAULT_EDITOR_VALUE),
+      name: "",
+      createdAt: Date.now(),
+      modifiedAt: Date.now(),
+      documentType: "cloud",
+      parentIdentifier: null,
+      identifier: uuidv4(),
+      tags: [],
+    }),
+    []
+  )
+
   return (
     <EditorComponent
-      key={currentTab} // Necessary to reload the component on id change
       saveDocument={onSave}
       renameDocument={onRename}
-      title={""}
-      content={DEFAULT_EDITOR_VALUE}
+      genericDocument={dummyGenericDocument}
     />
   )
 }

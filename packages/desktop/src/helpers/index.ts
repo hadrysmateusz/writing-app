@@ -1,4 +1,3 @@
-export * from "./createDirObjectRecursive"
 export * from "./electron-is-dev"
 export * from "./getDirWatchers"
 export * from "./getMainWindow"

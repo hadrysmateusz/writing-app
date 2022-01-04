@@ -1,13 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { Descendant } from "slate"
-import { usePlateEditorRef, usePlateEventId } from "@udecode/plate"
+import { usePlateEditorRef } from "@udecode/plate"
 
-import {
-  myDeserializeMd,
-  mySerializeMd,
-} from "../../../slate-helpers/serialization"
-
-import { DEFAULT_EDITOR_VALUE } from "../../CloudDocumentsProvider"
+import { mySerializeMd } from "../../../slate-helpers"
+import { createGenericDocumentFromLocalFile } from "../../../helpers"
+import { GenericDocument_LocalVariant } from "../../../types"
 
 import { DocumentEmptyState, DocumentLoadingState } from "../HelperStates"
 import EditorComponent from "../EditorComponent"
@@ -15,12 +11,7 @@ import EditorComponent from "../EditorComponent"
 type DocumentState = {
   isLoading: boolean
   isMissing: boolean
-  document:
-    | {
-        title: string
-        content: Descendant[]
-      }
-    | undefined
+  document: GenericDocument_LocalVariant | undefined
 }
 
 const INITIAL_DOCUMENT_STATE: DocumentState = {
@@ -37,7 +28,7 @@ export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
     INITIAL_DOCUMENT_STATE
   )
 
-  const editor = usePlateEditorRef(usePlateEventId("focus"))
+  const editor = usePlateEditorRef()
 
   useEffect(() => {
     ;(async () => {
@@ -57,18 +48,11 @@ export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
       if (ipcResponse.status === "success") {
         // TODO: handle possible data-shape errors
 
-        // TODO: support other deserializers (maybe, or probably just for importing to cloud documents)
-        let deserialized = myDeserializeMd(ipcResponse.data.file.content)
-        if (deserialized.length === 0) {
-          deserialized = DEFAULT_EDITOR_VALUE
-        }
-
-        console.log("deserialized:", deserialized)
+        const genericDocument = createGenericDocumentFromLocalFile(
+          ipcResponse.data.file
+        )
         setDocumentState({
-          document: {
-            title: ipcResponse.data.file.name,
-            content: deserialized,
-          },
+          document: genericDocument,
           isLoading: false,
           isMissing: false,
         })
@@ -108,11 +92,9 @@ export const LocalEditor: React.FC<{ currentDocumentPath: string }> = ({
 
   return documentState.document ? (
     <EditorComponent
-      key={currentDocumentPath}
       saveDocument={saveDocument}
       renameDocument={renameDocument}
-      title={documentState.document.title}
-      content={documentState.document.content}
+      genericDocument={documentState.document}
     />
   ) : documentState.isLoading ? (
     <DocumentLoadingState />

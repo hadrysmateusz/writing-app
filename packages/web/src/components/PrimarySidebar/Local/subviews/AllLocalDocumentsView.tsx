@@ -36,6 +36,7 @@ export const AllLocalDocumentsView: React.FC<{}> = () => {
             key="sorting"
             contextMenuContent={
               <>
+                {/* TODO: add a button for refreshing the tree (which will reset the watchers and update all names and snippets and other sidebar item values) */}
                 {/* <CloudDocumentSortingSubmenu /> // TODO: support sorting for local directories */}
                 <DocumentListDisplayTypeSubmenu />
                 <ContextMenuSeparator />
