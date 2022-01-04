@@ -220,6 +220,8 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
   )
 
   useEffect(() => {
+    // TODO: maybe use a kind of usePrevious hook to clear the previous document's plate store and not the current one's
+
     // Effect responsible for resetting the zustand/zustood or whatever it is, plate editor store for the given document identifier (plate editor id corresponds to document ids), because resetting the editor is synchronous there is no need for any kind of loading state to delay rendering the Plate component
     console.log("new generic document", genericDocument.identifier)
     getPlateActions(genericDocument.identifier).resetEditor()
