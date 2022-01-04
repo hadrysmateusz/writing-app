@@ -12,6 +12,7 @@ import {
   usePrimarySidebar,
 } from "../../../ViewState"
 import { useLocalFS } from "../../../LocalFSProvider"
+import { ContextMenuSeparator } from "../../../ContextMenu"
 
 import {
   AddLocalPathMenuItem,
@@ -21,11 +22,11 @@ import {
   MoreMainHeaderButton,
 } from "../../MainHeader"
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
-
-import { findDirInTrees } from "./DirectoryView.helpers"
 import { NestedDocumentsList } from "../../DocumentsList"
 import { LocalDocumentSectionHeader } from "../../SectionHeader"
 import { LocalDocumentSidebarItem } from "../../SidebarDocumentItem"
+
+import { findDirInTrees } from "./DirectoryView.helpers"
 
 export const DirectoryView: React.FC = () => {
   const { currentSubviews } = usePrimarySidebar()
@@ -123,6 +124,7 @@ const DirectoryViewInner: React.FC<{
               <>
                 {/* <CloudDocumentSortingSubmenu /> // TODO: support sorting for local directories */}
                 <DocumentListDisplayTypeSubmenu />
+                <ContextMenuSeparator />
                 <AddLocalPathMenuItem />
               </>
             }
