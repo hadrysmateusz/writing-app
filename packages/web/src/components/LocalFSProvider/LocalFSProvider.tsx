@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react"
+import { ValidatePathsObj } from "shared"
 
 import { GenericDocGroupTreeBranch } from "../../types"
 import { createContext } from "../../utils"
@@ -23,14 +24,18 @@ const ConfirmDeleteDirModalContent = getConfirmModalContent({
 
 type LocalFSContextType = {
   dirTrees: GenericDocGroupTreeBranch[]
+  validatePathObjects: ValidatePathsObj[]
+
   createDocument: (defaultPath?: string) => void
   createDir: (name: string, parentPath?: string) => void
-  deleteDir: (dirPath: string) => void
+  deleteDir: (dirPath: string) => Promise<void>
   revealItem: (targetPath: string) => void
-  deleteFile: (targetPath: string) => void
+  deleteFile: (targetPath: string) => Promise<void>
   addPath: (defaultPath?: string) => void
   removePath: (path: string) => void
 }
+
+// TODO: when adding or removing path from library make sure the tree in navigator sidebar gets updated too
 
 const [LocalFSContext, useLocalFS] = createContext<LocalFSContextType>()
 
@@ -149,6 +154,7 @@ const LocalFSProvider: React.FC = ({ children }) => {
       <LocalFSContext.Provider
         value={{
           dirTrees: dirState.dirTrees,
+          validatePathObjects: dirs,
           createDocument,
           createDir,
           deleteDir,
