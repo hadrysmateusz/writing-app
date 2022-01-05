@@ -20,6 +20,7 @@ import {
   GoUpMainHeaderButton,
   MainHeader,
   MoreMainHeaderButton,
+  useGoUpPath,
 } from "../../MainHeader"
 import { PrimarySidebarBottomButton } from "../../PrimarySidebarBottomButton"
 import { NestedDocumentsList } from "../../DocumentsList"
@@ -73,7 +74,12 @@ const DirectoryViewInner: React.FC<{
   // TODO: when adding dir path to local library paths list check if it's not a descendant of a path already on the list (this would cause a shitton of problems because the dirs and files inside would no longer be unique in the tree which will probably break watchers and other things)
   // TODO: if dir has exists === false, show a warning and a button to manually find the dir
   // TODO: turn bottom button into a create local document action (and expose it in context menu)
-  // TODO: move the add path action to maybe the main header (and probably context menu)
+
+  const goUpPath = useGoUpPath(
+    dirTree,
+    SIDEBAR_VAR.primary.local.directory,
+    SIDEBAR_VAR.primary.local.all
+  )
 
   return (
     <PrimarySidebarViewContainer>
@@ -83,10 +89,7 @@ const DirectoryViewInner: React.FC<{
         numSubgroups={dirTree?.childGroups?.length}
         buttons={[
           // TODO: add a way to go up one directory
-          <GoUpMainHeaderButton
-            goUpPath={SIDEBAR_VAR.primary.local.all}
-            key={SIDEBAR_VAR.primary.local.all}
-          />,
+          <GoUpMainHeaderButton goUpPath={goUpPath} key="goUpButton" />,
 
           <MoreMainHeaderButton
             key="sorting"
