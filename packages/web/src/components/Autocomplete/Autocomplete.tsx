@@ -15,7 +15,7 @@ export type Option = { value: string | null; label: string; disabled?: boolean }
 export const Autocomplete: React.FC<{
   suggestions: Option[]
   submit: (option: Option) => void
-  create: (value: string) => void
+  close: () => void
   /**
    * Force the placeholder to be a custom string instead of currently selected option
    */
@@ -29,6 +29,7 @@ export const Autocomplete: React.FC<{
   suggestions,
   submit,
   create,
+  close,
   placeholder,
   createNewPrompt = "Press 'Enter' to create new",
   inputRef,
@@ -95,6 +96,10 @@ export const Autocomplete: React.FC<{
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       switch (event.code) {
+        case "Escape": {
+          close()
+          break
+        }
         case "ArrowUp": {
           event.stopPropagation()
           event.preventDefault()
@@ -117,18 +122,20 @@ export const Autocomplete: React.FC<{
             // submit selected option
             wrappedSubmit(filteredSuggestions[activeSuggestionIndex])
           } else {
-            // create and submit the new option (all handled by 'create')
-            const __inputValue = inputValue
-            reset()
-            create(__inputValue)
+            if (create) {
+              // create and submit the new option (all handled by 'create')
+              const __inputValue = inputValue
+              reset()
+              create(__inputValue)
+            }
           }
           break
         }
-        // TODO: use esc to close
       }
     },
     [
       activeSuggestionIndex,
+      close,
       create,
       filteredSuggestions,
       inputValue,

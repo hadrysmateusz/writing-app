@@ -77,6 +77,7 @@ export const CollectionSelector: React.FC<CollectionSelectorProps> = ({
       <Autocomplete
         suggestions={options}
         submit={onSubmit}
+        close={close}
         create={handleMoveToGroupCreate}
         createNewPrompt="Press 'Enter' to create new collection"
         inputRef={inputRef}

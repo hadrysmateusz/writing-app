@@ -136,6 +136,7 @@ export const Keywords = () => {
           inputRef={autocompleteInputRef}
           suggestions={options}
           submit={handleSubmit}
+          close={close}
           create={handleCreate}
           createNewPrompt="Press 'Enter' to create new tag"
         />
