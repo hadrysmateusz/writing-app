@@ -12,7 +12,6 @@ import {
   MainHeader,
   MoreMainHeaderButton,
 } from "../../MainHeader"
-
 import { NestedDocumentsListSection } from "../../DocumentsList"
 import { LocalDocumentSectionHeader } from "../../SectionHeader"
 import { LocalDocumentSidebarItem } from "../../SidebarDocumentItem"
@@ -31,6 +30,7 @@ export const AllLocalDocumentsView: React.FC<{}> = () => {
     <PrimarySidebarViewContainer>
       <MainHeader
         title="Local"
+        detailsMessage={`${dirTrees.length} saved folders`}
         buttons={[
           <MoreMainHeaderButton
             key="sorting"

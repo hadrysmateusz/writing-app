@@ -43,6 +43,7 @@ export const TagsView: React.FC = () => {
       <PrimarySidebarViewContainer>
         <MainHeader
           title="Tags"
+          detailsMessage={`${tags?.length ?? 0} tags`}
           buttons={
             [
               // <GoUpMainHeaderButton
