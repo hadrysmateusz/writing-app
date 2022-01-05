@@ -1,5 +1,9 @@
 import React, { useMemo, useState } from "react"
 
+import { ValidatePathsObj } from "shared"
+
+import { GenericDocGroupTreeBranch } from "../../../types"
+
 import { ItemsBranch } from "../../GroupingItemList"
 import { useLocalFS } from "../../LocalFSProvider"
 import { GenericAddButton } from "../../TreeItem"
@@ -7,36 +11,40 @@ import { usePrimarySidebar } from "../../ViewState"
 import { DirsList } from "../../DirsList"
 
 import { SectionHeader, SectionContainer } from "../Common"
-import { GenericDocGroupTreeBranch } from "../../../types"
 
 // TODO: probably rename to dirs section
 
 const MSG_DIRECTORIES_HEADER = "Local Library"
 
-export const createGroupingItemBranchFromDirObject = (
-  dirTree: GenericDocGroupTreeBranch
+export const createGroupingItemBranchFromDir = (
+  dirTree: GenericDocGroupTreeBranch,
+  validatePathObjects: ValidatePathsObj[]
 ): ItemsBranch => {
+  const validatePathObj = validatePathObjects.find(
+    (pathObj) => pathObj.path === dirTree.identifier
+  )
+
   return {
     itemId: dirTree.identifier,
     itemName: dirTree.name,
-    // TODO: add parentDir information to local dirs tree
-    parentItemId: /* dirTree.parentGroup */ null,
+    parentItemId: dirTree.parentIdentifier,
     childItems: dirTree.childGroups.map((dirTree) =>
-      createGroupingItemBranchFromDirObject(dirTree)
+      createGroupingItemBranchFromDir(dirTree, validatePathObjects)
     ),
+    exists: validatePathObj?.exists, // intentionally returns undefined if validatePathObj wasn't found because that most likely means the path is a child,
   }
 }
 
 export const DirectoriesSection: React.FC = () => {
-  const { dirTrees } = useLocalFS()
+  const { dirTrees, validatePathObjects } = useLocalFS()
 
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
 
   const itemsTree = useMemo(() => {
     return dirTrees.map((dirTree) =>
-      createGroupingItemBranchFromDirObject(dirTree)
+      createGroupingItemBranchFromDir(dirTree, validatePathObjects)
     )
-  }, [dirTrees])
+  }, [dirTrees, validatePathObjects])
 
   return dirTrees.length > 0 ? (
     <SectionContainer>

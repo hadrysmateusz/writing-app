@@ -113,7 +113,7 @@ export const DirTreeItem: React.FC<{
       view={view}
       parentItemId={item.parentItemId}
       itemId={itemId}
-      itemName={itemName}
+      itemName={item.exists === false ? "MISSING: " + itemName : itemName}
       childItems={item.childItems}
       isEmpty={isEmpty}
       isActive={isActive}

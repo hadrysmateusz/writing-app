@@ -27,4 +27,6 @@ export type ItemsBranch = {
   itemName: string
   parentItemId: string | null // TODO: add actual parentItemIds for local branches
   childItems: ItemsBranch[]
+
+  exists?: boolean
 }
