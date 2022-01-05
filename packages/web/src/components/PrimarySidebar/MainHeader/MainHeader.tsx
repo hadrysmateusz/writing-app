@@ -11,8 +11,9 @@ export const MainHeader: React.FC<{
   title: string
   numDocuments?: number
   numSubgroups?: number
+  detailsMessage?: string
   buttons: React.ReactElement[]
-}> = ({ title, numSubgroups, numDocuments, buttons }) => {
+}> = ({ title, numSubgroups, numDocuments, buttons, detailsMessage }) => {
   // TODO: use real documents data in MainHeader_Detail
   return (
     <Wrapper>
@@ -20,9 +21,13 @@ export const MainHeader: React.FC<{
         <div>
           <div className="MainHeader_MainText">{title}</div>
           <div className="MainHeader_Details">
-            {numDocuments ? `${numDocuments} documents` : null}
-            {numSubgroups ? `, ${numSubgroups} collections` : null}
-            {!numDocuments && !numSubgroups ? <EmptyDetails /> : null}
+            {detailsMessage ?? (
+              <>
+                {numDocuments ? `${numDocuments} documents` : null}
+                {numSubgroups ? `, ${numSubgroups} collections` : null}
+                {!numDocuments && !numSubgroups ? <EmptyDetails /> : null}
+              </>
+            )}
           </div>
         </div>
         <>{buttons}</>
