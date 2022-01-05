@@ -1,5 +1,8 @@
-import React, { useState, FC } from "react"
+import { useState } from "react"
 import styled from "styled-components/macro"
+
+import { useStatelessToggleable } from "../../hooks"
+
 import { Icon } from "../Icon"
 
 import {
@@ -7,10 +10,10 @@ import {
   StatefulExpandableTreeItemProps,
   ExpandableChildrenRenderProps,
 } from "./types"
-import { useStatelessToggleable } from "../../hooks"
 import { TreeItemIcon } from "./TreeItemIcon"
+import { TreeItem } from "./TreeItem"
 
-export const ExpandableTreeItem: FC<StatefulExpandableTreeItemProps> = ({
+export const ExpandableTreeItem: React.FC<StatefulExpandableTreeItemProps> = ({
   startExpanded = false,
   ...props
 }) => {
@@ -25,7 +28,9 @@ export const ExpandableTreeItem: FC<StatefulExpandableTreeItemProps> = ({
   )
 }
 
-export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> = ({
+export const StatelessExpandableTreeItem: React.FC<
+  StatelessExpandableTreeItemProps
+> = ({
   icon,
   depth = 0,
   children,
@@ -41,14 +46,14 @@ export const StatelessExpandableTreeItem: FC<StatelessExpandableTreeItemProps> =
   onAfterChange,
   ...rest
 }) => {
-  const { toggle, open: expand, close: collapse } = useStatelessToggleable(
-    isExpanded,
-    setIsExpanded,
-    {
-      onBeforeChange,
-      onAfterChange,
-    }
-  )
+  const {
+    toggle,
+    open: expand,
+    close: collapse,
+  } = useStatelessToggleable(isExpanded, setIsExpanded, {
+    onBeforeChange,
+    onAfterChange,
+  })
 
   const renderProps: ExpandableChildrenRenderProps = {
     isExpanded,

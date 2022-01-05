@@ -11,6 +11,7 @@ import { TagsSection } from "../sections/TagsSection"
 import { FavoritesSection } from "../sections/FavoritesSection"
 import { GroupsSection } from "../sections/GroupsSection"
 import { DirectoriesSection } from "../sections/DirectoriesSection"
+import { SearchSection } from "../sections/SearchSection"
 
 import { useNavigationTreeItem } from "./helpers"
 import { NavigatorSidebarContainer } from "./NavigatorSidebar.styles"
@@ -23,6 +24,8 @@ export const NavigatorSidebar = forwardRef<HTMLDivElement, {}>(
         <InboxSidebarItem />
         <SettingsSidebarItem />
       </SectionContainer>
+
+      <SearchSection />
 
       <FavoritesSection />
 

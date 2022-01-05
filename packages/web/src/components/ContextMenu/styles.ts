@@ -6,7 +6,7 @@ const MENU_CONTAINER_PADDING_Y = MENU_CONTAINER_PADDING_Y_VALUE + "px"
 export const MENU_CONTAINER_BORDER_WIDTH_VALUE = 1
 const MENU_CONTAINER_BORDER_WIDTH = MENU_CONTAINER_BORDER_WIDTH_VALUE + "px"
 
-interface IPositioned {
+export interface IPositioned {
   xPos: number
   yPos: number
 }
@@ -61,7 +61,7 @@ export const menuContainerBaseStyles = css`
   /* overflow: hidden; */
 `
 
-const menuContainerPositioning = (p: IPositioned) => css`
+export const menuContainerPositioning = (p: IPositioned) => css`
   position: absolute;
   top: ${p.yPos}px;
   left: ${p.xPos}px;
@@ -80,13 +80,13 @@ type MenuContainerProps = {
 }
 export const MenuContainer = styled.div<MenuContainerProps>`
   /* Visual styles */
-  ${menuContainerBaseStyles};
+  ${menuContainerBaseStyles}
 
   /* Positioning */
-  ${menuContainerPositioning};
+  ${menuContainerPositioning}
 
   /* Visibility based on isAdjusted */
-  ${opacityFromIsAdjusted};
+  ${opacityFromIsAdjusted}
 `
 
 type ContextMenuItemContainerProps = { disabled?: boolean }
