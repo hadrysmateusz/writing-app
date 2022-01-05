@@ -15,7 +15,7 @@ export const useValidateDirs = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
   // Don't use __setDirs directly after initial load, use updateDirs instead
-  const [dirs, __setDirs] = useState<ValidatePathsObj[]>()
+  const [dirs, __setDirs] = useState<ValidatePathsObj[]>([])
 
   useEffect(() => {
     ;(async () => {
