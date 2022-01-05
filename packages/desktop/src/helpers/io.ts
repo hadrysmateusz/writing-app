@@ -19,6 +19,13 @@ export const readFileContentForLocalEditor = (filePath: string): string => {
   return fs.readFileSync(filePath, { encoding: "utf-8" })
 }
 
+export const dirExists = (pathStr: string): boolean => {
+  return fs.pathExistsSync(pathStr) && fs.lstatSync(pathStr).isDirectory()
+}
+
+export const fileExists = (pathStr: string): boolean => {
+  return fs.pathExistsSync(pathStr) && fs.lstatSync(pathStr).isFile()
+}
 export const createDirObjectRecursive = (
   pathStr: string
 ): DirObjectRecursive => {
