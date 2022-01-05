@@ -45,6 +45,7 @@ export const DirTreeItem: React.FC<{
     [createDir, item.itemId]
   )
 
+  // TODO: if the dir is a root dir in the library, also remove the path from library when deleting from disk
   const deleteItem = useCallback(() => {
     return deleteDir(itemId)
   }, [deleteDir, itemId])
@@ -54,11 +55,13 @@ export const DirTreeItem: React.FC<{
   }, [itemId, switchSubview])
 
   const renameItem = useCallback((newName: string) => {
+    console.warn("TODO: implement")
     // return renameGroup(itemId, newName)
   }, [])
 
   const moveItem = useCallback(
     (movedItemId: string, destinationId: string, destinationIndex: number) => {
+      console.warn("TODO: implement")
       // return moveGroup(movedItemId, destinationIndex, destinationId)
     },
     []
