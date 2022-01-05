@@ -22,6 +22,7 @@ import {
   GoUpMainHeaderButton,
   MainHeader,
   MoreMainHeaderButton,
+  useGoUpPath,
 } from "../../MainHeader"
 import { NewButton } from "../../PrimarySidebarBottomButton"
 import { CloudDocumentSectionHeader } from "../../SectionHeader"
@@ -92,9 +93,11 @@ const GroupViewWithFoundGroupId: React.FC<{ groupId: string }> = ({
 
   // =======================================================================
 
-  const goUpPath = filledGroupTree?.identifier
-    ? `${SIDEBAR_VAR.primary.cloud.group}_${filledGroupTree.parentIdentifier}`
-    : SIDEBAR_VAR.primary.cloud.all
+  const goUpPath = useGoUpPath(
+    filledGroupTree,
+    SIDEBAR_VAR.primary.cloud.group,
+    SIDEBAR_VAR.primary.cloud.all
+  )
 
   return filledGroupTree ? (
     <PrimarySidebarViewContainer>
