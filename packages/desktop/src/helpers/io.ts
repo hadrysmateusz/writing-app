@@ -26,10 +26,16 @@ export const dirExists = (pathStr: string): boolean => {
 export const fileExists = (pathStr: string): boolean => {
   return fs.pathExistsSync(pathStr) && fs.lstatSync(pathStr).isFile()
 }
+
 export const createDirObjectRecursive = (
-  pathStr: string
+  pathStr: string,
+  ensure: boolean = false
 ): DirObjectRecursive => {
-  fs.ensureDirSync(pathStr)
+  if (ensure) {
+    fs.ensureDirSync(pathStr)
+  } else if (!dirExists(pathStr)) {
+    throw new Error(`directory doesn't exist at this path ${pathStr}`)
+  }
 
   const entries = fs.readdirSync(pathStr, { withFileTypes: true })
 
