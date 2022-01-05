@@ -30,19 +30,9 @@ export const LocalDocumentSectionHeader: React.FC<
   onMouseLeave,
 }) => {
   const { switchSubview } = usePrimarySidebar()
-  const { deleteDir } = useLocalFS()
+  const { revealItem } = useLocalFS()
 
   const { openMenu, isMenuOpen, getContextMenuProps } = useContextMenu()
-
-  const handleRemoveDir = useCallback(
-    (_e) => {
-      if (!identifier) {
-        return
-      }
-      deleteDir(identifier)
-    },
-    [identifier, deleteDir]
-  )
 
   const handleClick = useCallback(() => {
     if (!identifier) {
@@ -58,6 +48,27 @@ export const LocalDocumentSectionHeader: React.FC<
     },
     [openMenu]
   )
+
+  const handleReveal = useCallback(() => {
+    if (!identifier) {
+      return
+    }
+
+    revealItem(identifier)
+  }, [identifier, revealItem])
+
+  // const handleRenameItem = useCallback(() => {
+  //   closeMenu()
+  //   startRenaming()
+  // }, [closeMenu, startRenaming])
+
+  // const handleCreateDocument = useCallback(() => {
+  //   createDocument()
+  // }, [createDocument])
+
+  // const handleCreateItem = useCallback(() => {
+  //   setIsCreatingGroup(true)
+  // }, [setIsExpanded])
 
   return (
     <>
@@ -76,10 +87,20 @@ export const LocalDocumentSectionHeader: React.FC<
 
       {isMenuOpen ? (
         <ContextMenu {...getContextMenuProps()}>
-          {/* TODO: add option to create new file */}
-          <ContextMenuItem onClick={handleRemoveDir}>
-            Remove Directory
+          {/* TODO: remove duplication with GroupingItemTreeItemComponent */}
+          {/* <ContextSubmenu text="Create New">
+            <ContextMenuItem onClick={handleCreateDocument}>
+              File
+            </ContextMenuItem>
+            <ContextMenuItem onClick={handleCreateItem}>Folder</ContextMenuItem>
+          </ContextSubmenu> */}
+
+          {/* <ContextMenuSeparator /> */}
+
+          <ContextMenuItem onClick={handleReveal}>
+            Reveal in Explorer
           </ContextMenuItem>
+          {/* <ContextMenuItem onClick={handleRenameItem}>Rename</ContextMenuItem> */}
         </ContextMenu>
       ) : null}
     </>
