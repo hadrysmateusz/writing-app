@@ -15,6 +15,7 @@ export type Option = { value: string | null; label: string; disabled?: boolean }
 export const Autocomplete: React.FC<{
   suggestions: Option[]
   submit: (option: Option) => void
+  create?: (value: string) => void
   close: () => void
   /**
    * Force the placeholder to be a custom string instead of currently selected option
@@ -24,16 +25,24 @@ export const Autocomplete: React.FC<{
    * Prompt to display when there are no matching options for the provided query
    */
   createNewPrompt?: string
+  /**
+   * Prompt to display when a valid option is selected (if skipped or undefined the prompt at the bottom won't be rendered at all)
+   */
+  submitPrompt?: string
+  focusOnHover?: boolean
   inputRef: React.MutableRefObject<HTMLInputElement | null>
 }> = ({
-  suggestions,
   submit,
   create,
   close,
+  suggestions,
   placeholder,
   createNewPrompt = "Press 'Enter' to create new",
+  submitPrompt,
   inputRef,
+  focusOnHover = true,
 }) => {
+  // TODO: extract suggestions related logic outside into a hook. The values can then be passed back into the Autocomplete component with a prop getter but are also accessible from the outside to e.g. display stats about current filteredSuggestions etc.
   const [filteredSuggestions, setFilteredSuggestions] = useState(suggestions)
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0)
   const [inputValue, setInputValue] = useState("")
@@ -147,17 +156,23 @@ export const Autocomplete: React.FC<{
   const { getHoverContainerProps, isHovered } = useIsHovered()
 
   useEffect(() => {
-    if (isHovered) {
-      const inputRefCurrent = inputRef?.current
+    const inputRefCurrent = inputRef?.current
+
+    if (focusOnHover && isHovered) {
       inputRefCurrent?.focus()
-      window.addEventListener("keydown", handleKeyDown)
-      return () => {
-        inputRefCurrent?.blur()
-        window.removeEventListener("keydown", handleKeyDown)
-      }
     }
-    return undefined
-  }, [handleKeyDown, inputRef, isHovered])
+
+    // if (focusOnHover && !isHovered) {
+    //   inputRefCurrent?.blur()
+    // }
+  }, [focusOnHover, inputRef, isHovered])
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [handleKeyDown])
 
   useEffect(() => {
     const suggestionsContainer = suggestionsContainerRef.current
@@ -222,14 +237,18 @@ export const Autocomplete: React.FC<{
         </ul>
       ) : (
         <div className="Autocomplete_EmptyState">
-          {inputValue.trim() === "" ? "Start typing" : createNewPrompt}
+          {inputValue.trim() === ""
+            ? "Start typing"
+            : create
+            ? createNewPrompt
+            : "No results matching query"}
         </div>
       )}
-      {!isEmpty ? (
+      {!isEmpty && submitPrompt ? (
         <div className="Autocomplete_ConfirmPrompt">
           {isDisabledItemActive
             ? "Can't select. This option is disabled"
-            : "Press 'Enter' to confirm selection"}
+            : submitPrompt}
         </div>
       ) : null}
     </AutocompleteContainer>
