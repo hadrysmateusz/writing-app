@@ -1,4 +1,3 @@
-import fs from "fs-extra"
 import path from "path"
 
 import {
@@ -6,6 +5,7 @@ import {
   ValidatePathsObj,
   ValidatePathsPayload,
 } from "shared"
+import { dirExists } from "../helpers"
 
 export const handleValidatePaths = async (
   _event,
@@ -15,9 +15,8 @@ export const handleValidatePaths = async (
     const dirs: ValidatePathsObj[] = []
     for (let pathStr of payload.paths) {
       // check if the path exists and is a directory
-      const dirExists =
-        fs.pathExistsSync(pathStr) && fs.lstatSync(pathStr).isDirectory()
-      if (!dirExists) {
+
+      if (!dirExists(pathStr)) {
         dirs.push({ path: pathStr, name: null, exists: false })
         continue
       }
