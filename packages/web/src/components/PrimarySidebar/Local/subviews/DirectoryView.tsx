@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 
-import { ValidatePathsObj } from "shared"
+import { GenericDocGroupTreeBranch } from "../../../../types"
 
 import {
   PrimarySidebarViewContainer,
@@ -47,54 +47,12 @@ export const DirectoryView: React.FC = () => {
 const DirectoryViewWithFoundDirPath: React.FC<{
   directoryPath: string
 }> = ({ directoryPath }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  // Don't use __setDirs directly after initial load, use updateDirs instead
-  const [dir, __setDir] = useState<ValidatePathsObj>()
-
-  useEffect(() => {
-    ;(async () => {
-      setIsLoading(true)
-
-      const localDocPaths = [directoryPath]
-
-      const ipcResponse = await window.electron.invoke("VALIDATE_PATHS", {
-        paths: localDocPaths,
-      })
-
-      console.log(ipcResponse)
-
-      if (ipcResponse.status === "success") {
-        const { dirs } = ipcResponse.data
-        __setDir(dirs[0])
-      } else {
-        // TODO: handle this
-        console.warn("something went wrong")
-      }
-
-      setIsLoading(false)
-    })()
-  }, [directoryPath])
-
-  // TODO: better loading/empty state + handle errors
-  return !isLoading && dir ? (
-    <DirectoryViewInner dir={dir} directoryPath={directoryPath} />
-  ) : null
-}
-
-const DirectoryViewInner: React.FC<{
-  dir: ValidatePathsObj
-  directoryPath: string
-}> = ({ dir, directoryPath }) => {
-  const { createDocument: createFile, dirTrees } = useLocalFS()
+  const { dirTrees } = useLocalFS()
   const { switchSubview } = usePrimarySidebar()
 
-  // TODO: when adding dir path to local library paths list check if it's not a descendant of a path already on the list (this would cause a shitton of problems because the dirs and files inside would no longer be unique in the tree which will probably break watchers and other things)
-
   const dirTree = useMemo(() => {
-    return findDirInTrees(dirTrees, directoryPath)
+    return findDirInTrees(dirTrees, directoryPath) as GenericDocGroupTreeBranch // TODO: find different way to ensure this type
   }, [dirTrees, directoryPath])
-
-  // console.log("FOUND DIR TREE", dirTree)
 
   // If the dir wasn't found, switch to more general sidebar view
   useEffect(() => {
@@ -103,6 +61,16 @@ const DirectoryViewInner: React.FC<{
     }
   }, [dirTree, switchSubview])
 
+  // TODO: better loading/empty state + handle errors
+  return dirTree ? <DirectoryViewInner dirTree={dirTree} /> : null
+}
+
+const DirectoryViewInner: React.FC<{
+  dirTree: GenericDocGroupTreeBranch
+}> = ({ dirTree }) => {
+  const { createDocument: createFile } = useLocalFS()
+
+  // TODO: when adding dir path to local library paths list check if it's not a descendant of a path already on the list (this would cause a shitton of problems because the dirs and files inside would no longer be unique in the tree which will probably break watchers and other things)
   // TODO: if dir has exists === false, show a warning and a button to manually find the dir
   // TODO: turn bottom button into a create local document action (and expose it in context menu)
   // TODO: move the add path action to maybe the main header (and probably context menu)
@@ -110,7 +78,9 @@ const DirectoryViewInner: React.FC<{
   return (
     <PrimarySidebarViewContainer>
       <MainHeader
-        title={dir.name ?? "Unknown Directory"}
+        title={dirTree.name ?? "Unknown Directory"}
+        numDocuments={dirTree?.childDocuments?.length}
+        numSubgroups={dirTree?.childGroups?.length}
         buttons={[
           // TODO: add a way to go up one directory
           <GoUpMainHeaderButton
@@ -144,7 +114,7 @@ const DirectoryViewInner: React.FC<{
 
       <PrimarySidebarBottomButton
         icon="plus"
-        handleClick={() => createFile(dir.path)}
+        handleClick={() => createFile(dirTree.identifier)}
       >
         Create Document
       </PrimarySidebarBottomButton>
