@@ -37,7 +37,7 @@ export const TrashView: React.FC = () => {
         buttons={[
           <GoUpMainHeaderButton
             goUpPath={SIDEBAR_VAR.primary.cloud.all}
-            key={SIDEBAR_VAR.primary.cloud.all}
+            key="goUpButton"
           />,
           <MoreMainHeaderButton
             key="sorting"
