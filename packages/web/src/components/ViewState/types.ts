@@ -49,7 +49,7 @@ export const SIDEBAR_VAR = Object.freeze({
     },
     local: {
       all: "primary_local_all" as "primary_local_all",
-      directory: "primary_local_all" as "primary_local_all",
+      directory: "primary_local_directory" as "primary_local_directory",
     },
     tags: {
       all: "primary_tags_all" as "primary_tags_all",
