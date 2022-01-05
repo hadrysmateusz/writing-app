@@ -1,4 +1,10 @@
+import { useMemo } from "react"
+
+import { GenericDocGroupTree_Discriminated } from "../../../../types"
+
 import { parseSidebarPath, usePrimarySidebar } from "../../../ViewState"
+
+import { createParentGroupingItemSubviewPath } from "../../Local"
 
 import { MainHeaderButton } from "./MainHeaderButton"
 
@@ -11,8 +17,6 @@ export const GoUpMainHeaderButton: React.FC<{ goUpPath?: string }> = ({
     if (!goUpPath) {
       return
     }
-
-    console.log("handleGoUpButtonClick")
 
     const parsedSidebarPath = parseSidebarPath(goUpPath)
 
@@ -33,4 +37,22 @@ export const GoUpMainHeaderButton: React.FC<{ goUpPath?: string }> = ({
       action={handleGoUpButtonClick}
     />
   ) : null
+}
+
+export const useGoUpPath = (
+  genericGroupTree: GenericDocGroupTree_Discriminated | undefined,
+  baseSubview: string,
+  fallbackSubview: string
+) => {
+  const memoized = useMemo(
+    () =>
+      createParentGroupingItemSubviewPath(
+        genericGroupTree,
+        baseSubview,
+        fallbackSubview
+      ),
+    [baseSubview, fallbackSubview, genericGroupTree]
+  )
+
+  return memoized
 }

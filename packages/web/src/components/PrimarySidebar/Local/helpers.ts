@@ -1,3 +1,5 @@
+import { GenericDocGroupTree_Discriminated } from "../../../types"
+
 import { TabsState } from "../../TabsProvider/tabsSlice"
 
 /**
@@ -17,4 +19,14 @@ export function findTabWithPath(
     return false
   })
   return foundTabId
+}
+
+export const createParentGroupingItemSubviewPath = (
+  genericGroupTree: GenericDocGroupTree_Discriminated | undefined,
+  baseSubview: string,
+  fallbackSubview: string
+) => {
+  return genericGroupTree?.identifier
+    ? `${baseSubview}_${genericGroupTree.parentIdentifier}`
+    : fallbackSubview
 }
