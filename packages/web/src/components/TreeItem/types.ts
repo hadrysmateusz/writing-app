@@ -1,5 +1,7 @@
 import { SimplifiedToggleableHooks } from "../../hooks"
 
+import { IconNames } from "../Icon"
+
 export type ExpandableChildrenRenderProps = {
   isExpanded: boolean
   expand: () => void
@@ -9,7 +11,7 @@ export type ExpandableChildrenRenderProps = {
 
 export type CoreTreeItemProps = {
   title?: string
-  icon?: string
+  icon?: IconNames
   depth?: number
   disabled?: boolean
   isActive?: boolean

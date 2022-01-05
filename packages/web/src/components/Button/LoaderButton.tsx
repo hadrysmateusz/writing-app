@@ -1,8 +1,9 @@
-import React from "react"
 import styled from "styled-components/macro"
 
 import { ANIMATION_SPIN } from "../../style-utils"
-import Icon from "../Icon"
+
+import { Icon } from "../Icon"
+
 import { Button } from "./Button"
 
 const LoaderButtonUnstyled: React.FC<{

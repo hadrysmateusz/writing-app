@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 
-import Icon from "../Icon"
+import { Icon } from "../Icon"
 import { EditableText, useEditableText } from "../RenamingInput"
 import { useTagsAPI } from "../TagsProvider"
 import { usePrimarySidebar } from "../ViewState"

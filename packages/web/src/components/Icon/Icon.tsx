@@ -1,5 +1,6 @@
 import React from "react"
-import iconLibrary from "./library"
+
+import { iconLibrary, IconNames } from "./library"
 
 const baseStyle = {
   lineHeight: "1em",
@@ -9,8 +10,8 @@ const baseStyle = {
   justifyContent: "center",
 }
 
-const Icon: React.FC<{
-  icon: string
+export const Icon: React.FC<{
+  icon: IconNames
   color?: string
   style?: React.CSSProperties
 }> = ({ icon, color, style = {}, ...rest }) => {

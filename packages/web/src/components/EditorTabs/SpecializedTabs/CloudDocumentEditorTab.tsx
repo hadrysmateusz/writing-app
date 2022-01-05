@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 
 import { formatOptional } from "../../../utils"
 import { useRxSubscription } from "../../../hooks"
@@ -8,7 +8,7 @@ import { GenericDocument_Discriminated } from "../../../types"
 import { useDocumentContextMenu } from "../../DocumentContextMenu"
 import { EditableText } from "../../RenamingInput"
 import { useDatabase } from "../../Database"
-import Icon from "../../Icon"
+import { Icon } from "../../Icon"
 import { useTabsAPI } from "../../TabsProvider"
 import { useCloudGroupsAPI } from "../../CloudGroupsProvider"
 

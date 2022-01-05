@@ -1,4 +1,4 @@
-import Icon from "../Icon"
+import { Icon } from "../Icon"
 
 export const TabCloseButton: React.FC<{
   handleCloseTab: (e: React.MouseEvent) => void

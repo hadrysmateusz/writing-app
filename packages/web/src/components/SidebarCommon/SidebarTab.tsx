@@ -1,10 +1,9 @@
-import { FC } from "react"
 import styled, { css } from "styled-components/macro"
 
-import Icon from "../Icon"
+import { Icon, IconNames } from "../Icon"
 
-const SidebarTab: FC<{
-  icon: string
+const SidebarTab: React.FC<{
+  icon: IconNames
   isActive: boolean
   onClick: () => void
   rightSide?: boolean

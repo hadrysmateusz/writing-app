@@ -1,10 +1,13 @@
 import React from "react"
 import styled from "styled-components/macro"
 
-import Icon from "../Icon"
+import { Icon, IconNames } from "../Icon"
 import { Button } from "./Button"
 
-const IconButtonUnstyled: React.FC<{ icon: string }> = ({ icon, ...rest }) => (
+const IconButtonUnstyled: React.FC<{ icon: IconNames }> = ({
+  icon,
+  ...rest
+}) => (
   <Button {...rest}>
     <Icon icon={icon} />
   </Button>

@@ -1,7 +1,6 @@
 import React, { useState, FC } from "react"
 import styled from "styled-components/macro"
-import { TreeItem } from "./TreeItem"
-import Icon from "../Icon"
+import { Icon } from "../Icon"
 
 import {
   StatelessExpandableTreeItemProps,

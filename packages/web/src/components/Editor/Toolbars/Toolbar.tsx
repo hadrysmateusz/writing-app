@@ -20,7 +20,7 @@ import {
   ListToolbarButton,
 } from "@udecode/plate"
 
-import Icon from "../../Icon"
+import { Icon } from "../../Icon"
 
 // import { useLinkModal } from "../LinkPrompt"
 import { useImageModal } from "../ImageModal"

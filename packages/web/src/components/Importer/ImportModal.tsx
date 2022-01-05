@@ -5,7 +5,7 @@ import { ImportFileResponseData } from "shared"
 import { myDeserializeMd } from "../../slate-helpers/serialization"
 import { formatOptional } from "../../utils"
 
-import Icon from "../Icon"
+import { Icon } from "../Icon"
 import { Button } from "../Button"
 import { usePrimarySidebar } from "../ViewState"
 import { serialize } from "../Editor"

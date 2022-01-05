@@ -22,7 +22,7 @@ import {
   ContextMenu,
   ContextMenuSeparator,
 } from "../../ContextMenu"
-import Icon from "../../Icon"
+import { Icon } from "../../Icon"
 
 import { useLinkModal } from "../LinkModal"
 import { useImageModal } from "../ImageModal"

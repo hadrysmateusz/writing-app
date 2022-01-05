@@ -1,7 +1,7 @@
-import Icon from "../../../Icon"
+import { Icon, IconNames } from "../../../Icon"
 
 export const MainHeaderButton: React.FC<{
-  icon: string
+  icon: IconNames
   tooltip: string
   action: (e: React.MouseEvent<HTMLDivElement>) => void
 }> = ({ icon, action, tooltip }) => {

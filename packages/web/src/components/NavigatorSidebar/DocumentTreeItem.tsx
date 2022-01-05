@@ -8,11 +8,12 @@ import { EditableText } from "../RenamingInput"
 import { GenericTreeItem } from "../TreeItem"
 import { useDocumentContextMenu } from "../DocumentContextMenu"
 import { useTabsAPI } from "../TabsProvider"
+import { IconNames } from "../Icon"
 
 const DocumentTreeItem: React.FC<{
   document: DocumentDoc
   depth?: number
-  icon?: string
+  icon?: IconNames
 }> = ({ document, depth = 0, icon }) => {
   const { openDocument } = useTabsAPI()
 

@@ -10,7 +10,7 @@ import { Portal } from "react-portal"
 
 import { useIsHovered, useToggleable } from "../../hooks"
 
-import Icon from "../Icon"
+import { Icon } from "../Icon"
 
 import { CaretContainer, MenuContainer, SubmenuLabel } from "./styles"
 import { Coords } from "./types"

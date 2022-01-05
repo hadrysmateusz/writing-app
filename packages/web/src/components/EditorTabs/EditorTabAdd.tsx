@@ -1,6 +1,7 @@
 import styled from "styled-components/macro"
 
-import Icon from "../Icon"
+import { Icon } from "../Icon"
+
 import { useTabsDispatch } from "../TabsProvider"
 
 const EditorTabAdd = () => {

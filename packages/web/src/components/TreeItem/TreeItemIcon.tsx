@@ -1,10 +1,9 @@
-import React from "react"
 import styled from "styled-components/macro"
 
-import Icon from "../Icon"
+import { Icon, IconNames } from "../Icon"
 
 export const TreeItemIcon: React.FC<{
-  icon?: string
+  icon?: IconNames
   style?: React.CSSProperties
 }> = ({ icon, style }) => {
   return icon ? (

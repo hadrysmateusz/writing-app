@@ -1,9 +1,9 @@
-import Icon from "../../Icon"
+import { Icon, IconNames } from "../../Icon"
 
 import { PrimarySidebarBottomButtonSC } from "./PrimarySidebarBottomButton.styles"
 
 export const PrimarySidebarBottomButton: React.FC<{
-  icon: string
+  icon: IconNames
   handleClick: () => void
 }> = ({ icon, handleClick, children }) => (
   <PrimarySidebarBottomButtonSC onClick={handleClick}>

@@ -37,7 +37,7 @@ import {
   BsLayoutSidebarReverse,
   BsArrow90DegUp,
 } from "react-icons/bs"
-import { BiStats, BiSort } from "react-icons/bi"
+import { BiStats, BiSort, BiSearch } from "react-icons/bi"
 
 import { CgMoreAlt } from "react-icons/cg"
 
@@ -67,7 +67,7 @@ import { ReactComponent as Heading1 } from "../../assets/Heading1.svg"
 import { ReactComponent as Heading2 } from "../../assets/Heading2.svg"
 
 // TODO: make the Icon component use the keys of this object as the type for the icon prop
-const iconLibrary = {
+export const iconLibrary = {
   /* For icons representing blocks, marks and other slate node types the icon 
   names use the type names of those nodes for simplicity */
   [MARK_BOLD]: FaBold,
@@ -82,36 +82,39 @@ const iconLibrary = {
   [ELEMENT_H2]: Heading2,
   [ELEMENT_LINK]: FaLink,
   [ELEMENT_IMAGE]: FaImage,
-  stats: BiStats,
-  plus: FiPlus,
+  arrow90DegUp: BsArrow90DegUp,
+  clipboard: FaClipboard,
+  close: MdClose,
   cloud: AiFillCloud,
   caretRight: BsCaretRightFill,
   caretDown: BsCaretDownFill,
   chevronDown: FaChevronDown,
   chevronUp: FaChevronUp,
-  starFilled: MdStar,
-  starOutline: FaRegStar,
-  sidebarLeft: BsLayoutSidebar,
-  sidebarRight: BsLayoutSidebarReverse,
-  sidebarNavigator: RiSideBarFill,
-  trash: IoMdTrash,
+  ellipsisVertical: FaEllipsisV,
+  ellipsisHorizontal: CgMoreAlt,
   folderOpen: AiFillFolderOpen,
   folderClosed: AiFillFolder,
   folderEmpty: AiOutlineFolder,
-  ellipsisVertical: FaEllipsisV,
-  ellipsisHorizontal: CgMoreAlt,
+  import: FiDownload,
   inbox: FaInbox,
-  user: FaUser,
+  pen: FaPen,
+  plus: FiPlus,
+  sidebarLeft: BsLayoutSidebar,
+  sidebarRight: BsLayoutSidebarReverse,
+  sidebarNavigator: RiSideBarFill,
+  sort: BiSort,
+  starFilled: MdStar,
+  starOutline: FaRegStar,
   spinner: FaSpinner,
   settings: IoMdSettings,
-  import: FiDownload,
-  clipboard: FaClipboard,
-  close: MdClose,
-  arrow90DegUp: BsArrow90DegUp,
-  sort: BiSort,
+  stats: BiStats,
+  search: BiSearch,
   tag: AiFillTag,
   tags: AiFillTags,
-  pen: FaPen,
+  trash: IoMdTrash,
+  user: FaUser,
 }
+
+export type IconNames = keyof typeof iconLibrary
 
 export default iconLibrary

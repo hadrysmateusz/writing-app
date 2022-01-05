@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { formatOptional } from "../../../utils"
 
-import Icon from "../../Icon"
+import { Icon } from "../../Icon"
 
 import { EditorTabContainer } from "../EditorTab.styles"
 import { TabCloseButton } from "../EditorTabCommon"

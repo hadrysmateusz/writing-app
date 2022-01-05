@@ -11,7 +11,7 @@ import {
 } from "@udecode/plate"
 
 import { useLinkModal } from "../LinkModal"
-import Icon from "../../Icon"
+import { Icon } from "../../Icon"
 
 import { ToolbarLink } from "./ToolbarLink"
 
