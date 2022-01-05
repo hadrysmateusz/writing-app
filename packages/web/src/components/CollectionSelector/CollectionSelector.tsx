@@ -79,6 +79,7 @@ export const CollectionSelector: React.FC<CollectionSelectorProps> = ({
         submit={onSubmit}
         close={close}
         create={handleMoveToGroupCreate}
+        submitPrompt="Press 'Enter' to confirm selection"
         createNewPrompt="Press 'Enter' to create new collection"
         inputRef={inputRef}
       />

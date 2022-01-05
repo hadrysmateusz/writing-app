@@ -138,6 +138,7 @@ export const Keywords = () => {
           submit={handleSubmit}
           close={close}
           create={handleCreate}
+          submitPrompt="Press 'Enter' to confirm selection"
           createNewPrompt="Press 'Enter' to create new tag"
         />
       </div>
