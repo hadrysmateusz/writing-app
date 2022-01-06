@@ -1,8 +1,6 @@
-const { contextBridge, ipcRenderer } = require("electron")
+import { contextBridge, ipcRenderer } from "electron"
 
 // we deliberately strip the event on every method as it includes the sender
-
-// TODO: create stronger types (in ipcRenderer.d.ts) and figure out a way to share ipc types between desktop and web
 
 contextBridge.exposeInMainWorld("electron", {
   subscribe: (channel, listener) => {

@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom"
 import styled from "styled-components/macro"
 import { Amplify } from "aws-amplify"
 
@@ -69,13 +74,7 @@ export const App = () => {
                 <EditorPage />
               </AuthenticatedRoute>
 
-              <Route>
-                <h2>Page not found!</h2>
-
-                <Link to="/login">Login</Link>
-
-                <Link to="/signup">Signup</Link>
-              </Route>
+              <Redirect to="/login" />
             </Switch>
           </Router>
         </AppContainer>

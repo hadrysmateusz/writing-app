@@ -1,7 +1,4 @@
 import { app, BrowserWindow, Notification } from "electron"
-import installExtension, {
-  REACT_DEVELOPER_TOOLS,
-} from "electron-devtools-installer"
 import path from "path"
 
 import { setUpApplicationMenu } from "./menu"
@@ -23,6 +20,11 @@ declare global {
 async function createWindow() {
   // Load react devtools extension
   if (IS_DEV) {
+    const {
+      default: installExtension,
+      REACT_DEVELOPER_TOOLS,
+    } = require("electron-devtools-installer")
+
     installExtension(REACT_DEVELOPER_TOOLS)
       .then((name) => console.log(`Added Extension:  ${name}`))
       .catch((err) => console.log("An error occurred: ", err))
