@@ -38,7 +38,7 @@ export const MainHeader: React.FC<{
 
 export default MainHeader
 
-// function qwer<S extends SidebarSidebar>() {
+// function qwer<S extends SidebarID>() {
 //   return function asdf<
 //     V extends SidebarView<S>,
 //     SV extends SidebarSubview<S, V>,
@@ -47,7 +47,7 @@ export default MainHeader
 // }
 
 // function asdf2<
-//   S extends SidebarSidebar,
+//   S extends SidebarID,
 //   V extends SidebarView<S>,
 //   SV extends SidebarSubview<S, V>,
 //   ID extends string

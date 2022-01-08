@@ -4,7 +4,6 @@ import { useLocalSettings, defaultLocalSettings } from "../LocalSettings"
 import { LocalSettings } from "../Database"
 
 import {
-  SidebarID,
   Side,
   PrimarySidebar,
   SidebarPaths,
@@ -151,10 +150,10 @@ export const PrimarySidebarProvider: FC<{
     [updateLocalSetting]
   )
 
-  const value = useMemo(
+  const value: PrimarySidebarContextValue = useMemo(
     () => ({
       ...toggleable,
-      id: SidebarID.primary,
+      id: "primary",
       side: Side.left,
       minWidth: 180,
       maxWidth: 400,

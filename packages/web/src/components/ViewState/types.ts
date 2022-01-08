@@ -2,37 +2,6 @@ import { Toggleable } from "../../hooks"
 
 import { LocalSettings } from "../Database"
 
-// TODO: the way this function works is probably why opening directories with underscores in the name don't work. Either rework the system or use a separator that is not supported in paths on any OS (that might be hard as it seems that MacOS supports all of unicode)
-// TODO: move this to a more logical place
-export function parseSidebarPath(path: string) {
-  const pathParts = path.split("_")
-  // console.log(pathParts)
-
-  const sidebar = Object.keys(SIDEBAR_VAR).find((s) => s === pathParts[0])
-  if (!sidebar) return null
-  // console.log(sidebar)
-
-  const view = Object.keys(SIDEBAR_VAR[sidebar]).find((s) => s === pathParts[1])
-  if (!view) return null
-  // console.log(view)
-
-  const subview = Object.keys(SIDEBAR_VAR[sidebar][view]).find(
-    (s) => s === pathParts[2]
-  )
-  if (!subview) return null
-  // console.log(subview)
-
-  // console.log(SIDEBAR_VAR[sidebar][view][subview], path)
-
-  return { sidebar, view, subview, id: pathParts[3] as string | undefined }
-
-  // TODO: figure out how to make this check work with the last part being the id
-  // if (SIDEBAR_VAR[sidebar][view][subview] === path) {
-  //   return { sidebar, view, subview, id: pathParts[3] }
-  // }
-  // return null
-}
-
 export const SIDEBAR_VAR = Object.freeze({
   navigator: {
     default: {
@@ -62,29 +31,20 @@ export const SIDEBAR_VAR = Object.freeze({
   },
 })
 
-// console.log(parseSidebarPath("navigator_default_all"))
-// console.log(parseSidebarPath("primary_cloud_all"))
-// console.log(parseSidebarPath("primary_cloud_trash"))
-// console.log(parseSidebarPath("primary_cloud_inbox"))
-// console.log(parseSidebarPath("primary_cloud_group"))
-// console.log(parseSidebarPath("primary_local_all"))
-// console.log(parseSidebarPath("primary_tags_all"))
-// console.log(parseSidebarPath("secondary_stats_all"))
-
 export type SidebarType = typeof SIDEBAR_VAR
-export type SidebarSidebar = keyof SidebarType
-export type SidebarView<S extends SidebarSidebar> = keyof SidebarType[S]
+export type SidebarID = keyof SidebarType
+export type SidebarView<S extends SidebarID> = keyof SidebarType[S]
 export type SidebarSubview<
-  S extends SidebarSidebar,
+  S extends SidebarID,
   V extends SidebarView<S>
 > = keyof SidebarType[S][V]
 export type SidebarPath<
-  S extends SidebarSidebar,
+  S extends SidebarID,
   V extends SidebarView<S>,
   SV extends SidebarSubview<S, V>
 > = SidebarType[S][V][SV]
 
-export type SidebarPaths<S extends SidebarSidebar> = Record<
+export type SidebarPaths<S extends SidebarID> = Record<
   SidebarView<S>,
   string // TODO: consider using a template literal type like `${sidebar}_${view}_${subview}_${string}`
 >
@@ -92,13 +52,6 @@ export type SidebarPaths<S extends SidebarSidebar> = Record<
 export enum Side {
   left = "left",
   right = "right",
-}
-
-// TODO: change usages with SidebarSidebar
-export enum SidebarID {
-  primary = "primarySidebar",
-  secondary = "secondarySidebar",
-  navigator = "navigatorSidebar",
 }
 
 export interface SidebarBase extends Toggleable<undefined> {
@@ -110,8 +63,7 @@ export interface SidebarBase extends Toggleable<undefined> {
 
 // TODO: make all sidebars multiview to simplify and unify the methods and components working with them
 
-export interface MultiViewSidebar<S extends SidebarSidebar>
-  extends SidebarBase {
+export interface MultiViewSidebar<S extends SidebarID> extends SidebarBase {
   currentView: SidebarView<S>
   switchView: (view: SidebarView<S>) => Promise<void>
 }

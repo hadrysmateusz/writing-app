@@ -6,10 +6,10 @@ import { defaultLocalSettings } from "../LocalSettings"
 import { LocalSettingsDoc, useDatabase } from "../Database"
 import { useCurrentUser } from "../Auth"
 
-import { SidebarSidebar } from "./types"
+import { SidebarID } from "./types"
 
 export const useSidebarToggleable = (
-  sidebarId: SidebarSidebar,
+  sidebarId: SidebarID,
   hooks?: ToggleableHooks
 ) => {
   const db = useDatabase()

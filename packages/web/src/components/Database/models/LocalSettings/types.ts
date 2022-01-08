@@ -1,9 +1,9 @@
 import { RxDocument, RxCollection } from "rxdb"
 
 import { TabsState } from "../../../TabsProvider/tabsSlice"
-import { SidebarSidebar, SidebarView } from "../../../ViewState"
+import { SidebarID, SidebarView } from "../../../ViewState"
 
-type NewSidebarType<S extends SidebarSidebar> = {
+type NewSidebarType<S extends SidebarID> = {
   // id: string
   isOpen: boolean
   currentView: SidebarView<S>

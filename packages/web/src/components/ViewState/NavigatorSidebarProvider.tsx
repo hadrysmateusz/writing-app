@@ -10,7 +10,7 @@ import {
 import { defaultLocalSettings, useLocalSettings } from "../LocalSettings"
 
 import { useSidebarToggleable } from "./useSidebarToggleable"
-import { SidebarID, Side, NavigatorSidebar } from "./types"
+import { Side, NavigatorSidebar } from "./types"
 import { SidebarsLoadingAction } from "./ViewStateProvider"
 
 type NavigatorSidebarContextValue = NavigatorSidebar
@@ -39,10 +39,10 @@ export const NavigatorSidebarProvider: FC<{
     })()
   }, [getLocalSetting, loadingStateDispatch])
 
-  const value = useMemo(
+  const value: NavigatorSidebarContextValue = useMemo(
     () => ({
       ...toggleable,
-      id: SidebarID.navigator,
+      id: "navigator",
       side: Side.left,
       minWidth: 150,
       maxWidth: 300,

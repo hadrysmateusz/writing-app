@@ -27,10 +27,10 @@ const useSplitPane = (storageKey: string) => {
   return { defaultSize: size, handleChange }
 }
 
-const sidebarWidthStorageKeys = {
-  [SidebarID.navigator]: "splitPos_navigatorSidebar",
-  [SidebarID.primary]: "splitPos_primarySidebar",
-  [SidebarID.secondary]: "splitPos_secondarySidebar",
+const sidebarWidthStorageKeys: Record<SidebarID, string> = {
+  navigator: "splitPos_navigatorSidebar",
+  primary: "splitPos_primarySidebar",
+  secondary: "splitPos_secondarySidebar",
 }
 
 //  TODO: refactor and remove unnecessary code - this is full of unnecessary checks etc.

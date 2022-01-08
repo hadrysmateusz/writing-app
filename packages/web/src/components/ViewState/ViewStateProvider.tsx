@@ -1,5 +1,5 @@
 import { FC, Reducer, useReducer } from "react"
-import { SidebarSidebar } from "."
+import { SidebarID } from "."
 
 import { withDelayRender } from "../../withDelayRender"
 
@@ -7,10 +7,10 @@ import { NavigatorSidebarProvider } from "./NavigatorSidebarProvider"
 import { PrimarySidebarProvider } from "./PrimarySidebarProvider"
 import { SecondarySidebarProvider } from "./SecondarySidebarProvider"
 
-export type SidebarsLoadingState = Record<SidebarSidebar, boolean>
+export type SidebarsLoadingState = Record<SidebarID, boolean>
 export type SidebarsLoadingAction = {
   type: "sidebar-ready"
-  sidebarId: SidebarSidebar
+  sidebarId: SidebarID
 }
 type SidebarsLoadingReducer = Reducer<
   SidebarsLoadingState,

@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalSettings, defaultLocalSettings } from "../LocalSettings"
 import { LocalSettings } from "../Database"
 
-import { SecondarySidebar, SidebarView, SidebarID, Side } from "./types"
+import { SecondarySidebar, SidebarView, Side } from "./types"
 import { useSidebarToggleable } from "./useSidebarToggleable"
 import { SidebarsLoadingAction } from "./ViewStateProvider"
 
@@ -58,10 +58,10 @@ export const SecondarySidebarProvider: FC<{
     [getLocalSetting, toggleable, updateLocalSetting]
   )
 
-  const value = useMemo(
+  const value: SecondarySidebarContextValue = useMemo(
     () => ({
       ...toggleable,
-      id: SidebarID.secondary,
+      id: "secondary",
       side: Side.right,
       minWidth: 180,
       maxWidth: 400,

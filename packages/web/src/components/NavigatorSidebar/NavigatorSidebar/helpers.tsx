@@ -27,7 +27,7 @@ export function useNavigationTreeItem<V extends SidebarView<"primary">>(
 
 // ================== W.I.P. version supporting all sidebars (requires all sidebars to support all of the properties)
 // export function useNavigationTreeItem<
-//   S extends SidebarSidebar,
+//   S extends SidebarID,
 //   V extends SidebarView<S>
 // >(sidebar: S, view: SidebarView<S>, subview: SidebarSubview<S, V>) {
 //   const {
