@@ -11,8 +11,9 @@ import {
   SidebarView,
   SwitchPrimarySidebarViewFn,
 } from "./types"
-import { useSidebarToggleable } from "./helpers"
-import { SidebarsLoadingAction, useNavigatorSidebar } from "."
+import { useSidebarToggleable } from "./useSidebarToggleable"
+import { useNavigatorSidebar } from "./NavigatorSidebarProvider"
+import { SidebarsLoadingAction } from "./ViewStateProvider"
 
 type PrimarySidebarContextValue = PrimarySidebar
 

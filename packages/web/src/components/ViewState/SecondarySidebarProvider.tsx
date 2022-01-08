@@ -1,11 +1,11 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react"
 
 import { useLocalSettings, defaultLocalSettings } from "../LocalSettings"
-
 import { LocalSettings } from "../Database"
+
 import { SecondarySidebar, SidebarView, SidebarID, Side } from "./types"
-import { useSidebarToggleable } from "./helpers"
-import { SidebarsLoadingAction } from "."
+import { useSidebarToggleable } from "./useSidebarToggleable"
+import { SidebarsLoadingAction } from "./ViewStateProvider"
 
 type SecondarySidebarContextValue = SecondarySidebar
 
@@ -20,10 +20,8 @@ export const SecondarySidebarProvider: FC<{
 
   const toggleable = useSidebarToggleable("secondary")
 
-  const [
-    secondarySidebarCurrentView,
-    setSecondarySidebarCurrentView,
-  ] = useState(defaultLocalSettings.sidebars.secondary.currentView)
+  const [secondarySidebarCurrentView, setSecondarySidebarCurrentView] =
+    useState(defaultLocalSettings.sidebars.secondary.currentView)
 
   useEffect(() => {
     ;(async () => {

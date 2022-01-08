@@ -6,12 +6,12 @@ import {
   useEffect,
   FC,
 } from "react"
-import { SidebarsLoadingAction } from "."
 
 import { defaultLocalSettings, useLocalSettings } from "../LocalSettings"
 
-import { useSidebarToggleable } from "./helpers"
+import { useSidebarToggleable } from "./useSidebarToggleable"
 import { SidebarID, Side, NavigatorSidebar } from "./types"
+import { SidebarsLoadingAction } from "./ViewStateProvider"
 
 type NavigatorSidebarContextValue = NavigatorSidebar
 

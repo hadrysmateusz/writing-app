@@ -61,8 +61,8 @@ export const useSidebarToggleable = (
 
   const sidebarMethods = useStatelessToggleable(isOpen, onChange, hooks)
 
-  return useMemo(() => ({ ...sidebarMethods, isOpen }), [
-    isOpen,
-    sidebarMethods,
-  ])
+  return useMemo(
+    () => ({ ...sidebarMethods, isOpen }),
+    [isOpen, sidebarMethods]
+  )
 }

@@ -3,9 +3,9 @@ import { SidebarSidebar } from "."
 
 import { withDelayRender } from "../../withDelayRender"
 
-import { NavigatorSidebarProvider } from "./NavigatorSidebarContext"
-import { PrimarySidebarProvider } from "./PrimarySidebarContext"
-import { SecondarySidebarProvider } from "./SecondarySidebarContext"
+import { NavigatorSidebarProvider } from "./NavigatorSidebarProvider"
+import { PrimarySidebarProvider } from "./PrimarySidebarProvider"
+import { SecondarySidebarProvider } from "./SecondarySidebarProvider"
 
 export type SidebarsLoadingState = Record<SidebarSidebar, boolean>
 export type SidebarsLoadingAction = {
