@@ -1,10 +1,24 @@
 // TODO: the way this function works is probably why opening directories with underscores in the name don't work. Either rework the system or use a separator that is not supported in paths on any OS (that might be hard as it seems that MacOS supports all of unicode)
 
-import { SIDEBAR_VAR } from "./types"
+import { SIDEBAR_VAR, SidebarView, SidebarSubview } from "./types"
 
-// TODO: move this to a more logical place
+const VIEW_PATH_SEGMENT_SEPARATOR = "_"
+const VIEW_PATH_ID_SEPARATOR = "?"
+
 export function parseSidebarPath(path: string) {
-  const pathParts = path.split("_")
+  const indexOfQuestionMark = path.indexOf(VIEW_PATH_ID_SEPARATOR)
+
+  const locationPath: string =
+    indexOfQuestionMark === -1 ? path : path.slice(0, indexOfQuestionMark)
+
+  const id: string | undefined =
+    indexOfQuestionMark === -1
+      ? undefined
+      : path.slice(indexOfQuestionMark + 1, path.length)
+
+  console.log(`path: ${path} locationPath: ${locationPath}`)
+
+  const pathParts = locationPath.split(VIEW_PATH_SEGMENT_SEPARATOR)
   // console.log(pathParts)
 
   const sidebar = Object.keys(SIDEBAR_VAR).find((s) => s === pathParts[0])
@@ -23,11 +37,25 @@ export function parseSidebarPath(path: string) {
 
   // console.log(SIDEBAR_VAR[sidebar][view][subview], path)
 
-  return { sidebar, view, subview, id: pathParts[3] as string | undefined }
+  return { sidebar, view, subview, id }
 
   // TODO: figure out how to make this check work with the last part being the id
   // if (SIDEBAR_VAR[sidebar][view][subview] === path) {
   //   return { sidebar, view, subview, id: pathParts[3] }
   // }
   // return null
+}
+
+export function createSidebarPath<View extends SidebarView<"primary">>(
+  view: View,
+  subview: SidebarSubview<"primary", View>,
+  id?: string // optional id used for some paths like groups
+) {
+  let newPath = `primary_${view}_${subview}`
+
+  if (id) {
+    newPath += `${VIEW_PATH_ID_SEPARATOR}${id}`
+  }
+
+  return newPath
 }

@@ -13,6 +13,7 @@ import {
 import { useSidebarToggleable } from "./useSidebarToggleable"
 import { useNavigatorSidebar } from "./NavigatorSidebarProvider"
 import { SidebarsLoadingAction } from "./ViewStateProvider"
+import { createSidebarPath } from "./helpers"
 
 type PrimarySidebarContextValue = PrimarySidebar
 
@@ -113,11 +114,7 @@ export const PrimarySidebarProvider: FC<{
         defaultLocalSettings.sidebars
 
       setPrimarySidebarCurrentSubviews((prevValue) => {
-        let newPath = `primary_${view}_${subview}`
-
-        if (id) {
-          newPath += `_${id}`
-        }
+        const newPath = createSidebarPath(view, subview, id)
 
         const newValue: SidebarPaths<"primary"> = {
           ...prevValue,
