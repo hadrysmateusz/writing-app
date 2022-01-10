@@ -88,7 +88,6 @@ const DirectoryViewInner: React.FC<{
         numDocuments={dirTree?.childDocuments?.length}
         numSubgroups={dirTree?.childGroups?.length}
         buttons={[
-          // TODO: add a way to go up one directory
           <GoUpMainHeaderButton goUpPath={goUpPath} key="goUpButton" />,
 
           <MoreMainHeaderButton
