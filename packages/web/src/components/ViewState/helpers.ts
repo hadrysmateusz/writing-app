@@ -2,8 +2,8 @@
 
 import { SIDEBAR_VAR, SidebarView, SidebarSubview } from "./types"
 
-const VIEW_PATH_SEGMENT_SEPARATOR = "_"
-const VIEW_PATH_ID_SEPARATOR = "?"
+export const VIEW_PATH_SEGMENT_SEPARATOR = "_"
+export const VIEW_PATH_ID_SEPARATOR = "?"
 
 export function parseSidebarPath(path: string) {
   const indexOfQuestionMark = path.indexOf(VIEW_PATH_ID_SEPARATOR)

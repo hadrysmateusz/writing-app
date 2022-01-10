@@ -41,17 +41,17 @@ export const GoUpMainHeaderButton: React.FC<{ goUpPath?: string }> = ({
 
 export const useGoUpPath = (
   genericGroupTree: GenericDocGroupTree_Discriminated | undefined,
-  baseSubview: string,
-  fallbackSubview: string
+  baseSubviewPath: string,
+  fallbackSubviewPath: string
 ) => {
   const memoized = useMemo(
     () =>
       createParentGroupingItemSubviewPath(
         genericGroupTree,
-        baseSubview,
-        fallbackSubview
+        baseSubviewPath,
+        fallbackSubviewPath
       ),
-    [baseSubview, fallbackSubview, genericGroupTree]
+    [baseSubviewPath, fallbackSubviewPath, genericGroupTree]
   )
 
   return memoized

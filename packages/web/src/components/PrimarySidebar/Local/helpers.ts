@@ -1,6 +1,7 @@
 import { GenericDocGroupTree_Discriminated } from "../../../types"
 
 import { TabsState } from "../../TabsProvider/tabsSlice"
+import { VIEW_PATH_ID_SEPARATOR } from "../../ViewState"
 
 /**
  * Checks tabs state for a tab with a local document with path matching the param
@@ -23,10 +24,10 @@ export function findTabWithPath(
 
 export const createParentGroupingItemSubviewPath = (
   genericGroupTree: GenericDocGroupTree_Discriminated | undefined,
-  baseSubview: string,
-  fallbackSubview: string
+  baseSubviewPath: string,
+  fallbackSubviewPath: string
 ) => {
   return genericGroupTree?.identifier
-    ? `${baseSubview}_${genericGroupTree.parentIdentifier}`
-    : fallbackSubview
+    ? `${baseSubviewPath}${VIEW_PATH_ID_SEPARATOR}${genericGroupTree.parentIdentifier}`
+    : fallbackSubviewPath
 }
