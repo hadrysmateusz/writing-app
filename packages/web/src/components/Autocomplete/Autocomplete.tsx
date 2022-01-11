@@ -1,21 +1,68 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
-import { useIsHovered } from "../../hooks"
-import { scrollToShow } from "../../utils"
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react"
+import { scrollToShowElementFromRefs } from "../../helpers"
+import { useIsHovered, useOnWindowKeyDown } from "../../hooks"
+import { forceDependency } from "../../utils"
+
 import { TextInput } from "../TextInput"
+import {
+  ActiveSuggestionIndexAction,
+  activeSuggestionIndexReducer,
+  DEFAULT_ACTIVE_SUGGESTION_INDEX,
+} from "./activeSuggestionIndexSlice"
 
-import { AutocompleteContainer, SuggestionItem } from "./Autocomplete.styles"
-
-// TODO: maybe make this a generic to support any value types
-// TODO: maybe add additional optional fields to control how the option should be displayed
-export type Option = { value: string | null; label: string; disabled?: boolean }
+import { AutocompleteContainer } from "./Autocomplete.styles"
+import { getSuggestionsMatchingQuery } from "./helpers"
+import { SuggestionItem } from "./SuggestionItem"
+import { Option } from "./types"
 
 // TODO: improve the disabled items system (perhaps by skipping over disabled items when using arrow keys (this will require handling many edge cases and probably a recursive/looping function to handle multiple disabled options in a row))
-// TODO: support autocompletes without option to create (hide create prompt, make create function optional etc.)
+
+const DEFAULT_INPUT_VALUE: string = ""
+
+const useClampActiveSuggestionIndex = (
+  suggestionsCount: number,
+  dispatch: React.Dispatch<ActiveSuggestionIndexAction>
+) => {
+  useEffect(() => {
+    // If change in filteredSuggestions would cause the current index to go out of bounds, we reset it to 0
+    dispatch({
+      type: "clamp",
+      suggestionsCount: suggestionsCount,
+    })
+  }, [dispatch, suggestionsCount])
+}
+
+const useFilterSuggestions = (suggestions: Option[], query: string) => {
+  return useMemo(
+    () => getSuggestionsMatchingQuery(suggestions, query),
+    [query, suggestions]
+  )
+}
 
 export const Autocomplete: React.FC<{
+  /**
+   * List of all options passed from the parent
+   */
   suggestions: Option[]
+  /**
+   * Method to handle selecting an existing option
+   */
   submit: (option: Option) => void
+  /**
+   * Method to handle an option that doesn't exist
+   * most likely by creating some new object using the value typed into the input field
+   */
   create?: (value: string) => void
+  /**
+   * Close the popup
+   */
   close: () => void
   /**
    * Force the placeholder to be a custom string instead of currently selected option
@@ -29,6 +76,9 @@ export const Autocomplete: React.FC<{
    * Prompt to display when a valid option is selected (if skipped or undefined the prompt at the bottom won't be rendered at all)
    */
   submitPrompt?: string
+  /**
+   * Whether to focus the input field when the mouse moves into the popup
+   */
   focusOnHover?: boolean
   inputRef: React.MutableRefObject<HTMLInputElement | null>
 }> = ({
@@ -43,64 +93,78 @@ export const Autocomplete: React.FC<{
   focusOnHover = true,
 }) => {
   // TODO: extract suggestions related logic outside into a hook. The values can then be passed back into the Autocomplete component with a prop getter but are also accessible from the outside to e.g. display stats about current filteredSuggestions etc.
-  const [filteredSuggestions, setFilteredSuggestions] = useState(suggestions)
-  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0)
-  const [inputValue, setInputValue] = useState("")
 
   const suggestionsContainerRef = useRef<HTMLUListElement | null>(null)
   const currentlyActiveElementRef = useRef<HTMLLIElement | null>(null)
 
-  useEffect(() => {
-    // Update filteredSuggestions to match new suggestions from parent
-    setFilteredSuggestions(suggestions)
-  }, [suggestions])
+  const [inputValue, setInputValue] = useState(DEFAULT_INPUT_VALUE)
 
-  useEffect(() => {
-    // If change in filteredSuggestions would cause the current index to go out of bounds, we reset it to 0
-    setActiveSuggestionIndex((prev) => {
-      if (prev > filteredSuggestions.length - 1) {
-        return 0
-        // return Math.max(0, filteredSuggestions.length - 1)
-      } else {
-        return prev
-      }
-    })
-  }, [filteredSuggestions])
+  const [activeSuggestionIndex, activeSuggestionIndexDispatch] = useReducer(
+    activeSuggestionIndexReducer,
+    DEFAULT_ACTIVE_SUGGESTION_INDEX
+  )
+
+  const filteredSuggestions = useFilterSuggestions(suggestions, inputValue)
+
+  useClampActiveSuggestionIndex(
+    filteredSuggestions.length,
+    activeSuggestionIndexDispatch
+  )
 
   const reset = useCallback(() => {
     setInputValue("")
-    setFilteredSuggestions(suggestions)
-    setActiveSuggestionIndex(0)
-  }, [suggestions])
+    activeSuggestionIndexDispatch({ type: "reset" })
+  }, [])
 
-  const onChange = (e) => {
-    // Filter out suggestions that don't contain the user's input
-    const filtered = suggestions.filter(
-      (suggestion) =>
-        suggestion.label.toLowerCase().indexOf(e.target.value.toLowerCase()) >
-        -1
-    )
-
+  const onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value)
-    setFilteredSuggestions(filtered)
-    setActiveSuggestionIndex(0)
-  }
+    activeSuggestionIndexDispatch({ type: "reset" })
+  }, [])
 
+  /**
+   * Submits if option isn't disabled and resets internal state
+   *
+   * @returns true if option was submitted, false if not
+   */
   const wrappedSubmit = useCallback(
     (option: Option) => {
       if (option.disabled === true) {
-        return
-      } else {
-        reset()
-        submit(option)
+        console.log("Can't submit, option is disabled")
+        return false
       }
+      reset()
+      submit(option)
+      return true
     },
     [reset, submit]
   )
 
-  const onSuggestionClick = (option: Option) => {
-    wrappedSubmit(option)
-  }
+  /**
+   * Confirm the selection of an item. Generic wrapper to handle both submitting existing options and creating new ones
+   */
+  const confirmSelection = useCallback(() => {
+    // We use Array.prototype.at instead of square brackets to make sure typescript knows this could potentailly be undefined
+    const activeSuggestion = filteredSuggestions.at(activeSuggestionIndex)
+
+    if (activeSuggestion) {
+      // submit selected option
+      wrappedSubmit(activeSuggestion)
+    } else {
+      if (create) {
+        // create and submit the new option (all handled by 'create')
+        const inputValueTemp = inputValue
+        reset()
+        create(inputValueTemp)
+      }
+    }
+  }, [
+    activeSuggestionIndex,
+    filteredSuggestions,
+    inputValue,
+    create,
+    reset,
+    wrappedSubmit,
+  ])
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -112,45 +176,27 @@ export const Autocomplete: React.FC<{
         case "ArrowUp": {
           event.stopPropagation()
           event.preventDefault()
-          setActiveSuggestionIndex((prev) => Math.max(0, (prev -= 1)))
+          activeSuggestionIndexDispatch({ type: "select-prev" })
           break
         }
         case "ArrowDown": {
           event.stopPropagation()
           event.preventDefault()
-          setActiveSuggestionIndex((prev) =>
-            Math.min(filteredSuggestions.length - 1, (prev += 1))
-          )
+          activeSuggestionIndexDispatch({
+            type: "select-next",
+            suggestionsCount: filteredSuggestions.length,
+          })
           break
         }
         case "Enter": {
           event.stopPropagation()
           event.preventDefault()
-
-          if (filteredSuggestions[activeSuggestionIndex]) {
-            // submit selected option
-            wrappedSubmit(filteredSuggestions[activeSuggestionIndex])
-          } else {
-            if (create) {
-              // create and submit the new option (all handled by 'create')
-              const __inputValue = inputValue
-              reset()
-              create(__inputValue)
-            }
-          }
+          confirmSelection()
           break
         }
       }
     },
-    [
-      activeSuggestionIndex,
-      close,
-      create,
-      filteredSuggestions,
-      inputValue,
-      reset,
-      wrappedSubmit,
-    ]
+    [close, confirmSelection, filteredSuggestions.length]
   )
 
   const { getHoverContainerProps, isHovered } = useIsHovered()
@@ -161,33 +207,22 @@ export const Autocomplete: React.FC<{
     if (focusOnHover && isHovered) {
       inputRefCurrent?.focus()
     }
-
-    // if (focusOnHover && !isHovered) {
-    //   inputRefCurrent?.blur()
-    // }
   }, [focusOnHover, inputRef, isHovered])
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown)
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown)
-    }
-  }, [handleKeyDown])
+  useOnWindowKeyDown(handleKeyDown)
 
   useEffect(() => {
-    const suggestionsContainer = suggestionsContainerRef.current
-    const currentlyActiveItem = currentlyActiveElementRef.current
-
-    if (!currentlyActiveItem || !suggestionsContainer) {
-      return
-    }
-
-    setTimeout(() => {
-      scrollToShow(currentlyActiveItem, suggestionsContainer)
-    }, 0)
+    // We want the scrollToShowElement function to re-run every time the activeSuggestionIndex changes for any reason, but the value itself isn't actually needed for the function to run, so we force a dependency to make sure it doesn't get removed by mistake
+    forceDependency(activeSuggestionIndex)
+    // Scroll to make the container currently active suggestion visible
+    scrollToShowElementFromRefs(
+      suggestionsContainerRef,
+      currentlyActiveElementRef
+    )
   }, [activeSuggestionIndex])
 
   const isEmpty = !(filteredSuggestions.length > 0)
+
   const isDisabledItemActive =
     filteredSuggestions[activeSuggestionIndex]?.disabled === true
 
@@ -203,7 +238,7 @@ export const Autocomplete: React.FC<{
         onChange={onChange}
         value={inputValue}
         placeholder={
-          placeholder || filteredSuggestions[activeSuggestionIndex]?.label
+          placeholder ?? filteredSuggestions[activeSuggestionIndex]?.label
         }
       />
 
@@ -215,23 +250,15 @@ export const Autocomplete: React.FC<{
           ref={suggestionsContainerRef}
         >
           {filteredSuggestions.map((suggestion, index) => {
+            const isActive = index === activeSuggestionIndex
             return (
               <SuggestionItem
                 key={suggestion.value}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onSuggestionClick(suggestion)
-                }}
-                isActive={index === activeSuggestionIndex}
-                isDisabled={suggestion.disabled === true}
-                ref={
-                  index === activeSuggestionIndex
-                    ? currentlyActiveElementRef
-                    : undefined
-                }
-              >
-                {suggestion.label}
-              </SuggestionItem>
+                suggestion={suggestion}
+                onSuggestionClick={wrappedSubmit}
+                isActive={isActive}
+                ref={isActive ? currentlyActiveElementRef : undefined}
+              />
             )
           })}
         </ul>

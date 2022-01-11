@@ -44,7 +44,7 @@ const emphasizedSuggestionItem = (isDisabled: boolean) =>
         background-color: #2c2c2c; // TODO: create more/better colors
       `
 
-export const SuggestionItem = styled.li<{
+export const SuggestionItemStyledNode = styled.li<{
   isActive: boolean
   isDisabled: boolean
 }>`
