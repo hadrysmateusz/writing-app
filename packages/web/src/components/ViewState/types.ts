@@ -85,10 +85,12 @@ export type SwitchPrimarySidebarViewFn = <View extends SidebarView<"primary">>(
 
 export interface PrimarySidebar extends MultiViewSidebar<"primary"> {
   documentsListDisplayType: LocalSettings["documentsListDisplayType"]
+  currentSubviews: SidebarPaths<"primary">
+  collapsedIdentifiers: string[]
+  toggleSection: (identifier: string, value?: boolean) => void
   switchDocumentsListDisplayType: (
     value: LocalSettings["documentsListDisplayType"]
   ) => void
-  currentSubviews: SidebarPaths<"primary">
   switchSubview: SwitchPrimarySidebarViewFn
 }
 

@@ -27,6 +27,32 @@ export const PrimarySidebarProvider: FC<{
   const { updateLocalSetting, getLocalSetting } = useLocalSettings()
   const navigatorSidebar = useNavigatorSidebar()
 
+  // TODO: add persistance
+  const [collapsedIdentifiers, setCollapsedIdentifiers] = useState<
+    PrimarySidebarContextValue["collapsedIdentifiers"]
+  >([])
+
+  const toggleSection = useCallback((identifier: string, value?: boolean) => {
+    setCollapsedIdentifiers((prev) => {
+      const index = prev.indexOf(identifier)
+      const isCollapsed = index !== -1
+
+      if (isCollapsed && [undefined, true].includes(value)) {
+        // We use filter to remove all occurences of identifier which will work even if a duplicate identifier somehow got into the array
+        return prev.filter((val) => val !== identifier)
+      }
+
+      if (!isCollapsed && [undefined, false].includes(value)) {
+        // We use set to ensure no duplicates
+        return Array.from(new Set([...prev, identifier]))
+      }
+
+      return prev
+    })
+  }, [])
+
+  console.log(collapsedIdentifiers)
+
   const [documentsListDisplayType, setDocumentsListDisplayType] = useState<
     LocalSettings["documentsListDisplayType"]
   >(defaultLocalSettings.documentsListDisplayType)
@@ -157,18 +183,22 @@ export const PrimarySidebarProvider: FC<{
       documentsListDisplayType,
       currentView: primarySidebarCurrentView,
       currentSubviews: primarySidebarCurrentSubviews,
+      collapsedIdentifiers,
+      toggleSection,
       switchView: switchPrimaryView,
       switchSubview: switchPrimarySubview,
       switchDocumentsListDisplayType,
     }),
     [
-      toggleable,
       documentsListDisplayType,
-      primarySidebarCurrentView,
+      collapsedIdentifiers,
       primarySidebarCurrentSubviews,
-      switchPrimaryView,
-      switchPrimarySubview,
+      primarySidebarCurrentView,
       switchDocumentsListDisplayType,
+      switchPrimarySubview,
+      switchPrimaryView,
+      toggleSection,
+      toggleable,
     ]
   )
   return (

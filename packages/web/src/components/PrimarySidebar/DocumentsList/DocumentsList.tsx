@@ -1,10 +1,11 @@
-import { memo } from "react"
+import { memo, useCallback, useMemo } from "react"
 
 import {
   GenericDocument_Discriminated,
   GenericDocGroupTree_Discriminated,
+  GenericDocGroupTreeBranch,
 } from "../../../types"
-import { useIsHovered, useToggleable } from "../../../hooks"
+import { useIsHovered } from "../../../hooks"
 
 import { usePrimarySidebar } from "../../ViewState"
 
@@ -24,14 +25,28 @@ type SectionHeaderComponentType = React.ComponentType<
 
 type DocumentItemComponentType = React.ComponentType<SidebarDocumentItemProps>
 
+const useDocumentSectionToggleable = (identifier: string) => {
+  const { toggleSection, collapsedIdentifiers } = usePrimarySidebar()
+
+  const isOpen = useMemo(
+    () => !collapsedIdentifiers.includes(identifier),
+    [collapsedIdentifiers, identifier]
+  )
+
+  const toggle = useCallback(() => {
+    toggleSection(identifier)
+  }, [identifier, toggleSection])
+
+  return useMemo(() => ({ isOpen, toggle }), [isOpen, toggle])
+}
+
 export const NestedDocumentsListSection: React.FC<{
-  groupTree: GenericDocGroupTree_Discriminated
+  groupTree: GenericDocGroupTreeBranch
 
   DocumentItemComponent: DocumentItemComponentType
   SectionHeaderComponent: SectionHeaderComponentType
 }> = ({ groupTree, SectionHeaderComponent, DocumentItemComponent }) => {
-  // TODO: use stateless toggleables and keep state higher up, persisting it between path changes (either as a global collection of group.ids that are open or closed, or a per-path one)
-  const { toggle, isOpen } = useToggleable(true)
+  const { toggle, isOpen } = useDocumentSectionToggleable(groupTree.identifier)
 
   const { getHoverContainerProps, isHovered } = useIsHovered()
 
