@@ -16,7 +16,7 @@ export function parseSidebarPath(path: string) {
       ? undefined
       : path.slice(indexOfQuestionMark + 1, path.length)
 
-  console.log(`path: ${path} locationPath: ${locationPath}`)
+  // console.log(`path: ${path} locationPath: ${locationPath}`)
 
   const pathParts = locationPath.split(VIEW_PATH_SEGMENT_SEPARATOR)
   // console.log(pathParts)
