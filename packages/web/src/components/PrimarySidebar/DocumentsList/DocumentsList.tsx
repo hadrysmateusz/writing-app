@@ -52,7 +52,8 @@ export const NestedDocumentsListSection: React.FC<{
 
   // const shouldRender = !isLoading && documents && documents.length > 0
 
-  return groupTree.childDocuments.length > 0 ? (
+  return groupTree.childDocuments.length > 0 ||
+    groupTree.childGroups.length > 0 ? (
     <PrimarySidebarSectionContainer isHovered={isHovered}>
       <SectionHeaderComponent
         isOpen={isOpen}
@@ -92,22 +93,24 @@ export const NestedDocumentsList: React.FC<{
 
   DocumentItemComponent: DocumentItemComponentType
   SectionHeaderComponent: SectionHeaderComponentType
-}> = ({ documents, groups, SectionHeaderComponent, DocumentItemComponent }) => (
-  <PrimarySidebarToggleableSectionContainer>
-    <FlatDocumentsList
-      documents={documents}
-      DocumentItemComponent={DocumentItemComponent}
-    />
-    {groups.map((childGroup) => (
-      <NestedDocumentsListSection
-        key={childGroup.identifier}
-        groupTree={childGroup}
-        SectionHeaderComponent={SectionHeaderComponent}
+}> = ({ documents, groups, SectionHeaderComponent, DocumentItemComponent }) => {
+  return (
+    <PrimarySidebarToggleableSectionContainer>
+      <FlatDocumentsList
+        documents={documents}
         DocumentItemComponent={DocumentItemComponent}
       />
-    ))}
-  </PrimarySidebarToggleableSectionContainer>
-)
+      {groups.map((childGroup) => (
+        <NestedDocumentsListSection
+          key={childGroup.identifier}
+          groupTree={childGroup}
+          SectionHeaderComponent={SectionHeaderComponent}
+          DocumentItemComponent={DocumentItemComponent}
+        />
+      ))}
+    </PrimarySidebarToggleableSectionContainer>
+  )
+}
 
 export const DocumentsList: React.FC<{
   groupTree: GenericDocGroupTree_Discriminated | null
