@@ -25,4 +25,4 @@ Some of the technologies used in this project:
 
 ## 👀 View project
 
-While the project was never launched to the public, it can still be [viewed live here](https://streetwear-app.web.app).
+The project is currently a work in progress and thus not available to the public.
