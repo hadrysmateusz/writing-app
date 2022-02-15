@@ -73,6 +73,7 @@ const TagViewWithFoundTagId: React.FC<{ tagId: string }> = ({ tagId }) => {
   return ok ? (
     <PrimarySidebarViewContainer>
       <MainHeader
+        numDocuments={flatDocuments.length}
         title={tag.name}
         buttons={[
           <GoUpMainHeaderButton
