@@ -17,7 +17,7 @@ import {
 import { useEditorContextMenu } from "./hooks"
 import { pluginsList } from "./config"
 import TitleInput from "./TitleInput"
-import { BalloonToolbar, Toolbar } from "./Toolbars"
+import { Toolbar } from "./Toolbars"
 
 type EditorComponentProps = {
   // handlers for actions that differ based on document/editor type
@@ -246,7 +246,7 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({
               onRename={renameDocument}
             />
             <Toolbar />
-            <BalloonToolbar />
+            {/*<BalloonToolbar />*/}
           </Plate>
           {isMenuOpen && renderContextMenu()}
         </EditableContainer>
