@@ -1,4 +1,4 @@
-# writing-app [WIP]
+# Couchwriter
 
 ![Project Screenshot](./screenshot.png)
 
